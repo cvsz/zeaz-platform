@@ -1,1 +1,1 @@
-output "module_name" { value="cloudflare-access-app" }
+output "module_name" { value = "cloudflare-access-app" }

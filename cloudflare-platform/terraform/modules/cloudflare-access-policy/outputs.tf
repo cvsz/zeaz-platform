@@ -1,1 +1,1 @@
-output "module_name" { value="cloudflare-access-policy" }
+output "module_name" { value = "cloudflare-access-policy" }

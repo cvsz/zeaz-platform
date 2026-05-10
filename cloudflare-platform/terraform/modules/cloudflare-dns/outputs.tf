@@ -1,1 +1,1 @@
-output "module_name" { value="cloudflare-dns" }
+output "module_name" { value = "cloudflare-dns" }

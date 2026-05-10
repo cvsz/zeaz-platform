@@ -1,1 +1,1 @@
-output "module_name" { value="cloudflare-r2" }
+output "module_name" { value = "cloudflare-r2" }

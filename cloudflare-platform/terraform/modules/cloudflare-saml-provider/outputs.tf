@@ -1,1 +1,1 @@
-output "module_name" { value="cloudflare-saml-provider" }
+output "module_name" { value = "cloudflare-saml-provider" }

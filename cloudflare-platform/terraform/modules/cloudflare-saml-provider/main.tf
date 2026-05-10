@@ -4,8 +4,8 @@ resource "cloudflare_access_identity_provider" "this" {
   type       = "saml"
 
   config {
-    issuer_url   = "https://idp.example.com/metadata"
+    issuer_url     = "https://idp.example.com/metadata"
     sso_target_url = "https://idp.example.com/sso"
-    attributes   = ["email"]
+    attributes     = ["email"]
   }
 }

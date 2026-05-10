@@ -6,7 +6,22 @@ module "dns" {
   source  = "./modules/cloudflare-dns"
   zone_id = var.cf_zone_id
   records = {
-    auth = "auth.zeaz.dev"
+    auth = {
+      name    = "auth"
+      type    = "CNAME"
+      value   = "auth.zeaz.dev"
+      ttl     = 1
+      proxied = true
+      comment = "Authentication endpoint"
+    }
+    api = {
+      name    = "api"
+      type    = "CNAME"
+      value   = "api.zeaz.dev"
+      ttl     = 1
+      proxied = true
+      comment = "Primary API endpoint"
+    }
   }
 }
 
@@ -17,8 +32,9 @@ module "api_shield" {
 }
 
 module "waf" {
-  source  = "./modules/cloudflare-waf"
-  zone_id = var.cf_zone_id
+  source        = "./modules/cloudflare-waf"
+  zone_id       = var.cf_zone_id
+  redirect_host = "zeaz.dev"
 }
 
 module "workers" {

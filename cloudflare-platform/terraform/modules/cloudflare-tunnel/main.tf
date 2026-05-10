@@ -1,5 +1,11 @@
+resource "random_password" "tunnel_secret" {
+  length           = 64
+  special          = false
+  override_special = ""
+}
+
 resource "cloudflare_tunnel" "this" {
   account_id = var.account_id
-  name       = coalesce(var.name, "default-tunnel")
-  secret     = base64encode("replace-with-32-byte-secret")
+  name       = var.name
+  secret     = base64encode(random_password.tunnel_secret.result)
 }

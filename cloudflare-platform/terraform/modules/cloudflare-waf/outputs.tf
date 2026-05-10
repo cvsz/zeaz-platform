@@ -1,1 +1,1 @@
-output "module_name" { value="cloudflare-waf" }
+output "module_name" { value = "cloudflare-waf" }
