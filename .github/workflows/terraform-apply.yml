@@ -1,0 +1,50 @@
+name: terraform-apply
+
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+
+    permissions:
+      contents: read
+
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_DNS_TOKEN: ${{ secrets.CF_DNS_TOKEN }}
+      CF_ZT_TOKEN: ${{ secrets.CF_ZT_TOKEN }}
+      CF_WORKERS_TOKEN: ${{ secrets.CF_WORKERS_TOKEN }}
+      CF_WAF_TOKEN: ${{ secrets.CF_WAF_TOKEN }}
+      CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
+      CF_R2_TOKEN: ${{ secrets.CF_R2_TOKEN }}
+      CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Load Environment
+        run: |
+          chmod +x cloudflare-platform/scripts/cloudflare/load-env.sh
+          ./cloudflare-platform/scripts/cloudflare/load-env.sh
+
+      - name: Export Terraform Variables
+        run: |
+          chmod +x cloudflare-platform/scripts/cloudflare/export-tf-vars.sh
+          source cloudflare-platform/scripts/cloudflare/export-tf-vars.sh
+
+      - name: Terraform Init
+        working-directory: cloudflare-platform/terraform
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: cloudflare-platform/terraform
+        run: terraform apply -auto-approve
