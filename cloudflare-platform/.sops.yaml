@@ -1,0 +1,4 @@
+creation_rules:
+  - path_regex: secrets/.*\.enc\.(yaml|json|env)$
+    encrypted_regex: '^(data|stringData|token|password|secret|key)$'
+    age: ["AGE-SECRET-KEY-1REPLACE_WITH_REAL_KEY"]

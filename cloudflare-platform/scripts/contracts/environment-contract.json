@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cloudflare Platform Runtime Contract",
+  "type": "object",
+  "required": [
+    "CF_ACCOUNT_ID","CF_ZONE_ID","CF_API_TOKEN","CF_DNS_TOKEN","CF_ZT_TOKEN","CF_WORKERS_TOKEN","CF_WAF_TOKEN","CF_TUNNEL_TOKEN","CF_R2_TOKEN",
+    "PRIMARY_DOMAIN","ENVIRONMENT","REGION",
+    "IDENTITY_PROVIDER_VENDOR","IDENTITY_PROVIDER_TYPE","IDENTITY_PROVIDER_METADATA_URL",
+    "CLOUDFLARE_PLAN_TIER","TERRAFORM_BACKEND_TYPE","TERRAFORM_STATE_BUCKET","TERRAFORM_LOCK_TABLE"
+  ],
+  "properties": {
+    "CF_ACCOUNT_ID": {"type": "string", "pattern": "^[a-f0-9]{32}$"},
+    "CF_ZONE_ID": {"type": "string", "pattern": "^[a-f0-9]{32}$"},
+    "PRIMARY_DOMAIN": {"type": "string", "pattern": "^[a-z0-9.-]+$"},
+    "ENVIRONMENT": {"type": "string", "enum": ["dev","staging","prod"]},
+    "REGION": {"type": "string", "minLength": 3},
+    "IDENTITY_PROVIDER_VENDOR": {"type": "string", "minLength": 2},
+    "IDENTITY_PROVIDER_TYPE": {"type": "string", "enum": ["saml","oidc"]},
+    "IDENTITY_PROVIDER_METADATA_URL": {"type": "string", "pattern": "^https://"},
+    "CLOUDFLARE_PLAN_TIER": {"type": "string", "enum": ["Free","Pro","Business","Enterprise"]},
+    "TERRAFORM_BACKEND_TYPE": {"type": "string", "enum": ["s3","gcs","azurerm","pg","local"]},
+    "TERRAFORM_STATE_BUCKET": {"type": "string", "minLength": 3},
+    "TERRAFORM_LOCK_TABLE": {"type": "string", "minLength": 3}
+  },
+  "additionalProperties": true
+}
