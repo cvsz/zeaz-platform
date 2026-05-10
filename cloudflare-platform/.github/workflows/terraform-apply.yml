@@ -1,8 +1,16 @@
 name: terraform-apply
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        default: dev
 jobs:
-  run:
+  apply:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - uses: actions/checkout@v4
-      - run: echo "terraform-apply" 
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform -chdir=cloudflare-platform/terraform/envs/${{ github.event.inputs.environment }} init -input=false
+      - run: terraform -chdir=cloudflare-platform/terraform/envs/${{ github.event.inputs.environment }} apply -auto-approve

@@ -1,8 +1,19 @@
 name: security-scanning
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches: [ main ]
 jobs:
-  run:
+  security:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "security-scanning" 
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: cloudflare-platform/terraform
+      - name: Trivy IaC
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: config
+          scan-ref: cloudflare-platform/terraform

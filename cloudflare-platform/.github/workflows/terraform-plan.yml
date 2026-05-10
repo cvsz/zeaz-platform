@@ -1,8 +1,14 @@
 name: terraform-plan
-on: [push, pull_request]
+on:
+  pull_request:
+    paths:
+      - 'cloudflare-platform/terraform/**'
 jobs:
-  run:
+  plan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "terraform-plan" 
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform -chdir=cloudflare-platform/terraform init -backend=false -input=false
+      - run: terraform -chdir=cloudflare-platform/terraform validate
+      - run: terraform -chdir=cloudflare-platform/terraform plan -input=false
