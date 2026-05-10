@@ -15,3 +15,7 @@ Production-grade, phased Cloudflare Zero Trust platform for `zeaz.dev`.
 make validate
 make plan ENV=dev
 ```
+
+
+## Documentation
+- Full project documentation: `docs/full-documentation.md`
