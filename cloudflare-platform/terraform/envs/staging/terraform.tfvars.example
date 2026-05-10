@@ -1,0 +1,4 @@
+cf_api_token=""
+cf_account_id=""
+cf_zone_id=""
+plan_tier="Free"

@@ -1,0 +1,8 @@
+name: policy-testing
+on: [push, pull_request]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "policy-testing" 

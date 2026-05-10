@@ -1,0 +1,8 @@
+name: drift-detection
+on: [push, pull_request]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "drift-detection" 
