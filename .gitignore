@@ -1,7 +1,30 @@
+# Secrets
+.env
+*.env
+*.tfvars
+*.pem
+*.key
+*.p12
+*.agekey
+
+# Terraform
+.terraform/
+terraform.tfstate*
+crash.log
+
+# Cloudflare
+cloudflared/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Existing project paths
 .secrets/
 terraform/backend/
-
-# Cloudflare token automation
 cloudflare-platform/secrets/*.env
 cloudflare-platform/backups/
-*.tfvars

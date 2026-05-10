@@ -1,1 +1,1 @@
-output "plan_tier" { value=var.plan_tier }
+output "plan_tier" { value = var.plan_tier }
