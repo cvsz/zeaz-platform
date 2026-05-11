@@ -28,3 +28,6 @@ __pycache__/
 terraform/backend/
 cloudflare-platform/secrets/*.env
 cloudflare-platform/backups/
+
+# Local tooling binaries
+bin/
