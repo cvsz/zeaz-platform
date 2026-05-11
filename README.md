@@ -48,7 +48,7 @@ Covers Zero Trust access, DNS, Cloudflare Tunnels, Workers, WAF, R2, and scoped 
 Infrastructure-as-code: Terraform (HCL)
 Secret management:      SOPS + age
 CI/CD:                  GitHub Actions
-Token lifecycle:        scripts/cloudflare/clean-and-regenerate-tokens.sh
+Token lifecycle:        scripts/cloudflare/clean-and-regenerate-tokens.sh (wrapper)
 ```
 
 ### Platform layers
@@ -126,9 +126,9 @@ Run phases in order. Each phase is independent and idempotent.
 # Ensure .env is fully populated.
 
 # Phase 2 — Terraform foundation
-terraform -chdir=terraform init
-terraform -chdir=terraform plan -out=tfplan
-terraform -chdir=terraform apply tfplan
+terraform -chdir=terraform/environments/${ENVIRONMENT} init
+terraform -chdir=terraform/environments/${ENVIRONMENT} plan -out=tfplan
+terraform -chdir=terraform/environments/${ENVIRONMENT} apply tfplan
 
 # Phase 3 — Zero Trust + Identity
 # Configure SAML/OIDC providers via Terraform modules:
@@ -202,18 +202,18 @@ make token-rotate
 
 | Variable | Required | Description |
 |---|---|---|
-| `ENVIRONMENT` | yes | `production`, `staging`, or `development` |
+| `ENVIRONMENT` | yes | `dev`, `staging`, or `prod` |
 | `REGION` | yes | Primary region, e.g. `ap-southeast-1` |
 | `PRIMARY_DOMAIN` | yes | `zeaz.dev` |
-| `ORIGIN_INFRA_TYPE` | yes | `self-hosted`, `vps`, `k8s`, or `docker` |
+| `ORIGIN_INFRA_TYPE` | yes | `vm`, `kubernetes`, `serverless`, or `hybrid` |
 | `ORIGIN_HOSTS` | yes | Comma-separated origin IPs or hostnames |
-| `CLOUDFLARE_PLAN_TIER` | yes | `free`, `pro`, `business`, or `enterprise` |
+| `CLOUDFLARE_PLAN_TIER` | yes | `Free`, `Pro`, `Business`, or `Enterprise` |
 
 ### Terraform backend
 
 | Variable | Required | Description |
 |---|---|---|
-| `TERRAFORM_BACKEND_TYPE` | yes | `s3`, `gcs`, `azurerm`, or `local` |
+| `TERRAFORM_BACKEND_TYPE` | yes | `s3` or `local` |
 | `TERRAFORM_STATE_BUCKET` | yes | Bucket name for remote state |
 | `TERRAFORM_LOCK_TABLE` | yes | DynamoDB table name (if `s3` backend) |
 

@@ -3,7 +3,7 @@ SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 
 ENVIRONMENT ?= dev
-BACKEND_TYPE ?= local
+BACKEND_TYPE ?= $(if $(TERRAFORM_BACKEND_TYPE),$(TERRAFORM_BACKEND_TYPE),local)
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
 TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
 
@@ -82,3 +82,28 @@ doctor:
 
 validate-f1:
 	@bash scripts/validate.sh --offline --strict
+
+
+# Agent and documentation compatibility aliases
+validate-agent: validate-env
+	@bash scripts/ai/validate-agent-env.sh
+
+bootstrap-agent:
+	@bash scripts/ai/bootstrap-agent.sh
+
+terraform-validate: tf-validate
+terraform-fmt: fmt
+yaml-validate:
+	@python3 scripts/validate-yaml.py
+
+shell-validate:
+	@shellcheck scripts/**/*.sh
+
+token-clean:
+	@bash scripts/cloudflare/clean-and-regenerate-tokens.sh --dry-run --cleanup-only
+
+token-rotate-dry:
+	@bash scripts/cloudflare/clean-and-regenerate-tokens.sh --dry-run --regenerate --types all --backup
+
+token-rotate:
+	@bash scripts/cloudflare/clean-and-regenerate-tokens.sh --yes --regenerate --types all --backup --write .env.cloudflare
