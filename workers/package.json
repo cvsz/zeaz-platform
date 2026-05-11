@@ -1,0 +1,16 @@
+{
+  "name": "@zeazdev/workers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test --import tsx ../tests/workers/*.test.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260511.0",
+    "@types/node": "^25.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

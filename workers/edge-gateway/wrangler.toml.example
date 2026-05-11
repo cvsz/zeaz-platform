@@ -1,0 +1,12 @@
+name = "edge-gateway"
+main = "src/index.ts"
+compatibility_date = "2026-05-11"
+workers_dev = true
+
+[[kv_namespaces]]
+binding = "EDGE_RATE_LIMIT_KV"
+id = "replace-with-kv-namespace-id"
+
+[vars]
+JWT_AUDIENCE = "edge-gateway"
+# JWT_SECRET must be injected via `wrangler secret put JWT_SECRET`.
