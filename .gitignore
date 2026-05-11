@@ -31,3 +31,6 @@ cloudflare-platform/backups/
 
 # Local tooling binaries
 bin/
+
+# Generated cloudflared config
+tunnels/cloudflared/config.yml

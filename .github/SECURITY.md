@@ -33,8 +33,7 @@ Do **not** open public issues for security vulnerabilities.
 
 This repository enforces:
 
-- Dependency and IaC vulnerability scanning in CI
-- CodeQL static analysis
-- Secret scanning in CI
+- ShellCheck validation in CI
+- Optional local security scanning via Trivy, Gitleaks, Semgrep, and SBOM tooling
 - Least-privilege automation tokens
-- Drift detection workflows for infrastructure integrity
+- Drift detection support via Make targets and scripts
