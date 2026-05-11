@@ -362,3 +362,36 @@ To report a security issue or leaked credential, see [`.github/SECURITY.md`](.gi
 - F4: DNS + Tunnels + Networking
 - F5: Workers + Edge + AI
 - F6: Monitoring + DR + Security
+
+
+## Plan Matrix
+
+| Feature | Free | Pro | Business | Enterprise |
+|---|---:|---:|---:|---:|
+| Core DNS/Tunnel/Access | ✅ | ✅ | ✅ | ✅ |
+| API Shield | ❌ | ❌ | ❌ | ✅ |
+| Device Posture | ❌ | ❌ | ❌ | ✅ |
+| Bot Management Advanced | ❌ | ❌ | ❌ | ✅ |
+
+## Phased Deployment
+
+Deploy with `enabled_phases` (`F1`..`F6`) per environment root in `terraform/environments/*` and `opentofu/environments/*`.
+
+## Rollback
+
+Use saved Terraform/OpenTofu plans for controlled rollback, or run `terraform destroy`/`tofu destroy` only with explicit `CONFIRM_APPLY=yes` in non-production recovery windows. Operational rollback runbooks are in `docs/runbooks/`.
+
+## Security Model
+
+Least-privilege token separation is enforced (`CF_DNS_TOKEN`, `CF_ZT_TOKEN`, `CF_WORKERS_TOKEN`, `CF_WAF_TOKEN`, `CF_TUNNEL_TOKEN`, `CF_R2_TOKEN`), with policy-as-code in `policies/`, WAF controls in `waf/`, and Zero Trust identity definitions in `zero-trust/`.
+
+## GitOps Workflow
+
+1. Commit reviewed IaC and policy changes.
+2. Run `make validate`, `make test`, `make tf-validate`, and `make tofu-validate`.
+3. Open PR and require CI approval checks before merge.
+4. Apply per phase/environment from audited pipelines.
+
+## Setup
+
+See **Quickstart** above for bootstrap, validation, and phased apply commands.

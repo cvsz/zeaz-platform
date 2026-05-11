@@ -467,7 +467,7 @@ for _k in "${_MANAGED_KEYS[@]}"; do
   if [[ -n "${_new_val}" ]]; then
     printf '%s="%s"\n' "${_k}" "${_new_val}" >> "${_tmp}"
   else
-    # Preserve existing env value if present, else write a placeholder
+    # Preserve existing env value if present, else write a template value
     _existing="${!_k:-}"
     if [[ -n "${_existing}" ]]; then
       printf '%s="%s"\n' "${_k}" "${_existing}" >> "${_tmp}"

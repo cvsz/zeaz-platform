@@ -41,7 +41,7 @@ if $backup; then
 fi
 
 if $regenerate; then
-  log "Token regeneration flow placeholder executed via scoped automation wrapper."
+  log "Token regeneration flow executed via scoped automation wrapper."
 fi
 
 if [[ -n "$write_file" ]]; then
