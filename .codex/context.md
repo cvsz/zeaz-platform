@@ -15,11 +15,16 @@ Use `cloudflare-platform/scripts/contracts/environment-contract.json` and `cloud
 ## Standard Operator Flow
 1. `make -C cloudflare-platform validate`
 2. `make -C cloudflare-platform plan-tier`
-3. `make -C cloudflare-platform plan`
-4. `make -C cloudflare-platform apply`
-5. `make -C cloudflare-platform drift`
+3. `make -C cloudflare-platform mcp-config`
+4. `make -C cloudflare-platform plan`
+5. `make -C cloudflare-platform apply`
+6. `make -C cloudflare-platform drift`
 
 ## Incident and Recovery
 - Use `cloudflare-platform/scripts/backup.sh` before major changes.
 - Use `cloudflare-platform/scripts/restore.sh` for deterministic rollback.
 - Audit token scope drift with `cloudflare-platform/scripts/validate-token-scopes.sh`.
+
+
+## MCP Runtime
+- Regenerate local MCP config with `make -C cloudflare-platform mcp-config` after token rotation.

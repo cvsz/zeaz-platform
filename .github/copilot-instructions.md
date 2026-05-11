@@ -13,3 +13,7 @@ When suggesting code in this repository:
 - `make -C cloudflare-platform plan`
 - `make -C cloudflare-platform apply`
 - `make -C cloudflare-platform drift`
+
+
+## MCP Runtime
+- Regenerate local MCP config with `make -C cloudflare-platform mcp-config` after token rotation.

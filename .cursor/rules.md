@@ -17,3 +17,7 @@
   - `IFS=$'\n\t'`
 - Do not weaken token scope validation logic.
 - Keep environment validation in sync with `scripts/contracts/environment-contract.json`.
+
+
+## MCP Runtime
+- Regenerate local MCP config with `make -C cloudflare-platform mcp-config` after token rotation.
