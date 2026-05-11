@@ -3,7 +3,7 @@ SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 
 ENVIRONMENT ?= dev
-BACKEND_TYPE ?= $(if $(TERRAFORM_BACKEND_TYPE),$(TERRAFORM_BACKEND_TYPE),local)
+BACKEND_TYPE ?= local
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
 TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
 
@@ -17,8 +17,9 @@ validate: validate-env tf-validate tofu-validate
 validate-env:
 	@test -n "$(ENVIRONMENT)" || (echo "ERROR: ENVIRONMENT is required" && exit 1)
 	@case "$(ENVIRONMENT)" in dev|staging|prod) ;; *) echo "ERROR: ENVIRONMENT must be dev|staging|prod"; exit 1;; esac
-	@case "$(BACKEND_TYPE)" in local|s3) ;; *) echo "ERROR: TERRAFORM_BACKEND_TYPE must be local|s3"; exit 1;; esac
-	@if [ "$(BACKEND_TYPE)" = "s3" ]; then \
+	@backend="$${TERRAFORM_BACKEND_TYPE:-$(BACKEND_TYPE)}"; \
+	case "$$backend" in local|s3) ;; *) echo "ERROR: TERRAFORM_BACKEND_TYPE must be local|s3"; exit 1;; esac; \
+	if [ "$$backend" = "s3" ]; then \
 		test -n "$${TERRAFORM_STATE_BUCKET:-}" || (echo "ERROR: TERRAFORM_STATE_BUCKET is required when backend is s3" && exit 1); \
 		test -n "$${TERRAFORM_LOCK_TABLE:-}" || (echo "ERROR: TERRAFORM_LOCK_TABLE is required when backend is s3" && exit 1); \
 	fi
