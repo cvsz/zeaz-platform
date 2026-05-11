@@ -29,22 +29,26 @@ policies:
     decision: allow
     precedence: 1
     include: [{groups: [wallet-admin, wallet-operator, treasury, compliance]}]
-    require: [mfa, valid_service_token]
+    require: [mfa, webauthn, valid_service_token]
+    session_ttl: 4h
   - app_key: pay
     decision: allow
     precedence: 1
     include: [{groups: [wallet-admin, wallet-operator, treasury]}]
-    require: [mfa, valid_service_token]
+    require: [mfa, webauthn, valid_service_token]
+    session_ttl: 4h
   - app_key: treasury
     decision: allow
     precedence: 1
     include: [{groups: [wallet-admin, treasury, compliance, wallet-auditor]}]
-    require: [mfa, valid_service_token, step_up_auth]
+    require: [mfa, webauthn, valid_service_token, step_up_auth]
+    session_ttl: 4h
   - app_key: admin-wallet
     decision: allow
     precedence: 1
     include: [{groups: [wallet-admin, compliance]}]
-    require: [mfa, valid_service_token, step_up_auth]
+    require: [mfa, webauthn, valid_service_token, step_up_auth]
+    session_ttl: 4h
 audit_hooks:
   - destination: cloudflare-logpush
     dataset: access_requests
