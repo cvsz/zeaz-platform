@@ -1,0 +1,12 @@
+version: 1
+jwt_validation:
+  required: true
+  jwks_url_env: FINTECH_JWKS_URL
+  expected_issuers_env: FINTECH_JWT_ISSUERS
+  expected_audiences_env: FINTECH_JWT_AUDIENCES
+  max_clock_skew_seconds: 60
+  require_claims: [sub, exp, iat, iss, aud, scope]
+  sensitive_paths:
+    - /v1/treasury/transfer
+    - /v1/wallet/withdraw
+    - /v1/payments/payout

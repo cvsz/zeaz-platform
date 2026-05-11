@@ -1,0 +1,17 @@
+version: 1
+applications: [app.zeaz.dev, pay.zeaz.dev, treasury.zeaz.dev, admin-wallet.zeaz.dev]
+controls:
+  mfa: required
+  webauthn: required
+  session_ttl_max_hours: 4
+  step_up_authentication: required
+  geo_restriction:
+    mode: allowlist
+    countries: [US]
+  sensitive_action_reauth: required
+  audit_logging: required
+enterprise_controls:
+  mtls_client_auth:
+    enabled_when_plan: Enterprise
+  api_shield:
+    enabled_when_plan: Enterprise
