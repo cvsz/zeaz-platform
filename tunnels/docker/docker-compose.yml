@@ -1,0 +1,9 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel run
+    volumes:
+      - ./config:/etc/cloudflared:ro
+    ports:
+      - "2000:2000"

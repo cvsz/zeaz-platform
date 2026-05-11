@@ -1,0 +1,33 @@
+tunnel: ${CF_TUNNEL_ID}
+credentials-file: /etc/cloudflared/${CF_TUNNEL_ID}.json
+metrics: 0.0.0.0:2000
+no-autoupdate: true
+ingress:
+  - hostname: zeaz.dev
+    service: https://origin-gateway.internal:443
+    originRequest:
+      http2Origin: true
+      noTLSVerify: false
+      connectTimeout: 30s
+      tlsTimeout: 10s
+  - hostname: app.zeaz.dev
+    service: https://fintech-origin.internal:443
+  - hostname: zveo.zeaz.dev
+    service: https://ai-origin.internal:443
+  - hostname: api.zeaz.dev
+    service: https://api-origin.internal:443
+  - hostname: admin.zeaz.dev
+    service: https://admin-origin.internal:443
+  - hostname: grafana.zeaz.dev
+    service: http://grafana:3000
+  - hostname: logs.zeaz.dev
+    service: http://loki:3100
+  - hostname: auth.zeaz.dev
+    service: https://auth-origin.internal:443
+  - hostname: tunnel.zeaz.dev
+    service: http_status:200
+  - hostname: '*.zeaz.dev'
+    service: https://wildcard-origin.internal:443
+  - service: http_status:404
+warp-routing:
+  enabled: true

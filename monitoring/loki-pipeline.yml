@@ -1,0 +1,5 @@
+pipeline_stages:
+  - json:
+      expressions:
+        level: level
+        msg: msg
