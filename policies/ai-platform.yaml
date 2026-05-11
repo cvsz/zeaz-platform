@@ -1,0 +1,31 @@
+version: 1
+targets:
+  - zveo.zeaz.dev
+  - studio.zeaz.dev
+authn:
+  mfa_required: true
+  webauthn_required: true
+  session_ttl_minutes: 240
+security:
+  prompt_injection_mitigation:
+    enabled: true
+    notes:
+      - "Use model-side instruction hierarchy validation and output filtering."
+      - "Block tool calls when prompt risk score is high."
+  upload_validation:
+    max_file_size_mb: 20
+    allowed_mime_types:
+      - image/png
+      - image/jpeg
+      - video/mp4
+quotas:
+  api_quota_per_user_per_minute: 20
+  publishing_quota_per_user_per_hour: 30
+edge_controls:
+  rate_limiting_required: true
+  publishing_rbac_roles:
+    - zveo-admin
+    - zveo-publisher
+bot_mitigation:
+  requires_enterprise_plan: true
+  fallback_rate_limit_only: true

@@ -1,0 +1,18 @@
+version: 1
+quotas:
+  ai_generation:
+    per_user_per_minute: 20
+    per_user_per_day: 500
+    burst: 10
+  publishing:
+    per_user_per_hour: 30
+    per_org_per_day: 2000
+  route:
+    "/v1/generate":
+      requests_per_minute: 120
+    "/v1/publish":
+      requests_per_minute: 60
+abuse_controls:
+  block_on_prompt_injection_signals: true
+  max_prompt_bytes: 65536
+  max_upload_bytes: 20971520

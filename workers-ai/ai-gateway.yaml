@@ -1,0 +1,15 @@
+version: 1
+gateway:
+  slug_var: CF_AI_GATEWAY_SLUG
+  account_id_var: CF_ACCOUNT_ID
+providers:
+  - name: openai
+    api_key_source: env
+    api_key_env_var: OPENAI_API_KEY
+controls:
+  request_timeout_ms: 30000
+  retries: 2
+  quota_policy_file: workers-ai/quota-policy.yaml
+  abuse_detection:
+    prompt_injection_detection: true
+    pii_redaction: true

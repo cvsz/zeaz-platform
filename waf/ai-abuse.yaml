@@ -1,0 +1,11 @@
+version: 1
+rules:
+  - id: ai-prompt-injection-patterns
+    action: managed_challenge
+    expression: "http.request.uri.path contains \"/generate\" and any(lower(http.request.body.raw) contains \"ignore previous instructions\", lower(http.request.body.raw) contains \"system prompt\")"
+  - id: ai-upload-anomaly
+    action: block
+    expression: "http.request.uri.path contains \"/upload\" and to_number(http.request.headers[\"content-length\"][0]) gt 20971520"
+  - id: ai-publish-abuse
+    action: js_challenge
+    expression: "http.request.uri.path contains \"/publish\" and cf.threat_score gt 10"
