@@ -19,3 +19,20 @@ variable "name" {
     error_message = "name must be between 3 and 64 chars."
   }
 }
+
+variable "secret" {
+  type        = string
+  description = "Base64 tunnel secret passed from runtime secret manager."
+  nullable    = false
+  sensitive   = true
+}
+
+variable "ingress_rules" {
+  type = list(object({
+    hostname = optional(string)
+    service  = string
+  }))
+  description = "Tunnel ingress rules; include terminal fallback service."
+  nullable    = false
+  default     = []
+}

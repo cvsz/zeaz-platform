@@ -1,0 +1,38 @@
+version: 1
+network_guardrails:
+  origin_allowlist:
+    - origin-auth:8080
+    - origin-auth-dr:8080
+    - origin-zveo:8080
+    - origin-zveo-dr:8080
+    - origin-studio:8080
+    - origin-studio-dr:8080
+    - origin-analytics:8080
+    - origin-analytics-dr:8080
+    - origin-app:8080
+    - origin-app-dr:8080
+    - origin-pay:8080
+    - origin-pay-dr:8080
+    - origin-treasury:8080
+    - origin-treasury-dr:8080
+    - origin-admin-wallet:8080
+    - origin-admin-wallet-dr:8080
+  egress_policy_notes:
+    - "Restrict connector egress to Cloudflare tunnel endpoints only"
+    - "Restrict origin egress to explicit upstream dependencies"
+  tunnel_health_validation:
+    command: "bash scripts/tunnel-validate.sh --offline"
+  dns_propagation_checks:
+    required_fqdns:
+      - auth.zeaz.dev
+      - zveo.zeaz.dev
+      - studio.zeaz.dev
+      - analytics.zeaz.dev
+      - app.zeaz.dev
+      - pay.zeaz.dev
+      - treasury.zeaz.dev
+      - admin-wallet.zeaz.dev
+  rollback_steps:
+    - "terraform apply using previous known good state"
+    - "restore previous dns/records.yaml and tunnels/config.yaml from git"
+    - "run bash scripts/tunnel-validate.sh --offline"

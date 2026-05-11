@@ -9,15 +9,29 @@ variable "zone_id" {
   }
 }
 
+variable "primary_domain" {
+  type        = string
+  description = "Primary DNS domain. Defaults to zeaz.dev but supports override."
+  nullable    = false
+  default     = "zeaz.dev"
+
+  validation {
+    condition     = can(regex("^[a-z0-9.-]+$", var.primary_domain))
+    error_message = "primary_domain must be a valid lowercase domain name."
+  }
+}
+
 variable "records" {
   type = map(object({
-    name     = string
-    type     = string
-    value    = string
-    ttl      = number
-    proxied  = bool
-    comment  = optional(string)
-    priority = optional(number)
+    name             = string
+    type             = string
+    value            = string
+    ttl              = number
+    proxied          = bool
+    target_from      = optional(string)
+    origin_host_key  = optional(string)
+    comment          = optional(string)
+    priority         = optional(number)
   }))
   description = "DNS records keyed by unique logical ID."
   nullable    = false
@@ -28,11 +42,11 @@ variable "records" {
     ])
     error_message = "Supported record types are A, AAAA, CNAME, TXT, and MX."
   }
+}
 
-  validation {
-    condition = alltrue([
-      for record in values(var.records) : record.ttl == 1 || (record.ttl >= 60 && record.ttl <= 86400)
-    ])
-    error_message = "TTL must be 1 (automatic) or between 60 and 86400 seconds."
-  }
+variable "origin_hosts" {
+  type        = map(string)
+  description = "Optional map of origin host key to IP/FQDN. Required when using A/AAAA from ORIGIN_HOSTS."
+  nullable    = false
+  default     = {}
 }
