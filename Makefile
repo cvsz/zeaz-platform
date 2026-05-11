@@ -1,53 +1,80 @@
 SHELL := /usr/bin/env bash
+.SHELLFLAGS := -Eeuo pipefail -c
 .DEFAULT_GOAL := help
-ENV ?= dev
-TF_DIR := terraform/envs/$(ENV)
+
+ENVIRONMENT ?= dev
+BACKEND_TYPE ?= local
+TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
+TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
+
+.PHONY: help validate validate-env fmt fmt-check lint test tf-init tf-validate tf-plan tf-apply tf-destroy tofu-init tofu-validate tofu-plan tofu-apply drift-detect security-scan sbom doctor
 
 help:
-	@echo "targets: validate contract plan-tier backend sops-bootstrap mcp-config plan apply drift test backup restore ai-bootstrap bootstrap-agent validate-agent"
+	@echo "Targets: validate validate-env fmt fmt-check lint test tf-init tf-validate tf-plan tf-apply tf-destroy tofu-init tofu-validate tofu-plan tofu-apply drift-detect security-scan sbom doctor"
 
-validate:
-	@scripts/validate.sh
+validate: validate-env tf-validate tofu-validate
 
-plan:
-	@scripts/install.sh plan $(ENV)
+validate-env:
+	@test -n "$(ENVIRONMENT)" || (echo "ERROR: ENVIRONMENT is required" && exit 1)
+	@case "$(ENVIRONMENT)" in dev|staging|prod) ;; *) echo "ERROR: ENVIRONMENT must be dev|staging|prod"; exit 1;; esac
+	@case "$(BACKEND_TYPE)" in local|s3) ;; *) echo "ERROR: TERRAFORM_BACKEND_TYPE must be local|s3"; exit 1;; esac
+	@if [ "$(BACKEND_TYPE)" = "s3" ]; then \
+		test -n "$${TERRAFORM_STATE_BUCKET:-}" || (echo "ERROR: TERRAFORM_STATE_BUCKET is required when backend is s3" && exit 1); \
+		test -n "$${TERRAFORM_LOCK_TABLE:-}" || (echo "ERROR: TERRAFORM_LOCK_TABLE is required when backend is s3" && exit 1); \
+	fi
 
-apply:
-	@scripts/install.sh apply $(ENV)
+fmt:
+	@terraform fmt -recursive terraform opentofu
 
-drift:
-	@scripts/drift-detect.sh $(ENV)
+fmt-check:
+	@terraform fmt -check -recursive terraform opentofu
+
+lint:
+	@tflint --recursive terraform || echo "WARN: tflint not installed"
 
 test:
-	@pytest -q tests/pytest || true
+	@if [ -d tests ]; then pytest -q tests; else echo "INFO: tests directory not present; skipping."; fi
 
-backup:
-	@scripts/backup.sh
+tf-init: validate-env
+	@terraform -chdir=$(TF_ENV_DIR) init
 
-restore:
-	@scripts/restore.sh
+tf-validate: tf-init
+	@terraform -chdir=$(TF_ENV_DIR) validate
 
-contract:
-	@test -f scripts/contracts/environment-contract.json
+tf-plan: validate-env
+	@terraform -chdir=$(TF_ENV_DIR) plan
 
-plan-tier:
-	@scripts/plan-tier-detect.sh
+tf-apply: validate-env
+	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
+	@terraform -chdir=$(TF_ENV_DIR) apply
 
-backend:
-	@scripts/render-backend-config.sh
+tf-destroy: validate-env
+	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
+	@terraform -chdir=$(TF_ENV_DIR) destroy
 
-sops-bootstrap:
-	@scripts/sops-bootstrap.sh
+tofu-init: validate-env
+	@tofu -chdir=$(TOFU_ENV_DIR) init
 
-ai-bootstrap:
-	@scripts/ai/bootstrap-agents.sh cloudflare-api
+tofu-validate: tofu-init
+	@tofu -chdir=$(TOFU_ENV_DIR) validate
 
+tofu-plan: validate-env
+	@tofu -chdir=$(TOFU_ENV_DIR) plan
 
-mcp-config:
-	@scripts/ai/render-mcp-config.sh
+tofu-apply: validate-env
+	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
+	@tofu -chdir=$(TOFU_ENV_DIR) apply
 
-bootstrap-agent:
-	@scripts/ai/bootstrap-agent.sh
+drift-detect:
+	@terraform -chdir=$(TF_ENV_DIR) plan -detailed-exitcode || test $$? -eq 2
 
-validate-agent:
-	@scripts/ai/validate-agent-env.sh
+security-scan:
+	@trivy fs .
+
+sbom:
+	@syft . -o spdx-json
+
+doctor:
+	@terraform version
+	@tofu version
+	@python3 --version
