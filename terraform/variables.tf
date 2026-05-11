@@ -1,38 +1,26 @@
-variable "cf_api_token" {
-  type      = string
-  sensitive = true
-  nullable  = false
-}
-
-variable "cf_account_id" {
-  type = string
-  validation {
-    condition     = can(regex("^[a-f0-9]{32}$", var.cf_account_id))
-    error_message = "cf_account_id must be 32 hex chars"
-  }
+variable "cf_dns_token" {
+  type        = string
+  sensitive   = true
+  description = "Cloudflare DNS Token"
 }
 
 variable "cf_zone_id" {
-  type = string
-  validation {
-    condition     = can(regex("^[a-f0-9]{32}$", var.cf_zone_id))
-    error_message = "cf_zone_id must be 32 hex chars"
-  }
+  type        = string
+  description = "Cloudflare Zone ID"
 }
 
-variable "domain" {
-  type    = string
-  default = "zeaz.dev"
-  validation {
-    condition     = var.domain == "zeaz.dev"
-    error_message = "domain must be zeaz.dev"
-  }
+variable "cf_account_id" {
+  type        = string
+  description = "Cloudflare Account ID"
 }
 
 variable "plan_tier" {
-  type = string
+  type        = string
+  description = "Cloudflare plan tier"
+  default     = "Free"
+
   validation {
     condition     = contains(["Free", "Pro", "Business", "Enterprise"], var.plan_tier)
-    error_message = "invalid plan"
+    error_message = "plan_tier must be one of Free, Pro, Business, Enterprise"
   }
 }

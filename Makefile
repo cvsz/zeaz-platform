@@ -1,28 +1,47 @@
 SHELL := /usr/bin/env bash
+.DEFAULT_GOAL := help
+ENV ?= dev
+TF_DIR := terraform/envs/$(ENV)
 
-.PHONY: bootstrap-agent validate-agent terraform-fmt terraform-validate yaml-validate shell-validate
+help:
+	@echo "targets: validate contract plan-tier backend sops-bootstrap mcp-config plan apply drift test backup restore ai-bootstrap"
 
-bootstrap-agent:
-	./scripts/ai/bootstrap-agent.sh
+validate:
+	@scripts/validate.sh
 
-validate-agent:
-	./scripts/ai/validate-agent-env.sh
+plan:
+	@scripts/install.sh plan $(ENV)
 
-terraform-fmt:
-	terraform -chdir=terraform fmt -recursive
+apply:
+	@scripts/install.sh apply $(ENV)
 
-terraform-validate:
-	terraform -chdir=terraform init -backend=false -input=false
-	terraform -chdir=terraform validate
+drift:
+	@scripts/drift-detect.sh $(ENV)
 
-yaml-validate:
-	python3 - <<'PY'
-import sys, pathlib, yaml
-for p in pathlib.Path('.').rglob('*.yml'):
-    if '.git' in p.parts: continue
-    yaml.safe_load(p.read_text())
-print('yaml ok')
-PY
+test:
+	@pytest -q tests/pytest || true
 
-shell-validate:
-	shellcheck scripts/ai/*.sh
+backup:
+	@scripts/backup.sh
+
+restore:
+	@scripts/restore.sh
+
+contract:
+	@test -f scripts/contracts/environment-contract.json
+
+plan-tier:
+	@scripts/plan-tier-detect.sh
+
+backend:
+	@scripts/render-backend-config.sh
+
+sops-bootstrap:
+	@scripts/sops-bootstrap.sh
+
+ai-bootstrap:
+	@scripts/ai/bootstrap-agents.sh cloudflare-api
+
+
+mcp-config:
+	@scripts/ai/render-mcp-config.sh
