@@ -1,8 +1,35 @@
 name: Backup Validation
-on: [workflow_dispatch, pull_request]
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-validation-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backup-validation:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: bash scripts/backup.sh
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Execute backup workflow in CI mode
+        env:
+          BACKUP_OUTPUT_DIR: backups/snapshots
+        run: scripts/backup.sh
+
+      - name: Upload backup artifacts
+        if: ${{ hashFiles('backups/snapshots/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-snapshots
+          path: backups/snapshots
+          if-no-files-found: ignore

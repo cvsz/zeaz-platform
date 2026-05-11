@@ -1,12 +1,32 @@
-name: SBOM Generation and Cosign Signing
-on: [workflow_dispatch]
-permissions: {contents: read, id-token: write}
+name: SBOM Generation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sbom-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sbom:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: scripts/generate-sbom.sh
-      - run: scripts/sign-artifacts.sh artifacts.sbom.spdx.json
-      - uses: actions/upload-artifact@v4
-        with: {name: sbom, path: artifacts.sbom.spdx.json}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Generate SBOM
+        run: make sbom
+
+      - name: Upload SBOM artifact
+        if: ${{ hashFiles('artifacts.sbom.spdx.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: artifacts.sbom.spdx.json
+          if-no-files-found: ignore

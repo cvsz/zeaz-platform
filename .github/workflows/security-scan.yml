@@ -1,11 +1,38 @@
 name: Security Scanning
-on: [pull_request, workflow_dispatch]
-permissions: {contents: read, security-events: write}
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: security-scan-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  scan:
-    runs-on: ubuntu-latest
+  security-scan:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: scripts/security-scan.sh
-      - uses: actions/upload-artifact@v4
-        with: {name: sbom, path: artifacts.sbom.spdx.json}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Run security scan
+        run: make security-scan
+
+      - name: Upload security outputs
+        if: ${{ hashFiles('artifacts.sbom.spdx.json', '**/semgrep*.sarif', '**/trivy*.sarif', '**/gitleaks*.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-artifacts
+          path: |
+            artifacts.sbom.spdx.json
+            **/semgrep*.sarif
+            **/trivy*.sarif
+            **/gitleaks*.json
+          if-no-files-found: ignore

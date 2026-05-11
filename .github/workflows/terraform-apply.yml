@@ -1,11 +1,35 @@
 name: Terraform Apply
+
 on:
   workflow_dispatch:
-permissions: {contents: read}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-apply-production
+  cancel-in-progress: false
+
 jobs:
   apply:
-    environment: production
-    runs-on: ubuntu-latest
+    name: Apply infrastructure (approved)
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
     steps:
-      - uses: actions/checkout@v4
-      - run: CONFIRM_APPLY=yes make tf-apply
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Set apply environment
+        run: |
+          {
+            echo "ENVIRONMENT=prod"
+            echo "PRIMARY_DOMAIN=zeaz.dev"
+            echo "CONFIRM_APPLY=yes"
+          } >> "$GITHUB_ENV"
+
+      - name: Run Terraform apply
+        run: make tf-apply

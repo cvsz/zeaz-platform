@@ -1,11 +1,43 @@
 name: Terraform Plan
-on: [pull_request, workflow_dispatch]
-permissions: {contents: read}
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-plan-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   plan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: make tf-plan
-      - uses: actions/upload-artifact@v4
-        with: {name: tf-plan, path: terraform/environments}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Set plan environment
+        run: |
+          {
+            echo "ENVIRONMENT=dev"
+            echo "PRIMARY_DOMAIN=zeaz.dev"
+            echo "CONFIRM_APPLY=no"
+          } >> "$GITHUB_ENV"
+
+      - name: Run Terraform plan
+        run: make tf-plan
+
+      - name: Upload Terraform plan artifacts
+        if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-artifacts
+          path: |
+            terraform/**/*.tfplan
+            terraform/**/plan-*.txt
+          if-no-files-found: ignore

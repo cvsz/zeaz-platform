@@ -1,9 +1,32 @@
 name: Terraform Validate
-on: [pull_request, workflow_dispatch]
-permissions: {contents: read}
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-validate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: make validate
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Set validation environment
+        run: |
+          {
+            echo "ENVIRONMENT=dev"
+            echo "PRIMARY_DOMAIN=zeaz.dev"
+          } >> "$GITHUB_ENV"
+
+      - name: Run repository validation
+        run: make validate

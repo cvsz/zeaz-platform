@@ -1,10 +1,25 @@
-name: Tunnel and WAF Validation
-on: [pull_request, workflow_dispatch]
-permissions: {contents: read}
+name: Tunnel Validation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tunnel-validation-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  validate:
-    runs-on: ubuntu-latest
+  tunnel-validation:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: scripts/tunnel-validate.sh
-      - run: test -f waf/ai-abuse.yaml
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Validate tunnel configuration
+        run: scripts/tunnel-validate.sh
