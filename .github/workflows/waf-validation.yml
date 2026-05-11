@@ -1,8 +1,25 @@
 name: WAF Validation
-on: [workflow_dispatch, pull_request]
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: waf-validation-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   waf-validation:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - run: terraform -chdir=terraform validate
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+
+      - name: Validate WAF policy assets
+        run: make waf-validate
