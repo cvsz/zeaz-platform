@@ -1,0 +1,8 @@
+name: cloudflared-restart
+on: { workflow_dispatch: {} }
+concurrency: { group: cloudflared-restart, cancel-in-progress: false }
+jobs:
+  restart:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "restart cloudflared safely"

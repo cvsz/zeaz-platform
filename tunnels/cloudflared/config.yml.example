@@ -1,0 +1,30 @@
+tunnel: ${CLOUDFLARE_TUNNEL_ID}
+credentials-file: /etc/cloudflared/${CLOUDFLARE_TUNNEL_ID}.json
+
+ingress:
+  - hostname: zeaz.dev
+    service: http://web-internal:8080
+  - hostname: app.zeaz.dev
+    service: http://app-internal:8080
+  - hostname: zveo.zeaz.dev
+    service: http://zveo-internal:8787
+  - hostname: api.zeaz.dev
+    service: http://api-internal:8081
+  - hostname: admin.zeaz.dev
+    service: http://admin-internal:8082
+  - hostname: grafana.zeaz.dev
+    service: http://grafana:3000
+  - hostname: logs.zeaz.dev
+    service: http://loki:3100
+  - hostname: auth.zeaz.dev
+    service: http://auth-internal:9090
+  - hostname: tunnel.zeaz.dev
+    service: http_status:200
+  - service: http_status:404
+
+originRequest:
+  http2Origin: true
+  noTLSVerify: false
+  connectTimeout: 10s
+  tlsTimeout: 10s
+  keepAliveTimeout: 1m30s

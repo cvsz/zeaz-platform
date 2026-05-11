@@ -1,0 +1,11 @@
+name: validate
+on: [pull_request]
+concurrency: { group: validate-${{ github.ref }}, cancel-in-progress: true }
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - run: make validate-agent
+      - run: shellcheck scripts/ai/*.sh
