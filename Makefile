@@ -113,3 +113,25 @@ token-rotate-dry:
 
 token-rotate:
 	@bash scripts/cloudflare/clean-and-regenerate-tokens.sh --yes --regenerate --types all --backup --write .env.cloudflare
+
+
+.PHONY: phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6
+
+phase-f1:
+	@bash scripts/validate.sh --offline --strict
+
+phase-f2: tf-validate tofu-validate
+	@echo "F2 validation complete."
+
+phase-f3:
+	@echo "F3 requires configured identity provider and Cloudflare Zero Trust tokens."
+	@echo "Run: terraform -chdir=$(TF_ENV_DIR) plan"
+
+phase-f4:
+	@bash scripts/tunnel-validate.sh --offline
+
+phase-f5:
+	@echo "Run Workers tests and deploy workflows for edge services."
+
+phase-f6: drift-detect security-scan sbom
+	@echo "F6 monitoring, DR, and security checks complete."

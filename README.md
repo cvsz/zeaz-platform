@@ -312,18 +312,22 @@ CF_EMAIL=you@example.com CF_GLOBAL_API_KEY=xxxx \
 
 ## Deployment phases
 
-| Phase | Scope | Key resources |
-|---|---|---|
-| F1 | Context + Variables | `.env` validation, prerequisite checks |
-| F2 | Terraform Foundation | Provider config, account-level resources |
-| F3 | Zero Trust + Identity | Access apps, policies, SAML/OIDC providers, RBAC |
-| F4 | DNS + Tunnels + Networking | DNS records, cloudflared tunnels, routing |
-| F5 | Workers + Edge + AI | Worker scripts, KV namespaces, R2 buckets, D1 databases, AI Gateway |
-| F6 | Monitoring + DR + Security | WAF rules, dashboards, alert policies, backup schedules |
+The platform is deployed in six explicit phases. Each phase can be executed independently, and all apply operations require explicit confirmation.
 
-Each phase supports partial execution. Run `terraform plan -target=module.<name>` to scope to a single module.
+| Phase | Name | Objective | Primary commands |
+|---|---|---|---|
+| F1 | Context + Variables | Offline validation of required runtime variables and plan-tier gates. | `make validate-f1` |
+| F2 | Terraform Foundation | Validate/init environment state for Terraform/OpenTofu modules. | `make tf-validate` / `make tofu-validate` |
+| F3 | Zero Trust + Identity | Deploy Access applications, policies, and identity provider integrations. | `terraform -chdir=terraform/environments/${ENVIRONMENT} plan` |
+| F4 | DNS + Tunnels + Networking | Provision DNS records and cloudflared tunnel integration. | `make waf-validate` |
+| F5 | Workers + Edge + AI | Deploy Workers and Workers AI guardrails and quotas. | `pnpm -C workers test` |
+| F6 | Monitoring + DR + Security | Enable monitoring, backup/restore, drift detection, and security scans. | `make drift-detect && make security-scan` |
 
----
+### Safe execution defaults
+
+- Validation runs in offline mode unless API checks are explicitly requested (`scripts/validate.sh --api-check`).
+- Terraform/OpenTofu apply is blocked until `CONFIRM_APPLY=yes` is supplied.
+- No secret material is committed; runtime values are injected via environment variables.
 
 ## Security
 
