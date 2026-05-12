@@ -1,8 +1,17 @@
-name: cloudflared-restart
-on: { workflow_dispatch: {} }
-concurrency: { group: cloudflared-restart, cancel-in-progress: false }
+name: Cloudflared Configuration Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
-  restart:
+  cloudflared-config-validation:
     runs-on: ubuntu-24.04
     steps:
-      - run: echo "restart cloudflared safely"
+      - uses: actions/checkout@v4
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+      - name: Validate tunnel configuration before restart operations
+        run: bash scripts/tunnel-validate.sh --offline

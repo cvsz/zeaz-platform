@@ -98,7 +98,12 @@ yaml-validate:
 	@python3 scripts/validate-yaml.py
 
 shell-validate:
-	@shellcheck scripts/**/*.sh
+	@find scripts -type f -name '*.sh' -print0 | xargs -0 shellcheck
+
+# WAF policy and platform validation
+waf-validate:
+	@bash scripts/validate.sh --offline --strict
+	@bash scripts/tunnel-validate.sh --offline
 
 token-clean:
 	@bash scripts/cloudflare/clean-and-regenerate-tokens.sh --dry-run --cleanup-only

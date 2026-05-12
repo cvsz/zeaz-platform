@@ -81,7 +81,7 @@ Token lifecycle:        scripts/cloudflare/clean-and-regenerate-tokens.sh (wrapp
 | pyyaml | any | `pip install pyyaml` |
 
 > **Cloudflare account:** You need a Cloudflare account with `zeaz.dev` added as a zone.
-> The Global API Key is required only for the token lifecycle script. All other operations use scoped tokens.
+> Use scoped API tokens for all operations; avoid Global API Key usage in automation.
 
 ---
 
@@ -165,13 +165,9 @@ Copy `.env.example` to `.env` and fill in every value before running any script 
 
 | Variable | Required | Description |
 |---|---|---|
-| `CF_EMAIL` | yes | Cloudflare account email. Used by Global API Key auth only. |
-| `CF_GLOBAL_API_KEY` | yes* | Global API Key. Required only for `token-rotate`. Rotate after each use. |
 | `CF_ACCOUNT_ID` | yes | Cloudflare account ID. Found in the dashboard URL. |
 | `CF_ZONE_ID` | yes | Zone ID for `zeaz.dev`. Found in the zone overview page. |
 | `CF_API_TOKEN` | yes | Scoped API token with Edit permissions for general Terraform use. |
-
-> `CF_GLOBAL_API_KEY` has full account access. Use it only for token rotation scripts, then rotate it immediately afterward.
 
 ### Scoped service tokens
 

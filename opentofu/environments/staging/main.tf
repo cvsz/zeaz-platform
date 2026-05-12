@@ -100,7 +100,7 @@ module "dns" {
 }
 
 module "api_shield" {
-  count      = local.phase_enabled.f6_monitoring_security && local.enterprise_only ? 1 : 0
-  source     = "../../modules/cloudflare-api-shield"
-  zone_id    = var.cf_zone_id
+  count   = local.phase_enabled.f6_monitoring_security && local.enterprise_only ? 1 : 0
+  source  = "../../modules/cloudflare-api-shield"
+  zone_id = var.cf_zone_id
 }

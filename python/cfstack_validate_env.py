@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 REQ=["CF_ACCOUNT_ID","CF_ZONE_ID","CF_API_TOKEN","CF_DNS_TOKEN","CF_WORKERS_TOKEN","CF_ZT_TOKEN","CF_WAF_TOKEN","CF_TUNNEL_TOKEN","CF_R2_TOKEN","IDENTITY_PROVIDER_TYPE","IDENTITY_PROVIDER_VENDOR","IDENTITY_PROVIDER_METADATA_URL","ENVIRONMENT","REGION","PRIMARY_DOMAIN","ORIGIN_INFRA_TYPE","ORIGIN_HOSTS","TERRAFORM_BACKEND_TYPE","TERRAFORM_STATE_BUCKET","TERRAFORM_LOCK_TABLE","SOPS_AGE_KEY","SECRET_ROTATION_INTERVAL","CLOUDFLARE_PLAN_TIER"]
 HEX32=re.compile(r"^[a-fA-F0-9]{32}$")
-DUR=re.compile(r"^([1-9][0-9]*)(s|m|h|d)$")
+DAYS=re.compile(r"^[1-9][0-9]*$")
 
 
 def parse_origin_hosts(value:str)->bool:
@@ -32,7 +32,7 @@ def validate(env:dict[str,str])->list[str]:
         u=urlparse(env["IDENTITY_PROVIDER_METADATA_URL"])
         if u.scheme not in {"http","https"} or not u.netloc: errs.append("IDENTITY_PROVIDER_METADATA_URL: invalid URL")
     if env.get("ORIGIN_HOSTS") and not parse_origin_hosts(env["ORIGIN_HOSTS"]): errs.append("ORIGIN_HOSTS: invalid list")
-    if env.get("SECRET_ROTATION_INTERVAL") and not DUR.match(env["SECRET_ROTATION_INTERVAL"]): errs.append("SECRET_ROTATION_INTERVAL: use positive duration like 30d")
+    if env.get("SECRET_ROTATION_INTERVAL") and not DAYS.match(env["SECRET_ROTATION_INTERVAL"]): errs.append("SECRET_ROTATION_INTERVAL: must be integer days, e.g. 30")
     return errs
 
 

@@ -28,5 +28,11 @@ jobs:
             echo "PRIMARY_DOMAIN=zeaz.dev"
           } >> "$GITHUB_ENV"
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
       - name: Run repository validation
         run: make validate

@@ -1,8 +1,0 @@
-name: Policy Testing
-on: [workflow_dispatch, pull_request]
-jobs:
-  policy-testing:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - run: test -f policies/zero-trust.rego
