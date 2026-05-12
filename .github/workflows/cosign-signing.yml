@@ -1,11 +1,19 @@
 name: Cosign Signing
-on: [workflow_dispatch]
+
+on:
+  workflow_dispatch:
+
 permissions:
   contents: read
+  id-token: write
+
 jobs:
   cosign:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - run: cosign version
