@@ -1,13 +1,26 @@
 # Disaster Recovery
 
-Run `scripts/backup.sh` daily and verify with monthly restore drills.
+## Objectives
 
-## Recovery objectives
+- **RPO:** 24 hours
+- **RTO:** 2 hours
 
-- RPO: 24h
-- RTO: 2h
+## DR lifecycle
 
-## Validation
+1. Perform daily configuration backups using `scripts/backup.sh`.
+2. Validate backup integrity (SHA-256 and manifest checks).
+3. Run monthly restore drills with `scripts/restore.sh` in an isolated workspace.
+4. Execute post-restore validation:
+   - `make validate`
+   - `make security-scan`
+   - `python3 -m pytest tests/test_runbooks.py`
 
-- Check Terraform/OpenTofu plans are clean post-restore.
-- Run `pytest -q tests/test_runbooks.py` after updates.
+## Incident execution
+
+For incident response playbooks, use `docs/runbooks/*.md`. Every runbook includes severity matrix, rollback, forensic collection, recovery validation, and postmortem template.
+
+## Evidence handling
+
+- Preserve backup archive checksums.
+- Preserve Cloudflare audit exports.
+- Record all recovery commands with UTC timestamps.

@@ -1,24 +1,37 @@
 # Observability
 
-This stack uses Prometheus, Grafana, Loki, Alertmanager, and OpenTelemetry Collector.
+Phase F6 observability is built with Prometheus, Grafana, Loki, OpenTelemetry Collector, and Alertmanager for Cloudflare-native monitoring and incident response.
 
-## Alert routing
+## Components
 
-Alert destination webhooks are loaded from secret files mounted at runtime:
+- **Prometheus** scrapes cloudflared, otel collector, and self-metrics.
+- **Grafana** dashboards track auth failures, WAF blocks, tunnel health, and Workers failures.
+- **Loki** stores structured logs with ingestion limits.
+- **OpenTelemetry Collector** receives OTLP logs/metrics and exports to Prometheus and Loki.
+- **Alertmanager** routes operational and security alerts from Prometheus rules.
 
-- `/etc/alertmanager/secrets/default_webhook_url`
-- `/etc/alertmanager/secrets/security_webhook_url`
+## Dashboards delivered
 
-No webhook URL is stored in git.
+- `monitoring/grafana/dashboards/auth-failures.json`
+- `monitoring/grafana/dashboards/waf-blocks.json`
+- `monitoring/grafana/dashboards/tunnel-health.json`
+- `monitoring/grafana/dashboards/workers-failures.json`
 
-## Dashboards
+## Secrets and hardening
 
-- auth failures
-- WAF blocks
-- bot attacks
-- tunnel health
-- JWT failures
-- API latency
-- Workers failures
-- certificate expiration
-- DNS propagation
+- Alert webhooks are loaded from mounted files:
+  - `/etc/alertmanager/secrets/default_webhook_url`
+  - `/etc/alertmanager/secrets/security_webhook_url`
+- No static credentials are stored in Git.
+- Log retention and ingestion limits are enforced in Loki.
+- OTel collector memory limiter protects against telemetry surge failures.
+
+## Validation
+
+Run from repository root:
+
+```bash
+make validate
+make security-scan
+python3 -m pytest tests/test_runbooks.py
+```
