@@ -9,20 +9,24 @@ permissions:
   contents: read
 
 concurrency:
-  group: dr-test-${{ github.ref }}
+  group: dr-test-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   dr-test:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
-        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
-      - name: Run runbook tests
+      - name: Run disaster recovery tests
         run: python3 -m pytest tests/test_runbooks.py
 
       - name: Upload DR artifacts

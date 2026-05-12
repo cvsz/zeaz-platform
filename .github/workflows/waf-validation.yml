@@ -8,18 +8,33 @@ permissions:
   contents: read
 
 concurrency:
-  group: waf-validation-${{ github.ref }}
+  group: waf-validation-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   waf-validation:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
-        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
       - name: Validate WAF policy assets
         run: make waf-validate
+
+      - name: Upload WAF validation artifacts
+        if: ${{ hashFiles('reports/waf/**', 'waf/**/*.json', 'waf/**/*.yaml') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: waf-validation-artifacts
+          path: |
+            reports/waf
+            waf/**/*.json
+            waf/**/*.yaml
+          if-no-files-found: ignore

@@ -2,34 +2,46 @@ name: Terraform Plan
 
 on:
   pull_request:
+    paths:
+      - 'terraform/**'
+      - 'opentofu/**'
+      - 'scripts/**'
+      - '.github/workflows/terraform-plan.yml'
+      - 'Makefile'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: terraform-plan-${{ github.ref }}
+  group: terraform-plan-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   plan:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
-        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
-      - name: Set plan environment
-        run: |
-          {
-            echo "ENVIRONMENT=dev"
-            echo "PRIMARY_DOMAIN=zeaz.dev"
-            echo "CONFIRM_APPLY=no"
-          } >> "$GITHUB_ENV"
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
 
       - name: Run Terraform plan
+        env:
+          ENVIRONMENT: dev
+          PRIMARY_DOMAIN: zeaz.dev
+          CONFIRM_APPLY: no
         run: make tf-plan
 
       - name: Upload Terraform plan artifacts

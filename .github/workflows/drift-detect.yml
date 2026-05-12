@@ -9,25 +9,35 @@ permissions:
   contents: read
 
 concurrency:
-  group: drift-detect-${{ github.ref }}
+  group: drift-detect-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   drift-detect:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
-        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
-
-      - name: Set drift detection environment
-        run: |
-          {
-            echo "ENVIRONMENT=prod"
-            echo "PRIMARY_DOMAIN=zeaz.dev"
-          } >> "$GITHUB_ENV"
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
       - name: Detect drift
+        env:
+          ENVIRONMENT: prod
+          PRIMARY_DOMAIN: zeaz.dev
         run: make drift-detect
+
+      - name: Upload drift reports
+        if: ${{ hashFiles('reports/drift/**', 'terraform/**/drift-*.txt') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-detection-artifacts
+          path: |
+            reports/drift
+            terraform/**/drift-*.txt
+          if-no-files-found: ignore

@@ -8,18 +8,22 @@ permissions:
   contents: read
 
 concurrency:
-  group: backup-validation-${{ github.ref }}
+  group: backup-validation-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   backup-validation:
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
-        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
       - name: Execute backup workflow in CI mode
         env:
@@ -27,9 +31,11 @@ jobs:
         run: scripts/backup.sh
 
       - name: Upload backup artifacts
-        if: ${{ hashFiles('backups/snapshots/**') != '' }}
+        if: ${{ hashFiles('backups/snapshots/**', 'reports/backup/**') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: backup-snapshots
-          path: backups/snapshots
+          path: |
+            backups/snapshots
+            reports/backup
           if-no-files-found: ignore

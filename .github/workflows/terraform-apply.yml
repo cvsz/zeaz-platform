@@ -14,22 +14,28 @@ jobs:
   apply:
     name: Apply infrastructure (approved)
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     environment:
       name: production
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
-        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -I{} bash -n {}
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
-      - name: Set apply environment
-        run: |
-          {
-            echo "ENVIRONMENT=prod"
-            echo "PRIMARY_DOMAIN=zeaz.dev"
-            echo "CONFIRM_APPLY=yes"
-          } >> "$GITHUB_ENV"
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
 
       - name: Run Terraform apply
+        env:
+          ENVIRONMENT: prod
+          PRIMARY_DOMAIN: zeaz.dev
+          CONFIRM_APPLY: yes
         run: make tf-apply
