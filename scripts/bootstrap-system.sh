@@ -4,10 +4,12 @@ IFS=$'\n\t'
 
 STRICT_TOOLS="${STRICT_TOOLS:-false}"
 CODEX_CLOUD="${CODEX_CLOUD:-false}"
+SKIP_CORE="${SKIP_CORE:-false}"
 SKIP_TERRAFORM="${SKIP_TERRAFORM:-false}"
 SKIP_CLOUDFLARED="${SKIP_CLOUDFLARED:-false}"
 SKIP_GH="${SKIP_GH:-false}"
 SKIP_PYTHON_DEPS="${SKIP_PYTHON_DEPS:-false}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 info(){ log "INFO: $*"; }
@@ -15,99 +17,173 @@ warn(){ log "WARN: $*" >&2; }
 die(){ log "ERROR: $*" >&2; exit 1; }
 has(){ command -v "$1" >/dev/null 2>&1; }
 
-require_or_skip(){
-  local cmd="$1"
-  if has "$cmd"; then
-    return 0
+OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+ARCH="$(uname -m)"
+
+case "$ARCH" in
+  x86_64|amd64) ARCH_CANON="amd64" ;;
+  aarch64|arm64) ARCH_CANON="arm64" ;;
+  armv7l) ARCH_CANON="armv7" ;;
+  *) ARCH_CANON="$ARCH" ;;
+esac
+
+SUDO=""
+if [[ "${EUID:-$(id -u)}" -ne 0 ]] && has sudo; then
+  SUDO="sudo"
+fi
+
+run_root(){
+  if [[ -n "$SUDO" ]]; then
+    sudo "$@"
+  else
+    "$@"
   fi
-  [[ "$STRICT_TOOLS" == "true" ]] && die "required command missing: $cmd"
-  warn "command missing: $cmd; skipping dependent operation"
-  return 1
 }
 
-apt_available(){ has apt-get && has sudo; }
-
-apt_install(){
-  if ! apt_available; then
-    [[ "$STRICT_TOOLS" == "true" ]] && die "sudo/apt-get unavailable"
-    warn "sudo or apt-get unavailable; skipped package install: $*"
-    return 0
-  fi
-  sudo apt-get install -y "$@"
+strict_skip(){
+  local msg="$1"
+  [[ "$STRICT_TOOLS" == "true" ]] && die "$msg"
+  warn "$msg"
+  return 0
 }
 
-apt_update(){
-  if ! apt_available; then
-    [[ "$STRICT_TOOLS" == "true" ]] && die "sudo/apt-get unavailable"
-    warn "sudo or apt-get unavailable; skipped apt-get update"
-    return 0
-  fi
-  sudo apt-get update
+pkg_manager(){
+  if has apt-get; then echo apt; return; fi
+  if has dnf; then echo dnf; return; fi
+  if has yum; then echo yum; return; fi
+  if has apk; then echo apk; return; fi
+  if has brew; then echo brew; return; fi
+  echo none
+}
+
+PKG_MANAGER="$(pkg_manager)"
+
+install_packages(){
+  [[ $# -gt 0 ]] || return 0
+  case "$PKG_MANAGER" in
+    apt)
+      run_root apt-get update || strict_skip "apt-get update failed"
+      run_root apt-get install -y "$@" || strict_skip "apt-get install failed: $*"
+      ;;
+    dnf)
+      run_root dnf install -y "$@" || strict_skip "dnf install failed: $*"
+      ;;
+    yum)
+      run_root yum install -y "$@" || strict_skip "yum install failed: $*"
+      ;;
+    apk)
+      run_root apk add --no-cache "$@" || strict_skip "apk add failed: $*"
+      ;;
+    brew)
+      brew install "$@" || strict_skip "brew install failed: $*"
+      ;;
+    *)
+      strict_skip "no supported package manager found; skipped install: $*"
+      ;;
+  esac
 }
 
 install_core(){
-  info "installing core dependencies"
-  apt_update
-  apt_install curl wget unzip jq git make python3 python3-pip python3-venv ca-certificates gnupg lsb-release software-properties-common
+  [[ "$SKIP_CORE" == "true" ]] && { warn "SKIP_CORE=true; skipped core install"; return 0; }
+  info "installing core dependencies via $PKG_MANAGER"
+  case "$PKG_MANAGER" in
+    apt) install_packages curl wget unzip jq git make python3 python3-pip python3-venv ca-certificates gnupg lsb-release software-properties-common ;;
+    dnf|yum) install_packages curl wget unzip jq git make python3 python3-pip ca-certificates gnupg2 ;;
+    apk) install_packages curl wget unzip jq git make python3 py3-pip ca-certificates gnupg bash ;;
+    brew) install_packages curl wget jq git make python ca-certificates gnupg ;;
+    *) strict_skip "core dependency install unavailable on this platform" ;;
+  esac
+}
+
+install_terraform_apt(){
+  has wget || install_packages wget
+  has gpg || install_packages gnupg
+  has lsb_release || install_packages lsb-release
+  wget -O- https://apt.releases.hashicorp.com/gpg | run_root gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | run_root tee /etc/apt/sources.list.d/hashicorp.list >/dev/null
+  run_root apt-get update
+  run_root apt-get install -y terraform
+}
+
+install_terraform_brew(){
+  brew tap hashicorp/tap || true
+  brew install hashicorp/tap/terraform || brew install terraform
 }
 
 install_terraform(){
   [[ "$SKIP_TERRAFORM" == "true" ]] && { warn "SKIP_TERRAFORM=true; skipped Terraform install"; return 0; }
   has terraform && { info "terraform already installed: $(terraform version | head -n 1)"; return 0; }
-  apt_available || { warn "sudo/apt-get unavailable; skipped Terraform install"; return 0; }
-  require_or_skip wget || return 0
-  require_or_skip gpg || return 0
-  require_or_skip lsb_release || return 0
-
-  info "installing Terraform"
-  wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list >/dev/null
-  apt_update
-  apt_install terraform
-  terraform version || warn "terraform verification failed"
+  info "installing Terraform for $OS/$ARCH_CANON"
+  case "$PKG_MANAGER" in
+    apt) install_terraform_apt || strict_skip "Terraform install failed" ;;
+    brew) install_terraform_brew || strict_skip "Terraform install failed" ;;
+    dnf|yum) install_packages yum-utils || true; run_root "$PKG_MANAGER" config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo || true; install_packages terraform ;;
+    apk) install_packages terraform ;;
+    *) strict_skip "Terraform install unavailable: no supported package manager" ;;
+  esac
+  has terraform && terraform version | head -n 1 || strict_skip "terraform verification failed"
 }
 
 install_python_deps(){
   [[ "$SKIP_PYTHON_DEPS" == "true" ]] && { warn "SKIP_PYTHON_DEPS=true; skipped Python deps"; return 0; }
-  require_or_skip python3 || return 0
+  has "$PYTHON_BIN" || { warn "$PYTHON_BIN missing; attempting core install"; install_core; }
+  has "$PYTHON_BIN" || return 0
   info "installing Python test dependencies"
-  python3 -m pip install --user --upgrade pip || warn "pip upgrade failed"
-  python3 -m pip install --user pytest pytest-cov requests pyyaml || warn "Python dependency install failed"
+  "$PYTHON_BIN" -m pip install --user --upgrade pip || warn "pip upgrade failed"
+  "$PYTHON_BIN" -m pip install --user pytest pytest-cov requests pyyaml || warn "Python dependency install failed"
 }
 
 install_cloudflared(){
   [[ "$SKIP_CLOUDFLARED" == "true" ]] && { warn "SKIP_CLOUDFLARED=true; skipped cloudflared install"; return 0; }
   has cloudflared && { info "cloudflared already installed: $(cloudflared --version 2>/dev/null | head -n 1)"; return 0; }
-  apt_available || { warn "sudo/apt-get unavailable; skipped cloudflared install"; return 0; }
-  require_or_skip wget || return 0
-
-  info "installing cloudflared"
-  local deb="/tmp/cloudflared-linux-amd64.deb"
-  wget -q -O "$deb" https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb || { warn "cloudflared download failed"; return 0; }
-  sudo dpkg -i "$deb" || warn "cloudflared install failed"
+  info "installing cloudflared for $OS/$ARCH_CANON"
+  case "$PKG_MANAGER" in
+    brew)
+      brew install cloudflare/cloudflare/cloudflared || strict_skip "cloudflared install failed"
+      ;;
+    apt)
+      has wget || install_packages wget
+      local deb="/tmp/cloudflared-linux-${ARCH_CANON}.deb"
+      wget -q -O "$deb" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH_CANON}.deb" || { warn "cloudflared download failed"; return 0; }
+      run_root dpkg -i "$deb" || warn "cloudflared install failed"
+      ;;
+    *)
+      strict_skip "cloudflared auto-install unsupported for package manager: $PKG_MANAGER"
+      ;;
+  esac
 }
 
 install_gh(){
   [[ "$SKIP_GH" == "true" ]] && { warn "SKIP_GH=true; skipped GitHub CLI install"; return 0; }
   has gh && { info "gh already installed: $(gh --version | head -n 1)"; return 0; }
-  apt_available || { warn "sudo/apt-get unavailable; skipped GitHub CLI install"; return 0; }
-  require_or_skip curl || return 0
-
-  info "installing GitHub CLI"
-  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg status=none || { warn "GitHub CLI key download failed"; return 0; }
-  sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null
-  apt_update
-  apt_install gh
+  info "installing GitHub CLI via $PKG_MANAGER"
+  case "$PKG_MANAGER" in
+    brew) brew install gh || strict_skip "GitHub CLI install failed" ;;
+    apt)
+      has curl || install_packages curl
+      curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | run_root dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg status=none || { warn "GitHub CLI key download failed"; return 0; }
+      run_root chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | run_root tee /etc/apt/sources.list.d/github-cli.list >/dev/null
+      run_root apt-get update
+      run_root apt-get install -y gh
+      ;;
+    dnf|yum|apk) install_packages gh ;;
+    *) strict_skip "GitHub CLI install unavailable: no supported package manager" ;;
+  esac
 }
 
 print_versions(){
   echo
   echo "========================================="
-  echo "Installed Versions"
+  echo "Bootstrap Summary"
   echo "========================================="
+  echo "OS: $OS"
+  echo "ARCH: $ARCH_CANON"
+  echo "PACKAGE_MANAGER: $PKG_MANAGER"
+  echo "CODEX_CLOUD: $CODEX_CLOUD"
+  echo "STRICT_TOOLS: $STRICT_TOOLS"
   has terraform && terraform version | head -n 1 || warn "terraform not installed"
-  has python3 && python3 --version || warn "python3 not installed"
+  has "$PYTHON_BIN" && "$PYTHON_BIN" --version || warn "$PYTHON_BIN not installed"
   has pytest && pytest --version || warn "pytest not installed"
   has cloudflared && cloudflared --version || warn "cloudflared not installed"
   has gh && gh --version | head -n 1 || warn "gh not installed"
