@@ -7,6 +7,7 @@ AUDIT_LOG="${AUDIT_LOG:-./.cloudflare-token-audit.log}"
 BACKUP_DIR="${BACKUP_DIR:-./.cloudflare-backups}"
 DEFAULT_OUT="${DEFAULT_OUT:-.env.cloudflare}"
 TOKEN_QUOTA="${TOKEN_QUOTA:-50}"
+PRESERVE_TOKEN_NAME_REGEX="${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway)([-_]|$)}"
 
 NAME_FILTER=""
 UNUSED_DAYS=0
@@ -41,6 +42,7 @@ Regeneration:
 
 Notes:
   CF_AUDIT_TOKEN and CF_AI_GATEWAY_TOKEN are preserved from the environment or existing output file.
+  Tokens with names matching PRESERVE_TOKEN_NAME_REGEX are never revoked by cleanup.
   CF_AI_GATEWAY_SLUG defaults to zeaz when unset.
 
   --help, -h             Show help
@@ -148,6 +150,10 @@ for line in "${ALL_TOKENS[@]}"; do
   IFS=$'\t' read -r id name created last_used <<< "$line"
   [[ -z "$id" ]] && continue
   [[ -n "$NAME_FILTER" && "$name" != "$NAME_FILTER" ]] && continue
+  if [[ -n "$name" ]] && [[ "$name" =~ $PRESERVE_TOKEN_NAME_REGEX ]]; then
+    log "preserving token from cleanup by name policy: $name"
+    continue
+  fi
   last_epoch=0
   [[ -n "$last_used" && "$last_used" != "null" ]] && last_epoch="$(epoch_of "$last_used")"
   [[ "$last_epoch" -eq 0 && -n "$created" && "$created" != "null" ]] && last_epoch="$(epoch_of "$created")"
