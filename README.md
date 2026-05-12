@@ -290,24 +290,15 @@ This repo includes a production-ready token lifecycle script at `scripts/cloudfl
 ### Recommended workflow
 
 ```bash
-# 1. Always dry-run first
-CF_EMAIL=you@example.com CF_GLOBAL_API_KEY=xxxx \
-  bash scripts/cloudflare/clean-and-regenerate-tokens.sh \
-    --keep-most 1 --unused-days 90 --dry-run
+# 1. Always dry-run first (offline safety preview)
+make token-clean
+make token-rotate-dry
 
-# 2. Backup and revoke interactively
-CF_EMAIL=you@example.com CF_GLOBAL_API_KEY=xxxx \
-  bash scripts/cloudflare/clean-and-regenerate-tokens.sh \
-    --keep-most 1 --unused-days 90 --backup
-
-# 3. Full rotate: revoke + regenerate all + write env
-CF_EMAIL=you@example.com CF_GLOBAL_API_KEY=xxxx \
-  bash scripts/cloudflare/clean-and-regenerate-tokens.sh \
-    --keep-most 1 --unused-days 90 --backup --yes \
-    --regenerate --types all --write .env.cloudflare
+# 2. Live rotation (manual operator approval required)
+make token-rotate
 ```
 
-> **Security note:** `CF_GLOBAL_API_KEY` appears in shell history. Consider wrapping the above in a script that reads from a password manager or `read -rs`.
+> **Security note:** This repository is scoped-token-first for automation. Do not use Cloudflare Global API Key in CI/GitOps workflows.
 
 ---
 
@@ -333,8 +324,8 @@ The platform is deployed in six explicit phases. Each phase can be executed inde
 ## Security
 
 - **Never commit secrets.** `.gitignore` excludes `.env`, `*.tfvars`, `*.pem`, `*.agekey`, and backup directories.
-- **Rotate the Global API Key** immediately after any token rotation run.
-- **Scoped tokens only** for all automated operations. The Global API Key is used exclusively by the token lifecycle script.
+- **Scoped tokens only** for all automated operations. Avoid Cloudflare Global API Key usage in CI and GitOps.
+- **Token lifecycle actions are manual and reviewable.** Use dry-run first and keep rotation flows operator-triggered.
 - **SOPS + age** for all secret files that must be committed (e.g. `terraform.tfvars.enc`).
 - **Audit log** at `.cloudflare-token-audit.log` records every token action. Contains no secret values.
 - **Mode 600** enforced on `.env.cloudflare` and all backup files.
