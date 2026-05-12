@@ -9,18 +9,6 @@ variable "zone_id" {
   }
 }
 
-variable "primary_domain" {
-  type        = string
-  description = "Primary DNS domain. Defaults to zeaz.dev but supports override."
-  nullable    = false
-  default     = "zeaz.dev"
-
-  validation {
-    condition     = can(regex("^[a-z0-9.-]+$", var.primary_domain))
-    error_message = "primary_domain must be a valid lowercase domain name."
-  }
-}
-
 variable "records" {
   type = map(object({
     name            = string

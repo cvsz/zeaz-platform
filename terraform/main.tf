@@ -1,5 +1,4 @@
 locals {
-  normalized_plan_tier = title(lower(var.plan_tier))
   enterprise           = lower(var.plan_tier) == "enterprise"
 }
 

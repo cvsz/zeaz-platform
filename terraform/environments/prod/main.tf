@@ -14,7 +14,6 @@ provider "cloudflare" {
 }
 
 locals {
-  normalized_plan_tier = title(lower(var.cloudflare_plan_tier))
   is_enterprise        = lower(var.cloudflare_plan_tier) == "enterprise"
 }
 
@@ -60,18 +59,6 @@ variable "primary_domain" {
   validation {
     condition     = can(regex("^[a-z0-9.-]+$", var.primary_domain))
     error_message = "primary_domain must be a valid domain."
-  }
-}
-
-variable "environment" {
-  type        = string
-  description = "Environment name"
-  nullable    = false
-  default     = "prod"
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "environment must be dev, staging, or prod."
   }
 }
 

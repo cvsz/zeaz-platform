@@ -58,17 +58,6 @@ variable "primary_domain" {
   }
 }
 
-variable "environment" {
-  type        = string
-  description = "Environment name"
-  nullable    = false
-  default     = "dev"
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "environment must be dev, staging, or prod."
-  }
-}
-
 variable "cloudflare_plan_tier" {
   type        = string
   description = "Cloudflare plan tier"

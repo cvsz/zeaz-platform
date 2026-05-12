@@ -38,9 +38,3 @@ variable "allowed_idps" {
   default     = []
 }
 
-variable "service_tokens_enabled" {
-  type        = bool
-  description = "Enable service token authentication."
-  nullable    = false
-  default     = true
-}

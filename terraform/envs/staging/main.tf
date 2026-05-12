@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.7.0"
+}
+
 module "platform" {
   source        = "../../"
   cf_api_token  = var.cf_api_token
