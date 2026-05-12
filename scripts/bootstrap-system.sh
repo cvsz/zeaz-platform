@@ -147,7 +147,7 @@ install_tflint(){
   has curl || install_packages curl
   has unzip || install_packages unzip
 
-  local os_name asset versioned_url tmp_dir zip_path
+  local os_name versioned_url tmp_dir zip_path
   case "$OS" in
     linux) os_name="linux" ;;
     darwin) os_name="darwin" ;;
@@ -171,7 +171,12 @@ install_tflint(){
   unzip -q "$zip_path" -d "$tmp_dir" || { rm -rf "$tmp_dir"; strict_skip "tflint unzip failed"; return 0; }
   run_root install -m 0755 "$tmp_dir/tflint" /usr/local/bin/tflint || { rm -rf "$tmp_dir"; strict_skip "tflint install failed"; return 0; }
   rm -rf "$tmp_dir"
-  has tflint && tflint --version | head -n 1 || strict_skip "tflint verification failed"
+
+  if has tflint; then
+    tflint --version | head -n 1 || true
+  else
+    strict_skip "tflint verification failed"
+  fi
 }
 
 venv_python(){ printf '%s/bin/python' "$PROJECT_ROOT/$PYTHON_VENV_DIR"; }
