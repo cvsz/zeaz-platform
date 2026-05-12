@@ -13,6 +13,7 @@ STRICT_TOOLS ?= false
 CODEX_CLOUD ?= false
 STRICT_ENV ?= true
 CONFIRM_APPLY ?= no
+TF_PLAN_FILE ?= tfplan
 
 TF_ROOT := terraform
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
@@ -25,7 +26,7 @@ export STRICT_TOOLS
 export CODEX_CLOUD
 export STRICT_ENV
 
-.PHONY: help bootstrap setup env load-env validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-apply tf-destroy tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci
+.PHONY: help bootstrap setup env load-env validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci
 
 help:
 	@printf '%s\n' \
@@ -51,6 +52,8 @@ help:
 	'  make tf-init                terraform -chdir=terraform init' \
 	'  make tf-validate            terraform -chdir=terraform validate' \
 	'  make tf-plan                terraform -chdir=terraform plan' \
+	'  make tf-plan-out            terraform plan -out=$(TF_PLAN_FILE)' \
+	'  make tf-apply-plan CONFIRM_APPLY=yes' \
 	'  make tf-apply CONFIRM_APPLY=yes' \
 	'  make tf-destroy CONFIRM_APPLY=yes' \
 	'  make drift                  terraform plan -detailed-exitcode' \
@@ -131,9 +134,18 @@ tf-validate: tf-init
 tf-plan: tf-init
 	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan
 
+tf-plan-out: tf-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -out=$(TF_PLAN_FILE)
+	@echo "Saved Terraform plan: $(TF_ROOT)/$(TF_PLAN_FILE)"
+
 tf-apply: tf-init
 	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
 	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) apply
+
+tf-apply-plan:
+	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
+	@test -f "$(TF_ROOT)/$(TF_PLAN_FILE)" || (echo "ERROR: missing saved plan $(TF_ROOT)/$(TF_PLAN_FILE). Run: make tf-plan-out" && exit 1)
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) apply $(TF_PLAN_FILE)
 
 tf-destroy: tf-init
 	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
@@ -195,7 +207,7 @@ doctor:
 	@command -v gh >/dev/null 2>&1 && gh --version | head -n 1 || echo "WARN: gh missing"
 
 clean:
-	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/*.tfplan
+	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/$(TF_PLAN_FILE) $(TF_ROOT)/*.tfplan
 	@find . -type d -name '.terraform' -prune -print -exec rm -rf {} +
 
 phase-f1: test validate-env
