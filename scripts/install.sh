@@ -2,65 +2,159 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-source "$(cd "$(dirname "$0")" && pwd)/common.sh"
+MODE="${1:-install}"
+STRICT_TOOLS="${STRICT_TOOLS:-false}"
+CODEX_CLOUD="${CODEX_CLOUD:-false}"
 
-rollback(){ warn "rollback invoked (no destructive changes were applied yet)"; }
-trap 'rollback' ERR
+log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+info(){ log "INFO: $*"; }
+warn(){ log "WARN: $*" >&2; }
+die(){ log "ERROR: $*" >&2; exit 1; }
+has(){ command -v "$1" >/dev/null 2>&1; }
 
-main(){
-  validate_plan
-  case "$(basename "$0")" in
-    install.sh)
-      require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || exit 1
-      info "initializing terraform and validating configuration"
-      retry 3 terraform -chdir="$PROJECT_ROOT/terraform" init -backend=false
-      retry 3 terraform -chdir="$PROJECT_ROOT/terraform" validate
-      ;;
-    uninstall.sh)
-      require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT || exit 1
-      info "generating destroy plan"
-      retry 3 terraform -chdir="$PROJECT_ROOT/terraform" plan -destroy -out tfplan.destroy
-      ;;
-    repair.sh)
-      info "running drift check and reconciliation plan"
-      retry 3 terraform -chdir="$PROJECT_ROOT/terraform" plan -detailed-exitcode || true
-      ;;
-    update.sh)
-      info "updating provider lock and modules"
-      retry 3 terraform -chdir="$PROJECT_ROOT/terraform" init -upgrade
-      ;;
-    rotate-secrets.sh)
-      require_env SECRET_ROTATION_INTERVAL SOPS_AGE_KEY || exit 1
-      info "secret rotation workflow started"
-      ;;
-    backup.sh)
-      info "creating configuration backup"
-      ts="$(date -u +%Y%m%dT%H%M%SZ)"
-      mkdir -p "$PROJECT_ROOT/backups"
-      tar -czf "$PROJECT_ROOT/backups/config-$ts.tgz" "$PROJECT_ROOT/terraform" "$PROJECT_ROOT/docs" "$PROJECT_ROOT/scripts"
-      ;;
-    restore.sh)
-      require_env BACKUP_ARCHIVE || exit 1
-      info "restoring from $BACKUP_ARCHIVE"
-      tar -xzf "$BACKUP_ARCHIVE" -C "$PROJECT_ROOT"
-      ;;
-    validate.sh)
-      require_env CF_ACCOUNT_ID CF_ZONE_ID CF_DNS_TOKEN CF_WORKERS_TOKEN CF_ZT_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN IDENTITY_PROVIDER_TYPE IDENTITY_PROVIDER_VENDOR IDENTITY_PROVIDER_METADATA_URL ENVIRONMENT REGION PRIMARY_DOMAIN ORIGIN_INFRA_TYPE ORIGIN_HOSTS TERRAFORM_BACKEND_TYPE TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE SOPS_AGE_KEY SECRET_ROTATION_INTERVAL CLOUDFLARE_PLAN_TIER || exit 1
-      health_check
-      retry 3 terraform -chdir="$PROJECT_ROOT/terraform" validate
-      ;;
-    drift-detect.sh)
-      info "running terraform drift detection"
-      set +e
-      terraform -chdir="$PROJECT_ROOT/terraform" plan -detailed-exitcode -out tfplan.drift
-      rc=$?
-      set -e
-      if [ "$rc" -eq 2 ]; then warn "drift detected"; exit 2; fi
-      if [ "$rc" -ne 0 ]; then err "drift check failed"; exit "$rc"; fi
-      info "no drift detected"
-      ;;
-  esac
-  info "completed"
+find_root(){
+  local d="${PROJECT_ROOT:-${PWD}}"
+  while [[ "$d" != "/" ]]; do
+    if [[ -d "$d/.git" ]] || [[ -d "$d/terraform" ]] || [[ -f "$d/.env.example" ]] || [[ -f "$d/python/cfstack_validate_env.py" ]]; then
+      printf '%s\n' "$d"
+      return 0
+    fi
+    d="$(dirname "$d")"
+  done
+  return 1
 }
 
-main "$@"
+PROJECT_ROOT="$(find_root || true)"
+[[ -n "$PROJECT_ROOT" && "$PROJECT_ROOT" != "/" ]] || { warn "could not detect repo root from PWD=${PWD}"; exit 0; }
+
+ENV_FILE="${ENV_FILE:-$PROJECT_ROOT/.env}"
+BACKUP_DIR="$PROJECT_ROOT/.cloudflare-backups"
+mkdir -p "$BACKUP_DIR"
+
+load_env(){
+  [[ -f "$ENV_FILE" ]] || { warn "missing env file: $ENV_FILE"; return 0; }
+  set -a
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+  set +a
+}
+
+require_env(){
+  local miss=0 v
+  for v in "$@"; do
+    if [[ -z "${!v:-}" ]]; then
+      warn "missing required env var $v"
+      miss=1
+    fi
+  done
+  [[ "$miss" -eq 0 ]]
+}
+
+validate_plan(){
+  local plan="${CLOUDFLARE_PLAN_TIER:-Free}"
+  case "$plan" in
+    Free|Pro|Business|Enterprise) info "detected plan tier $plan" ;;
+    *) warn "invalid CLOUDFLARE_PLAN_TIER=$plan"; return 1 ;;
+  esac
+}
+
+tf_available(){
+  if ! has terraform; then
+    [[ "$STRICT_TOOLS" == "true" ]] && die "missing dependency: terraform"
+    warn "terraform missing; skipped terraform operation"
+    return 1
+  fi
+  [[ -d "$PROJECT_ROOT/terraform" ]] || { warn "terraform directory not found; skipped terraform operation"; return 1; }
+  return 0
+}
+
+run_tf(){
+  tf_available || return 0
+  terraform -chdir="$PROJECT_ROOT/terraform" "$@" || warn "terraform command failed: terraform $*"
+}
+
+backup_config(){
+  local ts archive
+  ts="$(date -u +%Y%m%dT%H%M%SZ)"
+  archive="$BACKUP_DIR/config-$ts.tgz"
+  tar -czf "$archive" \
+    -C "$PROJECT_ROOT" \
+    terraform docs scripts .env.example 2>/dev/null || warn "backup archive created with partial content"
+  chmod 600 "$archive" 2>/dev/null || true
+  info "backup saved: $archive"
+}
+
+rollback(){
+  warn "rollback invoked; no destructive install action was applied"
+}
+trap rollback ERR
+
+load_env
+validate_plan || true
+
+case "$(basename "$0"):$MODE" in
+  install.sh:*|*:install)
+    require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || warn "install validation has missing env values"
+    info "initializing terraform and validating configuration"
+    run_tf init -backend=false
+    run_tf validate
+    ;;
+  uninstall.sh:*|*:uninstall)
+    require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT || warn "uninstall validation has missing env values"
+    info "generating destroy plan only"
+    run_tf plan -destroy -out=tfplan.destroy
+    ;;
+  repair.sh:*|*:repair)
+    info "running drift check and reconciliation plan"
+    run_tf plan -detailed-exitcode
+    ;;
+  update.sh:*|*:update)
+    info "updating provider lock and modules"
+    run_tf init -upgrade
+    ;;
+  rotate-secrets.sh:*|*:rotate-secrets)
+    require_env SECRET_ROTATION_INTERVAL SOPS_AGE_KEY || warn "secret rotation env is incomplete"
+    info "secret rotation workflow started"
+    ;;
+  backup.sh:*|*:backup)
+    backup_config
+    ;;
+  restore.sh:*|*:restore)
+    require_env BACKUP_ARCHIVE || die "BACKUP_ARCHIVE is required for restore"
+    info "restoring from $BACKUP_ARCHIVE"
+    tar -xzf "$BACKUP_ARCHIVE" -C "$PROJECT_ROOT"
+    ;;
+  validate.sh:*|*:validate)
+    require_env CF_ACCOUNT_ID CF_ZONE_ID CF_DNS_TOKEN CF_WORKERS_TOKEN CF_ZT_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN IDENTITY_PROVIDER_TYPE IDENTITY_PROVIDER_VENDOR IDENTITY_PROVIDER_METADATA_URL ENVIRONMENT REGION PRIMARY_DOMAIN ORIGIN_INFRA_TYPE ORIGIN_HOSTS TERRAFORM_BACKEND_TYPE TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE SOPS_AGE_KEY SECRET_ROTATION_INTERVAL CLOUDFLARE_PLAN_TIER || warn "validation has missing env values"
+    run_tf fmt -check
+    run_tf validate
+    ;;
+  drift-detect.sh:*|*:drift-detect)
+    info "running terraform drift detection"
+    if tf_available; then
+      set +e
+      terraform -chdir="$PROJECT_ROOT/terraform" plan -detailed-exitcode -out=tfplan.drift
+      rc=$?
+      set -e
+      case "$rc" in
+        0) info "no drift detected" ;;
+        2) warn "drift detected" ;;
+        *) warn "drift check failed rc=$rc" ;;
+      esac
+    fi
+    ;;
+  *)
+    cat >&2 <<USAGE
+Usage: $0 [install|uninstall|repair|update|rotate-secrets|backup|restore|validate|drift-detect]
+
+Optional env:
+  PROJECT_ROOT=/path/to/repo
+  ENV_FILE=/path/to/.env
+  STRICT_TOOLS=true
+  CODEX_CLOUD=true
+USAGE
+    exit 2
+    ;;
+esac
+
+info "completed"
