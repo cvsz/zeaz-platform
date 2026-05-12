@@ -1,4 +1,4 @@
-resource "cloudflare_access_identity_provider" "saml" {
+resource "cloudflare_zero_trust_access_identity_provider" "saml" {
   count      = var.provider_type == "saml" ? 1 : 0
   account_id = var.account_id
   name       = var.name
@@ -11,7 +11,7 @@ resource "cloudflare_access_identity_provider" "saml" {
   }
 }
 
-resource "cloudflare_access_identity_provider" "oidc" {
+resource "cloudflare_zero_trust_access_identity_provider" "oidc" {
   count      = var.provider_type == "oidc" ? 1 : 0
   account_id = var.account_id
   name       = var.name
