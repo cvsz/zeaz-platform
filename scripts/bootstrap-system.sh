@@ -114,7 +114,7 @@ install_terraform_brew(){
 
 install_terraform(){
   [[ "$SKIP_TERRAFORM" == "true" ]] && { warn "SKIP_TERRAFORM=true; skipped Terraform install"; return 0; }
-  has terraform && { info "terraform already installed: $(terraform version | head -n 1)"; return 0; }
+  has terraform && { info "terraform already installed: $(terraform version | head -n 1 || true)"; return 0; }
   info "installing Terraform for $OS/$ARCH_CANON"
   case "$PKG_MANAGER" in
     apt) install_terraform_apt || strict_skip "Terraform install failed" ;;
@@ -123,7 +123,11 @@ install_terraform(){
     apk) install_packages terraform ;;
     *) strict_skip "Terraform install unavailable: no supported package manager" ;;
   esac
-  has terraform && terraform version | head -n 1 || strict_skip "terraform verification failed"
+  if has terraform; then
+    terraform version | head -n 1 || true
+  else
+    strict_skip "terraform verification failed"
+  fi
 }
 
 venv_python(){ printf '%s/bin/python' "$PROJECT_ROOT/$PYTHON_VENV_DIR"; }
@@ -149,7 +153,7 @@ install_python_deps(){
 
 install_cloudflared(){
   [[ "$SKIP_CLOUDFLARED" == "true" ]] && { warn "SKIP_CLOUDFLARED=true; skipped cloudflared install"; return 0; }
-  has cloudflared && { info "cloudflared already installed: $(cloudflared --version 2>/dev/null | head -n 1)"; return 0; }
+  has cloudflared && { info "cloudflared already installed: $(cloudflared --version 2>/dev/null | head -n 1 || true)"; return 0; }
   info "installing cloudflared for $OS/$ARCH_CANON"
   case "$PKG_MANAGER" in
     brew) brew install cloudflare/cloudflare/cloudflared || strict_skip "cloudflared install failed" ;;
@@ -165,7 +169,7 @@ install_cloudflared(){
 
 install_gh(){
   [[ "$SKIP_GH" == "true" ]] && { warn "SKIP_GH=true; skipped GitHub CLI install"; return 0; }
-  has gh && { info "gh already installed: $(gh --version | head -n 1)"; return 0; }
+  has gh && { info "gh already installed: $(gh --version | head -n 1 || true)"; return 0; }
   info "installing GitHub CLI via $PKG_MANAGER"
   case "$PKG_MANAGER" in
     brew) brew install gh || strict_skip "GitHub CLI install failed" ;;
@@ -193,13 +197,40 @@ print_versions(){
   echo "PACKAGE_MANAGER: $PKG_MANAGER"
   echo "CODEX_CLOUD: $CODEX_CLOUD"
   echo "STRICT_TOOLS: $STRICT_TOOLS"
-  has terraform && terraform version | head -n 1 || warn "terraform not installed"
-  has "$PYTHON_BIN" && "$PYTHON_BIN" --version || warn "$PYTHON_BIN not installed"
+
+  if has terraform; then
+    terraform version | head -n 1 || true
+  else
+    warn "terraform not installed"
+  fi
+
+  if has "$PYTHON_BIN"; then
+    "$PYTHON_BIN" --version || true
+  else
+    warn "$PYTHON_BIN not installed"
+  fi
+
   [[ -x "$(venv_python)" ]] && "$(venv_python)" --version || true
   [[ -x "$(venv_pip)" ]] && "$(venv_pip)" --version || true
-  [[ -x "$PROJECT_ROOT/$PYTHON_VENV_DIR/bin/pytest" ]] && "$PROJECT_ROOT/$PYTHON_VENV_DIR/bin/pytest" --version || warn "pytest not installed in venv"
-  has cloudflared && cloudflared --version || warn "cloudflared not installed"
-  has gh && gh --version | head -n 1 || warn "gh not installed"
+
+  if [[ -x "$PROJECT_ROOT/$PYTHON_VENV_DIR/bin/pytest" ]]; then
+    "$PROJECT_ROOT/$PYTHON_VENV_DIR/bin/pytest" --version || true
+  else
+    warn "pytest not installed in venv"
+  fi
+
+  if has cloudflared; then
+    cloudflared --version || true
+  else
+    warn "cloudflared not installed"
+  fi
+
+  if has gh; then
+    gh --version | head -n 1 || true
+  else
+    warn "gh not installed"
+  fi
+
   echo
 }
 
