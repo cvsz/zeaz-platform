@@ -1,4 +1,4 @@
-resource "cloudflare_tunnel" "main" {
+resource "cloudflare_zero_trust_tunnel_cloudflared" "main" {
   account_id = var.cf_account_id
   name       = "zeaz-main"
   secret     = base64encode(sha256("${var.cf_account_id}:${var.cf_zone_id}:${var.domain}"))
@@ -13,6 +13,6 @@ resource "cloudflare_record" "tunnel_cname" {
   zone_id  = var.cf_zone_id
   name     = each.value
   type     = "CNAME"
-  value    = "${cloudflare_tunnel.main.id}.cfargotunnel.com"
+  value    = "${cloudflare_zero_trust_tunnel_cloudflared.main.id}.cfargotunnel.com"
   proxied  = true
 }

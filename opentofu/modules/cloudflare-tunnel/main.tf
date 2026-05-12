@@ -4,7 +4,7 @@ resource "random_password" "tunnel_secret" {
   override_special = ""
 }
 
-resource "cloudflare_tunnel" "this" {
+resource "cloudflare_zero_trust_tunnel_cloudflared" "this" {
   account_id = var.account_id
   name       = var.name
   secret     = base64encode(random_password.tunnel_secret.result)
