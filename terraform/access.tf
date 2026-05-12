@@ -91,12 +91,13 @@ module "access_application" {
 module "access_policy" {
   for_each = local.access_apps
 
-  source         = "./modules/cloudflare-access-policy"
-  account_id     = var.cf_account_id
-  application_id = module.access_application[each.key].application_id
-  name           = "zeazdev-${var.environment}-${replace(each.key, "_", "-")}-allow"
-  precedence     = 1
-  decision       = "allow"
-  include_groups = []
-  require_mfa    = each.value.require_mfa
+  source                = "./modules/cloudflare-access-policy"
+  account_id            = var.cf_account_id
+  application_id        = module.access_application[each.key].application_id
+  name                  = "zeazdev-${var.environment}-${replace(each.key, "_", "-")}-allow"
+  precedence            = 1
+  decision              = "allow"
+  include_groups        = []
+  include_email_domains = [var.domain]
+  require_mfa           = each.value.require_mfa
 }
