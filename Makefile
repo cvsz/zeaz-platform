@@ -24,53 +24,53 @@ export STRICT_TOOLS
 export CODEX_CLOUD
 export STRICT_ENV
 
-.PHONY: help bootstrap setup env load-env validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-apply tf-destroy tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate
+.PHONY: help bootstrap setup env load-env validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-apply tf-destroy tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci
 
 help:
-	@cat <<'HELP'
-Cloudflare Platform Make Targets
-
-Bootstrap:
-  make bootstrap              Install/check local tools and Python venv
-  make setup                  Generate/preserve .env using setup script
-  make env                    Validate/load environment
-  make load-env               Load Cloudflare env helper
-
-Validation:
-  make validate               Run tests + env + Terraform validation
-  make validate-env           Run Python env validator
-  make maintenance            Run scripts/environments/maintenance.sh validate
-  make test                   Run pytest suite
-  make fmt                    Terraform fmt recursive
-  make fmt-check              Terraform fmt check recursive
-  make lint                   Run optional shellcheck/tflint/yaml checks
-
-Terraform root:
-  make tf-init                terraform -chdir=terraform init
-  make tf-validate            terraform -chdir=terraform validate
-  make tf-plan                terraform -chdir=terraform plan
-  make tf-apply CONFIRM_APPLY=yes
-  make tf-destroy CONFIRM_APPLY=yes
-  make drift                  terraform plan -detailed-exitcode
-
-Terraform env roots:
-  make tf-env-init ENVIRONMENT=prod
-  make tf-env-validate ENVIRONMENT=prod
-  make tf-env-plan ENVIRONMENT=prod
-
-OpenTofu:
-  make tofu-init              init OpenTofu env if tofu exists
-  make tofu-validate          validate OpenTofu env if tofu exists
-  make tofu-plan              plan OpenTofu env if tofu exists
-
-Tokens:
-  make token-clean            dry-run token cleanup
-  make token-rotate-dry       dry-run token regeneration
-  make token-rotate           live token regeneration; requires CF_EMAIL/CF_GLOBAL_API_KEY
-
-Phases:
-  make phase-f1 ... phase-f7
-HELP
+	@printf '%s\n' \
+	'Cloudflare Platform Make Targets' \
+	'' \
+	'Bootstrap:' \
+	'  make bootstrap              Install/check local tools and Python venv' \
+	'  make setup                  Generate/preserve .env using setup script' \
+	'  make env                    Validate/load environment' \
+	'  make load-env               Load Cloudflare env helper' \
+	'' \
+	'Validation:' \
+	'  make validate               Run tests + env + Terraform validation' \
+	'  make ci                     Alias for validate' \
+	'  make validate-env           Run Python env validator' \
+	'  make maintenance            Run scripts/environments/maintenance.sh validate' \
+	'  make test                   Run pytest suite' \
+	'  make fmt                    Terraform fmt recursive' \
+	'  make fmt-check              Terraform fmt check recursive' \
+	'  make lint                   Run optional shellcheck/tflint/yaml checks' \
+	'' \
+	'Terraform root:' \
+	'  make tf-init                terraform -chdir=terraform init' \
+	'  make tf-validate            terraform -chdir=terraform validate' \
+	'  make tf-plan                terraform -chdir=terraform plan' \
+	'  make tf-apply CONFIRM_APPLY=yes' \
+	'  make tf-destroy CONFIRM_APPLY=yes' \
+	'  make drift                  terraform plan -detailed-exitcode' \
+	'' \
+	'Terraform env roots:' \
+	'  make tf-env-init ENVIRONMENT=prod' \
+	'  make tf-env-validate ENVIRONMENT=prod' \
+	'  make tf-env-plan ENVIRONMENT=prod' \
+	'' \
+	'OpenTofu:' \
+	'  make tofu-init              Init OpenTofu env if tofu exists' \
+	'  make tofu-validate          Validate OpenTofu env if tofu exists' \
+	'  make tofu-plan              Plan OpenTofu env if tofu exists' \
+	'' \
+	'Tokens:' \
+	'  make token-clean            Dry-run token cleanup' \
+	'  make token-rotate-dry       Dry-run token regeneration' \
+	'  make token-rotate           Live token regeneration; requires CF_EMAIL/CF_GLOBAL_API_KEY' \
+	'' \
+	'Phases:' \
+	'  make phase-f1 ... phase-f7'
 
 bootstrap:
 	@bash scripts/bootstrap-system.sh
@@ -83,6 +83,8 @@ env: load-env validate-env
 load-env:
 	@chmod +x scripts/cloudflare/load-env.sh
 	@bash scripts/cloudflare/load-env.sh
+
+ci: validate
 
 validate: test validate-env tf-fmt-check tf-init tf-validate
 	@echo "Validation complete."
