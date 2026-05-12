@@ -1,4 +1,11 @@
 version: 1
+plan_gating:
+  enterprise_features:
+    - bot_management
+    - advanced_rate_limiting
+  fallback_on_non_enterprise:
+    - js_challenge
+    - strict_rate_limit
 rules:
   - id: ai-prompt-injection-patterns
     action: managed_challenge
@@ -8,4 +15,4 @@ rules:
     expression: "http.request.uri.path contains \"/upload\" and to_number(http.request.headers[\"content-length\"][0]) gt 20971520"
   - id: ai-publish-abuse
     action: js_challenge
-    expression: "http.request.uri.path contains \"/publish\" and cf.threat_score gt 10"
+    expression: "http.request.uri.path contains \"/publish\" and (cf.threat_score gt 10 or cf.bot_management.score lt 30)"

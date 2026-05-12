@@ -1,12 +1,18 @@
-# AI Gateway integration
+# AI Gateway Integration
 
-`workers-ai/ai-gateway.yaml` defines declarative gateway controls.
+The AI gateway configuration is defined in `workers-ai/ai-gateway.yaml` and validated with `scripts/validate-ai-gateway.sh`.
 
-Required environment variables:
+## Required runtime variables
+
 - `CF_ACCOUNT_ID`
-- `CF_AI_GATEWAY_SLUG`
-- provider API key via external secret manager.
+- `CF_AI_GATEWAY_SLUG` (recommended: `cloudflare-platform-ai-gateway`)
+- Provider keys (`OPENAI_API_KEY`) from secret manager only.
 
-Recommended slug values:
-- `zcodex-ci-self-healing`
-- `cloudflare-platform-ai-gateway`
+`CF_AI_GATEWAY_SLUG` must be supplied by CI variables or runtime environment, never committed to source control as a secret.
+
+## Controls implemented
+
+- Retry and timeout controls.
+- Quota policy binding (`workers-ai/quota-policy.yaml`).
+- Abuse controls for prompt-injection and PII handling.
+- Structured validation logs for CI/CD.

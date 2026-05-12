@@ -1,13 +1,21 @@
-import { consumeTokenBucket, type RateLimitPolicy, type TokenBucketState } from "./rate-limit";
+import { consumeTokenBucket, type RateLimitDecision, type RateLimitPolicy, type TokenBucketState } from "./rate-limit";
+
+export interface DurableRateLimitStorage {
+  get<T>(key: string): Promise<T | undefined>;
+  put<T>(key: string, value: T): Promise<void>;
+}
 
 export class DurableRateLimiter {
-  constructor(private readonly state: DurableObjectState) {}
+  constructor(private readonly storage: DurableRateLimitStorage) {}
 
-  async consume(key: string, policy: RateLimitPolicy): Promise<{ allowed: boolean; retryAfterSec: number }> {
+  async consume(key: string, policy: RateLimitPolicy): Promise<RateLimitDecision> {
     const nowMs = Date.now();
-    const current = (await this.state.storage.get<TokenBucketState>(key)) ?? { tokens: policy.capacity, updatedAtMs: nowMs };
+    const current = (await this.storage.get<TokenBucketState>(key)) ?? {
+      tokens: policy.capacity,
+      updatedAtMs: nowMs,
+    };
     const result = consumeTokenBucket(current, policy, nowMs);
-    await this.state.storage.put(key, result.state);
-    return { allowed: result.allowed, retryAfterSec: result.retryAfterSec };
+    await this.storage.put(key, result.state);
+    return result;
   }
 }
