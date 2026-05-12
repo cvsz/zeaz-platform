@@ -15,5 +15,5 @@ provider "cloudflare" {
 
 provider "cloudflare" {
   alias     = "waf"
-  api_token = var.cf_waf_token
+  api_token = coalesce(var.cf_waf_token, var.cf_dns_token)
 }
