@@ -18,6 +18,7 @@ TF_ROOT := terraform
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
 TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
 PYTEST := $(VENV_DIR)/bin/pytest
+TF_ENV_WRAPPER := scripts/terraform/export-tf-vars.sh
 
 export PROJECT_ROOT
 export STRICT_TOOLS
@@ -116,7 +117,7 @@ yaml-validate:
 	@if [ -f scripts/validate-yaml.py ]; then $(PYTHON) scripts/validate-yaml.py; else echo "INFO: scripts/validate-yaml.py not present; skipped"; fi
 
 tf-init:
-	@$(TF_BIN) -chdir=$(TF_ROOT) init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init
 
 tf-fmt:
 	@$(TF_BIN) fmt -recursive $(TF_ROOT) opentofu 2>/dev/null || $(TF_BIN) fmt -recursive $(TF_ROOT)
@@ -125,28 +126,28 @@ tf-fmt-check:
 	@$(TF_BIN) fmt -check -recursive $(TF_ROOT) opentofu 2>/dev/null || $(TF_BIN) fmt -check -recursive $(TF_ROOT)
 
 tf-validate: tf-init
-	@$(TF_BIN) -chdir=$(TF_ROOT) validate
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) validate
 
 tf-plan: tf-init
-	@$(TF_BIN) -chdir=$(TF_ROOT) plan
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan
 
 tf-apply: tf-init
 	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
-	@$(TF_BIN) -chdir=$(TF_ROOT) apply
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) apply
 
 tf-destroy: tf-init
 	@test "$(CONFIRM_APPLY)" = "yes" || (echo "ERROR: Set CONFIRM_APPLY=yes to continue." && exit 1)
-	@$(TF_BIN) -chdir=$(TF_ROOT) destroy
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) destroy
 
 tf-env-init:
 	@test -d "$(TF_ENV_DIR)" || (echo "ERROR: missing $(TF_ENV_DIR)" && exit 1)
-	@$(TF_BIN) -chdir=$(TF_ENV_DIR) init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ENV_DIR) init
 
 tf-env-validate: tf-env-init
-	@$(TF_BIN) -chdir=$(TF_ENV_DIR) validate
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ENV_DIR) validate
 
 tf-env-plan: tf-env-init
-	@$(TF_BIN) -chdir=$(TF_ENV_DIR) plan
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ENV_DIR) plan
 
 tofu-init:
 	@if command -v $(TOFU_BIN) >/dev/null 2>&1 && [ -d "$(TOFU_ENV_DIR)" ]; then $(TOFU_BIN) -chdir=$(TOFU_ENV_DIR) init; else echo "WARN: tofu or $(TOFU_ENV_DIR) missing; skipped"; fi
@@ -160,7 +161,7 @@ tofu-plan: tofu-init
 drift: drift-detect
 
 drift-detect: tf-init
-	@set +e; $(TF_BIN) -chdir=$(TF_ROOT) plan -detailed-exitcode -out=tfplan.drift; rc=$$?; set -e; \
+	@set +e; bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -detailed-exitcode -out=tfplan.drift; rc=$$?; set -e; \
 	case "$$rc" in \
 	  0) echo "No drift detected." ;; \
 	  2) echo "WARN: drift detected."; exit 2 ;; \
