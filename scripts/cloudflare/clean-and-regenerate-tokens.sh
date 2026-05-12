@@ -35,9 +35,13 @@ Safety:
 
 Regeneration:
   --regenerate           Create replacement tokens for --types
-  --types <csv|all>      dns,zt,workers,waf,tunnel,r2,audit,ai-gateway or all
+  --types <csv|all>      dns,zt,workers,waf,tunnel,r2 or all
   --write <file>         Write generated tokens to env file
   --perm-id <id>         Override permission-group ID for every generated token
+
+Notes:
+  CF_AUDIT_TOKEN and CF_AI_GATEWAY_TOKEN are preserved from the environment or existing output file.
+  CF_AI_GATEWAY_SLUG defaults to zeaz when unset.
 
   --help, -h             Show help
 USAGE
@@ -109,6 +113,12 @@ audit(){
   chmod 600 "$AUDIT_LOG"
   printf '%s\tname:%s\tid:%s\taction:%s%s\n' \
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$name" "$id" "$action" "${*:+ $*}" >> "$AUDIT_LOG"
+}
+
+env_file_value(){
+  local file="$1" key="$2"
+  [[ -f "$file" ]] || return 0
+  awk -F= -v k="$key" '$1 == k {v=$0; sub("^[^=]*=", "", v); gsub(/^\"|\"$/, "", v); print v}' "$file" | tail -n 1
 }
 
 epoch_of(){
@@ -188,9 +198,7 @@ else
     for id in "${FINAL_REVOKE[@]}"; do
       printf '  %-38s name=%-30s created=%s last_used=%s\n' "$id" "$(token_field "$id" name)" "$(token_field "$id" created_at)" "$(token_field "$id" last_used_at)"
     done
-    if [[ "$ASSUME_YES" != "true" ]]; then
-      die "refusing live revocation without --yes"
-    fi
+    [[ "$ASSUME_YES" == "true" ]] || die "refusing live revocation without --yes"
     $DO_BACKUP && backup_json "$TOKEN_LIST_JSON" tokens.pre-revoke
     for id in "${FINAL_REVOKE[@]}"; do
       name="$(token_field "$id" name)"
@@ -215,10 +223,9 @@ $REGENERATE || { log "done"; exit 0; }
 [[ "$ASSUME_YES" == "true" || "$DRY_RUN" == "true" ]] || die "refusing token regeneration without --yes"
 
 if [[ "$TYPES_CSV" == "all" ]]; then
-  TYPES_CSV="dns,zt,workers,waf,tunnel,r2,audit,ai-gateway"
+  TYPES_CSV="dns,zt,workers,waf,tunnel,r2"
 fi
 
-# Permission IDs can vary. Use --perm-id to override globally when needed.
 declare -A PERM_ID_MAP=(
   [dns]="4755a26eedb94da69e1066d98aa820be"
   [zt]="b33f02c6f7284e05a6f20741c0bb0567"
@@ -226,8 +233,6 @@ declare -A PERM_ID_MAP=(
   [waf]="fb6778dc191143babbfaa57993f1d275"
   [tunnel]="c07321b023e944ff818fec44d8203567"
   [r2]="bf7481a1826f439697cb59a20b22293e"
-  [audit]=""
-  [ai-gateway]=""
 )
 
 declare -A TOKEN_NAME_MAP=(
@@ -237,8 +242,6 @@ declare -A TOKEN_NAME_MAP=(
   [waf]="zeaz-waf-token"
   [tunnel]="zeaz-tunnel-token"
   [r2]="zeaz-r2-token"
-  [audit]="zeaz-audit-token"
-  [ai-gateway]="zeaz-ai-gateway-token"
 )
 
 declare -A RESOURCE_MAP=(
@@ -248,8 +251,6 @@ declare -A RESOURCE_MAP=(
   [waf]="com.cloudflare.api.account.*"
   [tunnel]="com.cloudflare.api.account.*"
   [r2]="com.cloudflare.api.account.*"
-  [audit]="com.cloudflare.api.account.*"
-  [ai-gateway]="com.cloudflare.api.account.*"
 )
 
 declare -A ENV_KEY_MAP=(
@@ -259,8 +260,6 @@ declare -A ENV_KEY_MAP=(
   [waf]="CF_WAF_TOKEN"
   [tunnel]="CF_TUNNEL_TOKEN"
   [r2]="CF_R2_TOKEN"
-  [audit]="CF_AUDIT_TOKEN"
-  [ai-gateway]="CF_AI_GATEWAY_TOKEN"
 )
 
 IFS=',' read -r -a TYPES_ARR <<< "$TYPES_CSV"
@@ -269,8 +268,14 @@ declare -A GENERATED=()
 for t in "${TYPES_ARR[@]}"; do
   t="${t// /}"
   [[ -z "$t" ]] && continue
-  [[ -n "${TOKEN_NAME_MAP[$t]:-}" ]] || { warn "unknown token type: $t"; continue; }
 
+  if [[ "$t" == "audit" || "$t" == "ai-gateway" ]]; then
+    warn "$t token is preserved only; automatic regeneration is skipped"
+    warn "set CF_AUDIT_TOKEN or CF_AI_GATEWAY_TOKEN manually, or generate a dedicated token in Cloudflare Dashboard"
+    continue
+  fi
+
+  [[ -n "${TOKEN_NAME_MAP[$t]:-}" ]] || { warn "unknown token type: $t"; continue; }
   perm="${PERM_ID_OVERRIDE:-${PERM_ID_MAP[$t]:-}}"
   [[ -n "$perm" ]] || { warn "missing permission-group ID for $t; pass --perm-id or update PERM_ID_MAP"; continue; }
 
@@ -303,7 +308,7 @@ done
 tmp="$(mktemp "${OUT_FILE}.XXXXXX")"
 chmod 600 "$tmp"
 
-MANAGED_KEYS=(CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN CF_AUDIT_TOKEN CF_AI_GATEWAY_TOKEN)
+MANAGED_KEYS=(CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN CF_AUDIT_TOKEN CF_AI_GATEWAY_TOKEN CF_AI_GATEWAY_SLUG)
 if [[ -f "$OUT_FILE" ]]; then
   while IFS= read -r line || [[ -n "$line" ]]; do
     key="$(printf '%s' "$line" | sed -E 's/^([A-Za-z0-9_]+)=.*/\1/')"
@@ -313,21 +318,24 @@ if [[ -f "$OUT_FILE" ]]; then
   done < "$OUT_FILE"
 fi
 
-printf 'CF_ACCOUNT_ID="%s"\n' "${CF_ACCOUNT_ID:-}" >> "$tmp"
-printf 'CF_ZONE_ID="%s"\n' "${CF_ZONE_ID:-}" >> "$tmp"
-printf 'CF_AI_GATEWAY_SLUG="%s"\n' "${CF_AI_GATEWAY_SLUG:-zeaz}" >> "$tmp"
+printf 'CF_ACCOUNT_ID="%s"\n' "${CF_ACCOUNT_ID:-$(env_file_value "$OUT_FILE" CF_ACCOUNT_ID)}" >> "$tmp"
+printf 'CF_ZONE_ID="%s"\n' "${CF_ZONE_ID:-$(env_file_value "$OUT_FILE" CF_ZONE_ID)}" >> "$tmp"
+printf 'CF_AI_GATEWAY_SLUG="%s"\n' "${CF_AI_GATEWAY_SLUG:-$(env_file_value "$OUT_FILE" CF_AI_GATEWAY_SLUG || true)}" | sed 's/=""$/="zeaz"/' >> "$tmp"
 printf '\n' >> "$tmp"
 
-for t in dns zt workers waf tunnel r2 audit ai-gateway; do
+for t in dns zt workers waf tunnel r2; do
   key="${ENV_KEY_MAP[$t]}"
   val="${GENERATED[$t]:-}"
   if [[ -n "$val" ]]; then
     printf '%s="%s"\n' "$key" "$val" >> "$tmp"
   else
-    existing="${!key:-}"
-    [[ -n "$existing" ]] && printf '%s="%s"\n' "$key" "$existing" >> "$tmp" || printf '%s=""\n' "$key" >> "$tmp"
+    existing="${!key:-$(env_file_value "$OUT_FILE" "$key")}" 
+    printf '%s="%s"\n' "$key" "$existing" >> "$tmp"
   fi
 done
+
+printf 'CF_AUDIT_TOKEN="%s"\n' "${CF_AUDIT_TOKEN:-$(env_file_value "$OUT_FILE" CF_AUDIT_TOKEN)}" >> "$tmp"
+printf 'CF_AI_GATEWAY_TOKEN="%s"\n' "${CF_AI_GATEWAY_TOKEN:-$(env_file_value "$OUT_FILE" CF_AI_GATEWAY_TOKEN)}" >> "$tmp"
 
 if $DRY_RUN; then
   log "DRY-RUN: preview of $OUT_FILE"
