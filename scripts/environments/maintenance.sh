@@ -4,6 +4,7 @@ IFS=$'\n\t'
 
 MODE="${1:-check}"
 STRICT_TOOLS="${STRICT_TOOLS:-false}"
+CODEX_CLOUD="${CODEX_CLOUD:-false}"
 
 log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 warn(){ log "WARN: $*" >&2; }
@@ -11,36 +12,22 @@ die(){ log "ERROR: $*" >&2; exit 1; }
 has(){ command -v "$1" >/dev/null 2>&1; }
 
 find_root() {
-  local d="${PWD}"
-
+  local d="${PROJECT_ROOT:-${PWD}}"
   while [[ "${d}" != "/" ]]; do
-    if [[ -d "${d}/.git" ]] ||
-       [[ -d "${d}/terraform" ]] ||
-       [[ -f "${d}/.env.example" ]] ||
-       [[ -f "${d}/python/cfstack_validate_env.py" ]]; then
+    if [[ -d "${d}/.git" ]] || [[ -d "${d}/terraform" ]] || [[ -f "${d}/.env.example" ]] || [[ -f "${d}/python/cfstack_validate_env.py" ]]; then
       printf '%s\n' "${d}"
       return 0
     fi
     d="$(dirname "${d}")"
   done
-
   return 1
 }
 
-ROOT="${PROJECT_ROOT:-}"
-if [[ -z "${ROOT}" ]]; then
-  ROOT="$(find_root || true)"
-fi
-
-[[ -n "${ROOT}" && "${ROOT}" != "/" ]] || {
-  warn "could not detect repo root from PWD=${PWD}"
-  warn "set PROJECT_ROOT=/home/zeazdev/cloudflare-platform"
-  exit 0
-}
+ROOT="$(find_root || true)"
+[[ -n "$ROOT" && "$ROOT" != "/" ]] || { warn "could not detect repo root from PWD=${PWD}"; exit 0; }
 
 ENV_FILE="${ENV_FILE:-$ROOT/.env}"
 BACKUP_DIR="$ROOT/.cloudflare-backups"
-
 mkdir -p "$BACKUP_DIR"
 
 [[ -f "$ENV_FILE" ]] || {
@@ -56,8 +43,7 @@ set +a
 
 validate_env(){
   if has python3 && [[ -f "$ROOT/python/cfstack_validate_env.py" ]]; then
-    python3 "$ROOT/python/cfstack_validate_env.py" --strict || \
-      warn "env validation failed because required secrets/IDs are missing or invalid"
+    python3 "$ROOT/python/cfstack_validate_env.py" --strict || warn "env validation failed because required secrets/IDs are missing or invalid"
   else
     warn "python3 or validator missing; skipped env validation"
   fi
@@ -70,9 +56,7 @@ backup_env(){
 
 tf_available(){
   if ! has terraform; then
-    if [[ "$STRICT_TOOLS" == "true" ]]; then
-      die "missing dependency: terraform"
-    fi
+    [[ "$STRICT_TOOLS" == "true" ]] && die "missing dependency: terraform"
     warn "terraform missing; skipped terraform operation"
     return 1
   fi
@@ -99,7 +83,6 @@ tf_validate(){
 
 drift(){
   tf_available || return 0
-
   set +e
   terraform -chdir="$ROOT/terraform" plan -detailed-exitcode -out=tfplan.drift
   rc=$?
@@ -124,26 +107,38 @@ upgrade(){
   terraform -chdir="$ROOT/terraform" validate || warn "terraform validate failed after upgrade"
 }
 
+codex_cloud_info(){
+  [[ "$CODEX_CLOUD" == "true" ]] || return 0
+  log "CODEX_CLOUD enabled"
+  log "PROJECT_ROOT=$ROOT"
+  log "ENV_FILE=$ENV_FILE"
+}
+
 case "$MODE" in
   check)
+    codex_cloud_info
     validate_env
     tf_validate
     drift
     ;;
   validate)
+    codex_cloud_info
     validate_env
     tf_validate
     ;;
   drift)
+    codex_cloud_info
     validate_env
     drift
     ;;
   plan)
+    codex_cloud_info
     validate_env
     tf_init
     plan
     ;;
   upgrade)
+    codex_cloud_info
     validate_env
     upgrade
     ;;
@@ -163,6 +158,7 @@ Usage:
 Optional:
   PROJECT_ROOT=/home/zeazdev/cloudflare-platform $0 check
   STRICT_TOOLS=true $0 check
+  CODEX_CLOUD=true $0 check
 USAGE
     exit 2
     ;;
