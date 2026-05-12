@@ -107,7 +107,7 @@ fmt: tf-fmt
 fmt-check: tf-fmt-check
 
 lint: shellcheck yaml-validate
-	@if command -v tflint >/dev/null 2>&1; then tflint --recursive terraform; else echo "WARN: tflint not installed; skipped"; fi
+	@if command -v tflint >/dev/null 2>&1; then tflint --recursive --chdir=$(TF_ROOT); else echo "WARN: tflint not installed; skipped"; fi
 
 shellcheck:
 	@if command -v shellcheck >/dev/null 2>&1; then find scripts -type f -name '*.sh' -print0 | xargs -0 shellcheck; else echo "WARN: shellcheck not installed; skipped"; fi
