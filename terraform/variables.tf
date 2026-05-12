@@ -16,7 +16,7 @@ variable "cf_zone_id" {
   nullable    = false
 
   validation {
-    condition     = can(regex("^[a-f0-9]{32}$", var.cf_zone_id))
+    condition     = can(regex("^[a-f0-9]{32}$", lower(var.cf_zone_id)))
     error_message = "cf_zone_id must be a 32-character hexadecimal ID"
   }
 }
@@ -27,7 +27,7 @@ variable "cf_account_id" {
   nullable    = false
 
   validation {
-    condition     = can(regex("^[a-f0-9]{32}$", var.cf_account_id))
+    condition     = can(regex("^[a-f0-9]{32}$", lower(var.cf_account_id)))
     error_message = "cf_account_id must be a 32-character hexadecimal ID"
   }
 }
@@ -51,7 +51,7 @@ variable "plan_tier" {
   nullable    = false
 
   validation {
-    condition     = contains(["Free", "Pro", "Business", "Enterprise"], var.plan_tier)
+    condition     = contains(["free", "pro", "business", "enterprise"], lower(var.plan_tier))
     error_message = "plan_tier must be one of Free, Pro, Business, Enterprise"
   }
 }
@@ -84,6 +84,7 @@ variable "identity_provider_metadata_url" {
   type        = string
   description = "HTTPS metadata URL for SAML configuration"
   nullable    = false
+
   validation {
     condition     = can(regex("^https://", var.identity_provider_metadata_url))
     error_message = "identity_provider_metadata_url must start with https://"
@@ -110,4 +111,12 @@ variable "oidc_client_secret" {
   nullable    = true
   default     = null
   sensitive   = true
+}
+
+variable "tunnel_secret" {
+  type        = string
+  description = "Cloudflare Tunnel secret"
+  nullable    = false
+  sensitive   = true
+  default     = "dGVzdC10dW5uZWwtc2VjcmV0LWRldGVybWluaXN0aWM="
 }
