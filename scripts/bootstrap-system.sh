@@ -10,6 +10,8 @@ SKIP_CLOUDFLARED="${SKIP_CLOUDFLARED:-false}"
 SKIP_GH="${SKIP_GH:-false}"
 SKIP_PYTHON_DEPS="${SKIP_PYTHON_DEPS:-false}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+PYTHON_VENV_DIR="${PYTHON_VENV_DIR:-.venv}"
+USE_SYSTEM_PIP="${USE_SYSTEM_PIP:-false}"
 
 log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 info(){ log "INFO: $*"; }
@@ -27,17 +29,27 @@ case "$ARCH" in
   *) ARCH_CANON="$ARCH" ;;
 esac
 
+find_root(){
+  local d="${PROJECT_ROOT:-${PWD}}"
+  while [[ "$d" != "/" ]]; do
+    if [[ -d "$d/.git" ]] || [[ -f "$d/.env.example" ]] || [[ -d "$d/terraform" ]] || [[ -f "$d/README.md" ]]; then
+      printf '%s\n' "$d"
+      return 0
+    fi
+    d="$(dirname "$d")"
+  done
+  printf '%s\n' "$PWD"
+}
+
+PROJECT_ROOT="$(find_root)"
+
 SUDO=""
 if [[ "${EUID:-$(id -u)}" -ne 0 ]] && has sudo; then
   SUDO="sudo"
 fi
 
 run_root(){
-  if [[ -n "$SUDO" ]]; then
-    sudo "$@"
-  else
-    "$@"
-  fi
+  if [[ -n "$SUDO" ]]; then sudo "$@"; else "$@"; fi
 }
 
 strict_skip(){
@@ -65,21 +77,11 @@ install_packages(){
       run_root apt-get update || strict_skip "apt-get update failed"
       run_root apt-get install -y "$@" || strict_skip "apt-get install failed: $*"
       ;;
-    dnf)
-      run_root dnf install -y "$@" || strict_skip "dnf install failed: $*"
-      ;;
-    yum)
-      run_root yum install -y "$@" || strict_skip "yum install failed: $*"
-      ;;
-    apk)
-      run_root apk add --no-cache "$@" || strict_skip "apk add failed: $*"
-      ;;
-    brew)
-      brew install "$@" || strict_skip "brew install failed: $*"
-      ;;
-    *)
-      strict_skip "no supported package manager found; skipped install: $*"
-      ;;
+    dnf) run_root dnf install -y "$@" || strict_skip "dnf install failed: $*" ;;
+    yum) run_root yum install -y "$@" || strict_skip "yum install failed: $*" ;;
+    apk) run_root apk add --no-cache "$@" || strict_skip "apk add failed: $*" ;;
+    brew) brew install "$@" || strict_skip "brew install failed: $*" ;;
+    *) strict_skip "no supported package manager found; skipped install: $*" ;;
   esac
 }
 
@@ -124,13 +126,25 @@ install_terraform(){
   has terraform && terraform version | head -n 1 || strict_skip "terraform verification failed"
 }
 
+venv_python(){ printf '%s/bin/python' "$PROJECT_ROOT/$PYTHON_VENV_DIR"; }
+venv_pip(){ printf '%s/bin/pip' "$PROJECT_ROOT/$PYTHON_VENV_DIR"; }
+
 install_python_deps(){
   [[ "$SKIP_PYTHON_DEPS" == "true" ]] && { warn "SKIP_PYTHON_DEPS=true; skipped Python deps"; return 0; }
   has "$PYTHON_BIN" || { warn "$PYTHON_BIN missing; attempting core install"; install_core; }
   has "$PYTHON_BIN" || return 0
-  info "installing Python test dependencies"
-  "$PYTHON_BIN" -m pip install --user --upgrade pip || warn "pip upgrade failed"
-  "$PYTHON_BIN" -m pip install --user pytest pytest-cov requests pyyaml || warn "Python dependency install failed"
+
+  if [[ "$USE_SYSTEM_PIP" == "true" ]]; then
+    info "installing Python test dependencies with system pip"
+    "$PYTHON_BIN" -m pip install --user --upgrade pip || warn "pip upgrade failed"
+    "$PYTHON_BIN" -m pip install --user pytest pytest-cov requests pyyaml || warn "Python dependency install failed"
+    return 0
+  fi
+
+  info "installing Python test dependencies in virtualenv: $PROJECT_ROOT/$PYTHON_VENV_DIR"
+  "$PYTHON_BIN" -m venv "$PROJECT_ROOT/$PYTHON_VENV_DIR" || { warn "venv creation failed"; return 0; }
+  "$(venv_python)" -m pip install --upgrade pip || warn "venv pip upgrade failed"
+  "$(venv_pip)" install pytest pytest-cov requests pyyaml || warn "venv Python dependency install failed"
 }
 
 install_cloudflared(){
@@ -138,18 +152,14 @@ install_cloudflared(){
   has cloudflared && { info "cloudflared already installed: $(cloudflared --version 2>/dev/null | head -n 1)"; return 0; }
   info "installing cloudflared for $OS/$ARCH_CANON"
   case "$PKG_MANAGER" in
-    brew)
-      brew install cloudflare/cloudflare/cloudflared || strict_skip "cloudflared install failed"
-      ;;
+    brew) brew install cloudflare/cloudflare/cloudflared || strict_skip "cloudflared install failed" ;;
     apt)
       has wget || install_packages wget
       local deb="/tmp/cloudflared-linux-${ARCH_CANON}.deb"
       wget -q -O "$deb" "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${ARCH_CANON}.deb" || { warn "cloudflared download failed"; return 0; }
       run_root dpkg -i "$deb" || warn "cloudflared install failed"
       ;;
-    *)
-      strict_skip "cloudflared auto-install unsupported for package manager: $PKG_MANAGER"
-      ;;
+    *) strict_skip "cloudflared auto-install unsupported for package manager: $PKG_MANAGER" ;;
   esac
 }
 
@@ -177,6 +187,7 @@ print_versions(){
   echo "========================================="
   echo "Bootstrap Summary"
   echo "========================================="
+  echo "PROJECT_ROOT: $PROJECT_ROOT"
   echo "OS: $OS"
   echo "ARCH: $ARCH_CANON"
   echo "PACKAGE_MANAGER: $PKG_MANAGER"
@@ -184,7 +195,9 @@ print_versions(){
   echo "STRICT_TOOLS: $STRICT_TOOLS"
   has terraform && terraform version | head -n 1 || warn "terraform not installed"
   has "$PYTHON_BIN" && "$PYTHON_BIN" --version || warn "$PYTHON_BIN not installed"
-  has pytest && pytest --version || warn "pytest not installed"
+  [[ -x "$(venv_python)" ]] && "$(venv_python)" --version || true
+  [[ -x "$(venv_pip)" ]] && "$(venv_pip)" --version || true
+  [[ -x "$PROJECT_ROOT/$PYTHON_VENV_DIR/bin/pytest" ]] && "$PROJECT_ROOT/$PYTHON_VENV_DIR/bin/pytest" --version || warn "pytest not installed in venv"
   has cloudflared && cloudflared --version || warn "cloudflared not installed"
   has gh && gh --version | head -n 1 || warn "gh not installed"
   echo
