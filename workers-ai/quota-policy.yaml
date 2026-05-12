@@ -16,3 +16,4 @@ abuse_controls:
   block_on_prompt_injection_signals: true
   max_prompt_bytes: 65536
   max_upload_bytes: 20971520
+  throttle_multiplier_for_suspicious_ips: 0.25

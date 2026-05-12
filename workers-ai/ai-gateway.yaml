@@ -1,6 +1,7 @@
 version: 1
 gateway:
   slug_var: CF_AI_GATEWAY_SLUG
+  recommended_slug: cloudflare-platform-ai-gateway
   account_id_var: CF_ACCOUNT_ID
 providers:
   - name: openai
@@ -13,3 +14,4 @@ controls:
   abuse_detection:
     prompt_injection_detection: true
     pii_redaction: true
+    upload_validation_required: true

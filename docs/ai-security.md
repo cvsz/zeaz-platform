@@ -1,8 +1,13 @@
-# AI security controls
+# AI Platform Security Controls
 
-Applies to `zveo.zeaz.dev` and `studio.zeaz.dev`:
-- MFA + WebAuthn required.
-- Prompt injection mitigation and upload validation.
-- API and publishing quotas.
-- Edge rate limiting + RBAC for publishing.
-- Bot mitigation enabled on Enterprise; fallback to strict rate limits otherwise.
+Scope: `zveo.zeaz.dev`, `studio.zeaz.dev`, `analytics.zeaz.dev`.
+
+## Enforced controls
+
+- JWT validation hooks at the edge gateway before rate-limit evaluation.
+- Security headers on every response.
+- MFA + WebAuthn policy requirement.
+- Upload validation policy (file size and MIME constraints).
+- Prompt-injection mitigation guardrails and challenge actions.
+- Publishing RBAC quotas and abuse throttling.
+- Bot mitigation gated by Cloudflare plan tier (Enterprise native controls, non-Enterprise fallback rate controls).
