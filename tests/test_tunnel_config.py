@@ -1,23 +1,25 @@
 from pathlib import Path
 
-DOMAINS = [
-    "auth.zeaz.dev",
-    "zveo.zeaz.dev",
-    "studio.zeaz.dev",
-    "analytics.zeaz.dev",
-    "app.zeaz.dev",
-    "pay.zeaz.dev",
-    "treasury.zeaz.dev",
-    "admin-wallet.zeaz.dev",
+HOSTS = [
+    "auth",
+    "zveo",
+    "studio",
+    "analytics",
+    "app",
+    "pay",
+    "treasury",
+    "admin-wallet",
 ]
 
 
-def test_tunnel_config_has_all_required_ingress_mappings():
+def test_tunnel_config_has_required_ingress_mappings_and_origin_hosts_contract():
     content = Path("tunnels/config.yaml").read_text()
-    assert "healthchecks:" in content
-    assert "failover_origins:" in content
-    for domain in DOMAINS:
-        assert f"hostname: {domain}" in content
+    assert "required_env:" in content
+    assert "- ORIGIN_HOSTS" in content
+    assert "failover_origins_from: ORIGIN_HOSTS" in content
+    for host in HOSTS:
+        assert f"hostname: {host}.${{PRIMARY_DOMAIN}}" in content
+        assert f"service_from_origin_hosts: {host}" in content
 
 
 def test_tunnel_config_does_not_commit_token_or_secret():

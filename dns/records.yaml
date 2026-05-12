@@ -1,58 +1,60 @@
 version: 1
 primary_domain: zeaz.dev
+required_env:
+  - PRIMARY_DOMAIN
 records:
   - id: auth
     name: auth
-    fqdn: auth.zeaz.dev
+    fqdn: auth.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: zveo
     name: zveo
-    fqdn: zveo.zeaz.dev
+    fqdn: zveo.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: studio
     name: studio
-    fqdn: studio.zeaz.dev
+    fqdn: studio.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: analytics
     name: analytics
-    fqdn: analytics.zeaz.dev
+    fqdn: analytics.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: app
     name: app
-    fqdn: app.zeaz.dev
+    fqdn: app.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: pay
     name: pay
-    fqdn: pay.zeaz.dev
+    fqdn: pay.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: treasury
     name: treasury
-    fqdn: treasury.zeaz.dev
+    fqdn: treasury.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
   - id: admin-wallet
     name: admin-wallet
-    fqdn: admin-wallet.zeaz.dev
+    fqdn: admin-wallet.${PRIMARY_DOMAIN}
     type: CNAME
     target_from: tunnel_endpoint
     proxied: true

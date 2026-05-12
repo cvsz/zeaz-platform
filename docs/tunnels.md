@@ -1,17 +1,22 @@
-# Tunnel Automation (F4.2)
+# Tunnel Ingress (F4)
 
-## Configuration Source
-- Runtime config: `tunnels/config.yaml`.
-- Validation script: `scripts/tunnel-validate.sh`.
+Source of truth: `tunnels/config.yaml`.
 
-## Security
-- Tunnel secrets are not committed.
-- `TUNNEL_TOKEN` must be supplied via environment or secret manager at runtime.
+## Runtime requirements
+- `PRIMARY_DOMAIN` must be set.
+- `ORIGIN_HOSTS` must supply origin targets for all required host labels.
+- Tunnel secrets/tokens must never be committed.
 
-## Ingress Mapping
-- Includes ingress mapping for all platform domains.
-- Default fallback route is `http_status:404`.
+## Ingress model
+- Each required hostname maps to `service_from_origin_hosts`.
+- `ORIGIN_HOSTS` is the only source of origin targets.
+- Fallback route is explicit `http_status:404`.
 
-## Failover
-- `failover_origins` map defines primary and DR upstream origins per hostname.
-- Health checks are configured for `/healthz` with strict intervals/timeouts.
+## Dry-run/offline validation
+- `bash scripts/tunnel-validate.sh --offline`
+- `bash scripts/tunnel-validate.sh --dry-run`
+
+## Rollback notes
+1. Revert `tunnels/config.yaml`.
+2. Restart connector with previous validated configuration.
+3. Re-run offline validation before promoting traffic.

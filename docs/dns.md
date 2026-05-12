@@ -1,18 +1,14 @@
-# DNS Model (F4.1)
+# DNS Records (F4)
 
-`dns/records.yaml` is the source of truth for platform hostnames.
+Source of truth: `dns/records.yaml`.
 
-## Defaults and Overrides
-- Default primary domain is `zeaz.dev`.
-- Terraform module input `primary_domain` supports override for multi-zone or alternate domains.
-- No hardcoded origin IP addresses are allowed in the DNS model.
+## Rules
+- All required records are CNAME and proxied through Cloudflare.
+- No public origin IPs are permitted in record definitions.
+- `PRIMARY_DOMAIN` controls suffix rendering (`<host>.${PRIMARY_DOMAIN}`).
+- DNS targets are always derived from the Cloudflare tunnel endpoint.
 
-## Record Strategy
-- All platform application records are CNAME records.
-- CNAME targets are derived from tunnel endpoint (`<tunnel_id>.cfargotunnel.com`).
-- `proxied: true` is required for edge security controls and WAF enforcement.
-
-## Required Hosts
+## Required hostnames
 - auth.zeaz.dev
 - zveo.zeaz.dev
 - studio.zeaz.dev
@@ -21,3 +17,8 @@
 - pay.zeaz.dev
 - treasury.zeaz.dev
 - admin-wallet.zeaz.dev
+
+## Rollback notes
+1. Revert `dns/records.yaml` to prior commit.
+2. Re-apply DNS via Terraform/OpenTofu.
+3. Validate with `bash scripts/tunnel-validate.sh --offline`.

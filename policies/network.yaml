@@ -1,38 +1,27 @@
 version: 1
+primary_domain_from: PRIMARY_DOMAIN
+required_host_labels:
+  - auth
+  - zveo
+  - studio
+  - analytics
+  - app
+  - pay
+  - treasury
+  - admin-wallet
 network_guardrails:
-  origin_allowlist:
-    - origin-auth:8080
-    - origin-auth-dr:8080
-    - origin-zveo:8080
-    - origin-zveo-dr:8080
-    - origin-studio:8080
-    - origin-studio-dr:8080
-    - origin-analytics:8080
-    - origin-analytics-dr:8080
-    - origin-app:8080
-    - origin-app-dr:8080
-    - origin-pay:8080
-    - origin-pay-dr:8080
-    - origin-treasury:8080
-    - origin-treasury-dr:8080
-    - origin-admin-wallet:8080
-    - origin-admin-wallet-dr:8080
+  origin_source: ORIGIN_HOSTS
+  origin_rules:
+    - no_public_ips: true
+    - require_tls_or_internal_dns: true
+    - require_dr_pairing: true
   egress_policy_notes:
-    - "Restrict connector egress to Cloudflare tunnel endpoints only"
-    - "Restrict origin egress to explicit upstream dependencies"
+    - Restrict connector egress to Cloudflare tunnel endpoints only.
+    - Restrict origin egress to explicit upstream dependencies.
   tunnel_health_validation:
-    command: "bash scripts/tunnel-validate.sh --offline"
-  dns_propagation_checks:
-    required_fqdns:
-      - auth.zeaz.dev
-      - zveo.zeaz.dev
-      - studio.zeaz.dev
-      - analytics.zeaz.dev
-      - app.zeaz.dev
-      - pay.zeaz.dev
-      - treasury.zeaz.dev
-      - admin-wallet.zeaz.dev
+    command: bash scripts/tunnel-validate.sh --offline
   rollback_steps:
-    - "terraform apply using previous known good state"
-    - "restore previous dns/records.yaml and tunnels/config.yaml from git"
-    - "run bash scripts/tunnel-validate.sh --offline"
+    - Re-apply previous known-good Terraform state.
+    - Restore previous dns/records.yaml and tunnels/config.yaml from Git.
+    - Re-run bash scripts/tunnel-validate.sh --offline.
+    - Confirm DNS propagation and origin health checks before reopening traffic.

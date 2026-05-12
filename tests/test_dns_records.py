@@ -1,23 +1,25 @@
 from pathlib import Path
 
-DOMAINS = [
-    "auth.zeaz.dev",
-    "zveo.zeaz.dev",
-    "studio.zeaz.dev",
-    "analytics.zeaz.dev",
-    "app.zeaz.dev",
-    "pay.zeaz.dev",
-    "treasury.zeaz.dev",
-    "admin-wallet.zeaz.dev",
+HOSTS = [
+    "auth",
+    "zveo",
+    "studio",
+    "analytics",
+    "app",
+    "pay",
+    "treasury",
+    "admin-wallet",
 ]
 
 
-def test_dns_records_contains_all_domains_and_tunnel_model():
+def test_dns_records_uses_primary_domain_suffix_template_and_cname_model():
     content = Path("dns/records.yaml").read_text()
     assert "primary_domain: zeaz.dev" in content
+    assert "required_env:" in content
+    assert "- PRIMARY_DOMAIN" in content
     assert "target_from: tunnel_endpoint" in content
-    for domain in DOMAINS:
-        assert f"fqdn: {domain}" in content
+    for host in HOSTS:
+        assert f"fqdn: {host}.${{PRIMARY_DOMAIN}}" in content
 
 
 def test_dns_records_avoid_hardcoded_ip_targets():

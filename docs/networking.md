@@ -1,22 +1,19 @@
-# Networking Guardrails (F4.3)
+# Networking Guardrails (F4)
 
-## Origin Allowlist
-Origin traffic must only target declared service names and DR peers defined in `tunnels/config.yaml`.
+Policy file: `policies/network.yaml`.
 
-## Egress Policy Notes
-- Tunnel connector egress should be limited to Cloudflare Tunnel control/data plane.
-- Origin egress should be restricted to required dependencies only.
+## Controls
+- Domain suffix validation against `PRIMARY_DOMAIN`.
+- Required ingress mapping validation for all platform hostnames.
+- No committed tunnel secrets.
+- `ORIGIN_HOSTS`-backed origin mapping with DR expectations.
 
-## Tunnel Health Validation
-- Run `bash scripts/tunnel-validate.sh --offline` during CI.
-- Run without `--offline` for DNS and runtime environment checks.
+## Validation workflow
+1. `bash scripts/tunnel-validate.sh --offline`
+2. `python3 -m pytest tests/test_dns_records.py tests/test_tunnel_config.py`
+3. `make tf-validate`
 
-## DNS Propagation Checks
-- Validate host resolution for every platform FQDN post-deploy.
-- Roll forward only after all required hostnames resolve.
-
-## Rollback Steps
-1. Re-apply previous known-good Terraform state.
-2. Restore previous `dns/records.yaml` and `tunnels/config.yaml` from Git.
-3. Re-run tunnel validation and DNS checks.
-4. Validate application health endpoints before reopening traffic.
+## Change rollback
+- Use Git rollback for DNS and tunnel config files.
+- Re-apply prior infrastructure state.
+- Re-validate DNS and ingress before restoring production traffic.

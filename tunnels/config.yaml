@@ -1,33 +1,28 @@
 version: 1
 tunnel_name: zeazdev-platform
+required_env:
+  - PRIMARY_DOMAIN
+  - ORIGIN_HOSTS
 ingress:
-  - hostname: auth.zeaz.dev
-    service: http://origin-auth:8080
-  - hostname: zveo.zeaz.dev
-    service: http://origin-zveo:8080
-  - hostname: studio.zeaz.dev
-    service: http://origin-studio:8080
-  - hostname: analytics.zeaz.dev
-    service: http://origin-analytics:8080
-  - hostname: app.zeaz.dev
-    service: http://origin-app:8080
-  - hostname: pay.zeaz.dev
-    service: http://origin-pay:8080
-  - hostname: treasury.zeaz.dev
-    service: http://origin-treasury:8080
-  - hostname: admin-wallet.zeaz.dev
-    service: http://origin-admin-wallet:8080
+  - hostname: auth.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: auth
+  - hostname: zveo.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: zveo
+  - hostname: studio.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: studio
+  - hostname: analytics.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: analytics
+  - hostname: app.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: app
+  - hostname: pay.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: pay
+  - hostname: treasury.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: treasury
+  - hostname: admin-wallet.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: admin-wallet
   - service: http_status:404
 healthchecks:
   path: /healthz
   interval_seconds: 30
   timeout_seconds: 5
-failover_origins:
-  auth.zeaz.dev: ["http://origin-auth:8080", "http://origin-auth-dr:8080"]
-  zveo.zeaz.dev: ["http://origin-zveo:8080", "http://origin-zveo-dr:8080"]
-  studio.zeaz.dev: ["http://origin-studio:8080", "http://origin-studio-dr:8080"]
-  analytics.zeaz.dev: ["http://origin-analytics:8080", "http://origin-analytics-dr:8080"]
-  app.zeaz.dev: ["http://origin-app:8080", "http://origin-app-dr:8080"]
-  pay.zeaz.dev: ["http://origin-pay:8080", "http://origin-pay-dr:8080"]
-  treasury.zeaz.dev: ["http://origin-treasury:8080", "http://origin-treasury-dr:8080"]
-  admin-wallet.zeaz.dev: ["http://origin-admin-wallet:8080", "http://origin-admin-wallet-dr:8080"]
+failover_origins_from: ORIGIN_HOSTS
