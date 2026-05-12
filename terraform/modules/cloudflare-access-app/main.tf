@@ -1,4 +1,4 @@
-resource "cloudflare_access_application" "this" {
+resource "cloudflare_zero_trust_access_application" "this" {
   account_id                = var.account_id
   name                      = var.name
   domain                    = var.domain
