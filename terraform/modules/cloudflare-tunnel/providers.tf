@@ -1,2 +1,10 @@
-provider "cloudflare" {}
-provider "random" {}
+terraform {
+  required_providers {
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+    }
+    random = {
+      source = "hashicorp/random"
+    }
+  }
+}
