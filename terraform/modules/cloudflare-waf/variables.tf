@@ -26,3 +26,11 @@ variable "redirect_host" {
     error_message = "redirect_host must be a valid DNS hostname."
   }
 }
+
+variable "enable_zone_settings_override" {
+  type        = bool
+  description = "Whether to manage zone settings override (requires Zone Settings Write permission)."
+  nullable    = false
+  default     = false
+}
+

@@ -1,4 +1,5 @@
 resource "cloudflare_zone_settings_override" "tls_hardening" {
+  count = var.enable_zone_settings_override ? 1 : 0
   zone_id = var.zone_id
 
   settings {
