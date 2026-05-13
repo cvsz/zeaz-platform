@@ -56,21 +56,65 @@ Status: **PASS (control behavior)**
 
 `make validate-f1` correctly **fails closed** when mandatory runtime variables are absent or invalid. This confirms strict gating behavior before provisioning.
 
-Detected missing/invalid runtime inputs in this environment include:
-- Missing: `CF_ACCOUNT_ID`, `CF_ZONE_ID`, `CF_API_TOKEN`, `CF_DNS_TOKEN`, `CF_WORKERS_TOKEN`, `CF_ZT_TOKEN`, `CF_WAF_TOKEN`, `CF_TUNNEL_TOKEN`, `CF_R2_TOKEN`, `SOPS_AGE_KEY`, `SECRET_ROTATION_INTERVAL`
-- Invalid/unset value categories: `ENVIRONMENT`, `CLOUDFLARE_PLAN_TIER`, `IDENTITY_PROVIDER_TYPE`, `IDENTITY_PROVIDER_METADATA_URL`
+Detected missing/invalid runtime inputs in the baseline local audit shell are expected, because the validator is designed to fail closed when secrets are not injected.
+
+### 5) Production environment readiness re-check (2026-05-12)
+Status: **MOSTLY PASS (operational follow-ups required)**
+
+Re-check of production environment inputs indicates substantial progress:
+
+- Present secrets:
+  - `CF_WAF_TOKEN`
+  - `CF_DNS_TOKEN`
+  - `CF_WORKERS_TOKEN`
+  - `CF_ZT_TOKEN`
+  - `CF_TUNNEL_TOKEN`
+  - `CF_R2_TOKEN`
+  - `CF_ACCOUNT_ID`
+  - `CF_ZONE_ID`
+  - `SOPS_AGE_KEY`
+- Present variables:
+  - `PRIMARY_DOMAIN=zeaz.dev`
+  - `CLOUDFLARE_PLAN_TIER=free`
+  - `ENVIRONMENT=prod`
+  - `IDENTITY_PROVIDER_TYPE=saml`
+- Terraform backend variables present:
+  - backend type
+  - state bucket
+  - lock table
+
+Remaining blocker is likely token scope, not repository configuration:
+- Prior WAF failure: `Unauthorized to access requested resource (9109)`.
+- Required immediate action: regenerate `CF_WAF_TOKEN` scoped to zone `zeaz.dev` with:
+  - `Zone / Zone / Read`
+  - `Zone / Zone Settings / Edit`
+  - `Zone / WAF / Edit`
+
+Recommended governance hardening for production environment:
+- Enable deployment protection rules:
+  - required reviewer(s)
+  - wait timer (`5` minutes minimum)
+- Restrict deployment branches:
+  - `Protected branches only`, or explicit allowlist (for example `main`, `release/*`).
+- Add optional secrets when related automation is enabled:
+  - `TUNNEL_SECRET`
+  - `OPENAI_API_KEY`
 
 ## Release readiness decision
 Decision: **CONDITIONALLY READY**
 
-The repository implementation and guardrails are in place and enforce secure defaults. Final release to deployment environments is blocked only by absence/invalidity of required runtime secrets and environment configuration.
+The repository implementation and guardrails are in place and enforce secure defaults. With production environment values now mostly populated, release risk has shifted from configuration completeness to Cloudflare token permissions and deployment governance controls.
 
 ## Final actions to reach release state
-1. Populate all required Cloudflare scoped tokens and account/zone IDs in secure secret stores.
-2. Set `ENVIRONMENT` to one of `dev|staging|prod`.
-3. Set `CLOUDFLARE_PLAN_TIER` to one of `Free|Pro|Business|Enterprise`.
-4. Configure `IDENTITY_PROVIDER_TYPE` (`saml` or `oidc`) and valid `IDENTITY_PROVIDER_METADATA_URL`.
-5. Re-run `make validate-f1` and archive output as release evidence.
+1. Regenerate and rotate `CF_WAF_TOKEN` with explicit WAF edit scope for `zeaz.dev`.
+2. Configure production deployment protection rules (reviewers + wait timer).
+3. Restrict production deployment branches to protected branches or explicit allowlist.
+4. Add `TUNNEL_SECRET` and `OPENAI_API_KEY` if tunnel/Workers-AI automation paths require them.
+5. Execute:
+   - `make tf-plan-out`
+   - `make tf-apply-plan CONFIRM_APPLY=yes` (manual only, post-review)
+   - `git push`
+6. Confirm GitHub Deployment status transitions to successful and archive evidence.
 
 ## Audit conclusion
-The codebase is architecturally complete for phased enterprise rollout and demonstrates deterministic fail-closed validation for critical configuration inputs. Remaining blockers are operational secrets/config provisioning, not code defects.
+The codebase is architecturally complete for phased enterprise rollout and demonstrates deterministic fail-closed validation for critical configuration inputs. Current release blockers are primarily operational token-scope and deployment-governance controls, not structural repository defects.
