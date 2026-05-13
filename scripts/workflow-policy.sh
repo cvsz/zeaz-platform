@@ -18,6 +18,18 @@ log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 warn(){ log "WARN: $*" >&2; }
 die(){ log "ERROR: $*" >&2; exit 1; }
 
+search_workflows() {
+  local pattern="$1"
+  shift || true
+
+  if command -v rg >/dev/null 2>&1; then
+    rg "$@" "$pattern"
+    return $?
+  fi
+
+  grep -E "$@" "$pattern"
+}
+
 find_root() {
   local d="${PROJECT_ROOT:-${PWD}}"
 
@@ -86,22 +98,22 @@ declare -A normalized_name_to_file=()
 while IFS= read -r workflow_file; do
   [[ -z "$workflow_file" ]] && continue
 
-  if ! rg -q '^permissions:' "$workflow_file"; then
+  if ! search_workflows "$workflow_file" -q '^permissions:'; then
     printf '{"level":"ERROR","file":"%s","msg":"missing top-level permissions"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))
   fi
 
-  if ! rg -q 'timeout-minutes:' "$workflow_file"; then
+  if ! search_workflows "$workflow_file" -q 'timeout-minutes:'; then
     printf '{"level":"ERROR","file":"%s","msg":"missing job timeout-minutes"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))
   fi
 
-  if rg -q '^\s*push:' "$workflow_file" && rg -q 'apply|destroy' "$workflow_file"; then
+  if search_workflows "$workflow_file" -q '^[[:space:]]*push:' && search_workflows "$workflow_file" -q 'apply|destroy'; then
     printf '{"level":"ERROR","file":"%s","msg":"mutating workflow must not run on push"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))
   fi
 
-  if rg -q 'run:\s*make validate(\s|$)' "$workflow_file" && ! rg -q 'opentofu/setup-opentofu@v1' "$workflow_file"; then
+  if search_workflows "$workflow_file" -q 'run:[[:space:]]*make validate([[:space:]]|$)' && ! search_workflows "$workflow_file" -q 'opentofu/setup-opentofu@v1'; then
     printf '{"level":"ERROR","file":"%s","msg":"workflows running make validate must install OpenTofu"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))
   fi

@@ -91,10 +91,10 @@ install_core(){
   [[ "$SKIP_CORE" == "true" ]] && { warn "SKIP_CORE=true; skipped core install"; return 0; }
   info "installing core dependencies via $PKG_MANAGER"
   case "$PKG_MANAGER" in
-    apt) install_packages curl wget unzip jq git make python3 python3-pip python3-venv ca-certificates gnupg lsb-release software-properties-common ;;
-    dnf|yum) install_packages curl wget unzip jq git make python3 python3-pip ca-certificates gnupg2 ;;
-    apk) install_packages curl wget unzip jq git make python3 py3-pip ca-certificates gnupg bash ;;
-    brew) install_packages curl wget jq git make python ca-certificates gnupg unzip ;;
+    apt) install_packages curl wget unzip jq git make python3 python3-pip python3-venv ca-certificates gnupg lsb-release software-properties-common ripgrep ;;
+    dnf|yum) install_packages curl wget unzip jq git make python3 python3-pip ca-certificates gnupg2 ripgrep ;;
+    apk) install_packages curl wget unzip jq git make python3 py3-pip ca-certificates gnupg bash ripgrep ;;
+    brew) install_packages curl wget jq git make python ca-certificates gnupg unzip ripgrep ;;
     *) strict_skip "core dependency install unavailable on this platform" ;;
   esac
 }
