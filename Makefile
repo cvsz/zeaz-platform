@@ -240,10 +240,8 @@ security-scan:
 sbom:
 	@if command -v syft >/dev/null 2>&1; then \
 	  syft dir:. -o spdx-json=artifacts.sbom.spdx.json; \
-	elif [ -x scripts/generate-sbom.sh ]; then \
-	  bash scripts/generate-sbom.sh; \
 	else \
-	  echo "WARN: syft and scripts/generate-sbom.sh missing; SBOM generation skipped"; \
+	  echo "WARN: syft missing; SBOM generation skipped"; \
 	fi
 
 cosign-sign:
