@@ -5,14 +5,22 @@ resource "cloudflare_zero_trust_tunnel_cloudflared" "main" {
 }
 
 locals {
-  hostnames = ["zeaz.dev", "app.zeaz.dev", "zveo.zeaz.dev", "api.zeaz.dev", "admin.zeaz.dev", "grafana.zeaz.dev", "logs.zeaz.dev", "auth.zeaz.dev", "tunnel.zeaz.dev"]
+  tunnel_hostnames = [
+    "zeaz.dev",
+    "app.zeaz.dev",
+    "zveo.zeaz.dev",
+    "admin.zeaz.dev",
+    "grafana.zeaz.dev",
+    "logs.zeaz.dev",
+    "tunnel.zeaz.dev"
+  ]
 }
 
 resource "cloudflare_record" "tunnel_cname" {
-  for_each = toset(local.hostnames)
+  for_each = toset(local.tunnel_hostnames)
   zone_id  = var.cf_zone_id
   name     = each.value
   type     = "CNAME"
-  value    = "${cloudflare_zero_trust_tunnel_cloudflared.main.id}.cfargotunnel.com"
+  content  = "${cloudflare_zero_trust_tunnel_cloudflared.main.id}.cfargotunnel.com"
   proxied  = true
 }
