@@ -10,18 +10,24 @@ variable "cf_dns_token" {
   }
 }
 
-
 variable "cf_waf_token" {
   type        = string
   sensitive   = true
-  description = "Cloudflare WAF token (recommended). Must include Zone:Read and Zone Settings:Edit for target zone."
+  description = "Cloudflare WAF token. Required only when enable_waf=true."
   nullable    = true
   default     = null
 
   validation {
-    condition     = var.cf_waf_token == null || length(var.cf_waf_token) >= 32
-    error_message = "cf_waf_token must be null or at least 32 characters"
+    condition     = var.cf_waf_token == null || var.cf_waf_token == "" || length(var.cf_waf_token) >= 32
+    error_message = "cf_waf_token must be empty/null or at least 32 characters"
   }
+}
+
+variable "enable_waf" {
+  type        = bool
+  description = "Enable WAF and zone settings hardening resources. Requires Cloudflare token permissions for Zone:Read, Zone Settings:Edit, and WAF:Edit."
+  nullable    = false
+  default     = false
 }
 
 variable "cf_zone_id" {
