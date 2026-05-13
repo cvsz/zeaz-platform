@@ -7,6 +7,10 @@ module "dns" {
   source  = "./modules/cloudflare-dns"
   zone_id = var.cf_zone_id
 
+  providers = {
+    cloudflare = cloudflare.dns
+  }
+
   records = {
     auth = {
       name    = "auth"
