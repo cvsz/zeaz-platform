@@ -42,6 +42,13 @@ variable "enable_waf" {
   default     = false
 }
 
+variable "enable_zero_trust" {
+  type        = bool
+  description = "Enable Zero Trust Access applications, policies, and identity providers. Requires complete SAML/OIDC IdP configuration."
+  nullable    = false
+  default     = false
+}
+
 variable "cf_zone_id" {
   type        = string
   description = "Cloudflare Zone ID"
