@@ -78,12 +78,13 @@ if [[ -d "${ROOT_DIR}/scripts/cloudflare/cloudflare" ]]; then
 fi
 
 if ! awk '
-  $0 ~ /^shell-validate:/ { in_target=1; next }
-  in_target && $0 ~ /^\t@find scripts -type f -name '\''\*\.sh'\'' -print0 \| xargs -0 shellcheck$/ { found=1; exit 0 }
+  $0 ~ /^shellcheck:/ { in_target=1; next }
+  in_target && $0 ~ /^\t@if command -v shellcheck >/ { saw_guard=1 }
+  in_target && $0 ~ /find scripts -type f -name '\''\*\.sh'\'' -print0 \| xargs -0 shellcheck/ { found=1; exit 0 }
   in_target && $0 !~ /^\t/ { in_target=0 }
   END { exit(found ? 0 : 1) }
 ' "${ROOT_DIR}/Makefile"; then
-  printf '{"level":"ERROR","file":"Makefile","msg":"shell-validate must use find|xargs for portability"}\n' >&2
+  printf '{"level":"ERROR","file":"Makefile","msg":"shellcheck target must use find|xargs for portability"}\n' >&2
   fail_count=$((fail_count + 1))
 fi
 
