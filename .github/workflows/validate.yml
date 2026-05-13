@@ -20,6 +20,22 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y shellcheck
-      - run: make validate-agent
-      - run: shellcheck scripts/ai/*.sh
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.2
+
+      - name: Run CI validation
+        run: make validate-agent
+
+      - name: Run shellcheck for AI scripts
+        run: |
+          if find scripts/ai -type f -name '*.sh' -print -quit | grep -q .; then
+            find scripts/ai -type f -name '*.sh' -print0 | xargs -0 shellcheck
+          else
+            echo "No scripts/ai shell scripts found; skipped"
+          fi
