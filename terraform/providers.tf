@@ -10,10 +10,15 @@ terraform {
 }
 
 provider "cloudflare" {
+  api_token = var.cf_api_token
+}
+
+provider "cloudflare" {
+  alias     = "dns"
   api_token = var.cf_dns_token
 }
 
 provider "cloudflare" {
   alias     = "waf"
-  api_token = coalesce(var.cf_waf_token, var.cf_dns_token)
+  api_token = coalesce(var.cf_waf_token, var.cf_api_token)
 }
