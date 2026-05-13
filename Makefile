@@ -135,7 +135,12 @@ sbom-validate: sbom
 
 security-validate: security-scan
 
-tunnel-validation: phase-f4
+tunnel-validation:
+	@if [ -n "$${ORIGIN_HOSTS:-}" ]; then \
+	  bash scripts/tunnel-validate.sh --offline; \
+	else \
+	  echo "Tunnel validation skipped because ORIGIN_HOSTS is not configured in pull_request context"; \
+	fi
 
 waf-validation:
 	@if [ "$${ENABLE_WAF:-false}" = "true" ] || [ "$${TF_VAR_enable_waf:-false}" = "true" ]; then \
