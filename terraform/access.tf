@@ -1,57 +1,59 @@
 locals {
-  access_apps = {
+  access_apps = var.enable_zero_trust ? {
     auth = {
       domain           = "auth.${var.domain}"
       session_duration = "24h"
-      allowed_idps     = [module.identity_provider_ai.identity_provider_id, module.identity_provider_finance.identity_provider_id]
+      allowed_idps     = [module.identity_provider_ai[0].identity_provider_id, module.identity_provider_finance[0].identity_provider_id]
       require_mfa      = true
     }
     zveo = {
       domain           = "zveo.${var.domain}"
       session_duration = "8h"
-      allowed_idps     = [module.identity_provider_ai.identity_provider_id]
+      allowed_idps     = [module.identity_provider_ai[0].identity_provider_id]
       require_mfa      = true
     }
     studio = {
       domain           = "studio.${var.domain}"
       session_duration = "8h"
-      allowed_idps     = [module.identity_provider_ai.identity_provider_id]
+      allowed_idps     = [module.identity_provider_ai[0].identity_provider_id]
       require_mfa      = true
     }
     analytics = {
       domain           = "analytics.${var.domain}"
       session_duration = "8h"
-      allowed_idps     = [module.identity_provider_ai.identity_provider_id]
+      allowed_idps     = [module.identity_provider_ai[0].identity_provider_id]
       require_mfa      = true
     }
     app = {
       domain           = "app.${var.domain}"
       session_duration = "4h"
-      allowed_idps     = [module.identity_provider_finance.identity_provider_id]
+      allowed_idps     = [module.identity_provider_finance[0].identity_provider_id]
       require_mfa      = true
     }
     pay = {
       domain           = "pay.${var.domain}"
       session_duration = "4h"
-      allowed_idps     = [module.identity_provider_finance.identity_provider_id]
+      allowed_idps     = [module.identity_provider_finance[0].identity_provider_id]
       require_mfa      = true
     }
     treasury = {
       domain           = "treasury.${var.domain}"
       session_duration = "4h"
-      allowed_idps     = [module.identity_provider_finance.identity_provider_id]
+      allowed_idps     = [module.identity_provider_finance[0].identity_provider_id]
       require_mfa      = true
     }
     admin_wallet = {
       domain           = "admin-wallet.${var.domain}"
       session_duration = "4h"
-      allowed_idps     = [module.identity_provider_finance.identity_provider_id]
+      allowed_idps     = [module.identity_provider_finance[0].identity_provider_id]
       require_mfa      = true
     }
-  }
+  } : {}
 }
 
 module "identity_provider_ai" {
+  count = var.enable_zero_trust ? 1 : 0
+
   source        = "./modules/cloudflare-saml-provider"
   account_id    = var.cf_account_id
   name          = "zeazdev-ai-saml"
@@ -65,6 +67,8 @@ module "identity_provider_ai" {
 }
 
 module "identity_provider_finance" {
+  count = var.enable_zero_trust ? 1 : 0
+
   source        = "./modules/cloudflare-saml-provider"
   account_id    = var.cf_account_id
   name          = "zeazdev-finance-saml"
