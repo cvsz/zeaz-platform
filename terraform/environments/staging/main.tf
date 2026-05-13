@@ -14,7 +14,7 @@ provider "cloudflare" {
 }
 
 locals {
-  is_enterprise        = lower(var.cloudflare_plan_tier) == "enterprise"
+  is_enterprise = lower(var.cloudflare_plan_tier) == "enterprise"
 }
 
 variable "cf_api_token" {

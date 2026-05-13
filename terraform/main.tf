@@ -1,5 +1,5 @@
 locals {
-  enterprise = lower(var.plan_tier) == "enterprise"
+  enterprise  = lower(var.plan_tier) == "enterprise"
   waf_enabled = var.enable_waf
 }
 
