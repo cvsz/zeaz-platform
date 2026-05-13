@@ -1,5 +1,6 @@
 locals {
   enterprise = lower(var.plan_tier) == "enterprise"
+  waf_enabled = var.enable_waf
 }
 
 module "dns" {
@@ -34,6 +35,7 @@ module "api_shield" {
 }
 
 module "waf" {
+  count  = local.waf_enabled ? 1 : 0
   source = "./modules/cloudflare-waf"
 
   providers = {
