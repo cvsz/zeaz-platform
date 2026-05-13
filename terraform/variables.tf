@@ -1,3 +1,15 @@
+variable "cf_api_token" {
+  type        = string
+  sensitive   = true
+  description = "Cloudflare account-level API token. Required for Zero Trust, Tunnel, Workers, R2, D1, and account-level resources."
+  nullable    = false
+
+  validation {
+    condition     = length(var.cf_api_token) >= 32
+    error_message = "cf_api_token must be at least 32 characters"
+  }
+}
+
 variable "cf_dns_token" {
   type        = string
   sensitive   = true
