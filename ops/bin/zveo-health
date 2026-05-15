@@ -77,6 +77,6 @@ echo "== ZVEO endpoints =="
 check_http "http://127.0.0.1:8090/healthz"
 check_http "http://127.0.0.1:3002"
 check_http "https://zveo.zeaz.dev"
-check_http "https://api.zveo.zeaz.dev/healthz"
+check_http "https://api-zveo.zeaz.dev/healthz"
 
 exit "$FAILED"
