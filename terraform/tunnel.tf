@@ -9,8 +9,11 @@ locals {
 
   tunnel_hostnames = [
     "zeaz.dev",
+    "www.zeaz.dev",
     "app.zeaz.dev",
+    "admin-wallet.zeaz.dev",
     "zveo.zeaz.dev",
+    "api.zveo.zeaz.dev",
     "admin.zeaz.dev",
     "grafana.zeaz.dev",
     "logs.zeaz.dev",
