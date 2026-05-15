@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+FAILED=0
+
+check_service() {
+  local svc="$1"
+  if systemctl list-unit-files | grep -q "^${svc}"; then
+    if systemctl is-active --quiet "$svc"; then
+      echo "[OK] service ${svc}"
+    else
+      echo "[FAIL] service ${svc}"
+      FAILED=1
+    fi
+  else
+    echo "[SKIP] service ${svc} not installed"
+  fi
+}
+
+check_optional_service() {
+  local svc="$1"
+  if ! systemctl list-unit-files | grep -q "^${svc}"; then
+    echo "[SKIP] optional service ${svc} not installed"
+    return 0
+  fi
+  if systemctl is-enabled --quiet "$svc" 2>/dev/null; then
+    if systemctl is-active --quiet "$svc"; then
+      echo "[OK] optional service ${svc}"
+    else
+      echo "[FAIL] optional service ${svc} enabled but not active"
+      FAILED=1
+    fi
+  else
+    echo "[SKIP] optional service ${svc} disabled"
+  fi
+}
+
+check_http() {
+  local url="$1"
+  local code
+  code=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$url" || true)
+  if [[ "$code" =~ ^(200|30[0-8])$ ]]; then
+    echo "[OK] ${url} (${code})"
+  else
+    echo "[FAIL] ${url} (${code})"
+    FAILED=1
+  fi
+}
+
+echo "== Zeaz core services =="
+for svc in cloudflared redis-server postgresql; do
+  check_service "$svc"
+done
+
+echo
+echo "== zWallet services =="
+for svc in zwallet zwallet-web zwallet-transfer-worker; do
+  check_service "$svc"
+done
+
+echo
+echo "== ZVEO services =="
+check_service "zveo-api"
+check_service "zveo-web"
+check_optional_service "zveo-render-worker"
+
+echo
+echo "== Local endpoints =="
+check_http "http://127.0.0.1:8081/healthz"
+check_http "http://127.0.0.1:8090/healthz"
+check_http "http://127.0.0.1:3000"
+check_http "http://127.0.0.1:3002"
+
+echo
+echo "== Public endpoints =="
+check_http "https://app.zeaz.dev"
+check_http "https://zveo.zeaz.dev"
+check_http "https://admin-wallet.zeaz.dev/healthz"
+check_http "https://api.zveo.zeaz.dev/healthz"
+
+exit "$FAILED"
