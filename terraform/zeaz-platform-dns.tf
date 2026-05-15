@@ -36,7 +36,7 @@ resource "cloudflare_record" "zeaz_platform_apps" {
   zone_id = var.cf_zone_id
   name    = each.value.name
   type    = "CNAME"
-  value   = var.zeaz_tunnel_cname_target
+  content = var.zeaz_tunnel_cname_target
   proxied = true
   comment = each.value.comment
 }
