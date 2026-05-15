@@ -1,8 +1,0 @@
-deny: rm -rf /
-deny: curl * | bash
-deny: eval *
-
-allow: npm *
-allow: pnpm *
-allow: python *
-allow: pytest *
