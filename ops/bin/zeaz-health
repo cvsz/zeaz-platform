@@ -95,6 +95,6 @@ echo "== Public endpoints =="
 check_http "https://app.zeaz.dev"
 check_http "https://zveo.zeaz.dev"
 check_http "https://admin-wallet.zeaz.dev/healthz"
-check_http "https://api.zveo.zeaz.dev/healthz"
+check_http "https://api-zveo.zeaz.dev/healthz"
 
 exit "$FAILED"
