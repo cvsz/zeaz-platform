@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+FAILED=0
+
+check_service_required() {
+  local svc="$1"
+  if systemctl is-active --quiet "$svc"; then
+    echo "[OK] service ${svc}"
+  else
+    echo "[FAIL] service ${svc}"
+    FAILED=1
+  fi
+}
+
+check_service_optional() {
+  local svc="$1"
+  if ! systemctl list-unit-files | grep -q "^${svc}"; then
+    echo "[SKIP] optional service ${svc} not installed"
+    return 0
+  fi
+  if systemctl is-enabled --quiet "$svc" 2>/dev/null; then
+    if systemctl is-active --quiet "$svc"; then
+      echo "[OK] optional service ${svc}"
+    else
+      echo "[FAIL] optional service ${svc} enabled but inactive"
+      FAILED=1
+    fi
+  else
+    echo "[SKIP] optional service ${svc} disabled"
+  fi
+}
+
+check_http() {
+  local url="$1"
+  local code
+  code=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$url" || true)
+  if [[ "$code" =~ ^(200|30[0-8])$ ]]; then
+    echo "[OK] ${url} (${code})"
+  else
+    echo "[FAIL] ${url} (${code})"
+    FAILED=1
+  fi
+}
+
+echo "== ZVEO services =="
+check_service_required "zveo-api"
+check_service_required "zveo-web"
+check_service_optional "zveo-render-worker"
+
+echo
+echo "== ZVEO endpoints =="
+check_http "http://127.0.0.1:8090/healthz"
+check_http "http://127.0.0.1:3002"
+check_http "https://zveo.zeaz.dev"
+check_http "https://api.zveo.zeaz.dev/healthz"
+
+exit "$FAILED"
