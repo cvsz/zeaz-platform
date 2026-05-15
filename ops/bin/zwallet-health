@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+FAILED=0
+
+check_service() {
+  local svc="$1"
+  if systemctl is-active --quiet "$svc"; then
+    echo "[OK] service ${svc}"
+  else
+    echo "[FAIL] service ${svc}"
+    FAILED=1
+  fi
+}
+
+check_http() {
+  local url="$1"
+  local code
+  code=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$url" || true)
+  if [[ "$code" =~ ^(200|30[0-8])$ ]]; then
+    echo "[OK] ${url} (${code})"
+  else
+    echo "[FAIL] ${url} (${code})"
+    FAILED=1
+  fi
+}
+
+echo "== zWallet services =="
+check_service "zwallet"
+check_service "zwallet-web"
+check_service "zwallet-transfer-worker"
+
+echo
+echo "== zWallet endpoints =="
+check_http "http://127.0.0.1:8081/healthz"
+check_http "http://127.0.0.1:3000"
+check_http "https://app.zeaz.dev"
+check_http "https://admin-wallet.zeaz.dev/healthz"
+
+exit "$FAILED"
