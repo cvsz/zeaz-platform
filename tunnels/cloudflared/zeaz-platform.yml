@@ -7,7 +7,7 @@ ingress:
   - hostname: zveo.zeaz.dev
     service: http://127.0.0.1:3002
 
-  - hostname: api.zveo.zeaz.dev
+  - hostname: api-zveo.zeaz.dev
     service: http://127.0.0.1:8090
 
   - hostname: app.zeaz.dev
