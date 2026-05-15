@@ -1,0 +1,19 @@
+# Zeaz Platform Cloudflare Tunnel ingress.
+# Production currently uses a token-based tunnel, so Cloudflare Zero Trust
+# Public Hostnames may be the runtime source of truth. Keep this file as the
+# GitOps/IaC reference for expected routing.
+
+ingress:
+  - hostname: zveo.zeaz.dev
+    service: http://127.0.0.1:3002
+
+  - hostname: api.zveo.zeaz.dev
+    service: http://127.0.0.1:8090
+
+  - hostname: app.zeaz.dev
+    service: http://127.0.0.1:3000
+
+  - hostname: admin-wallet.zeaz.dev
+    service: http://127.0.0.1:8081
+
+  - service: http_status:404
