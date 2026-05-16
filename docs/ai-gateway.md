@@ -5,7 +5,7 @@ The AI gateway configuration is defined in `workers-ai/ai-gateway.yaml` and vali
 ## Required runtime variables
 
 - `CF_ACCOUNT_ID`
-- `CF_AI_GATEWAY_SLUG` (recommended: `cloudflare-platform-ai-gateway`)
+- `CF_AI_GATEWAY_SLUG` (recommended: `zeaz-platform-ai-gateway`)
 - Provider keys (`OPENAI_API_KEY`) from secret manager only.
 
 `CF_AI_GATEWAY_SLUG` must be supplied by CI variables or runtime environment, never committed to source control as a secret.

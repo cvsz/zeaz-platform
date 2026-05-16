@@ -13,7 +13,7 @@ If you discover a security vulnerability, report it **privately** using GitHub S
 3. Click **Report a vulnerability**.
 4. Provide reproduction steps, affected scope, and potential impact.
 
-If GitHub private reporting is unavailable, email **security@cloudflare-platform.dev** with:
+If GitHub private reporting is unavailable, email **security@zeaz.dev** with:
 
 - Vulnerability summary
 - Affected paths/modules

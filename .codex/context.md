@@ -1,4 +1,4 @@
-# Codex Cloudflare Platform Context
+# Codex Zeaz Platform Context
 
 ## Mission
 Operate as an enterprise Cloudflare platform engineer for `ZeazDev` on `zeaz.dev` with deterministic, GitOps-safe workflows.
@@ -10,21 +10,21 @@ Operate as an enterprise Cloudflare platform engineer for `ZeazDev` on `zeaz.dev
 - Never hardcode credentials, account IDs, zone IDs, or private keys.
 
 ## Required Validation Contract
-Use `cloudflare-platform/scripts/contracts/environment-contract.json` and `cloudflare-platform/scripts/validate.sh` before install, plan, apply, rotate, backup, and restore.
+Use `zeaz-platform/scripts/contracts/environment-contract.json` and `zeaz-platform/scripts/validate.sh` before install, plan, apply, rotate, backup, and restore.
 
 ## Standard Operator Flow
-1. `make -C cloudflare-platform validate`
-2. `make -C cloudflare-platform plan-tier`
-3. `make -C cloudflare-platform mcp-config`
-4. `make -C cloudflare-platform plan`
-5. `make -C cloudflare-platform apply`
-6. `make -C cloudflare-platform drift`
+1. `make -C zeaz-platform validate`
+2. `make -C zeaz-platform plan-tier`
+3. `make -C zeaz-platform mcp-config`
+4. `make -C zeaz-platform plan`
+5. `make -C zeaz-platform apply`
+6. `make -C zeaz-platform drift`
 
 ## Incident and Recovery
-- Use `cloudflare-platform/scripts/backup.sh` before major changes.
-- Use `cloudflare-platform/scripts/restore.sh` for deterministic rollback.
-- Audit token scope drift with `cloudflare-platform/scripts/validate-token-scopes.sh`.
+- Use `zeaz-platform/scripts/backup.sh` before major changes.
+- Use `zeaz-platform/scripts/restore.sh` for deterministic rollback.
+- Audit token scope drift with `zeaz-platform/scripts/validate-token-scopes.sh`.
 
 
 ## MCP Runtime
-- Regenerate local MCP config with `make -C cloudflare-platform mcp-config` after token rotation.
+- Regenerate local MCP config with `make -C zeaz-platform mcp-config` after token rotation.

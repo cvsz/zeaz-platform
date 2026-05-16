@@ -1,7 +1,7 @@
 version: 1
 gateway:
   slug_var: CF_AI_GATEWAY_SLUG
-  recommended_slug: cloudflare-platform-ai-gateway
+  recommended_slug: zeaz-platform-ai-gateway
   account_id_var: CF_ACCOUNT_ID
 providers:
   - name: openai

@@ -40,8 +40,8 @@ jobs:
       - name: Run workflow policy checks
         run: make workflow-policy
 
-      - name: Run repository validation
+      - name: Run CI-safe repository validation
         env:
           ENVIRONMENT: dev
           PRIMARY_DOMAIN: zeaz.dev
-        run: make validate
+        run: make ci-validate

@@ -29,7 +29,7 @@ for env_file in /etc/zveo.env /etc/zwallet.env; do
   fi
 done
 
-for repo in /opt/zveo /opt/zwallet /opt/cloudflare-platform; do
+for repo in /opt/zveo /opt/zwallet /opt/zeaz-platform; do
   if [ -d "$repo/.git" ]; then
     git -C "$repo" rev-parse HEAD > "$BACKUP_DIR/$(basename "$repo")-commit.txt" || true
   fi

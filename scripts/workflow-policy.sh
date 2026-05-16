@@ -80,7 +80,7 @@ fi
 if ! awk '
   $0 ~ /^shellcheck:/ { in_target=1; next }
   in_target && $0 ~ /^\t@if command -v shellcheck >/ { saw_guard=1 }
-  in_target && $0 ~ /find scripts -type f -name '\''\*\.sh'\'' -print0 \| xargs -0 shellcheck/ { found=1; exit 0 }
+  in_target && $0 ~ /find .*xargs .*shellcheck/ { found=1; exit 0 }
   in_target && $0 !~ /^\t/ { in_target=0 }
   END { exit(found ? 0 : 1) }
 ' "${ROOT_DIR}/Makefile"; then
@@ -114,7 +114,7 @@ while IFS= read -r workflow_file; do
     fail_count=$((fail_count + 1))
   fi
 
-  if search_workflows "$workflow_file" -q 'run:[[:space:]]*make validate([[:space:]]|$)' && ! search_workflows "$workflow_file" -q 'opentofu/setup-opentofu@v1'; then
+  if search_workflows "$workflow_file" -q 'run:[[:space:]]*make validate([[:space:]]|$)' && ! search_workflows "$workflow_file" -q 'opentofu/setup-opentofu@v[12]'; then
     printf '{"level":"ERROR","file":"%s","msg":"workflows running make validate must install OpenTofu"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))
   fi

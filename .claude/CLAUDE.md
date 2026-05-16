@@ -10,16 +10,11 @@ This repository provisions Cloudflare-native enterprise infrastructure with Open
 - Keep scripts idempotent and rollback-capable.
 
 ## Execution Order
-1. `make -C cloudflare-platform validate`
-2. `make -C cloudflare-platform plan-tier`
-3. `make -C cloudflare-platform mcp-config`
-4. `make -C cloudflare-platform plan`
-5. `make -C cloudflare-platform apply`
-6. `make -C cloudflare-platform drift`
+1. `make validate`\n2. `make plan-tier`\n3. `make mcp-config`\n4. `make plan`\n5. `make apply`\n6. `make drift`
 
 ## MCP and AI Tooling
-Use `.mcp.json` endpoints for Cloudflare-compatible MCP workflows and only execute allowlisted commands from `cloudflare-platform/scripts/ai/bootstrap-agents.sh`.
+Use `.mcp.json` endpoints for Cloudflare-compatible MCP workflows and only execute allowlisted commands from `zeaz-platform/scripts/ai/bootstrap-agents.sh`.
 
 
 ## MCP Runtime
-- Regenerate local MCP config with `make -C cloudflare-platform mcp-config` after token rotation.
+- Regenerate local MCP config with `make -C zeaz-platform mcp-config` after token rotation.
