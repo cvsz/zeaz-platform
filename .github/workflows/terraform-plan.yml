@@ -55,7 +55,7 @@ jobs:
         run: make tf-validate
 
       - name: Terraform plan
-        if: ${{ github.event_name == 'workflow_dispatch' && secrets.CF_ACCOUNT_ID != '' && secrets.CF_ZONE_ID != '' && secrets.CF_API_TOKEN != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           ENVIRONMENT: dev
           PRIMARY_DOMAIN: zeaz.dev
@@ -64,13 +64,23 @@ jobs:
           TF_VAR_cloudflare_zone_id: ${{ secrets.CF_ZONE_ID }}
           TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CF_API_TOKEN }}
           TF_VAR_primary_domain: zeaz.dev
-        run: make tf-plan
+        run: |
+          missing=0
+          for var in TF_VAR_cloudflare_account_id TF_VAR_cloudflare_zone_id TF_VAR_cloudflare_bootstrap_token; do
+            if [[ -z "${!var:-}" ]]; then
+              echo "::error::Missing required secret-backed Terraform variable: $var"
+              missing=$((missing + 1))
+            fi
+          done
+          (( missing == 0 )) || exit 1
+          make tf-plan
 
       - name: Explain skipped Terraform plan
-        if: ${{ github.event_name != 'workflow_dispatch' || secrets.CF_ACCOUNT_ID == '' || secrets.CF_ZONE_ID == '' || secrets.CF_API_TOKEN == '' }}
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
           echo "Terraform validate completed."
-          echo "Terraform plan is skipped unless this workflow is manually dispatched with CF_ACCOUNT_ID, CF_ZONE_ID, and CF_API_TOKEN configured."
+          echo "Terraform plan is skipped for pull_request events because secrets are intentionally unavailable."
+          echo "Run this workflow manually after configuring CF_ACCOUNT_ID, CF_ZONE_ID, and CF_API_TOKEN to execute terraform plan."
 
       - name: Upload Terraform plan artifacts
         if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}
