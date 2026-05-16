@@ -1,4 +1,4 @@
 name = "zeaz-platform"
-main = "src/worker.js"
+main = "workers/src/index.js"
 compatibility_date = "2025-01-01"
-workers_dev = false
+workers_dev = true
