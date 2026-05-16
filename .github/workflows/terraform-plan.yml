@@ -135,7 +135,7 @@ jobs:
       # ── 8. Artifacts ─────────────────────────────────────────────────────────
       - name: Upload Terraform plan artifacts
         if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: terraform-plan-artifacts
           path: |
