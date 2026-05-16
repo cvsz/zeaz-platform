@@ -1,0 +1,50 @@
+faf_version: "0.1"
+project:
+  name: "zeaz-platform"
+  owner: "ZeaZDev"
+  repository: "cvsz/zeaz-platform"
+  type: "platform-infrastructure"
+  description: "AI-native Cloudflare Zero Trust and edge infrastructure foundation for the ZeaZDev ecosystem."
+
+architecture:
+  style: "cloudflare-zero-trust-platform"
+  primary_domain: "zeaz.dev"
+  layers:
+    - identity
+    - network
+    - edge-compute
+    - storage
+    - security
+    - observability
+
+stack:
+  infrastructure:
+    - Cloudflare Zero Trust
+    - Cloudflare Tunnels
+    - Cloudflare Workers
+    - WAF
+    - R2
+    - KV
+    - D1
+  iac:
+    - Terraform
+    - OpenTofu
+  cicd:
+    - GitHub Actions
+
+conventions:
+  commit_style: "conventional commits"
+  branch_strategy: "master + feature branches"
+  documentation: "README + docs + .faf"
+  review_model: "all infrastructure changes should be reviewable and reproducible"
+
+constraints:
+  - "Keep configuration changes auditable."
+  - "Prefer least-privilege access patterns."
+  - "Require explicit operator approval for production infrastructure changes."
+  - "Keep public documentation accurate and operationally safe."
+
+goals:
+  - "Provide the core infrastructure layer for ZeaZDev products."
+  - "Maintain secure Zero Trust access across ZeaZDev services."
+  - "Keep persistent AI project context available through .FAF."
