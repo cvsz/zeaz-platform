@@ -55,7 +55,7 @@ module "identity_provider_ai" {
   count = var.enable_zero_trust ? 1 : 0
 
   source        = "./modules/cloudflare-saml-provider"
-  account_id    = var.cf_account_id
+  account_id    = var.cloudflare_account_id
   name          = "zeazdev-ai-saml"
   provider_type = var.identity_provider_type
   metadata_url  = var.identity_provider_metadata_url
@@ -70,7 +70,7 @@ module "identity_provider_finance" {
   count = var.enable_zero_trust ? 1 : 0
 
   source        = "./modules/cloudflare-saml-provider"
-  account_id    = var.cf_account_id
+  account_id    = var.cloudflare_account_id
   name          = "zeazdev-finance-saml"
   provider_type = var.identity_provider_type
   metadata_url  = var.identity_provider_metadata_url
@@ -85,7 +85,7 @@ module "access_application" {
   for_each = local.access_apps
 
   source           = "./modules/cloudflare-access-app"
-  account_id       = var.cf_account_id
+  account_id       = var.cloudflare_account_id
   name             = "zeazdev-${var.environment}-${replace(each.key, "_", "-")}"
   domain           = each.value.domain
   session_duration = each.value.session_duration
@@ -96,7 +96,7 @@ module "access_policy" {
   for_each = local.access_apps
 
   source                = "./modules/cloudflare-access-policy"
-  account_id            = var.cf_account_id
+  account_id            = var.cloudflare_account_id
   application_id        = module.access_application[each.key].application_id
   name                  = "zeazdev-${var.environment}-${replace(each.key, "_", "-")}-allow"
   precedence            = 1

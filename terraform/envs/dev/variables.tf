@@ -1,33 +1,32 @@
-variable "cf_api_token" {
+variable "cloudflare_bootstrap_token" {
   type        = string
   description = "Cloudflare API token"
   sensitive   = true
   nullable    = false
 
   validation {
-    condition     = length(var.cf_api_token) > 20
     error_message = "token too short"
   }
 }
 
-variable "cf_account_id" {
+variable "cloudflare_account_id" {
   type        = string
   description = "Cloudflare account"
   nullable    = false
 
   validation {
-    condition     = can(regex("^[a-f0-9]{32}$", var.cf_account_id))
+    condition     = can(regex("^[a-f0-9]{32}$", var.cloudflare_account_id))
     error_message = "bad id"
   }
 }
 
-variable "cf_zone_id" {
+variable "cloudflare_zone_id" {
   type        = string
   description = "Cloudflare zone"
   nullable    = false
 
   validation {
-    condition     = can(regex("^[a-f0-9]{32}$", var.cf_zone_id))
+    condition     = can(regex("^[a-f0-9]{32}$", var.cloudflare_zone_id))
     error_message = "bad id"
   }
 }

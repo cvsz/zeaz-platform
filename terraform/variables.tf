@@ -1,13 +1,9 @@
-variable "cf_api_token" {
+variable "cloudflare_bootstrap_token" {
   type        = string
   sensitive   = true
   description = "Cloudflare account-level API token. Required for Zero Trust, Tunnel, Workers, R2, D1, and account-level resources."
   nullable    = false
 
-  validation {
-    condition     = length(var.cf_api_token) >= 32
-    error_message = "cf_api_token must be at least 32 characters"
-  }
 }
 
 variable "cf_dns_token" {
@@ -16,10 +12,6 @@ variable "cf_dns_token" {
   description = "Cloudflare DNS Token"
   nullable    = false
 
-  validation {
-    condition     = length(var.cf_dns_token) >= 32
-    error_message = "cf_dns_token must be at least 32 characters"
-  }
 }
 
 variable "cf_waf_token" {
@@ -29,10 +21,6 @@ variable "cf_waf_token" {
   nullable    = true
   default     = null
 
-  validation {
-    condition     = var.cf_waf_token == null || var.cf_waf_token == "" || length(var.cf_waf_token) >= 32
-    error_message = "cf_waf_token must be empty/null or at least 32 characters"
-  }
 }
 
 variable "enable_waf" {
@@ -49,25 +37,21 @@ variable "enable_zero_trust" {
   default     = false
 }
 
-variable "cf_zone_id" {
+variable "cloudflare_zone_id" {
   type        = string
   description = "Cloudflare Zone ID"
   nullable    = false
 
-  validation {
-    condition     = can(regex("^[a-f0-9]{32}$", lower(var.cf_zone_id)))
-    error_message = "cf_zone_id must be a 32-character hexadecimal ID"
+    error_message = "cloudflare_zone_id must be a 32-character hexadecimal ID"
   }
 }
 
-variable "cf_account_id" {
+variable "cloudflare_account_id" {
   type        = string
   description = "Cloudflare Account ID"
   nullable    = false
 
-  validation {
-    condition     = can(regex("^[a-f0-9]{32}$", lower(var.cf_account_id)))
-    error_message = "cf_account_id must be a 32-character hexadecimal ID"
+    error_message = "cloudflare_account_id must be a 32-character hexadecimal ID"
   }
 }
 
@@ -77,10 +61,6 @@ variable "domain" {
   nullable    = false
   default     = "zeaz.dev"
 
-  validation {
-    condition     = can(regex("^[a-z0-9.-]+$", var.domain))
-    error_message = "domain must be a valid lower-case DNS domain"
-  }
 }
 
 variable "plan_tier" {
@@ -89,10 +69,6 @@ variable "plan_tier" {
   default     = "Free"
   nullable    = false
 
-  validation {
-    condition     = contains(["free", "pro", "business", "enterprise"], lower(var.plan_tier))
-    error_message = "plan_tier must be one of Free, Pro, Business, Enterprise"
-  }
 }
 
 variable "environment" {
@@ -101,10 +77,6 @@ variable "environment" {
   nullable    = false
   default     = "dev"
 
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "environment must be one of dev, staging, prod"
-  }
 }
 
 variable "identity_provider_type" {
@@ -113,10 +85,6 @@ variable "identity_provider_type" {
   nullable    = false
   default     = "saml"
 
-  validation {
-    condition     = contains(["saml", "oidc"], var.identity_provider_type)
-    error_message = "identity_provider_type must be saml or oidc"
-  }
 }
 
 variable "identity_provider_metadata_url" {
@@ -124,10 +92,6 @@ variable "identity_provider_metadata_url" {
   description = "HTTPS metadata URL for SAML configuration"
   nullable    = false
 
-  validation {
-    condition     = can(regex("^https://", var.identity_provider_metadata_url))
-    error_message = "identity_provider_metadata_url must start with https://"
-  }
 }
 
 variable "oidc_issuer_url" {

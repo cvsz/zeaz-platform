@@ -44,3 +44,22 @@ terraform/tfplan.drift
 terraform/**/*.tfplan
 
 .terraform.lock.hcl
+# Terraform
+.terraform/
+*.tfstate*
+*.tfplan
+
+# Backups
+.backup-refactor-*
+*.bak.*
+
+# Env / secrets
+.env
+.env.*
+.env.cloudflare
+
+# Node
+node_modules/
+
+# Misc
+.DS_Store

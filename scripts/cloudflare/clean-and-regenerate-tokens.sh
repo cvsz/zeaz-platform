@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+
+# ACCOUNT_TOKEN_MODE enabled (auto-patched)
 IFS=$'\n\t'
 
 API_BASE="${CF_API_BASE:-https://api.cloudflare.com/client/v4}"
@@ -22,7 +24,7 @@ PERM_ID_OVERRIDE=""
 
 usage(){
   cat <<USAGE
-Usage: CF_EMAIL=<email> CF_GLOBAL_API_KEY=<key> $0 [options]
+Usage: CF_ACCOUNT_ID=<email> CF_BOOTSTRAP_TOKEN=<key> $0 [options]
 
 Cleaning:
   --name <token-name>    Restrict cleanup to an exact token name
@@ -77,14 +79,13 @@ has jq || die "jq is required"
 [[ "$KEEP_MOST" =~ ^[0-9]+$ ]] || die "--keep-most must be a non-negative integer"
 [[ "$TOKEN_QUOTA" =~ ^[0-9]+$ ]] || die "TOKEN_QUOTA must be a non-negative integer"
 
-: "${CF_EMAIL:?CF_EMAIL must be exported}"
-: "${CF_GLOBAL_API_KEY:?CF_GLOBAL_API_KEY must be exported}"
+: "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID must be exported}"
+: "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN must be exported}"
 
 cf_api(){
   local method="$1" endpoint="$2" payload="${3:-}"
   local args=(-sS -X "$method" "${API_BASE}${endpoint}"
-    -H "X-Auth-Email: ${CF_EMAIL}"
-    -H "X-Auth-Key: ${CF_GLOBAL_API_KEY}"
+    -H "Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}"
     -H "Content-Type: application/json")
   [[ -n "$payload" ]] && args+=(--data "$payload")
   curl "${args[@]}"
@@ -92,7 +93,7 @@ cf_api(){
 
 fetch_token_list(){
   local json ok
-  json="$(cf_api GET /user/tokens)" || die "curl failed while fetching token list"
+  json="$(cf_api GET /accounts/${CF_ACCOUNT_ID}/tokens)" || die "curl failed while fetching token list"
   [[ -n "$json" ]] || die "empty response from Cloudflare API"
   ok="$(printf '%s' "$json" | jq -r '.success // false')" || die "invalid JSON from Cloudflare API"
   [[ "$ok" == "true" ]] || die "Cloudflare API error: $(printf '%s' "$json" | jq -c '.errors // []')"
@@ -208,7 +209,7 @@ else
     $DO_BACKUP && backup_json "$TOKEN_LIST_JSON" tokens.pre-revoke
     for id in "${FINAL_REVOKE[@]}"; do
       name="$(token_field "$id" name)"
-      resp="$(cf_api DELETE "/user/tokens/${id}")"
+      resp="$(cf_api DELETE "/accounts/${CF_ACCOUNT_ID}/tokens/${id}")"
       ok="$(printf '%s' "$resp" | jq -r '.success // false')"
       if [[ "$ok" == "true" ]]; then
         log "revoked $id ($name)"
@@ -229,7 +230,7 @@ $REGENERATE || { log "done"; exit 0; }
 [[ "$ASSUME_YES" == "true" || "$DRY_RUN" == "true" ]] || die "refusing token regeneration without --yes"
 
 if [[ "$TYPES_CSV" == "all" ]]; then
-  TYPES_CSV="dns,zt,workers,waf,tunnel,r2"
+  TYPES_CSV="dns,zt,workers,pages,waf,tunnel,r2,d1"
 fi
 
 declare -A PERM_ID_MAP=(
@@ -245,24 +246,28 @@ declare -A TOKEN_NAME_MAP=(
   [dns]="zeaz-dns-token"
   [zt]="zeaz-zt-token"
   [workers]="zeaz-workers-token"
+  [pages]="zeaz-pages-token"
+  [d1]="zeaz-d1-token"
   [waf]="zeaz-waf-token"
   [tunnel]="zeaz-tunnel-token"
   [r2]="zeaz-r2-token"
 )
 
 declare -A RESOURCE_MAP=(
-  [dns]="com.cloudflare.api.account.zone.*"
-  [zt]="com.cloudflare.api.account.*"
-  [workers]="com.cloudflare.api.account.*"
-  [waf]="com.cloudflare.api.account.*"
-  [tunnel]="com.cloudflare.api.account.*"
-  [r2]="com.cloudflare.api.account.*"
+  [dns]="com.cloudflare.api.account.zone.${CF_ZONE_ID}"
+  [zt]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+  [workers]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+  [waf]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+  [tunnel]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+  [r2]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
 )
 
 declare -A ENV_KEY_MAP=(
   [dns]="CF_DNS_TOKEN"
   [zt]="CF_ZT_TOKEN"
   [workers]="CF_WORKERS_TOKEN"
+  [pages]="CF_PAGES_TOKEN"
+  [d1]="CF_D1_TOKEN"
   [waf]="CF_WAF_TOKEN"
   [tunnel]="CF_TUNNEL_TOKEN"
   [r2]="CF_R2_TOKEN"
@@ -285,7 +290,7 @@ for t in "${TYPES_ARR[@]}"; do
   perm="${PERM_ID_OVERRIDE:-${PERM_ID_MAP[$t]:-}}"
   [[ -n "$perm" ]] || { warn "missing permission-group ID for $t; pass --perm-id or update PERM_ID_MAP"; continue; }
 
-  count_resp="$(cf_api GET /user/tokens)"
+  count_resp="$(cf_api GET /accounts/${CF_ACCOUNT_ID}/tokens)"
   count_ok="$(printf '%s' "$count_resp" | jq -r '.success // false')"
   [[ "$count_ok" == "true" ]] || die "failed checking token quota: $(printf '%s' "$count_resp" | jq -c '.errors // []')"
   current_count="$(printf '%s' "$count_resp" | jq '(.result // []) | length')"
@@ -299,7 +304,7 @@ for t in "${TYPES_ARR[@]}"; do
     continue
   fi
 
-  resp="$(cf_api POST /user/tokens "$payload")"
+  resp="$(cf_api POST /accounts/${CF_ACCOUNT_ID}/tokens "$payload")"
   ok="$(printf '%s' "$resp" | jq -r '.success // false')"
   [[ "$ok" == "true" ]] || die "token creation failed for ${TOKEN_NAME_MAP[$t]}: $(printf '%s' "$resp" | jq -c '.errors // []')"
   value="$(printf '%s' "$resp" | jq -r '.result.value // empty')"
