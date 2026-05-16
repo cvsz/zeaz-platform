@@ -104,7 +104,7 @@ jobs:
 
       # ── 6. Toolchain ─────────────────────────────────────────────────────────
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
