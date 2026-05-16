@@ -35,7 +35,7 @@ jobs:
         uses: hashicorp/setup-terraform@v4
 
       - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v1
+        uses: opentofu/setup-opentofu@v2
 
       - name: Run workflow policy checks
         run: make workflow-policy
