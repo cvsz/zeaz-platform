@@ -27,12 +27,46 @@ jobs:
         working-directory: ${{ github.workspace }}
 
     steps:
+      # ── 1. Source ────────────────────────────────────────────────────────────
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ── 2. Static analysis ───────────────────────────────────────────────────
       - name: Validate shell scripts syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
+      # ── 3. Preflight — fail fast if secrets are not configured ───────────────
+      - name: Preflight — verify secrets are configured
+        env:
+          CF_ACCOUNT_ID:    ${{ secrets.CF_ACCOUNT_ID }}
+          CF_ZONE_ID:       ${{ secrets.CF_ZONE_ID }}
+          CF_API_TOKEN:     ${{ secrets.CF_API_TOKEN }}
+          CF_DNS_TOKEN:     ${{ secrets.CF_DNS_TOKEN }}
+          CF_ZT_TOKEN:      ${{ secrets.CF_ZT_TOKEN }}
+          CF_WORKERS_TOKEN: ${{ secrets.CF_WORKERS_TOKEN }}
+          CF_WAF_TOKEN:     ${{ secrets.CF_WAF_TOKEN }}
+          CF_TUNNEL_TOKEN:  ${{ secrets.CF_TUNNEL_TOKEN }}
+          CF_R2_TOKEN:      ${{ secrets.CF_R2_TOKEN }}
+        run: |
+          missing=0
+          for var in \
+            CF_ACCOUNT_ID \
+            CF_ZONE_ID \
+            CF_API_TOKEN \
+            CF_DNS_TOKEN \
+            CF_ZT_TOKEN \
+            CF_WORKERS_TOKEN \
+            CF_WAF_TOKEN \
+            CF_TUNNEL_TOKEN \
+            CF_R2_TOKEN; do
+            if [[ -z "${!var:-}" ]]; then
+              echo "::error::Secret not configured: $var — add it at Settings → Secrets → Actions"
+              (( missing++ )) || true
+            fi
+          done
+          (( missing == 0 )) || exit 1
+
+      # ── 4. Load environment — secrets win over any .env file ─────────────────
       - name: Load environment
         env:
           CF_ACCOUNT_ID:       ${{ secrets.CF_ACCOUNT_ID }}
@@ -52,18 +86,22 @@ jobs:
           chmod +x "$GITHUB_WORKSPACE/scripts/cloudflare/load-env.sh"
           "$GITHUB_WORKSPACE/scripts/cloudflare/load-env.sh"
 
+      # ── 5. Toolchain ─────────────────────────────────────────────────────────
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
 
+      # ── 6. Plan ──────────────────────────────────────────────────────────────
       - name: Run Terraform plan
         env:
           ENVIRONMENT:    dev
           PRIMARY_DOMAIN: zeaz.dev
           CONFIRM_APPLY:  "no"
-          # TF_VAR_* → picked up automatically by Terraform as input variables
+          # TF_VAR_* → Terraform reads these automatically as input variables.
+          # The CF_* vars written to GITHUB_ENV by load-env.sh are for shell
+          # tooling; Terraform needs its own TF_VAR_ prefixed copies.
           TF_VAR_cf_api_token:                   ${{ secrets.CF_API_TOKEN }}
           TF_VAR_cf_dns_token:                   ${{ secrets.CF_DNS_TOKEN }}
           TF_VAR_cf_zone_id:                     ${{ secrets.CF_ZONE_ID }}
@@ -76,6 +114,7 @@ jobs:
           TF_VAR_identity_provider_metadata_url: ${{ secrets.IDENTITY_PROVIDER_METADATA_URL }}
         run: make tf-plan
 
+      # ── 7. Artifacts ─────────────────────────────────────────────────────────
       - name: Upload Terraform plan artifacts
         if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}
         uses: actions/upload-artifact@v4
