@@ -1,4 +1,4 @@
-# Cursor Rules: Cloudflare Platform
+# Cursor Rules: Zeaz Platform
 
 ## Platform Defaults
 - Security-first, deterministic automation.
@@ -6,9 +6,9 @@
 - No placeholder values and no pseudo-code.
 
 ## Required Checks Before Commit
-- `make -C cloudflare-platform validate`
-- `make -C cloudflare-platform contract`
-- `make -C cloudflare-platform plan-tier`
+- `make -C zeaz-platform validate`
+- `make -C zeaz-platform contract`
+- `make -C zeaz-platform plan-tier`
 
 ## File Conventions
 - Bash scripts must begin with:
@@ -20,4 +20,4 @@
 
 
 ## MCP Runtime
-- Regenerate local MCP config with `make -C cloudflare-platform mcp-config` after token rotation.
+- Regenerate local MCP config with `make -C zeaz-platform mcp-config` after token rotation.
