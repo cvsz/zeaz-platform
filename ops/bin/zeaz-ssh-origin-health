@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+IFS=$'\n\t'
+
+HOST="ssh.zeaz.dev"
+PORT="22022"
+ORIGIN="127.0.0.1"
+SSHD_CONFIG="/etc/ssh/sshd_config"
+DROPIN_FILE="/etc/ssh/sshd_config.d/99-zeaz-public-ssh.conf"
+FAILED=0
+
+usage() {
+  cat <<USAGE
+Usage: zeaz-ssh-origin-health [--help]
+
+Checks local OpenSSH origin readiness for Cloudflare Tunnel route:
+  ${HOST} -> ssh://${ORIGIN}:${PORT}
+USAGE
+}
+
+ok() { echo "[OK] $*"; }
+warn() { echo "[WARN] $*"; }
+fail() { echo "[FAIL] $*"; FAILED=1; }
+skip() { echo "[SKIP] $*"; }
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
+
+if command -v sshd >/dev/null 2>&1; then
+  ok "sshd command available"
+  if sshd -t -f "${SSHD_CONFIG}" 2>/dev/null; then
+    ok "sshd configuration syntax is valid"
+  else
+    fail "sshd configuration syntax check failed"
+  fi
+else
+  fail "sshd command not found"
+fi
+
+if [[ -f "${DROPIN_FILE}" ]]; then
+  ok "Zeaz SSH drop-in present: ${DROPIN_FILE}"
+elif [[ -f "${SSHD_CONFIG}" ]] && grep -q '^# BEGIN ZEAZ PUBLIC SSH$' "${SSHD_CONFIG}"; then
+  ok "Zeaz SSH managed block present in ${SSHD_CONFIG}"
+else
+  warn "Zeaz SSH managed configuration not found"
+fi
+
+if command -v sshd >/dev/null 2>&1; then
+  effective="$(sshd -T -f "${SSHD_CONFIG}" 2>/dev/null || true)"
+  check_effective() {
+    local key="$1"
+    local expected="$2"
+    if printf '%s\n' "${effective}" | grep -Eq "^${key}[[:space:]]+${expected}$"; then
+      ok "${key} ${expected}"
+    else
+      fail "expected '${key} ${expected}' in effective sshd config"
+    fi
+  }
+  check_effective "permitrootlogin" "no"
+  check_effective "pubkeyauthentication" "yes"
+  check_effective "passwordauthentication" "no"
+  check_effective "kbdinteractiveauthentication" "no"
+  check_effective "x11forwarding" "no"
+  if printf '%s\n' "${effective}" | grep -Eq "^port[[:space:]]+${PORT}$"; then
+    ok "port ${PORT} configured"
+  else
+    fail "port ${PORT} not found in effective sshd config"
+  fi
+fi
+
+service_name=""
+for candidate in ssh sshd; do
+  if systemctl cat "${candidate}" >/dev/null 2>&1 || systemctl status "${candidate}" >/dev/null 2>&1; then
+    service_name="${candidate}"
+    break
+  fi
+done
+
+if [[ -z "${service_name}" ]]; then
+  skip "SSH systemd service not detected"
+elif systemctl is-active --quiet "${service_name}"; then
+  ok "${service_name} service active"
+else
+  fail "${service_name} service not active"
+fi
+
+if command -v ss >/dev/null 2>&1; then
+  if ss -ltn | awk '{print $4}' | grep -Eq "(^|:)${PORT}$"; then
+    ok "port ${PORT} listening"
+  else
+    fail "port ${PORT} not listening"
+  fi
+else
+  skip "ss command not found; port check skipped"
+fi
+
+if command -v nc >/dev/null 2>&1; then
+  if nc -z -w 2 "${ORIGIN}" "${PORT}" >/dev/null 2>&1; then
+    ok "TCP connection to ${ORIGIN}:${PORT} succeeds"
+  else
+    fail "TCP connection to ${ORIGIN}:${PORT} failed"
+  fi
+else
+  skip "nc command not found; TCP probe skipped"
+fi
+
+exit "${FAILED}"

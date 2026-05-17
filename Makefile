@@ -26,7 +26,7 @@ export STRICT_TOOLS
 export CODEX_CLOUD
 export STRICT_ENV
 
-.PHONY: help bootstrap setup env load-env validate validate-agent ci-validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate tunnel-validation waf-validation tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform backup-platform install-platform-ops
+.PHONY: help bootstrap setup env load-env validate validate-agent ci-validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate tunnel-validation waf-validation tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
 
 help:
 	@printf '%s\n' \
@@ -53,6 +53,10 @@ help:
 	'  make health-zveo            Run ZVEO health checks' \
 	'  make health-zwallet         Run zWallet health checks' \
 	'  make health-platform        Run full platform health checks' \
+	'  make ssh-origin-setup       Configure hardened SSH origin on 127.0.0.1:22022' \
+	'  make ssh-origin-health      Check local SSH origin readiness' \
+	'  make ssh-route              Upsert or print Cloudflare SSH route instructions' \
+	'  make ssh-public-health      Check client/public Cloudflare Access SSH readiness' \
 	'  make backup-platform        Run platform backup script' \
 	'  make install-platform-ops   Install ops scripts into /usr/local/bin' \
 	'' \
@@ -144,6 +148,18 @@ health-zwallet:
 
 health-platform:
 	@bash ops/bin/zeaz-health
+
+ssh-origin-setup:
+	@bash ops/bin/zeaz-ssh-origin-setup
+
+ssh-origin-health:
+	@bash ops/bin/zeaz-ssh-origin-health
+
+ssh-route:
+	@bash ops/bin/zeaz-cloudflare-ssh-route
+
+ssh-public-health:
+	@bash ops/bin/zeaz-ssh-public-health
 
 backup-platform:
 	@bash ops/scripts/backup-platform.sh

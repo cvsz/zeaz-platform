@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+IFS=$'\n\t'
+
+HOSTNAME="ssh.zeaz.dev"
+SSH_ALIAS="zeaz-platform"
+FAILED=0
+
+usage() {
+  cat <<USAGE
+Usage: zeaz-ssh-public-health [--help]
+
+Checks client-side prerequisites and public reachability signals for Cloudflare
+Access SSH hostname ${HOSTNAME}. It does not print or require private tokens.
+USAGE
+}
+
+ok() { echo "[OK] $*"; }
+warn() { echo "[WARN] $*"; }
+fail() { echo "[FAIL] $*"; FAILED=1; }
+skip() { echo "[SKIP] $*"; }
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
+
+if command -v cloudflared >/dev/null 2>&1; then
+  ok "cloudflared installed: $(cloudflared --version 2>/dev/null | head -n 1)"
+else
+  fail "cloudflared not installed; required for Cloudflare Access SSH ProxyCommand"
+fi
+
+if command -v ssh >/dev/null 2>&1; then
+  ok "ssh client installed"
+else
+  fail "ssh client not found"
+fi
+
+if command -v getent >/dev/null 2>&1; then
+  if getent hosts "${HOSTNAME}" >/dev/null 2>&1; then
+    ok "DNS resolves for ${HOSTNAME}"
+  else
+    fail "DNS does not resolve for ${HOSTNAME}"
+  fi
+elif command -v dig >/dev/null 2>&1; then
+  if dig +short "${HOSTNAME}" | grep -q .; then
+    ok "DNS resolves for ${HOSTNAME}"
+  else
+    fail "DNS does not resolve for ${HOSTNAME}"
+  fi
+else
+  skip "getent/dig not found; DNS check skipped"
+fi
+
+if command -v nc >/dev/null 2>&1; then
+  if nc -z -w 5 "${HOSTNAME}" 443 >/dev/null 2>&1; then
+    ok "TCP 443 reachable for ${HOSTNAME}"
+  else
+    warn "TCP 443 probe failed for ${HOSTNAME}; network or DNS may block Cloudflare Access"
+  fi
+else
+  skip "nc command not found; TCP 443 check skipped"
+fi
+
+if command -v cloudflared >/dev/null 2>&1; then
+  if cloudflared access ssh --hostname "${HOSTNAME}" --help >/dev/null 2>&1; then
+    ok "cloudflared access ssh command is available"
+  else
+    warn "cloudflared access ssh help check failed; verify cloudflared version supports Access SSH"
+  fi
+fi
+
+if [[ -f "${HOME}/.ssh/config" ]] && grep -Eq "^[[:space:]]*Host[[:space:]]+.*(^|[[:space:]])${SSH_ALIAS}([[:space:]]|$)" "${HOME}/.ssh/config"; then
+  ok "SSH client alias ${SSH_ALIAS} found in ~/.ssh/config"
+else
+  warn "SSH client alias ${SSH_ALIAS} not found; see docs/public-ssh.md"
+fi
+
+skip "interactive Cloudflare Access login not attempted; run: ssh ${SSH_ALIAS}"
+
+exit "${FAILED}"

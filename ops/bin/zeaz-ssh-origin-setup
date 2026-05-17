@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+IFS=$'\n\t'
+
+HOST="ssh.zeaz.dev"
+PORT="22022"
+ORIGIN="127.0.0.1"
+SSHD_CONFIG="/etc/ssh/sshd_config"
+DROPIN_DIR="/etc/ssh/sshd_config.d"
+DROPIN_FILE="${DROPIN_DIR}/99-zeaz-public-ssh.conf"
+BACKUP_DIR="/etc/ssh"
+FAILED=0
+
+usage() {
+  cat <<USAGE
+Usage: zeaz-ssh-origin-setup [--help]
+
+Configures the local OpenSSH server to accept hardened public-key SSH on
+${ORIGIN}:${PORT} for Cloudflare Tunnel public hostname ${HOST}.
+
+Safety behavior:
+  - requires root
+  - backs up ${SSHD_CONFIG} before editing
+  - preserves existing SSH sessions and does not remove existing Port entries
+  - runs sshd -t before reloading/restarting SSH
+USAGE
+}
+
+ok() { echo "[OK] $*"; }
+warn() { echo "[WARN] $*"; }
+fail() { echo "[FAIL] $*"; FAILED=1; }
+skip() { echo "[SKIP] $*"; }
+
+trap 'fail "setup interrupted at line ${LINENO}"; exit 1' ERR
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
+
+if [[ "${EUID}" -ne 0 ]]; then
+  fail "must run as root; use sudo"
+  exit 1
+fi
+
+if [[ ! -f "${SSHD_CONFIG}" ]]; then
+  fail "${SSHD_CONFIG} not found"
+  exit 1
+fi
+
+if ! command -v sshd >/dev/null 2>&1; then
+  fail "sshd command not found"
+  exit 1
+fi
+
+if [[ -n "${SSH_CONNECTION:-}" ]]; then
+  ok "existing SSH session detected; preserving current session and existing ports"
+else
+  warn "no SSH_CONNECTION detected; run from a console or keep a recovery session available"
+fi
+
+backup="${BACKUP_DIR}/sshd_config.zeaz-public-ssh.$(date -u +%Y%m%dT%H%M%SZ).bak"
+cp -p "${SSHD_CONFIG}" "${backup}"
+chmod 0600 "${backup}" 2>/dev/null || true
+ok "backup created at ${backup}"
+
+config_block() {
+  cat <<CONFIG
+# Zeaz public SSH via Cloudflare Tunnel / Zero Trust.
+# Route: ${HOST} -> ssh://${ORIGIN}:${PORT}
+Port ${PORT}
+ListenAddress ${ORIGIN}:${PORT}
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+X11Forwarding no
+CONFIG
+}
+
+uses_dropin=false
+if grep -Eq '^[[:space:]]*Include[[:space:]]+/etc/ssh/sshd_config\.d/\*\.conf([[:space:]]|$)' "${SSHD_CONFIG}"; then
+  uses_dropin=true
+fi
+
+if [[ "${uses_dropin}" == "true" ]]; then
+  mkdir -p "${DROPIN_DIR}"
+  config_block > "${DROPIN_FILE}"
+  chmod 0644 "${DROPIN_FILE}"
+  ok "wrote SSH drop-in ${DROPIN_FILE}"
+else
+  warn "${SSHD_CONFIG} does not include ${DROPIN_DIR}/*.conf; appending managed block to main config"
+  tmp_file="$(mktemp)"
+  cp "${SSHD_CONFIG}" "${tmp_file}"
+  block_file="$(mktemp)"
+  config_block > "${block_file}"
+  export ZEAZ_BLOCK_FILE="${block_file}"
+  if grep -q '^# BEGIN ZEAZ PUBLIC SSH$' "${tmp_file}"; then
+    awk '
+      /^# BEGIN ZEAZ PUBLIC SSH$/ {
+        print
+        while ((getline line) > 0 && line !~ /^# END ZEAZ PUBLIC SSH$/) {}
+        while ((getline repl < ENVIRON["ZEAZ_BLOCK_FILE"]) > 0) print repl
+        close(ENVIRON["ZEAZ_BLOCK_FILE"])
+        print "# END ZEAZ PUBLIC SSH"
+        next
+      }
+      {print}
+    ' "${tmp_file}" > "${SSHD_CONFIG}"
+  else
+    {
+      cat "${tmp_file}"
+      printf '\n# BEGIN ZEAZ PUBLIC SSH\n'
+      cat "${block_file}"
+      printf '# END ZEAZ PUBLIC SSH\n'
+    } > "${SSHD_CONFIG}"
+  fi
+  rm -f "${tmp_file}" "${block_file}"
+  chmod 0644 "${SSHD_CONFIG}"
+  ok "updated managed block in ${SSHD_CONFIG}"
+fi
+
+if sshd -t -f "${SSHD_CONFIG}"; then
+  ok "sshd configuration syntax is valid"
+else
+  cp -p "${backup}" "${SSHD_CONFIG}"
+  fail "sshd -t failed; restored ${SSHD_CONFIG} from backup"
+  exit 1
+fi
+
+service_name=""
+for candidate in ssh sshd; do
+  if systemctl cat "${candidate}" >/dev/null 2>&1 || systemctl status "${candidate}" >/dev/null 2>&1; then
+    service_name="${candidate}"
+    break
+  fi
+done
+
+if [[ -z "${service_name}" ]]; then
+  warn "SSH systemd service not detected; reload manually after reviewing ${SSHD_CONFIG}"
+else
+  if systemctl reload "${service_name}" >/dev/null 2>&1; then
+    ok "reloaded ${service_name} service"
+  else
+    warn "reload failed; attempting restart of ${service_name} after successful sshd -t"
+    systemctl restart "${service_name}"
+    ok "restarted ${service_name} service"
+  fi
+fi
+
+if command -v ss >/dev/null 2>&1; then
+  if ss -ltn | awk '{print $4}' | grep -Eq "(^|:)${PORT}$"; then
+    ok "sshd is listening on port ${PORT}"
+  else
+    warn "port ${PORT} is not listening yet; check service status and sshd logs"
+  fi
+else
+  skip "ss command not found; port listener check skipped"
+fi
+
+exit "${FAILED}"
