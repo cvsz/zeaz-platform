@@ -387,3 +387,14 @@ Least-privilege token separation is enforced (`CF_DNS_TOKEN`, `CF_ZT_TOKEN`, `CF
 ## Setup
 
 See **Quickstart** above for bootstrap, validation, and phased apply commands.
+
+## zsp-aitool Health Verification
+
+Run environment-aware health checks from the workers workspace:
+
+- `npm run health` (repo-safe checks; runtime/public/db checks warn/skip outside production)
+- `ZSP_HEALTH_REQUIRE_RUNTIME=true npm run health` (fail if local runtime/service checks fail)
+- `ZSP_HEALTH_REQUIRE_DB=true npm run health` (fail if DB checks cannot run/pass)
+- `ZSP_HEALTH_REQUIRE_PUBLIC=true npm run health` (fail if public URL checks fail)
+
+The health script is designed for CI/container/Codex execution and avoids failing on production-only infrastructure unless explicitly required.

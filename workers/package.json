@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --test --import tsx ../tests/workers/*.test.ts"
+    "test": "node --test --import tsx ../tests/workers/*.test.ts",
+    "health": "bash ../scripts/health-zsp-aitool.sh",
+    "postbuild": "bash ../scripts/fix-next-server-chunks.sh"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260511.0",
