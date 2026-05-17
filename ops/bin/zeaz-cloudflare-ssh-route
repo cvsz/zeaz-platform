@@ -30,8 +30,10 @@ fail() { echo "[FAIL] $*"; FAILED=1; }
 skip() { echo "[SKIP] $*"; }
 
 manual_instructions() {
+  local missing_display="$1"
   cat <<MANUAL
 [SKIP] Cloudflare API environment not fully configured; no API changes attempted.
+[WARN] Missing API environment variables: ${missing_display}
 
 Manual Cloudflare Zero Trust dashboard steps:
   1. Open Zero Trust dashboard > Networks > Tunnels.
@@ -64,7 +66,8 @@ for var_name in CF_API_TOKEN CF_ACCOUNT_ID CF_TUNNEL_ID; do
 done
 
 if [[ "${#missing[@]}" -gt 0 ]]; then
-  manual_instructions
+  missing_display="$(IFS=,; printf '%s' "${missing[*]}")"
+  manual_instructions "${missing_display}"
   exit 0
 fi
 
