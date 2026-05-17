@@ -61,7 +61,7 @@ The route helper supports two modes.
 
 ### Mode 1: Manual dashboard instructions
 
-If Cloudflare API environment variables are not set, the script does not mutate Cloudflare and prints manual steps:
+If Cloudflare API environment variables are not set, the script does not mutate Cloudflare, prints the missing variable names, and shows manual steps:
 
 ```bash
 make ssh-route
