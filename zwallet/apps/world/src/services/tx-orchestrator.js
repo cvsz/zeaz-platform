@@ -41,15 +41,22 @@ export class TxOrchestrator {
    * Orchestrates the signing flow via the MPC provider.
    */
   static async signAndSubmit(tx: Transaction, signatureType: 'mpc' | 'standard' = 'mpc'): Promise<{ txHash: string }> {
-    console.log(`[Orchestrator] Requesting ${signatureType} signature for transaction...`);
+    console.log(`[Orchestrator] Initializing ${signatureType} ceremony...`);
     
-    // This would interface with the zWallet Backend Gateway
+    // Phase 5 Refinement: Multi-step ceremony simulation
     return new Promise((resolve) => {
+      // Step 1: Initialize
+      setTimeout(() => console.log("[MPC] Ceremony initialized. Requesting shares..."), 500);
+      
+      // Step 2: Aggregate
+      setTimeout(() => console.log("[MPC] 2/3 shares aggregated. Finalizing TSS..."), 1500);
+      
+      // Step 3: Broadcast
       setTimeout(() => {
         resolve({
-          txHash: `0x${Math.random().toString(16).slice(2)}...`
+          txHash: `0x${Math.random().toString(16).slice(2).padEnd(64, '0')}`
         });
-      }, 1500);
+      }, 3000);
     });
   }
 }

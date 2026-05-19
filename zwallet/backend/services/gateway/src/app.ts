@@ -66,24 +66,31 @@ export const buildApp = (deps: Deps = {}) => {
 
     const aiBase = process.env.AI_SERVICE_URL ?? 'http://api:8000';
     
-    // Phase 4: Consult Python AI Intelligence before orchestration
-    const aiRes = await fetch(`${aiBase}/v1/ai/inference/swap-recommendation`, {
-      method: 'POST',
-      headers: { 
-        'content-type': 'application/json',
-        'Authorization': req.headers.authorization // Forward credentials
-      },
-      body: JSON.stringify({
-        user_id: req.user.sub,
-        from_token: parsed.data.fromToken,
-        to_token: parsed.data.toToken,
-        amount: parsed.data.amount,
-        slippage_tolerance_bps: parsed.data.slippageBps,
-        urgency: parsed.data.urgency || 'medium'
-      })
-    });
-    
-    const aiRecommendation = await aiRes.json();
+    // Phase 5 Refinement: Hardened AI consultation with fallback
+    let aiRecommendation = { urgency: 'medium', risk_score: 0.1 };
+    try {
+      const aiRes = await fetch(`${aiBase}/v1/ai/inference/swap-recommendation`, {
+        method: 'POST',
+        headers: { 
+          'content-type': 'application/json',
+          'Authorization': req.headers.authorization // Forward credentials
+        },
+        body: JSON.stringify({
+          user_id: req.user.sub,
+          from_token: parsed.data.fromToken,
+          to_token: parsed.data.toToken,
+          amount: parsed.data.amount,
+          slippage_tolerance_bps: parsed.data.slippageBps,
+          urgency: parsed.data.urgency || 'medium'
+        })
+      });
+      if (aiRes.ok) {
+        aiRecommendation = await aiRes.json();
+      }
+    } catch (e) {
+      app.log.warn({ event: 'ai_service_unavailable', error: e });
+      // Fallback to safe defaults if AI is down
+    }
     
     const swap = { 
       id: randomUUID(), 

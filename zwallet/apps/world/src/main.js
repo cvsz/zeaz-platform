@@ -62,7 +62,7 @@ function renderWallet() {
   `;
   const status = wallet.error ? `<span class="text-error">${wallet.error}</span>` : 
                  wallet.txHash ? `<span class="text-success animate-fade">Success! Hash: ${wallet.txHash}</span>` :
-                 isSubmitting ? `<span class="text-primary animate-pulse">Orchestrating MPC Signature...</span>` :
+                 isSubmitting ? `<span class="text-primary animate-pulse">${wallet.ceremonyState || 'Orchestrating...'}</span>` :
                  isPreview ? `<span class="text-success">Ready to sign: Gas ~0.002 ETH</span>` : 
                  "Awaiting transaction details...";
   return CardWrapper("Wallet Transfer", "💳", content, status);
@@ -95,7 +95,7 @@ function renderSwap() {
   `;
   const status = swap.error ? `<span class="text-error">${swap.error}</span>` : 
                  swap.txHash ? `<span class="text-success animate-fade">Swap Success! ${swap.txHash}</span>` :
-                 isSubmitting ? `<span class="text-primary animate-pulse">Running Simulation & Execution...</span>` :
+                 isSubmitting ? `<span class="text-primary animate-pulse">${swap.ceremonyState || 'Running Simulation...'}</span>` :
                  isPreview ? `<span class="text-success">Optimal route identified.</span>` : 
                  "Enter pair and amount for quote.";
   return CardWrapper("Swap Engine", "🔄", content, status);
@@ -164,14 +164,20 @@ function bind() {
   const walletSubmit = document.querySelector("#wallet-submit");
   if (walletSubmit) walletSubmit.onclick = async () => {
     state.wallet.stage = "submitting";
+    state.wallet.ceremonyState = "Initializing MPC...";
     render();
     
+    // Simulate ceremony steps in UI
+    setTimeout(() => { state.wallet.ceremonyState = "Aggregating Shares (2/3)..."; render(); }, 800);
+    setTimeout(() => { state.wallet.ceremonyState = "Finalizing TSS Signature..."; render(); }, 1800);
+
     const result = await TxOrchestrator.signAndSubmit({ to: state.wallet.address, value: state.wallet.amount });
     state.system.pool++;
     state.wallet.txHash = result.txHash;
     state.wallet.stage = "idle";
     state.wallet.address = "";
     state.wallet.amount = "";
+    state.wallet.ceremonyState = null;
     render();
   };
 
@@ -195,13 +201,19 @@ function bind() {
   const swapSubmit = document.querySelector("#swap-submit");
   if (swapSubmit) swapSubmit.onclick = async () => {
     state.swap.stage = "submitting";
+    state.swap.ceremonyState = "Initializing MPC...";
     render();
     
+    // Simulate ceremony steps in UI
+    setTimeout(() => { state.swap.ceremonyState = "Aggregating Shares (2/3)..."; render(); }, 800);
+    setTimeout(() => { state.swap.ceremonyState = "Finalizing TSS Signature..."; render(); }, 1800);
+
     const result = await TxOrchestrator.signAndSubmit({ to: "0xRouter...", value: state.swap.amount });
     state.system.pool++;
     state.swap.txHash = result.txHash;
     state.swap.stage = "idle";
     state.swap.amount = "";
+    state.swap.ceremonyState = null;
     render();
   };
 
