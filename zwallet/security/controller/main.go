@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kubernetes "k8s.io/client-go/kubernetes"
@@ -43,9 +44,11 @@ func quarantinePod(namespace, pod string) {
 	log.Printf("[ACTION] Quarantine pod %s/%s", namespace, pod)
 
 	patch := []byte(`{"metadata":{"labels":{"quarantine":"true"}}}`)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	_, err := clientset.CoreV1().Pods(namespace).Patch(
-		context.TODO(),
+		ctx,
 		pod,
 		metav1.TypeMergePatchType,
 		patch,

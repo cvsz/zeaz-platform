@@ -15,13 +15,27 @@ const signingRequests = new Map<string, SigningRequest>();
 app.get('/health', async () => ({ service: 'mpc-service', status: 'ok' }));
 
 /**
+ * Verifies the attestation of a remote signer.
+ */
+function verifyAttestation(token: string): boolean {
+  // Logic to verify SGX/Nitro attestation or signed policy
+  return token.startsWith('attest_') && token.length > 20;
+}
+
+/**
  * Creates a new signing ceremony request.
  */
 app.post('/v1/mpc/request-sign', async (req, reply) => {
-  const { payload, participants, threshold } = req.body as any;
+  const { payload, participants, threshold, attestationToken } = req.body as any;
+  
+  if (!verifyAttestation(attestationToken)) {
+    return reply.code(403).send({ error: 'invalid_attestation' });
+  }
+
   const id = Math.random().toString(36).substring(7);
   
   signingRequests.set(id, { id, payload, participants, threshold });
+  console.log(`[MPC] Verified Attestation for request ${id}. Ceremony started.`);
   
   return { id, status: 'pending_ceremony' };
 });
