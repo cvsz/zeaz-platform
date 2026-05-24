@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "ZeaZ Studio AI Agent System dashboard built with React and Vite for Cloudflare Pages.",
+  "description": "ZeaZ Studio AI Agent System dashboard built with React and Vite for local zdash.zeaz.dev and Cloudflare Pages deployment.",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "vite --host 127.0.0.1 --port 3006 --strictPort",
+    "dev:lan": "vite --host 0.0.0.0 --port 3006 --strictPort",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview --host 127.0.0.1 --port 3006 --strictPort",
+    "preview:lan": "vite preview --host 0.0.0.0 --port 3006 --strictPort",
+    "start:local": "npm run build && npm run preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
