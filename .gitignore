@@ -1,4 +1,5 @@
 # Secrets
+.gitignore
 .env
 *.env
 *.tfvars
@@ -75,3 +76,7 @@ node_modules/
 .codebuddy/
 .joycode/
 .zed/
+dist/
+package-lock.json
+bootstrap-generate-tokens-once.sh
+zdash.sh
