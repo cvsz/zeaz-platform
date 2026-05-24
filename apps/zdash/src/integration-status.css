@@ -1,0 +1,122 @@
+.zdash-integration-status {
+  scroll-margin-top: 96px;
+}
+
+.status-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.status-summary,
+.status-row {
+  background: var(--bg2);
+  border: 1px solid var(--tone-border, var(--border));
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.status-summary span,
+.status-label,
+.status-meta,
+.status-footer {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+}
+
+.status-summary span,
+.status-label {
+  display: block;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.status-summary strong {
+  color: var(--tone, var(--gold));
+  font-family: "JetBrains Mono", monospace;
+  font-size: 16px;
+  word-break: break-word;
+}
+
+.status-notice {
+  border: 1px solid #f0c04055;
+  background: #f0c04012;
+  color: var(--gold);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  margin-bottom: 16px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.status-title h3 {
+  color: var(--tone, var(--gold));
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.status-title p {
+  color: var(--muted);
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--tone, var(--gold));
+  border: 1px solid var(--tone-border, var(--border));
+  background: var(--tone-bg, #ffffff08);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.status-progress {
+  height: 5px;
+  border-radius: 999px;
+  background: #ffffff10;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.status-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tone, var(--gold));
+}
+
+.status-meta {
+  display: grid;
+  gap: 5px;
+}
+
+.status-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.status-footer span {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #ffffff05;
+}
