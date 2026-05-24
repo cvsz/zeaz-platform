@@ -1,0 +1,30 @@
+name: ECC Integration Check
+
+on:
+  pull_request:
+    paths:
+      - "scripts/ai/install-ecc.sh"
+      - "docs/ecc-integration.md"
+      - ".github/workflows/ecc-integration-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ecc-integration-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-wrapper:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate shell syntax
+        run: bash -n scripts/ai/install-ecc.sh
+
+      - name: Show wrapper help
+        run: bash scripts/ai/install-ecc.sh --help
