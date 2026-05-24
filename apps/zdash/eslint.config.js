@@ -2,6 +2,17 @@ import js from "@eslint/js";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
+const browserGlobals = {
+  window: "readonly",
+  document: "readonly",
+  setTimeout: "readonly",
+  clearTimeout: "readonly",
+};
+
+const nodeGlobals = {
+  process: "readonly",
+};
+
 export default [
   { ignores: ["dist"] },
   js.configs.recommended,
@@ -11,10 +22,8 @@ export default [
       ecmaVersion: 2022,
       sourceType: "module",
       globals: {
-        window: "readonly",
-        document: "readonly",
-        setTimeout: "readonly",
-        clearTimeout: "readonly",
+        ...browserGlobals,
+        ...nodeGlobals,
       },
       parserOptions: {
         ecmaFeatures: { jsx: true },
@@ -28,6 +37,12 @@ export default [
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { "allowConstantExport": true }],
       "no-unused-vars": ["error", { "varsIgnorePattern": "^[A-Z_]" }],
+    },
+  },
+  {
+    files: ["src/main.jsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 ];
