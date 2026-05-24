@@ -61,6 +61,9 @@ terraform/**/*.tfplan
 # Node
 node_modules/
 
+# ECC / local agent harness state
+.cache/
+
 # Misc
 .DS_Store
 .agent/
