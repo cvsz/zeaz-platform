@@ -1,7 +1,7 @@
-name = "zeaz-studio-dashboard"
+name = "zdash"
 compatibility_date = "2026-05-24"
 pages_build_output_dir = "dist"
 
 [vars]
-VITE_APP_NAME = "ZeaZ Studio Dashboard"
+VITE_APP_NAME = "zDash"
 VITE_APP_ENV = "production"

@@ -1,12 +1,12 @@
-name: Deploy ZeaZ Studio Dashboard to Cloudflare Pages
+name: Deploy zDash to Cloudflare Pages
 
 on:
   push:
     branches:
       - main
     paths:
-      - "apps/zeaz-studio-dashboard/**"
-      - ".github/workflows/deploy-zeaz-studio-dashboard-pages.yml"
+      - "apps/zdash/**"
+      - ".github/workflows/deploy-zdash-pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -14,21 +14,21 @@ permissions:
   deployments: write
 
 concurrency:
-  group: zeaz-studio-dashboard-pages-${{ github.ref }}
+  group: zdash-pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build-and-deploy:
-    name: Build and deploy dashboard
+    name: Build and deploy zDash
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: apps/zeaz-studio-dashboard
+        working-directory: apps/zdash
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_PAGES_PROJECT_NAME: zeaz-studio-dashboard
+      CLOUDFLARE_PAGES_PROJECT_NAME: zdash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,5 +56,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: apps/zeaz-studio-dashboard
-          command: pages deploy dist --project-name=zeaz-studio-dashboard --branch=${{ github.ref_name }} --commit-dirty=true
+          workingDirectory: apps/zdash
+          command: pages deploy dist --project-name=zdash --branch=${{ github.ref_name }} --commit-dirty=true

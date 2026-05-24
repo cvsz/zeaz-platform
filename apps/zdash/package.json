@@ -1,9 +1,9 @@
 {
-  "name": "zeaz-studio-dashboard",
+  "name": "zdash",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "ZeaZ Studio AI Agent System dashboard built with React and Vite for local zdash.zeaz.dev and Cloudflare Pages deployment.",
+  "description": "zDash AI Agent System dashboard built with React and Vite for local zdash.zeaz.dev and Cloudflare deployment.",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 3006 --strictPort",
     "dev:lan": "vite --host 0.0.0.0 --port 3006 --strictPort",

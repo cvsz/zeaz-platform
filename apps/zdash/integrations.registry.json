@@ -1,0 +1,20 @@
+{
+  "app": "zdash",
+  "owner_repo": "cvsz/zeaz-platform",
+  "public_url": "https://zdash.zeaz.dev",
+  "local_service": "http://127.0.0.1:3006",
+  "scanned_sources": {
+    "cvsz": ["cvsz/zeaz-platform", "cvsz/zveo", "cvsz/zwallet", "cvsz/zkbtrader", "cvsz/livescan", "cvsz/zSafeGuard", "cvsz/zsp-aitool", "cvsz/everything-claude-code", "cvsz/fb_scheduler", "cvsz/zLinebot", "cvsz/zLinebot-automos", "cvsz/zeaz-meta", "cvsz/zcodex", "cvsz/zypto", "cvsz/zttlbots", "cvsz/zlttbots", "cvsz/zeapay", "cvsz/zeye"],
+    "ZeaZDev": ["ZeaZDev/FBScheduler", "ZeaZDev/ZeaClicker", "ZeaZDev/GreenClicker", "ZeaZDev/ZeaZDev-Omega", "ZeaZDev/zeazchain", "ZeaZDev/zeaztools", "ZeaZDev/zeazdev-repo"]
+  },
+  "integration_targets": [
+    {"module": "trading", "repos": ["cvsz/zkbtrader", "cvsz/livescan"], "zdash_panels": ["XAU Live Scanner", "AutoTrading Engine", "Backtesting Lab"], "priority": "P0", "mode": "api-adapter-first"},
+    {"module": "risk", "repos": ["cvsz/zSafeGuard"], "zdash_panels": ["Drawdown Guard", "Risk Events", "Kill Switch"], "priority": "P0", "mode": "read-only-then-control"},
+    {"module": "cloudflare-ops", "repos": ["cvsz/zeaz-platform"], "zdash_panels": ["Tunnel Health", "Deploy Status", "Route Map"], "priority": "P0", "mode": "local-service-and-cloudflare-tunnel"},
+    {"module": "wallet-payments", "repos": ["cvsz/zwallet", "cvsz/zeapay", "cvsz/zypto", "ZeaZDev/zeazchain"], "zdash_panels": ["Wallet Status", "Payment Events", "Ledger Summary"], "priority": "P1", "mode": "summary-api-only"},
+    {"module": "video-content", "repos": ["cvsz/zveo"], "zdash_panels": ["Video Pipeline", "Render Queue", "Asset Status"], "priority": "P1", "mode": "queue-and-health"},
+    {"module": "social-automation", "repos": ["cvsz/fb_scheduler", "ZeaZDev/FBScheduler", "cvsz/zLinebot", "cvsz/zLinebot-automos"], "zdash_panels": ["Scheduler", "Social Media Pipeline", "Line Bot Events"], "priority": "P1", "mode": "job-status-adapter"},
+    {"module": "agent-tooling", "repos": ["cvsz/zsp-aitool", "cvsz/everything-claude-code", "cvsz/zcodex", "ZeaZDev/ZeaZDev-Omega"], "zdash_panels": ["Agent Roster", "Session Manager", "Codex/ECC Status"], "priority": "P2", "mode": "metadata-and-runbook"},
+    {"module": "device-automation", "repos": ["ZeaZDev/ZeaClicker", "ZeaZDev/GreenClicker", "cvsz/zeye"], "zdash_panels": ["Device Automation", "Automation Health"], "priority": "P2", "mode": "local-agent-adapter"}
+  ]
+}
