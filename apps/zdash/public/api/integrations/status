@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-05-24T19:50:00Z",
+  "source": "static-contract",
+  "version": "2026.05.24-p0",
+  "modules": [
+    {
+      "module": "trading",
+      "priority": "P0",
+      "status": "adapter-required",
+      "mode": "api-adapter-first",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Static contract ready; connect cvsz/zkbtrader and cvsz/livescan adapters next"
+    },
+    {
+      "module": "risk",
+      "priority": "P0",
+      "status": "adapter-required",
+      "mode": "read-only-then-control",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Static contract ready; connect cvsz/zSafeGuard read-only health next"
+    },
+    {
+      "module": "cloudflare-ops",
+      "priority": "P0",
+      "status": "planned",
+      "mode": "local-service-and-cloudflare-tunnel",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Static contract ready; zdash tunnel route exists at https://zdash.zeaz.dev"
+    },
+    {
+      "module": "wallet-payments",
+      "priority": "P1",
+      "status": "planned",
+      "mode": "summary-api-only",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Planned after P0 adapters"
+    },
+    {
+      "module": "video-content",
+      "priority": "P1",
+      "status": "planned",
+      "mode": "queue-and-health",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Planned after P0 adapters"
+    },
+    {
+      "module": "social-automation",
+      "priority": "P1",
+      "status": "planned",
+      "mode": "job-status-adapter",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Planned after P0 adapters"
+    },
+    {
+      "module": "agent-tooling",
+      "priority": "P2",
+      "status": "planned",
+      "mode": "metadata-and-runbook",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Planned after P1 adapters"
+    },
+    {
+      "module": "device-automation",
+      "priority": "P2",
+      "status": "planned",
+      "mode": "local-agent-adapter",
+      "health": "unknown",
+      "latency_ms": null,
+      "last_event": "Planned after P1 adapters"
+    }
+  ]
+}

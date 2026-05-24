@@ -1,0 +1,13 @@
+{
+  "module": "cloudflare-ops",
+  "priority": "P0",
+  "status": "planned",
+  "health": "unknown",
+  "sources": ["cvsz/zeaz-platform"],
+  "expected_contract": {
+    "tunnel": "/api/integrations/cloudflare-ops/tunnel",
+    "deployments": "/api/integrations/cloudflare-ops/deployments",
+    "routes": "/api/integrations/cloudflare-ops/routes"
+  },
+  "next_step": "Connect local cloudflared and GitHub Actions status into read-only Cloudflare Ops adapter."
+}

@@ -1,0 +1,13 @@
+{
+  "module": "trading",
+  "priority": "P0",
+  "status": "adapter-required",
+  "health": "unknown",
+  "sources": ["cvsz/zkbtrader", "cvsz/livescan"],
+  "expected_contract": {
+    "signals": "/api/integrations/trading/signals",
+    "positions": "/api/integrations/trading/positions",
+    "backtests": "/api/integrations/trading/backtests"
+  },
+  "next_step": "Add read-only adapter that normalizes zkbtrader/livescan output into zDash status schema."
+}

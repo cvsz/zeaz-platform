@@ -1,0 +1,13 @@
+{
+  "module": "risk",
+  "priority": "P0",
+  "status": "adapter-required",
+  "health": "unknown",
+  "sources": ["cvsz/zSafeGuard"],
+  "expected_contract": {
+    "drawdown": "/api/integrations/risk/drawdown",
+    "events": "/api/integrations/risk/events",
+    "kill_switch": "/api/integrations/risk/kill-switch"
+  },
+  "next_step": "Add read-only zSafeGuard health adapter before exposing any control actions."
+}
