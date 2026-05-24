@@ -1,88 +1,147 @@
-```markdown
-# zeaz-platform Development Patterns
+---
+name: zeaz-platform
+description: Repo-specific Cloudflare platform delivery rules for secure, phase-scoped, validated changes.
+---
 
-> Auto-generated skill from repository analysis
+# zeaz-platform Skill
 
-## Overview
-This skill teaches the core development patterns and conventions used in the `zeaz-platform` TypeScript codebase. It covers file naming, import/export styles, commit message conventions, and testing patterns. While no specific framework or automated workflows were detected, this guide will help you contribute code that aligns with the project's established practices.
+Use this skill for any task in `zeaz-platform`. It replaces the old generic TypeScript guidance with the actual Cloudflare platform operating model for this repository.
 
-## Coding Conventions
+## Source Of Truth
 
-### File Naming
-- **Pattern:** PascalCase for all files.
-- **Example:**  
-  `UserProfile.ts`, `OrderManager.test.ts`
+- Treat `AGENTS.md` as authoritative policy.
+- Use this file as an execution checklist, not as a policy override.
 
-### Import Style
-- **Pattern:** Relative imports are used throughout the codebase.
-- **Example:**
-  ```typescript
-  import { UserProfile } from './UserProfile';
-  ```
+## Activation Checklist
 
-### Export Style
-- **Pattern:** Named exports are preferred.
-- **Example:**
-  ```typescript
-  // In UserProfile.ts
-  export function getUserProfile() { ... }
-  ```
+1. Identify the current phase (`F0` to `F12`) and keep changes phase-scoped.
+2. Classify action type:
+   - read-only research
+   - local file mutation
+   - external mutation (push, publish, paid API job, third-party change)
+3. Run offline validation first; make API checks opt-in (`--api-check`).
+4. Verify no secrets, IDs, tokens, or private key material are introduced.
 
-### Commit Message Conventions
-- **Pattern:** Conventional commits with clear prefixes.
-- **Common Prefixes:** `docs`, `chore`
-- **Example:**
-  ```
-  docs: update README with new setup instructions
-  chore: remove unused dependencies
-  ```
+## Non-Negotiable Safety Rules
 
-## Workflows
+- Never commit real secrets or production identifiers.
+- Never invent Cloudflare IDs, provider metadata, tunnel IDs, or credentials.
+- Never use global Cloudflare API key automation patterns.
+- Never auto-run `terraform apply`/`tofu apply` on PR/push workflows.
+- Never disable tests, scanners, or policy checks to hide failures.
+- Never print full secret-bearing environment variables.
+- Never use unsafe placeholders in implementation files:
+  - `replace-me`
+  - `changeme`
+  - `dummy-secret`
+  - `fake-token`
 
-### Commit Changes
-**Trigger:** When committing code or documentation changes  
-**Command:** `/commit`
+## External Action Boundary
 
-1. Stage your changes using `git add`.
-2. Write a commit message using the conventional commit format:
-   - Use a prefix like `docs` or `chore`.
-   - Keep the message concise (average 44 characters).
-3. Commit your changes:
-   ```bash
-   git commit -m "docs: update API documentation"
-   ```
+- Networked tools are read-only by default.
+- Require explicit user approval before posting/publishing/pushing/merging, dispatching remote agents, or mutating third-party resources.
+- If approval is unclear, produce a local plan or draft artifact instead of taking the external action.
 
-### Add a New Module
-**Trigger:** When adding a new feature or module  
-**Command:** `/add-module`
+## Core Implementation Patterns
 
-1. Create a new file using PascalCase (e.g., `NewFeature.ts`).
-2. Use relative imports to include dependencies.
-3. Export your functions or classes using named exports.
-   ```typescript
-   export function newFeature() { ... }
-   ```
-4. If applicable, create a corresponding test file (e.g., `NewFeature.test.ts`).
+### Bash scripts (`scripts/`, `ops/`)
 
-## Testing Patterns
+Start scripts with:
 
-- **Test File Pattern:** Test files are named with the `.test.` infix (e.g., `UserManager.test.ts`).
-- **Testing Framework:** Not explicitly detected; follow standard TypeScript testing practices.
-- **Example Test File:**
-  ```typescript
-  // UserManager.test.ts
-  import { getUserManager } from './UserManager';
-
-  describe('getUserManager', () => {
-    it('should return a valid manager', () => {
-      // test implementation
-    });
-  });
-  ```
-
-## Commands
-| Command        | Purpose                                      |
-|----------------|----------------------------------------------|
-| /commit        | Commit changes using conventional commits     |
-| /add-module    | Add a new module following code conventions  |
+```bash
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
 ```
+
+Required behavior:
+- `--help` support
+- structured logging
+- predictable exit codes
+- safe temp-dir handling
+- destructive/mutating confirmation guards (`CONFIRM_APPLY=yes`, etc.)
+
+### Terraform/OpenTofu
+
+- Keep module files complete: `providers.tf`, `versions.tf`, `variables.tf`, `outputs.tf`, `README.md`.
+- Add variable type/description and validation where practical.
+- Keep validation paths usable without real credentials when feasible.
+- Keep `apply` manual and explicitly approval-gated.
+- Never expose secrets through outputs.
+
+### Python validators and utilities
+
+- Default to offline validation.
+- API interaction must be explicit and opt-in (`--api-check` style).
+- Validate required env vars, enums, and format constraints without leaking secrets.
+
+### Workers/Edge
+
+- Use strict TypeScript.
+- Include safe primitives for security headers, request IDs, structured logs, and safe JSON error responses.
+- Do not use `eval`, `new Function`, or dynamic unsafe execution.
+
+## Platform Guardrails
+
+- Supported plans: `Free`, `Pro`, `Business`, `Enterprise`.
+- Enterprise-only features must be plan-gated and non-breaking on lower tiers.
+- No allow-all Access policy.
+- Wildcard targets need explicit justification and tests.
+- Finance policies (`app/pay/treasury/admin-wallet`) must be stricter than AI platform policies (`zveo/studio/analytics`).
+
+## Required Environment Focus
+
+Prioritize strict validation coverage for:
+- Cloudflare identifiers and scoped tokens (`CF_*`)
+- identity provider settings
+- environment/region/domain settings
+- origin and backend config
+- secret rotation and plan tier controls
+
+Keep token purpose separation explicit (`CF_DNS_TOKEN`, `CF_WORKERS_TOKEN`, `CF_ZT_TOKEN`, `CF_WAF_TOKEN`, `CF_TUNNEL_TOKEN`, `CF_R2_TOKEN`).
+
+## Validation Workflow
+
+Run the smallest relevant set first, then phase-specific checks:
+
+```bash
+make validate
+make test
+make validate-env
+make tf-fmt-check
+make tf-validate
+```
+
+Use additional commands as needed by phase:
+- `make tofu-validate`
+- `make workflow-policy`
+- `make workflow-validate`
+- `make gitops-validate`
+- `make tunnel-validation`
+- `make waf-validation`
+- `make security-scan`
+
+If a phase command is missing, add it only when that phase is being implemented.
+
+## Commit And PR Conventions
+
+- Keep commits phase-scoped when possible (for example `feat(f3): ...`).
+- Keep pull requests reviewable and include:
+  - phase implemented
+  - files changed
+  - validation commands run
+  - security notes
+  - rollback notes
+  - manual setup requirements
+  - known limitations
+
+## Done Criteria
+
+A change is done only when:
+- implementation and docs are consistent
+- no secrets or fake production IDs are committed
+- relevant validations pass, or failures are documented with exact root cause
+- apply/destroy flows remain guarded
+- plan-gated behavior does not break lower tiers
+
+Do not claim production readiness without validation evidence.

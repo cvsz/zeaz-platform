@@ -50,7 +50,7 @@ jobs:
         env:
           TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID || '00000000000000000000000000000000' }}
           TF_VAR_cloudflare_zone_id: ${{ secrets.CF_ZONE_ID || '00000000000000000000000000000000' }}
-          TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CF_API_TOKEN || 'ci-validation-token-not-used-for-network-calls' }}
+          TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CLOUDFLARE_API_TOKEN || 'ci-validation-token-not-used-for-network-calls' }}
           TF_VAR_primary_domain: zeaz.dev
         run: make tf-validate
 
@@ -62,7 +62,7 @@ jobs:
           CONFIRM_APPLY: "no"
           TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
           TF_VAR_cloudflare_zone_id: ${{ secrets.CF_ZONE_ID }}
-          TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CF_API_TOKEN }}
+          TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_primary_domain: zeaz.dev
         run: |
           missing=0
@@ -80,7 +80,7 @@ jobs:
         run: |
           echo "Terraform validate completed."
           echo "Terraform plan is skipped for pull_request events because secrets are intentionally unavailable."
-          echo "Run this workflow manually after configuring CF_ACCOUNT_ID, CF_ZONE_ID, and CF_API_TOKEN to execute terraform plan."
+          echo "Run this workflow manually after configuring CF_ACCOUNT_ID, CF_ZONE_ID, and CLOUDFLARE_API_TOKEN to execute terraform plan."
 
       - name: Upload Terraform plan artifacts
         if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}

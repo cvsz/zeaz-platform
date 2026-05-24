@@ -12,7 +12,7 @@ API_BASE="https://api.cloudflare.com/client/v4"
 DEFAULT_OUT=".env.cloudflare"
 AUDIT_LOG="./.cloudflare-token-audit.log"
 
-: "${CF_EMAIL:?Missing CF_EMAIL}"
+: "${CLOUDFLARE_EMAIL:?Missing CLOUDFLARE_EMAIL}"
 : "${CF_GLOBAL_API_KEY:?Missing CF_GLOBAL_API_KEY}"
 
 TYPES_CSV=""
@@ -27,7 +27,7 @@ DRY_RUN=false
 usage() {
   cat <<USAGE
 Usage:
-  CF_EMAIL=you@example.com CF_GLOBAL_API_KEY=xxxx $0 --types <csv|all> [--write <file>] [--force] [--revoke-old] [--perm-id <id>] [--clean] [--backup] [--dry-run]
+  CLOUDFLARE_EMAIL=you@example.com CF_GLOBAL_API_KEY=xxxx $0 --types <csv|all> [--write <file>] [--force] [--revoke-old] [--perm-id <id>] [--clean] [--backup] [--dry-run]
 
 Options:
   --types <csv>    Comma-separated list of token types: dns,zt,workers,waf,tunnel,r2 or "all"
@@ -95,7 +95,7 @@ declare -A RESOURCE_MAP=(
 )
 
 # Keys we manage in the env file
-MANAGED_KEYS=(CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN)
+MANAGED_KEYS=(CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN)
 
 log() { printf '[%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$*"; }
 
@@ -103,13 +103,13 @@ cf_api() {
   local method="$1"; local endpoint="$2"; local payload="${3:-}"
   if [[ -n "${payload}" ]]; then
     curl -sS -X "${method}" "${API_BASE}${endpoint}" \
-      -H "X-Auth-Email: ${CF_EMAIL}" \
+      -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
       -H "X-Auth-Key: ${CF_GLOBAL_API_KEY}" \
       -H "Content-Type: application/json" \
       --data "${payload}"
   else
     curl -sS -X "${method}" "${API_BASE}${endpoint}" \
-      -H "X-Auth-Email: ${CF_EMAIL}" \
+      -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
       -H "X-Auth-Key: ${CF_GLOBAL_API_KEY}" \
       -H "Content-Type: application/json"
   fi
@@ -332,7 +332,7 @@ for t in "${TYPES_ARR[@]}"; do
     PERM_NAME="${PERM_NAME_MAP[$t]:-}"
     if ! PERM_ID="$(get_permission_id_by_name "${PERM_NAME}")"; then
       log "Failed to resolve permission group for ${PERM_NAME}. To diagnose, run:"
-      log "  curl -sS -X GET \"${API_BASE}/user/tokens/permission_groups\" -H \"X-Auth-Email: \${CF_EMAIL}\" -H \"X-Auth-Key: \${CF_GLOBAL_API_KEY}\" | jq -r '.result[] | \"\\(.name)\\t\\(.id)\"'"
+      log "  curl -sS -X GET \"${API_BASE}/user/tokens/permission_groups\" -H \"X-Auth-Email: \${CLOUDFLARE_EMAIL}\" -H \"X-Auth-Key: \${CF_GLOBAL_API_KEY}\" | jq -r '.result[] | \"\\(.name)\\t\\(.id)\"'"
       exit 1
     fi
     log "Resolved permission id: ${PERM_ID}"
@@ -415,7 +415,7 @@ if [[ -n "${OUT_FILE:-}" ]]; then
   {
     printf 'CF_ACCOUNT_ID="%s"\n' "${CF_ACCOUNT_ID:-}"
     printf 'CF_ZONE_ID="%s"\n' "${CF_ZONE_ID:-}"
-    printf 'CF_API_TOKEN="%s"\n\n' "${CF_API_TOKEN:-}"
+    printf 'CLOUDFLARE_API_TOKEN="%s"\n\n' "${CLOUDFLARE_API_TOKEN:-}"
   } >> "${TMP}"
 
   # Append token keys (use generated values, else preserve env or template value)

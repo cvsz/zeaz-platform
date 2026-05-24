@@ -38,7 +38,7 @@ normalize_bool(){
 load_file "$TOKEN_ENV_FILE"
 load_file "$ENV_FILE"
 
-export TF_VAR_cf_api_token="${TF_VAR_cf_api_token:-${CF_API_TOKEN:-}}"
+export TF_VAR_cf_api_token="${TF_VAR_cf_api_token:-${CLOUDFLARE_API_TOKEN:-}}"
 export TF_VAR_cf_dns_token="${TF_VAR_cf_dns_token:-${CF_DNS_TOKEN:-}}"
 export TF_VAR_cf_zone_id="${TF_VAR_cf_zone_id:-${CF_ZONE_ID:-}}"
 export TF_VAR_cf_waf_token="${TF_VAR_cf_waf_token:-${CF_WAF_TOKEN:-}}"

@@ -86,7 +86,7 @@ In the Cloudflare Zero Trust dashboard:
 When all of these variables are present, the route helper reads the existing remotely-managed tunnel configuration and upserts only the `ssh.zeaz.dev` ingress entry:
 
 ```bash
-# Set CF_ACCOUNT_ID, CF_TUNNEL_ID, and CF_API_TOKEN from a secure operator shell.
+# Set CF_ACCOUNT_ID, CF_TUNNEL_ID, and CLOUDFLARE_API_TOKEN from a secure operator shell.
 # Do not commit them, echo them, or write them into repository files.
 make ssh-route
 ```

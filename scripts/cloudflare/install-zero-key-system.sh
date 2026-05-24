@@ -80,7 +80,7 @@ if "permissions.sh" not in s:
 
 # --- Replace auth ---
 s = s.replace(
-    'X-Auth-Email: ${CF_EMAIL}',
+    'X-Auth-Email: ${CLOUDFLARE_EMAIL}',
     'Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}'
 )
 s = s.replace(
@@ -90,7 +90,7 @@ s = s.replace(
 
 # --- Replace env requirements ---
 s = s.replace(
-    'CF_EMAIL',
+    'CLOUDFLARE_EMAIL',
     'CF_ACCOUNT_ID'
 )
 s = s.replace(

@@ -39,7 +39,7 @@ main() {
   # shellcheck disable=SC1090
   source "${TOKENS_FILE}"
 
-  local required=(CF_API_TOKEN CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN)
+  local required=(CLOUDFLARE_API_TOKEN CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN)
   local key
   for key in "${required[@]}"; do
     if [[ -z "${!key:-}" ]]; then

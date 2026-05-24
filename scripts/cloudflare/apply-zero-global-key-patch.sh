@@ -58,7 +58,7 @@ p = Path("scripts/cloudflare/clean-and-regenerate-tokens.sh")
 s = p.read_text()
 
 s = s.replace(
-''': "${CF_EMAIL:?CF_EMAIL must be exported, for example: export CF_EMAIL=you@example.com}"
+''': "${CLOUDFLARE_EMAIL:?CLOUDFLARE_EMAIL must be exported, for example: export CLOUDFLARE_EMAIL=you@example.com}"
 : "${CF_GLOBAL_API_KEY:?CF_GLOBAL_API_KEY must be exported}"''',
 ''': "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID must be exported}"
 : "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN must be exported}"'''
@@ -71,7 +71,7 @@ source "$(dirname "$0")/permissions.sh"'''
 )
 
 s = s.replace(
-'''    -H "X-Auth-Email: ${CF_EMAIL}"
+'''    -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}"
     -H "X-Auth-Key: ${CF_GLOBAL_API_KEY}"''',
 '''    -H "Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}"'''
 )

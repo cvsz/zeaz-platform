@@ -16,8 +16,8 @@ Upserts the Cloudflare Tunnel public hostname route:
   ${HOSTNAME} -> ${SERVICE}
 
 Modes:
-  1. Without CF_API_TOKEN, CF_ACCOUNT_ID, or CF_TUNNEL_ID: prints manual dashboard steps.
-  2. With CF_API_TOKEN, CF_ACCOUNT_ID, and CF_TUNNEL_ID: uses the Cloudflare API to
+  1. Without CLOUDFLARE_API_TOKEN, CF_ACCOUNT_ID, or CF_TUNNEL_ID: prints manual dashboard steps.
+  2. With CLOUDFLARE_API_TOKEN, CF_ACCOUNT_ID, and CF_TUNNEL_ID: uses the Cloudflare API to
      preserve existing remotely-managed tunnel ingress routes and add/update only ${HOSTNAME}.
 
 No secrets are printed. The API token should be purpose-scoped for Cloudflare Tunnel configuration.
@@ -59,7 +59,7 @@ if [[ $# -gt 0 ]]; then
 fi
 
 missing=()
-for var_name in CF_API_TOKEN CF_ACCOUNT_ID CF_TUNNEL_ID; do
+for var_name in CLOUDFLARE_API_TOKEN CF_ACCOUNT_ID CF_TUNNEL_ID; do
   if [[ -z "${!var_name:-}" ]]; then
     missing+=("${var_name}")
   fi
@@ -95,7 +95,7 @@ work_dir="$(mktemp -d)"
 chmod 0700 "${work_dir}"
 curl_config="${work_dir}/curl.conf"
 cat > "${curl_config}" <<CURLCONFIG
-header = "Authorization: Bearer ${CF_API_TOKEN}"
+header = "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"
 header = "Content-Type: application/json"
 CURLCONFIG
 chmod 0600 "${curl_config}"

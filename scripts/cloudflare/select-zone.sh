@@ -2,14 +2,14 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-: "${CF_API_TOKEN:?Missing CF_API_TOKEN}"
+: "${CLOUDFLARE_API_TOKEN:?Missing CLOUDFLARE_API_TOKEN}"
 
 readonly TARGET_DOMAIN="zeaz.dev"
 
 response="$(
   curl -sS \
     "https://api.cloudflare.com/client/v4/zones?page=1&per_page=100" \
-    -H "Authorization: Bearer ${CF_API_TOKEN}"
+    -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"
 )"
 
 success="$(echo "${response}" | jq -r '.success')"

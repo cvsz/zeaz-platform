@@ -29,7 +29,7 @@
    - **Exact fix:** Replace placeholder `echo` steps with concrete script entrypoints (`scripts/tunnel-validate.sh`, `scripts/rotate-secrets.sh`, etc.) and fail the job on command error.
 
 4. **Insecure/sensitive auth guidance mismatch in documentation**
-   - **Evidence:** `README.md` says Global API Key is required for token lifecycle; `.env.example` does not include `CF_EMAIL`/`CF_GLOBAL_API_KEY`.
+   - **Evidence:** `README.md` says Global API Key is required for token lifecycle; `.env.example` does not include `CLOUDFLARE_EMAIL`/`CF_GLOBAL_API_KEY`.
    - **Impact:** Operators may overuse high-privilege credentials and hit setup confusion due to doc/env mismatch.
    - **Exact fix:** Prefer scoped token automation everywhere; remove Global API Key requirement from README and token scripts, or explicitly add gated optional vars in `.env.example` and validation with strict warning banners.
 

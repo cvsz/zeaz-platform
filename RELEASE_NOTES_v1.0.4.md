@@ -71,7 +71,7 @@ Observed missing required variables in local shell include:
 
 - `CF_ACCOUNT_ID`
 - `CF_ZONE_ID`
-- `CF_API_TOKEN`
+- `CLOUDFLARE_API_TOKEN`
 - `CF_DNS_TOKEN`
 - `CF_WORKERS_TOKEN`
 - `CF_ZT_TOKEN`

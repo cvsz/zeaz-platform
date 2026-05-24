@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 REQUIRED_VARS = [
     "CF_ACCOUNT_ID",
     "CF_ZONE_ID",
-    "CF_API_TOKEN",
+    "CLOUDFLARE_API_TOKEN",
     "CF_DNS_TOKEN",
     "CF_WORKERS_TOKEN",
     "CF_ZT_TOKEN",
@@ -35,7 +35,7 @@ REQUIRED_VARS = [
     "CLOUDFLARE_PLAN_TIER",
 ]
 TOKEN_VARS = [
-    "CF_API_TOKEN",
+    "CLOUDFLARE_API_TOKEN",
     "CF_DNS_TOKEN",
     "CF_WORKERS_TOKEN",
     "CF_ZT_TOKEN",

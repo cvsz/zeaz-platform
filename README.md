@@ -168,7 +168,7 @@ Copy `.env.example` to `.env` and fill in every value before running any script 
 |---|---|---|
 | `CF_ACCOUNT_ID` | yes | Cloudflare account ID. Found in the dashboard URL. |
 | `CF_ZONE_ID` | yes | Zone ID for `zeaz.dev`. Found in the zone overview page. |
-| `CF_API_TOKEN` | yes | Scoped API token with Edit permissions for general Terraform use. |
+| `CLOUDFLARE_API_TOKEN` | yes | Scoped API token with Edit permissions for general Terraform use. |
 
 ### Scoped service tokens
 

@@ -84,7 +84,7 @@ help:
 	'Tokens:' \
 	'  make token-clean            Dry-run token cleanup' \
 	'  make token-rotate-dry       Dry-run token regeneration' \
-	'  make token-rotate           Live token regeneration; requires CF_EMAIL/CF_GLOBAL_API_KEY' \
+	'  make token-rotate           Live token regeneration; requires CLOUDFLARE_EMAIL/CF_GLOBAL_API_KEY' \
 	'' \
 	'Compatibility:' \
 	'  make policy-test sbom-generation security-validate tunnel-validation waf-validation' \

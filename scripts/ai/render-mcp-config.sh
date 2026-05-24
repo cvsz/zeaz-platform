@@ -20,7 +20,7 @@ require_var() {
 validate_environment() {
   local vars=(
     CF_ACCOUNT_ID
-    CF_API_TOKEN
+    CLOUDFLARE_API_TOKEN
     CF_WORKERS_TOKEN
     CF_AUDIT_TOKEN
     CF_AI_GATEWAY_SLUG
@@ -31,7 +31,7 @@ validate_environment() {
   done
 
   [[ "${CF_ACCOUNT_ID}" =~ ^[a-f0-9]{32}$ ]] || { log "CF_ACCOUNT_ID must be 32 lowercase hex chars"; return 1; }
-  [[ "${#CF_API_TOKEN}" -ge 32 ]] || { log "CF_API_TOKEN must be at least 32 chars"; return 1; }
+  [[ "${#CLOUDFLARE_API_TOKEN}" -ge 32 ]] || { log "CLOUDFLARE_API_TOKEN must be at least 32 chars"; return 1; }
   [[ "${#CF_WORKERS_TOKEN}" -ge 32 ]] || { log "CF_WORKERS_TOKEN must be at least 32 chars"; return 1; }
   [[ "${#CF_AUDIT_TOKEN}" -ge 32 ]] || { log "CF_AUDIT_TOKEN must be at least 32 chars"; return 1; }
   [[ "${CF_AI_GATEWAY_SLUG}" =~ ^[a-z0-9-]{3,64}$ ]] || { log "CF_AI_GATEWAY_SLUG must match ^[a-z0-9-]{3,64}$"; return 1; }
@@ -47,7 +47,7 @@ main() {
       "type": "http",
       "url": "https://api.cloudflare.com/client/v4",
       "headers": {
-        "Authorization": "Bearer ${CF_API_TOKEN}",
+        "Authorization": "Bearer ${CLOUDFLARE_API_TOKEN}",
         "Content-Type": "application/json"
       }
     },

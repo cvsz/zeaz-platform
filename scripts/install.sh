@@ -102,13 +102,13 @@ validate_plan || true
 
 case "$(basename "$0"):$MODE" in
   install.sh:*|*:install)
-    require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || warn "install validation has missing env values"
+    require_env CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || warn "install validation has missing env values"
     info "initializing terraform and validating configuration"
     run_tf init -backend=false
     run_tf validate
     ;;
   uninstall.sh:*|*:uninstall)
-    require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT || warn "uninstall validation has missing env values"
+    require_env CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT || warn "uninstall validation has missing env values"
     info "generating destroy plan only"
     run_tf plan -destroy -out=tfplan.destroy
     ;;

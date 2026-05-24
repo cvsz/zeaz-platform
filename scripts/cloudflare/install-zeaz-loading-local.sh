@@ -11,7 +11,7 @@ set -Eeuo pipefail
 #
 # Wrangler 4.x auth:
 #   Prefer CLOUDFLARE_API_TOKEN.
-#   Deprecated CF_API_TOKEN is mapped only for this process.
+#   Deprecated CLOUDFLARE_API_TOKEN is mapped only for this process.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 WORKER_DIR="${ROOT_DIR}/workers/zeaz-loading"
@@ -50,8 +50,8 @@ Modern Wrangler env:
   CLOUDFLARE_EMAIL       Optional.
 
 Deprecated compatibility:
-  CF_API_TOKEN is mapped to CLOUDFLARE_API_TOKEN for this run only.
-  CF_EMAIL is mapped to CLOUDFLARE_EMAIL for this run only.
+  CLOUDFLARE_API_TOKEN is mapped to CLOUDFLARE_API_TOKEN for this run only.
+  CLOUDFLARE_EMAIL is mapped to CLOUDFLARE_EMAIL for this run only.
 USAGE
 }
 
@@ -78,14 +78,14 @@ ensure_node_tooling() {
 }
 
 normalize_wrangler_auth_env() {
-  if [[ -z "${CLOUDFLARE_API_TOKEN:-}" && -n "${CF_API_TOKEN:-}" ]]; then
-    export CLOUDFLARE_API_TOKEN="${CF_API_TOKEN}"
-    warn "Mapped deprecated CF_API_TOKEN to CLOUDFLARE_API_TOKEN for this run."
+  if [[ -z "${CLOUDFLARE_API_TOKEN:-}" && -n "${CLOUDFLARE_API_TOKEN:-}" ]]; then
+    export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN}"
+    warn "Mapped deprecated CLOUDFLARE_API_TOKEN to CLOUDFLARE_API_TOKEN for this run."
   fi
 
-  if [[ -z "${CLOUDFLARE_EMAIL:-}" && -n "${CF_EMAIL:-}" ]]; then
-    export CLOUDFLARE_EMAIL="${CF_EMAIL}"
-    warn "Mapped deprecated CF_EMAIL to CLOUDFLARE_EMAIL for this run."
+  if [[ -z "${CLOUDFLARE_EMAIL:-}" && -n "${CLOUDFLARE_EMAIL:-}" ]]; then
+    export CLOUDFLARE_EMAIL="${CLOUDFLARE_EMAIL}"
+    warn "Mapped deprecated CLOUDFLARE_EMAIL to CLOUDFLARE_EMAIL for this run."
   fi
 
   if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
@@ -96,7 +96,7 @@ normalize_wrangler_auth_env() {
 
 run_wrangler() {
   normalize_wrangler_auth_env
-  env -u CF_API_TOKEN -u CF_EMAIL npx wrangler "$@"
+  env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_EMAIL npx wrangler "$@"
 }
 
 write_worker_files() {

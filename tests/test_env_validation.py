@@ -5,7 +5,7 @@ def base_env():
     return {
         "CF_ACCOUNT_ID": "a" * 32,
         "CF_ZONE_ID": "b" * 32,
-        "CF_API_TOKEN": "tok" * 20,
+        "CLOUDFLARE_API_TOKEN": "tok" * 20,
         "CF_DNS_TOKEN": "tok" * 20,
         "CF_WORKERS_TOKEN": "tok" * 20,
         "CF_ZT_TOKEN": "tok" * 20,
@@ -77,6 +77,6 @@ def test_duration_must_be_positive_duration():
 
 def test_short_token_warns():
     env = base_env()
-    env["CF_API_TOKEN"] = "short"
+    env["CLOUDFLARE_API_TOKEN"] = "short"
     result = validate_with_warnings(env)
-    assert any("CF_API_TOKEN" in w for w in result.warnings)
+    assert any("CLOUDFLARE_API_TOKEN" in w for w in result.warnings)

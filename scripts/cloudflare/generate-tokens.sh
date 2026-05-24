@@ -102,7 +102,7 @@ main() {
   OUTPUT_DIR="${OUTPUT_DIR:-${root}/secrets}"
   ENV_FILE="${ENV_FILE:-${OUTPUT_DIR}/cloudflare.env}"
 
-  require_env CF_API_TOKEN
+  require_env CLOUDFLARE_API_TOKEN
   require_env CF_ACCOUNT_ID
   require_env CF_ZONE_ID
   command -v jq >/dev/null || die "jq is required"
@@ -114,7 +114,7 @@ main() {
   local cf_api_token cf_dns_token cf_zt_token cf_workers_token cf_waf_token cf_tunnel_token cf_r2_token
   local cf_audit_token cf_ai_gateway_token
 
-  cf_api_token="${CF_API_TOKEN:-}"
+  cf_api_token="${CLOUDFLARE_API_TOKEN:-}"
   cf_dns_token="$(create_token "zeaz-dns-token" "$(policy_dns)")"
   cf_zt_token="$(create_token "zeaz-zt-token" "$(policy_zt)")"
   cf_workers_token="$(create_token "zeaz-workers-token" "$(policy_workers)")"
@@ -138,7 +138,7 @@ main() {
 
   umask 077
   cat >"${ENV_FILE}" <<EOV
-CF_API_TOKEN=${cf_api_token}
+CLOUDFLARE_API_TOKEN=${cf_api_token}
 CF_DNS_TOKEN=${cf_dns_token}
 CF_ZT_TOKEN=${cf_zt_token}
 CF_WORKERS_TOKEN=${cf_workers_token}

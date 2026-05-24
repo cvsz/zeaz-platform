@@ -12,13 +12,13 @@ main(){
   validate_plan
   case "$(basename "$0")" in
     install.sh)
-      require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || exit 1
+      require_env CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || exit 1
       info "initializing terraform and validating configuration"
       retry 3 terraform -chdir="$PROJECT_ROOT/terraform" init -backend=false
       retry 3 terraform -chdir="$PROJECT_ROOT/terraform" validate
       ;;
     uninstall.sh)
-      require_env CF_ACCOUNT_ID CF_ZONE_ID CF_API_TOKEN ENVIRONMENT || exit 1
+      require_env CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT || exit 1
       info "generating destroy plan"
       retry 3 terraform -chdir="$PROJECT_ROOT/terraform" plan -destroy -out tfplan.destroy
       ;;

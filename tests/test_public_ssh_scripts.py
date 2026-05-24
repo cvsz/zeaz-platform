@@ -42,18 +42,18 @@ def test_origin_setup_preserves_port_22_and_validates_before_restart():
 
 def test_cloudflare_route_script_has_manual_mode_and_preserves_ingress():
     content = read(SCRIPT_DIR / "zeaz-cloudflare-ssh-route")
-    assert "CF_API_TOKEN CF_ACCOUNT_ID CF_TUNNEL_ID" in content
+    assert "CLOUDFLARE_API_TOKEN CF_ACCOUNT_ID CF_TUNNEL_ID" in content
     assert "Manual Cloudflare Zero Trust dashboard steps" in content
     assert "ssh.zeaz.dev" in content
     assert "ssh://127.0.0.1:22022" in content
     assert "$preserved + [{hostname: $hostname, service: $service}] + $catchall" in content
-    assert "Authorization: Bearer ${CF_API_TOKEN}" in content
+    assert "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" in content
     assert "token was not printed" in content
 
 
 def test_cloudflare_route_manual_mode_does_not_require_credentials_or_mutate_api():
     env = os.environ.copy()
-    for key in ("CF_API_TOKEN", "CF_ACCOUNT_ID", "CF_TUNNEL_ID"):
+    for key in ("CLOUDFLARE_API_TOKEN", "CF_ACCOUNT_ID", "CF_TUNNEL_ID"):
         env.pop(key, None)
     result = subprocess.run(
         [str(SCRIPT_DIR / "zeaz-cloudflare-ssh-route")],
@@ -63,7 +63,7 @@ def test_cloudflare_route_manual_mode_does_not_require_credentials_or_mutate_api
         capture_output=True,
     )
     assert "[SKIP] Cloudflare API environment not fully configured" in result.stdout
-    assert "[WARN] Missing API environment variables: CF_API_TOKEN,CF_ACCOUNT_ID,CF_TUNNEL_ID" in result.stdout
+    assert "[WARN] Missing API environment variables: CLOUDFLARE_API_TOKEN,CF_ACCOUNT_ID,CF_TUNNEL_ID" in result.stdout
     assert "ssh.zeaz.dev" in result.stdout
     assert "127.0.0.1:22022" in result.stdout
 

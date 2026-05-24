@@ -54,7 +54,7 @@ fi
 
 if $API_CHECK; then
   declare -A token_permission_map=(
-    [CF_API_TOKEN]='account'
+    [CLOUDFLARE_API_TOKEN]='account'
     [CF_DNS_TOKEN]='dns'
     [CF_WORKERS_TOKEN]='workers'
     [CF_ZT_TOKEN]='access'
