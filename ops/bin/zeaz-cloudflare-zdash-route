@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+HOSTNAME="${ZDASH_HOSTNAME:-zdash.zeaz.dev}"
+SERVICE="${ZDASH_SERVICE:-http://127.0.0.1:3006}"
+API_BASE="https://api.cloudflare.com/client/v4"
+ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-}"
+TUNNEL_ID="${CLOUDFLARE_TUNNEL_ID:-}"
+FAILED=0
+
+usage() {
+  cat <<USAGE
+Usage: zeaz-cloudflare-zdash-route [--help]
+
+Upserts the Cloudflare Tunnel public hostname route:
+  ${HOSTNAME} -> ${SERVICE}
+
+Required environment for API mode:
+  CLOUDFLARE_API_TOKEN
+  CLOUDFLARE_ACCOUNT_ID
+  CLOUDFLARE_TUNNEL_ID
+
+Without those values, this command prints manual Cloudflare dashboard steps only.
+USAGE
+}
+
+ok() { echo "[OK] $*"; }
+warn() { echo "[WARN] $*"; }
+fail() { echo "[FAIL] $*"; FAILED=1; }
+
+manual_instructions() {
+  local missing_display="$1"
+  cat <<MANUAL
+[SKIP] Cloudflare API environment is incomplete; no API changes attempted.
+[WARN] Missing environment variables: ${missing_display}
+
+Manual Cloudflare Zero Trust dashboard steps:
+  1. Open Zero Trust dashboard > Networks > Tunnels.
+  2. Select the existing production tunnel for zeaz.dev.
+  3. Add a Public Hostname without changing existing routes:
+     - Subdomain: zdash
+     - Domain: zeaz.dev
+     - Type: HTTP
+     - URL: 127.0.0.1:3006
+  4. Save the route and confirm the connector is healthy.
+  5. Open https://zdash.zeaz.dev after the dashboard service is running.
+MANUAL
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
+
+missing=()
+for var_name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_TUNNEL_ID; do
+  if [[ -z "${!var_name:-}" ]]; then
+    missing+=("${var_name}")
+  fi
+done
+
+if [[ "${#missing[@]}" -gt 0 ]]; then
+  missing_display="$(IFS=,; printf '%s' "${missing[*]}")"
+  manual_instructions "${missing_display}"
+  exit 0
+fi
+
+command -v curl >/dev/null 2>&1 || { fail "curl not found"; exit 1; }
+command -v jq >/dev/null 2>&1 || { fail "jq not found; required to preserve existing tunnel routes safely"; exit 1; }
+
+if [[ ! "${ACCOUNT_ID}" =~ ^[A-Za-z0-9_-]{16,64}$ ]]; then
+  fail "CLOUDFLARE_ACCOUNT_ID format is invalid"
+  exit 1
+fi
+
+if [[ ! "${TUNNEL_ID}" =~ ^[A-Za-z0-9_-]{16,80}$ ]]; then
+  fail "CLOUDFLARE_TUNNEL_ID format is invalid"
+  exit 1
+fi
+
+work_dir="$(mktemp -d)"
+chmod 0700 "${work_dir}"
+curl_config="${work_dir}/curl.conf"
+cat > "${curl_config}" <<CURLCONFIG
+header = "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"
+header = "Content-Type: application/json"
+CURLCONFIG
+chmod 0600 "${curl_config}"
+cleanup() { rm -rf "${work_dir}"; }
+trap cleanup EXIT
+trap 'fail "Cloudflare zdash route update interrupted at line ${LINENO}"; exit 1' ERR
+
+config_url="${API_BASE}/accounts/${ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/configurations"
+get_body="${work_dir}/get.json"
+put_body="${work_dir}/put.json"
+response_body="${work_dir}/response.json"
+http_code="$(curl -sS -o "${get_body}" -w '%{http_code}' --config "${curl_config}" "${config_url}")"
+
+if [[ ! "${http_code}" =~ ^2 ]]; then
+  fail "Cloudflare API read failed with HTTP ${http_code}"
+  exit 1
+fi
+
+if ! jq -e '.success == true' "${get_body}" >/dev/null; then
+  fail "Cloudflare API read response was not successful"
+  exit 1
+fi
+
+jq --arg hostname "${HOSTNAME}" --arg service "${SERVICE}" '
+  def is_catchall: ((has("hostname") | not) or (.hostname == null));
+  (.result.config // {}) as $cfg
+  | ($cfg.ingress // []) as $ingress
+  | ($ingress | map(select((is_catchall | not) and (.hostname != $hostname)))) as $preserved
+  | ($ingress | map(select(is_catchall))) as $catchall
+  | {
+      config: ($cfg + {
+        ingress: ($preserved + [{hostname: $hostname, service: $service}] + $catchall)
+      })
+    }
+' "${get_body}" > "${put_body}"
+
+if ! jq -e --arg hostname "${HOSTNAME}" --arg service "${SERVICE}" '
+  [.config.ingress[] | select(.hostname == $hostname and .service == $service)] | length == 1
+' "${put_body}" >/dev/null; then
+  fail "generated route payload did not contain exactly one ${HOSTNAME} route"
+  exit 1
+fi
+
+http_code="$(curl -sS -o "${response_body}" -w '%{http_code}' -X PUT --config "${curl_config}" --data-binary "@${put_body}" "${config_url}")"
+
+if [[ ! "${http_code}" =~ ^2 ]]; then
+  fail "Cloudflare API update failed with HTTP ${http_code}"
+  exit 1
+fi
+
+if jq -e '.success == true' "${response_body}" >/dev/null; then
+  ok "upserted ${HOSTNAME} -> ${SERVICE} without removing existing tunnel routes"
+else
+  fail "Cloudflare API update response was not successful"
+  exit 1
+fi
+
+exit "${FAILED}"

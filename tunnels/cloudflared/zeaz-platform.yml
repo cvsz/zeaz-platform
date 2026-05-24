@@ -4,6 +4,9 @@
 # GitOps/IaC reference for expected routing.
 
 ingress:
+  - hostname: zdash.zeaz.dev
+    service: http://127.0.0.1:3006
+
   - hostname: zveo.zeaz.dev
     service: http://127.0.0.1:3002
 
