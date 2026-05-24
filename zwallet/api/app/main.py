@@ -73,7 +73,7 @@ async def login(payload: LoginRequest, session: AsyncSession = Depends(session_d
 async def transfer(payload: TransferRequestDTO, _: str = Depends(require_user)) -> dict:
     # Removed private_key from payload. 
     # Shifting to Orchestration flow: Validate -> Simulate -> Request Signing
-    request_id = WalletService(EthereumClient()).request_transfer_signature(
+    request_id = await WalletService(EthereumClient()).request_transfer_signature(
         payload.from_address, payload.to_address, payload.amount_eth
     )
     return {"status": "pending_signature", "request_id": request_id}

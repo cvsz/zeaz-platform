@@ -1,56 +1,79 @@
 import Fastify from 'fastify';
-import { type TxPayload } from '@zwallet/shared';
+import { randomUUID } from 'node:crypto';
+import { MPCWallet } from '@zwallet/crypto';
 
 const app = Fastify({ logger: true });
 
-interface SigningRequest {
+interface CeremonyState {
   id: string;
-  payload: TxPayload;
-  participants: string[];
+  payload: string;
   threshold: number;
+  participants: Set<string>;
+  shares: Map<string, Buffer>;
+  status: 'pending' | 'completed' | 'failed';
 }
 
-const signingRequests = new Map<string, SigningRequest>();
+const ceremonies = new Map<string, CeremonyState>();
 
 app.get('/health', async () => ({ service: 'mpc-service', status: 'ok' }));
 
 /**
- * Verifies the attestation of a remote signer.
+ * Verifies the attestation of a remote signer (simulating SGX/Nitro Enclave checks).
  */
 function verifyAttestation(token: string): boolean {
-  // Logic to verify SGX/Nitro attestation or signed policy
   return token.startsWith('attest_') && token.length > 20;
 }
 
-/**
- * Creates a new signing ceremony request.
- */
 app.post('/v1/mpc/request-sign', async (req, reply) => {
-  const { payload, participants, threshold, attestationToken } = req.body as any;
+  const { payload, threshold, participants, attestationToken } = req.body as any;
   
-  if (!verifyAttestation(attestationToken)) {
+  if (!attestationToken || !verifyAttestation(attestationToken)) {
     return reply.code(403).send({ error: 'invalid_attestation' });
   }
 
-  const id = Math.random().toString(36).substring(7);
-  
-  signingRequests.set(id, { id, payload, participants, threshold });
-  console.log(`[MPC] Verified Attestation for request ${id}. Ceremony started.`);
-  
+  if (!payload || !threshold || !Array.isArray(participants)) {
+    return reply.code(400).send({ error: 'invalid_request_params' });
+  }
+
+  const id = randomUUID();
+  ceremonies.set(id, {
+    id,
+    payload,
+    threshold,
+    participants: new Set(participants),
+    shares: new Map(),
+    status: 'pending'
+  });
+
   return { id, status: 'pending_ceremony' };
 });
 
-/**
- * Verifies a partial signature and updates the ceremony state.
- */
 app.post('/v1/mpc/participate', async (req, reply) => {
-  const { requestId, participantId, partialSignature } = req.body as any;
-  const request = signingRequests.get(requestId);
-  
-  if (!request) return reply.code(404).send({ error: 'Request not found' });
-  
-  // Logic for aggregating TSS signatures would go here.
-  return { status: 'acknowledged', progress: '1/3' };
+  const { requestId, participantId, shareHex } = req.body as any;
+  const ceremony = ceremonies.get(requestId);
+
+  if (!ceremony) return reply.code(404).send({ error: 'ceremony_not_found' });
+  if (!ceremony.participants.has(participantId)) return reply.code(403).send({ error: 'unauthorized_participant' });
+  if (ceremony.status !== 'pending') return reply.code(400).send({ error: 'ceremony_already_finalized' });
+
+  ceremony.shares.set(participantId, Buffer.from(shareHex, 'hex'));
+
+  if (ceremony.shares.size >= ceremony.threshold) {
+    try {
+      const wallet = new MPCWallet(ceremony.threshold);
+      ceremony.shares.forEach((share, id) => wallet.addShare({ id, share }));
+      
+      const signature = wallet.sign(Buffer.from(ceremony.payload));
+      ceremony.status = 'completed';
+      
+      return { status: 'completed', signature: signature.toString('hex') };
+    } catch (e: any) {
+      ceremony.status = 'failed';
+      return reply.code(500).send({ error: 'aggregation_failed', detail: e.message });
+    }
+  }
+
+  return { status: 'acknowledged', progress: `${ceremony.shares.size}/${ceremony.threshold}` };
 });
 
 await app.listen({ port: 3005, host: '0.0.0.0' });

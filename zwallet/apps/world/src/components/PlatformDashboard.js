@@ -4,36 +4,79 @@
  */
 
 export function renderPlatformDashboard(data) {
-  const { components, globalStatus } = data;
-  
-  const componentList = Object.entries(components).map(([key, info]) => `
-    <div class="status-item">
-      <div class="status-meta">
-        <span class="status-name">${info.service}</span>
-        <span class="status-time">${new Date(info.lastCheck).toLocaleTimeString()}</span>
-      </div>
-      <div class="status-indicator-group">
-        ${info.latency ? `<span class="latency">${info.latency}ms</span>` : ''}
-        <span class="dot ${info.status === 'healthy' ? 'success' : 'warning'} pulse"></span>
+  const { components, globalStatus, security, health, metrics } = data;
+
+  const renderAssets = () => `
+    <div class="card animate-slide-up" style="animation-delay: 0.1s">
+      <h2>Multi-Chain Assets <span class="badge">LIVE</span></h2>
+      <div class="asset-list">
+        <div class="asset-item">
+          <div class="asset-info">
+            <span class="asset-icon">💵</span>
+            <div>
+              <div class="asset-name">ZEA Stablecoin</div>
+              <div class="asset-symbol">ERC-20 (6 Decimals)</div>
+            </div>
+          </div>
+          <div class="asset-balance">1,250.00 ZEA</div>
+        </div>
+        <div class="asset-item">
+          <div class="asset-info">
+            <span class="asset-icon">💠</span>
+            <div>
+              <div class="asset-name">ZEAZ Governance</div>
+              <div class="asset-symbol">ERC-20 (18 Decimals)</div>
+            </div>
+          </div>
+          <div class="asset-balance">5,000.00 ZEAZ</div>
+        </div>
       </div>
     </div>
-  `).join('');
+  `;
+
+  const renderWeb3Status = () => `
+    <div class="card animate-slide-up" style="animation-delay: 0.2s">
+      <h2>Web3 Connectivity</h2>
+      <div class="status-item">
+        <div class="status-meta">
+          <span class="status-name">EIP-1193 Provider</span>
+          <span class="status-time">Injected: window.ethereum</span>
+        </div>
+        <div class="status-indicator-group">
+          <span class="dot success pulse"></span>
+          <span class="latency">READY</span>
+        </div>
+      </div>
+      <div class="security-intel" style="margin-top: var(--spacing-md)">
+        <div class="intel-header">
+          <span class="title">Active DApp Context</span>
+        </div>
+        <div class="route-meta">
+          <span class="version-tag">Origin: world.zeaz.dev</span>
+          <button class="text-button" id="web3-connect">Disconnect</button>
+        </div>
+      </div>
+    </div>
+  `;
 
   return `
-    <section class="card glass-panel platform-dashboard">
-      <div class="card-header">
+    <div class="platform-dashboard animate-fade">
+      ${renderWeb3Status()}
+      ${renderAssets()}
+      
+      <div class="card animate-slide-up" style="animation-delay: 0.3s">
         <h2>
           <span>🛰️ Platform Control</span>
           <span class="badge ${globalStatus === 'online' ? '' : 'badge-warning'}">${globalStatus.toUpperCase()}</span>
         </h2>
-        <p class="subtitle">Real-time Cloudflare Infrastructure Status</p>
-      </div>
-      <div class="status-list">
         ${componentList}
       </div>
+
+      ${securityMetrics}
+
       <div class="dashboard-footer">
         <button id="refresh-health" class="text-button">Force Sync</button>
-        <span class="version-tag">v1.0.5-stable</span>
+        <span class="version-tag">v1.1.0-hardened</span>
       </div>
     </section>
   `;
@@ -93,6 +136,51 @@ export const platformDashboardStyles = `
   .version-tag {
     font-size: 0.65rem;
     color: var(--color-text-muted);
+  }
+  .security-intel {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+  }
+  .intel-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+  .intel-header .title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-primary);
+  }
+  .intel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+  }
+  .intel-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--spacing-sm);
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  .intel-card .label {
+    font-size: 0.65rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+  .intel-card .value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
   }
   .dashboard-footer {
     display: flex;

@@ -1,29 +1,52 @@
 import Fastify from 'fastify';
-import { IndexerWorker, InMemoryQueue } from './worker.js';
-import { PostgresStateStore } from './state-store.js';
+import { MultiRpcPool, createFetchRpcClient } from '@zwallet/rpc';
 
 const app = Fastify({ logger: true });
 
-const queue = new InMemoryQueue();
-const stateStore = new PostgresStateStore();
-const worker = new IndexerWorker(queue, stateStore);
+interface IndexedBlock {
+  blockNumber: number;
+  transactions: string[];
+  processedAt: string;
+}
 
-app.get('/health', async () => ({
-  service: 'indexer-service',
-  status: 'ok',
-  timestamp: new Date().toISOString(),
-}));
+const history: IndexedBlock[] = [];
 
-app.post<{ Body: { messages: unknown[] } }>('/queue/publish', async (req) => {
-  for (const message of req.body.messages) {
-    await queue.publish(message);
-  }
-  return { accepted: req.body.messages.length };
+app.get('/health', async () => ({ service: 'indexer-service', status: 'ok', backlog: 0 }));
+
+/**
+ * Simulates the ingestion of a new block.
+ */
+async function processBlock(rpc: MultiRpcPool, blockNumber: number) {
+  console.log(`[Indexer] Processing block ${blockNumber}...`);
+  
+  // Simulation: Fetch logs and transactions
+  const block = {
+    blockNumber,
+    transactions: [
+      `0x${Math.random().toString(16).slice(2)}`,
+      `0x${Math.random().toString(16).slice(2)}`
+    ],
+    processedAt: new Date().toISOString()
+  };
+  
+  history.unshift(block);
+  if (history.length > 100) history.pop();
+}
+
+app.get('/v1/indexer/history', async () => {
+  return history;
 });
 
-app.post('/worker/run-once', async () => {
-  const processed = await worker.drainOnce();
-  return { processed };
-});
+// Mock RPC config
+const rpcPool = new MultiRpcPool([
+  { id: 'primary', chain: 'evm', url: 'http://localhost:8545', priority: 100 }
+], createFetchRpcClient);
 
-await app.listen({ port: Number(process.env.PORT ?? 0), host: '0.0.0.0' });
+// Start ingestion loop
+setInterval(() => {
+  const lastBlock = history[0]?.blockNumber || 18000000;
+  processBlock(rpcPool, lastBlock + 1).catch(console.error);
+}, 12000);
+
+await app.listen({ port: 3007, host: '0.0.0.0' });
+console.log('Indexer Service listening on port 3007');

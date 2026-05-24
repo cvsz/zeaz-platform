@@ -63,3 +63,12 @@ node_modules/
 
 # Misc
 .DS_Store
+.agent/
+.agents/
+.gemini/
+.codex/
+.cursor/
+.claude/
+.codebuddy/
+.joycode/
+.zed/

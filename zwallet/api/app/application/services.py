@@ -26,12 +26,27 @@ class WalletService:
     def __init__(self, eth_client: EthereumClient) -> None:
         self.eth_client = eth_client
 
-    def request_transfer_signature(self, from_address: str, to_address: str, amount_eth: float) -> str:
-        # 1. Validate Balance & State
-        # 2. Trigger Simulation
-        # 3. Create Orchestration Record
-        # 4. Return Request ID for MPC ceremony
-        import uuid
-        request_id = str(uuid.uuid4())
-        print(f"[WalletService] Signing request created: {request_id} for {amount_eth} ETH from {from_address}")
-        return request_id
+    async def request_transfer_signature(self, from_address: str, to_address: str, amount_eth: float) -> str:
+        # 1. Validate Balance & State (Omitted for brevity in this step)
+        # 2. Trigger MPC Signing Ceremony
+        import httpx
+        import os
+
+        payload = f"TRANSFER:{from_address}:{to_address}:{amount_eth}"
+        mpc_service_url = os.getenv("MPC_SERVICE_URL", "http://localhost:3005")
+        
+        async with httpx.AsyncClient() as client:
+            res = await client.post(
+                f"{mpc_service_url}/v1/mpc/request-sign",
+                json={
+                    "payload": payload,
+                    "threshold": 2,
+                    "participants": ["node-1", "node-2", "user-device"]
+                }
+            )
+            if res.status_code != 200:
+                raise HTTPException(status_code=500, detail="Failed to initiate MPC ceremony")
+            
+            request_id = res.json()["id"]
+            print(f"[WalletService] MPC Ceremony initiated: {request_id} for {amount_eth} ETH")
+            return request_id

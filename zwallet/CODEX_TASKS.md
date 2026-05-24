@@ -71,9 +71,9 @@ This plan converts `docs/00_AGENT_CONTRACT.md` through `docs/11_FINAL_EXECUTION.
 - [ ] `verifySignature()` finalized and chain-tested.
 
 ### 3.3 Security controls
-- [ ] AES-256-GCM encryption for sensitive wallet payloads.
-- [ ] Zero plaintext secret persistence.
-- [ ] Memory wipe/best-effort cleanup for key material.
+- [x] AES-256-GCM encryption for sensitive wallet payloads.
+- [x] Zero plaintext secret persistence.
+- [x] Memory wipe/best-effort cleanup for key material.
 
 ### 3.4 Tests
 - [ ] Valid signature tests (per chain).

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "fastify": "^5.0.0",
-    "@zwallet/shared": "1.0.0"
+    "@zwallet/shared": "workspace:*"
   },
   "devDependencies": {
     "tsx": "^4.19.1",

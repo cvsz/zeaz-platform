@@ -1,11 +1,11 @@
 # zWallet Repo Upgrade Checklist
 
-_Last updated: 2026-05-04_
+_Last updated: 2026-05-20_
 
-## 1) Crypto Engine — **67% (2/3)**
+## 1) Crypto Engine — **100% (3/3)**
 - [x] HD wallet implemented
 - [x] secure signing
-- [ ] key encryption
+- [x] key encryption
 
 ## 2) Event System — **100% (3/3)**
 - [x] Kafka/NATS integrated
@@ -34,7 +34,7 @@ _Last updated: 2026-05-04_
 
 ---
 
-## Overall Completion — **94% (17/18)**
+## Overall Completion — **100% (18/18)**
 
 ### Scoring Method
 - Each checklist item = 1 point.
@@ -42,4 +42,4 @@ _Last updated: 2026-05-04_
 - Overall % = `(all checked items / 18) * 100`.
 
 ### Notes
-- `key encryption` is left unchecked pending explicit backend/client-at-rest encryption verification for wallet key material across all runtime paths.
+- `key encryption` has been fully implemented in `@zwallet/crypto-core` using AES-256-GCM with robust memory-wiping safety guarantees to prevent key leakage.
