@@ -36,14 +36,46 @@ apps/zeaz-studio-dashboard/dist
 | Root directory | `apps/zeaz-studio-dashboard` |
 | Node version | `22` |
 
-## Required GitHub secrets
+## Required GitHub Actions secrets
 
 | Secret | Purpose |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare scoped token with Pages deploy permission |
-| `CF_ACCOUNT_ID` | Cloudflare account ID |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare token with Pages deployment permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
 
-Use scoped Cloudflare API tokens only. Do not commit token values, account IDs, zone IDs, tunnel IDs, or private keys.
+Use the GitHub CLI from a secure local shell. Do not paste real values into committed files.
+
+```bash
+# Login once if needed
+gh auth login
+
+# Set the Cloudflare account ID
+printf '%s' '<your-cloudflare-account-id>' \
+  | gh secret set CLOUDFLARE_ACCOUNT_ID --repo cvsz/zeaz-platform
+
+# Set the Cloudflare API token
+printf '%s' '<your-cloudflare-api-token>' \
+  | gh secret set CLOUDFLARE_API_TOKEN --repo cvsz/zeaz-platform
+
+# Verify names only. This does not print secret values.
+gh secret list --repo cvsz/zeaz-platform
+```
+
+For PowerShell:
+
+```powershell
+# Login once if needed
+gh auth login
+
+# Set the Cloudflare account ID
+'<your-cloudflare-account-id>' | gh secret set CLOUDFLARE_ACCOUNT_ID --repo cvsz/zeaz-platform
+
+# Set the Cloudflare API token
+'<your-cloudflare-api-token>' | gh secret set CLOUDFLARE_API_TOKEN --repo cvsz/zeaz-platform
+
+# Verify names only. This does not print secret values.
+gh secret list --repo cvsz/zeaz-platform
+```
 
 ## Manual deployment
 
