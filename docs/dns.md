@@ -17,6 +17,11 @@ Source of truth: `dns/records.yaml`.
 - pay.zeaz.dev
 - treasury.zeaz.dev
 - admin-wallet.zeaz.dev
+- zkbtrader.zeaz.dev
+
+## Service routing notes
+- `zkbtrader.zeaz.dev` routes through Cloudflare Tunnel to the local ZKBTrader API on port `8004`.
+- Keep the DNS record proxied and CNAME-based; do not expose the VM public IP.
 
 ## Rollback notes
 1. Revert `dns/records.yaml` to prior commit.

@@ -59,3 +59,10 @@ records:
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
+  - id: zkbtrader
+    name: zkbtrader
+    fqdn: zkbtrader.${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1

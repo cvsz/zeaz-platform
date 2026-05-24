@@ -14,6 +14,11 @@ ingress:
     service: https://fintech-origin.internal:443
   - hostname: zveo.zeaz.dev
     service: https://ai-origin.internal:443
+  - hostname: zkbtrader.zeaz.dev
+    service: http://host.docker.internal:8004
+    originRequest:
+      connectTimeout: 30s
+      noTLSVerify: true
   - hostname: api.zeaz.dev
     service: https://api-origin.internal:443
   - hostname: admin.zeaz.dev
