@@ -28,12 +28,11 @@ REQUIRED_VARS = [
     "ORIGIN_INFRA_TYPE",
     "ORIGIN_HOSTS",
     "TERRAFORM_BACKEND_TYPE",
-    "TERRAFORM_STATE_BUCKET",
-    "TERRAFORM_LOCK_TABLE",
     "SOPS_AGE_KEY",
     "SECRET_ROTATION_INTERVAL",
     "CLOUDFLARE_PLAN_TIER",
 ]
+S3_BACKEND_REQUIRED_VARS = ["TERRAFORM_STATE_BUCKET", "TERRAFORM_LOCK_TABLE"]
 TOKEN_VARS = [
     "CLOUDFLARE_API_TOKEN",
     "CF_DNS_TOKEN",
@@ -42,7 +41,19 @@ TOKEN_VARS = [
     "CF_WAF_TOKEN",
     "CF_TUNNEL_TOKEN",
     "CF_R2_TOKEN",
+    "CF_AUDIT_TOKEN",
+    "CF_AI_GATEWAY_TOKEN",
 ]
+ALIASES = {
+    "CF_ACCOUNT_ID": ["CLOUDFLARE_ACCOUNT_ID"],
+    "CF_ZONE_ID": ["CLOUDFLARE_ZONE_ID"],
+    "CF_DNS_TOKEN": ["CLOUDFLARE_DNS_TOKEN"],
+    "CF_WORKERS_TOKEN": ["CLOUDFLARE_WORKERS_TOKEN"],
+    "CF_ZT_TOKEN": ["CLOUDFLARE_ZT_TOKEN"],
+    "CF_WAF_TOKEN": ["CLOUDFLARE_WAF_TOKEN"],
+    "CF_TUNNEL_TOKEN": ["CLOUDFLARE_TUNNEL_TOKEN"],
+    "CF_R2_TOKEN": ["CLOUDFLARE_R2_TOKEN"],
+}
 HEX_ID_RE = re.compile(r"^[a-f0-9]{32}$", re.IGNORECASE)
 HOSTNAME_RE = re.compile(r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*$")
 DURATION_RE = re.compile(r"^(?P<value>[1-9][0-9]*)(?P<unit>[smhdw]?)$", re.IGNORECASE)
@@ -50,6 +61,17 @@ PLAN_TIERS = {"free", "pro", "business", "enterprise"}
 PLAN_TIER_DISPLAY = "Free, Pro, Business, Enterprise"
 ENVIRONMENTS = {"dev", "staging", "prod"}
 IDP_TYPES = {"saml", "oidc"}
+BACKEND_TYPES = {"local", "s3"}
+ORIGIN_INFRA_TYPES = {"vm", "kubernetes", "serverless", "hybrid", "self-hosted"}
+BOOL_TEXT = {"true", "false"}
+PAID_OVERRIDE_FLAGS = [
+    "ALLOW_PAID_CLOUDFLARE_FEATURES",
+    "ALLOW_R2_WRITE",
+    "ALLOW_WORKERS_DEPLOY",
+    "ALLOW_LOAD_BALANCING",
+    "ALLOW_ADVANCED_WAF",
+    "ALLOW_LOGPUSH",
+]
 
 
 @dataclass(frozen=True)
@@ -57,6 +79,19 @@ class ValidationResult:
     ok: bool
     errors: List[str]
     warnings: List[str]
+
+
+def _normalise_aliases(env: Dict[str, str]) -> Dict[str, str]:
+    normalized = dict(env)
+    for canonical, aliases in ALIASES.items():
+        if normalized.get(canonical, "").strip():
+            continue
+        for alias in aliases:
+            value = normalized.get(alias, "").strip()
+            if value:
+                normalized[canonical] = value
+                break
+    return normalized
 
 
 def _is_valid_url(value: str) -> bool:
@@ -91,12 +126,21 @@ def validate(env: Dict[str, str]) -> List[str]:
 
 
 def validate_with_warnings(env: Dict[str, str]) -> ValidationResult:
+    env = _normalise_aliases(env)
     errors: List[str] = []
     warnings: List[str] = []
 
     for name in REQUIRED_VARS:
         if not env.get(name, "").strip():
             errors.append(f"{name}: missing")
+
+    backend_type = env.get("TERRAFORM_BACKEND_TYPE", "").strip().lower()
+    if backend_type and backend_type not in BACKEND_TYPES:
+        errors.append("TERRAFORM_BACKEND_TYPE: must be local or s3")
+    if backend_type == "s3":
+        for name in S3_BACKEND_REQUIRED_VARS:
+            if not env.get(name, "").strip():
+                errors.append(f"{name}: missing for s3 backend")
 
     for id_key in ("CF_ACCOUNT_ID", "CF_ZONE_ID"):
         value = env.get(id_key, "").strip()
@@ -116,6 +160,19 @@ def validate_with_warnings(env: Dict[str, str]) -> ValidationResult:
     if plan and plan not in PLAN_TIERS:
         errors.append(f"CLOUDFLARE_PLAN_TIER: must be one of {PLAN_TIER_DISPLAY}")
 
+    cost_lock = env.get("COST_LOCK", "true").strip().lower()
+    if cost_lock and cost_lock not in BOOL_TEXT:
+        errors.append("COST_LOCK: must be true or false")
+    if plan == "free" and cost_lock == "false":
+        warnings.append("COST_LOCK=false while CLOUDFLARE_PLAN_TIER=Free")
+    if plan == "free" and cost_lock != "false":
+        for flag in PAID_OVERRIDE_FLAGS:
+            value = env.get(flag, "false").strip().lower()
+            if value and value not in BOOL_TEXT:
+                errors.append(f"{flag}: must be true or false")
+            if value == "true":
+                warnings.append(f"{flag}=true while Free plan cost lock is active")
+
     idp_type = env.get("IDENTITY_PROVIDER_TYPE", "").strip().lower()
     if idp_type and idp_type not in IDP_TYPES:
         errors.append("IDENTITY_PROVIDER_TYPE: must be saml or oidc")
@@ -123,6 +180,10 @@ def validate_with_warnings(env: Dict[str, str]) -> ValidationResult:
     metadata_url = env.get("IDENTITY_PROVIDER_METADATA_URL", "")
     if metadata_url and not _is_valid_url(metadata_url):
         errors.append("IDENTITY_PROVIDER_METADATA_URL: must be a valid https URL")
+
+    origin_type = env.get("ORIGIN_INFRA_TYPE", "").strip().lower()
+    if origin_type and origin_type not in ORIGIN_INFRA_TYPES:
+        errors.append("ORIGIN_INFRA_TYPE: must be vm, kubernetes, serverless, hybrid, or self-hosted")
 
     origin_hosts = env.get("ORIGIN_HOSTS", "")
     if origin_hosts and not _parse_origin_hosts(origin_hosts):
