@@ -1,87 +1,129 @@
-# Cloudflare Zero Trust Platform - zeaz-platform control plan 
+# zeaz-platform — Cloudflare Zero Trust + Free Control Panel
 
-Enterprise-grade, fully-automated Cloudflare infrastructure platform for **ZeazDev** (`zeaz.dev`).
-Covers Zero Trust access, DNS, Cloudflare Tunnels, Workers, WAF, R2, and scoped API token lifecycle management.
+Enterprise-grade Cloudflare infrastructure automation for **ZeazDev** (`zeaz.dev`) with scoped-token-first operations, Cloudflare Tunnel, DNS, Zero Trust Access, Terraform/OpenTofu, and a FREE NO COST control-panel expansion.
+
+Default operating mode is safe and cost-controlled:
+
+```bash
+CLOUDFLARE_PLAN_TIER=Free
+COST_LOCK=true
+TERRAFORM_BACKEND_TYPE=local
+```
+
+Paid or overage-prone features must remain disabled unless the owner explicitly approves them and disables the relevant cost-lock guard.
 
 ---
 
 ## Table of contents
 
 1. [Architecture](#architecture)
-2. [Prerequisites](#prerequisites)
-3. [Quickstart](#quickstart)
-4. [Environment variables](#environment-variables)
-5. [Repository structure](#repository-structure)
-6. [Makefile targets](#makefile-targets)
-7. [Token management](#token-management)
-8. [Deployment phases](#deployment-phases)
-9. [Security](#security)
-10. [Contributing](#contributing)
+2. [Free/no-cost mode](#freeno-cost-mode)
+3. [Prerequisites](#prerequisites)
+4. [Quickstart](#quickstart)
+5. [Environment variables](#environment-variables)
+6. [Repository structure](#repository-structure)
+7. [Makefile targets](#makefile-targets)
+8. [Token management](#token-management)
+9. [Deployment phases](#deployment-phases)
+10. [Cloudflare docs context](#cloudflare-docs-context)
+11. [Security](#security)
+12. [Contributing](#contributing)
 
 ---
 
 ## Architecture
 
-```
+```text
                          ┌─────────────────────────────────────────────┐
                          │              Cloudflare Edge                │
                          │                                             │
-  Users ──────────────►  │  WAF → Zero Trust → Tunnel → Origin        │
+  Users ──────────────►  │  DNS → Access → Tunnel → Self-hosted VM     │
                          │                                             │
                          │  Domains:                                   │
-                         │  ├── auth.zeaz.dev          (identity)      │
-                         │  ├── app.zeaz.dev            (zWallet)      │
-                         │  ├── pay.zeaz.dev            (zPay)         │
-                         │  ├── treasury.zeaz.dev       (finance)      │
-                         │  ├── zveo.zeaz.dev           (AI platform)  │
-                         │  ├── studio.zeaz.dev         (AI studio)    │
-                         │  └── analytics.zeaz.dev      (analytics)    │
+                         │  ├── panel.zeaz.dev        (control panel)  │
+                         │  ├── api.zeaz.dev          (control API)    │
+                         │  ├── ssh.zeaz.dev          (Access SSH)     │
+                         │  ├── auth.zeaz.dev         (identity)       │
+                         │  ├── app.zeaz.dev          (zWallet)        │
+                         │  ├── zveo.zeaz.dev         (AI platform)    │
+                         │  └── analytics.zeaz.dev    (analytics)      │
                          └─────────────────────────────────────────────┘
                                           │
                               Cloudflare Tunnel (cloudflared)
                                           │
                          ┌─────────────────────────────────────────────┐
                          │              Self-hosted origin             │
-                         │  zeaz-platform (zeazdev@zeaz-platform)      │
+                         │  zeaz-platform (Ubuntu/Docker/systemd)      │
                          └─────────────────────────────────────────────┘
-
-Infrastructure-as-code: Terraform (HCL)
-Secret management:      SOPS + age
-CI/CD:                  GitHub Actions
-Token lifecycle:        scripts/cloudflare/clean-and-regenerate-tokens.sh (wrapper)
 ```
 
 ### Platform layers
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Identity | Cloudflare Access + SAML/OIDC | Zero Trust auth for all subdomains |
-| Network | Cloudflare Tunnel (cloudflared) | Secure origin connectivity, no open ports |
-| Compute | Cloudflare Workers + Workers AI | Edge functions, AI inference |
-| Storage | R2 + KV + D1 | Object storage, key-value, SQLite at edge |
-| Security | WAF + Bot Management + mTLS | Fintech-grade request filtering |
-| IaC | Terraform + OpenTofu | Declarative, idempotent provisioning |
-| Secrets | SOPS + age | Encrypted secrets, GitOps-safe |
-| Observability | Grafana + Prometheus + Loki | Metrics, logs, dashboards |
+| Layer | Technology | Purpose | Free-mode default |
+|---|---|---|---|
+| Identity | Cloudflare Access + SAML/OIDC | Zero Trust auth for selected subdomains | enabled |
+| Network | Cloudflare Tunnel | Secure origin connectivity, no open inbound ports | enabled |
+| DNS | Cloudflare DNS | zone and hostname automation | enabled |
+| IaC | Terraform + OpenTofu | Declarative provisioning and drift checks | enabled |
+| Secrets | SOPS + age / local env files | GitOps-safe secret handling | enabled |
+| Observability | Grafana + Prometheus + local checks | local metrics and health checks | optional |
+| Workers/R2/D1/WAF advanced | Cloudflare platform services | edge compute/storage/security modules | guarded |
+
+---
+
+## Free/no-cost mode
+
+See [`docs/CLOUDFLARE_CONTROL_PANEL_FREE.md`](docs/CLOUDFLARE_CONTROL_PANEL_FREE.md) for the full control-panel plan.
+
+Free-mode guardrails:
+
+```bash
+COST_LOCK=true
+ALLOW_PAID_CLOUDFLARE_FEATURES=false
+ALLOW_R2_WRITE=false
+ALLOW_WORKERS_DEPLOY=false
+ALLOW_LOAD_BALANCING=false
+ALLOW_ADVANCED_WAF=false
+ALLOW_LOGPUSH=false
+```
+
+Allowed in Free mode:
+
+- DNS read/write with confirmation for destructive changes
+- Cloudflare Tunnel config generation and routing
+- free-compatible Access apps and policies
+- local backups and audit logs
+- local SQLite/PostgreSQL/Redis/Grafana/Prometheus runtime
+
+Blocked by default in Free mode:
+
+- Load Balancing
+- Argo Smart Routing
+- paid Bot Management
+- paid Logpush destinations
+- R2 write-heavy workflows
+- Workers deployment unless explicitly enabled
+- advanced WAF templates unless explicitly enabled
+- Enterprise-only APIs
 
 ---
 
 ## Prerequisites
 
-| Tool | Minimum version | Install |
-|---|---|---|
-| bash | 4.0+ | macOS: `brew install bash` |
-| curl | any | pre-installed on most systems |
-| jq | 1.6+ | `apt install jq` / `brew install jq` |
-| terraform | 1.5+ | https://developer.hashicorp.com/terraform/install |
-| age | 1.1+ | `apt install age` / `brew install age` |
-| sops | 3.8+ | https://github.com/getsops/sops/releases |
-| shellcheck | 0.9+ | `apt install shellcheck` / `brew install shellcheck` |
-| python3 | 3.10+ | https://python.org (for yaml-validate target) |
-| Python test deps | pinned | `python3 -m pip install -r requirements-dev.txt` |
+| Tool | Minimum version | Notes |
+|---|---:|---|
+| bash | 4.0+ | required by shell helpers |
+| curl | any | Cloudflare/API checks |
+| jq | 1.6+ | token lifecycle script |
+| python3 | 3.10+ | env and YAML validators |
+| PyYAML | current | `scripts/validate-yaml.py` |
+| pytest | current | test suite |
+| terraform | 1.5+ | Terraform modules |
+| tofu | optional | OpenTofu validation |
+| cloudflared | current | Tunnel connector |
+| age + sops | current | encrypted secret files |
 
-> **Cloudflare account:** You need a Cloudflare account with `zeaz.dev` added as a zone.
-> Use scoped API tokens for all operations; avoid Global API Key usage in automation.
+Cloudflare account requirement: `zeaz.dev` must already be added to Cloudflare. Use scoped API tokens only; avoid Global API Key usage in automation.
 
 ---
 
@@ -90,168 +132,116 @@ Token lifecycle:        scripts/cloudflare/clean-and-regenerate-tokens.sh (wrapp
 ### 1. Clone and configure
 
 ```bash
-git clone https://github.com/cvsz/cloudflare-platform.git
-cd cloudflare-platform
+git clone https://github.com/cvsz/zeaz-platform.git
+cd zeaz-platform
 
 cp .env.example .env
 chmod 600 .env
 ```
 
-Open `.env` and fill in every value. See [Environment variables](#environment-variables) for details.
+Fill `.env` using canonical `CF_*` variables. Legacy `CLOUDFLARE_*` aliases are accepted by validators, but new config should use `CF_*` names.
 
-### 2. Bootstrap the agent environment
-
-```bash
-source .env
-make bootstrap-agent
-```
-
-This runs `scripts/ai/bootstrap-agent.sh` which validates your environment, checks API connectivity, and sets up local tooling.
-
-### 3. Validate everything
+### 2. Validate local structure
 
 ```bash
-make validate-agent        # check env vars and API token scopes
-make terraform-validate    # init + validate all Terraform modules
 python3 -m pip install -r requirements-dev.txt
-make yaml-validate         # lint all .yml files
-make shell-validate        # shellcheck all scripts
+python3 python/cfstack_validate_env.py
+python3 scripts/validate-yaml.py
+make doctor
+make yaml-validate
 ```
 
-### 4. Provision infrastructure (phased)
-
-Run phases in order. Each phase is independent and idempotent.
+Use strict mode after real values are filled:
 
 ```bash
-# Phase 1 — variables and context (no API calls)
-# Ensure .env is fully populated.
+python3 python/cfstack_validate_env.py --strict
+```
 
-# Phase 2 — Terraform foundation
+### 3. Refresh Cloudflare docs context for agents
+
+```bash
+chmod +x scripts/cloudflare/fetch-cloudflare-llms-context.sh
+bash scripts/cloudflare/fetch-cloudflare-llms-context.sh
+```
+
+The docs cache is written to `.cache/cloudflare-docs/` and is intentionally ignored by Git.
+
+### 4. Validate IaC
+
+```bash
+make tf-fmt-check
+make tf-init
+make tf-validate
+make tofu-validate
+```
+
+### 5. Provision infrastructure only after review
+
+```bash
 terraform -chdir=terraform/environments/${ENVIRONMENT} init
 terraform -chdir=terraform/environments/${ENVIRONMENT} plan -out=tfplan
+# apply only after reviewing the plan
 terraform -chdir=terraform/environments/${ENVIRONMENT} apply tfplan
-
-# Phase 3 — Zero Trust + Identity
-# Configure SAML/OIDC providers via Terraform modules:
-# terraform/modules/cloudflare-saml-provider/
-
-# Phase 4 — DNS + Tunnels
-# See tunnels/cloudflared/ for tunnel config files.
-
-# Phase 5 — Workers + Edge
-# Deploy workers via wrangler or Terraform cloudflare_worker_script resources.
-
-# Phase 6 — Monitoring + DR
-# See docs/ai/ for runbook references.
 ```
 
-### 5. Manage API tokens
-
-```bash
-# Preview what would be revoked (safe — no API calls)
-make token-clean
-
-# Revoke duplicates + stale tokens
-make token-rotate-dry      # dry run first
-make token-rotate          # live run with backup
-```
+All apply/destroy workflows should remain manually approved.
 
 ---
 
 ## Environment variables
 
-Copy `.env.example` to `.env` and fill in every value before running any script or Terraform.
+Copy `.env.example` to `.env` and fill values locally.
 
 ### Cloudflare core
 
 | Variable | Required | Description |
-|---|---|---|
-| `CF_ACCOUNT_ID` | yes | Cloudflare account ID. Found in the dashboard URL. |
-| `CF_ZONE_ID` | yes | Zone ID for `zeaz.dev`. Found in the zone overview page. |
-| `CLOUDFLARE_API_TOKEN` | yes | Scoped API token with Edit permissions for general Terraform use. |
+|---|---:|---|
+| `CF_ACCOUNT_ID` | yes | Cloudflare account ID |
+| `CF_ZONE_ID` | yes | Zone ID for `zeaz.dev` |
+| `PRIMARY_DOMAIN` | yes | default `zeaz.dev` |
+| `CLOUDFLARE_PLAN_TIER` | yes | `Free`, `Pro`, `Business`, or `Enterprise` |
+| `COST_LOCK` | yes | defaults to `true` |
 
-### Scoped service tokens
+### Scoped tokens
 
 | Variable | Required | Scope |
-|---|---|---|
+|---|---:|---|
+| `CLOUDFLARE_API_TOKEN` | yes | general scoped token for Terraform fallback |
 | `CF_DNS_TOKEN` | yes | Zone DNS Edit + Zone Read |
-| `CF_ZT_TOKEN` | yes | Access Apps/Policies Edit + Identity Providers Edit |
-| `CF_WORKERS_TOKEN` | yes | Workers Scripts Edit + Routes Edit + KV Edit + R2 Edit + D1 Edit |
-| `CF_WAF_TOKEN` | yes | WAF Edit + Firewall Services Edit |
-| `CF_TUNNEL_TOKEN` | yes | Cloudflare Tunnel Edit |
-| `CF_R2_TOKEN` | yes | R2 Storage Edit |
-| `CF_AUDIT_TOKEN` | no | Account Audit Logs Read. Required for `.mcp.json` log MCP server. |
-
-Regenerate all tokens with:
-```bash
-make token-rotate
-```
-
-### Identity provider
-
-| Variable | Required | Description |
-|---|---|---|
-| `IDENTITY_PROVIDER_TYPE` | yes | `saml` or `oidc` |
-| `IDENTITY_PROVIDER_VENDOR` | yes | e.g. `okta`, `azure`, `google`, `authentik` |
-| `IDENTITY_PROVIDER_METADATA_URL` | yes | SAML metadata URL or OIDC discovery URL |
-
-### Infrastructure
-
-| Variable | Required | Description |
-|---|---|---|
-| `ENVIRONMENT` | yes | `dev`, `staging`, or `prod` |
-| `REGION` | yes | Primary region, e.g. `ap-southeast-1` |
-| `PRIMARY_DOMAIN` | yes | `zeaz.dev` |
-| `ORIGIN_INFRA_TYPE` | yes | `vm`, `kubernetes`, `serverless`, or `hybrid` |
-| `ORIGIN_HOSTS` | yes | Comma-separated origin IPs or hostnames |
-| `CLOUDFLARE_PLAN_TIER` | yes | `Free`, `Pro`, `Business`, or `Enterprise` |
+| `CF_ZT_TOKEN` | yes | Access apps/policies as needed |
+| `CF_WORKERS_TOKEN` | conditional | Workers operations; guarded in Free mode |
+| `CF_WAF_TOKEN` | conditional | WAF operations; guarded in Free mode |
+| `CF_TUNNEL_TOKEN` | yes | Cloudflare Tunnel operations |
+| `CF_R2_TOKEN` | conditional | R2 operations; guarded in Free mode |
+| `CF_AUDIT_TOKEN` | optional | audit/log read workflows |
 
 ### Terraform backend
 
 | Variable | Required | Description |
-|---|---|---|
-| `TERRAFORM_BACKEND_TYPE` | yes | `s3` or `local` |
-| `TERRAFORM_STATE_BUCKET` | yes | Bucket name for remote state |
-| `TERRAFORM_LOCK_TABLE` | yes | DynamoDB table name (if `s3` backend) |
-
-### Secret management
-
-| Variable | Required | Description |
-|---|---|---|
-| `SOPS_AGE_KEY` | yes | age private key for SOPS decryption. Keep this secret. |
-| `SECRET_ROTATION_INTERVAL` | no | Rotation interval duration (for example `30d` or `12h`). Default: `30d` |
-| `CF_AI_GATEWAY_SLUG` | no | AI Gateway slug for `.mcp.json` MCP server |
+|---|---:|---|
+| `TERRAFORM_BACKEND_TYPE` | yes | `local` or `s3`; default is `local` |
+| `TERRAFORM_STATE_BUCKET` | only for s3 | remote state bucket |
+| `TERRAFORM_LOCK_TABLE` | only for s3 | lock table |
 
 ---
 
 ## Repository structure
 
-```
-cloudflare-platform/
-├── .claude/                    # Claude AI agent context + system prompt
-├── .codex/                     # OpenAI Codex agent context
-├── .cursor/                    # Cursor IDE AI context
-├── .github/
-│   ├── workflows/              # GitHub Actions CI/CD pipelines
-│   └── SECURITY.md             # Vulnerability reporting policy
-├── docs/
-│   └── ai/                     # AI platform documentation
-├── scripts/
-│   ├── ai/
-│   │   ├── bootstrap-agent.sh  # Environment bootstrap and validation
-│   │   └── validate-agent-env.sh
-│   └── cloudflare/
-│       └── clean-and-regenerate-tokens.sh  # Token lifecycle management
-├── terraform/                  # All Terraform/OpenTofu modules and roots
-├── tunnels/
-│   └── cloudflared/            # cloudflared tunnel configuration files
-├── .env.example                # Template for all required env vars
-├── .gitignore                  # Excludes secrets, state, binaries
-├── .mcp.json                   # MCP server config (Cloudflare API, AI Gateway, Logs)
-├── AGENTS.md                   # Master meta-prompt — full platform specification
-├── LICENSE                     # MIT
-├── Makefile                    # All runnable targets
-└── README.md                   # This file
+```text
+zeaz-platform/
+├── .github/workflows/                  # CI validation and Terraform workflows
+├── docs/                               # architecture, audits, prompts, runbooks
+├── ops/                                # host-level operations scripts
+├── python/                             # validators and helper utilities
+├── scripts/                            # setup, Cloudflare, Terraform, validation scripts
+├── terraform/                          # Terraform modules/root config
+├── opentofu/                           # OpenTofu environment roots
+├── tunnels/cloudflared/                # cloudflared templates
+├── tests/                              # Python validation tests
+├── .env.example                        # safe local env template
+├── AGENTS.md                           # agent instructions
+├── Makefile                            # canonical task runner
+└── README.md
 ```
 
 ---
@@ -259,142 +249,105 @@ cloudflare-platform/
 ## Makefile targets
 
 ```bash
-make bootstrap-agent        # bootstrap environment and validate prerequisites
-make validate-agent         # validate all env vars and API token scopes
-
-make terraform-fmt          # format all Terraform files recursively
-make terraform-validate     # init (no backend) + validate all modules
-make yaml-validate          # lint all .yml files with PyYAML
-make shell-validate         # shellcheck scripts/ai/ and scripts/cloudflare/
-
-make token-clean            # dry-run: show duplicate/stale tokens (no API calls)
-make token-rotate-dry       # dry-run: full rotate flow with backup preview
-make token-rotate           # live: backup → revoke duplicates/stale → regenerate all
+make doctor                 # show local tool status
+make test                   # run pytest when available
+make validate-env           # validate .env with Python validator
+make yaml-validate          # validate active YAML files
+make shellcheck             # shellcheck scripts when installed
+make tf-fmt-check           # Terraform/OpenTofu formatting check
+make tf-validate            # Terraform validation
+make tofu-validate          # OpenTofu validation when installed
+make token-clean            # dry-run token cleanup
+make token-rotate-dry       # dry-run token regeneration
+make token-rotate           # live token regeneration; use only after review
+make drift-detect           # Terraform drift check
+make security-scan          # optional security tools if installed
 ```
 
 ---
 
 ## Token management
 
-This repo includes a production-ready token lifecycle script at `scripts/cloudflare/clean-and-regenerate-tokens.sh`.
-
-### What it does
-
-- Finds and revokes **duplicate tokens** (keeps the newest N per name)
-- Finds and revokes **stale tokens** unused for more than N days
-- **Regenerates** fresh scoped tokens for each service
-- Writes new values **atomically** to `.env.cloudflare` (mode 600)
-- Records all actions to `.cloudflare-token-audit.log` (no secrets in log)
-- Checks quota before creating (Cloudflare limit: 50 tokens per account)
-
-### Recommended workflow
+Token lifecycle helper:
 
 ```bash
-# 1. Always dry-run first (offline safety preview)
+scripts/cloudflare/clean-and-regenerate-tokens.sh
+```
+
+Recommended workflow:
+
+```bash
 make token-clean
 make token-rotate-dry
-
-# 2. Live rotation (manual operator approval required)
+# only after review and with correct bootstrap permission
 make token-rotate
 ```
 
-> **Security note:** This repository is scoped-token-first for automation. Do not use Cloudflare Global API Key in CI/GitOps workflows.
+Safety rules:
+
+- never commit `.env`, `.env.cloudflare`, tunnel credentials, origin certs, or token values
+- keep token rotation dry-run first
+- keep generated token files mode `600`
+- prefer scoped tokens over Global API Key
+- review permission groups before regeneration
 
 ---
 
 ## Deployment phases
 
-The platform is deployed in six explicit phases. Each phase can be executed independently, and all apply operations require explicit confirmation.
-
 | Phase | Name | Objective | Primary commands |
 |---|---|---|---|
-| F1 | Context + Variables | Offline validation of required runtime variables and plan-tier gates. | `make validate-f1` |
-| F2 | Terraform Foundation | Validate/init environment state for Terraform/OpenTofu modules. | `make tf-validate` / `make tofu-validate` |
-| F3 | Zero Trust + Identity | Deploy Access applications, policies, and identity provider integrations. | `terraform -chdir=terraform/environments/${ENVIRONMENT} plan` |
-| F4 | DNS + Tunnels + Networking | Provision DNS records and cloudflared tunnel integration. | `make waf-validate` |
-| F5 | Workers + Edge + AI | Deploy Workers and Workers AI guardrails and quotas. | `pnpm -C workers test` |
-| F6 | Monitoring + DR + Security | Enable monitoring, backup/restore, drift detection, and security scans. | `make drift-detect && make security-scan` |
+| F1 | Context + Variables | Validate local env, plan tier, backend, and cost lock | `make validate-env` |
+| F2 | Terraform Foundation | Init and validate IaC | `make tf-validate` / `make tofu-validate` |
+| F3 | Zero Trust + Identity | Configure Access apps/policies and identity metadata | Terraform plan/apply after review |
+| F4 | DNS + Tunnels | Provision DNS and cloudflared templates | tunnel validation + Terraform |
+| F5 | Workers + Edge | Guarded edge compute/storage modules | disabled by default in Free mode |
+| F6 | Monitoring + DR | Drift, backups, audit, security scans | `make drift-detect && make security-scan` |
+| F7 | GitOps | workflow policy and PR checks | `make gitops-validate` |
 
-### Safe execution defaults
+---
 
-- Validation runs in offline mode unless API checks are explicitly requested (`scripts/validate.sh --api-check`).
-- Terraform/OpenTofu apply is blocked until `CONFIRM_APPLY=yes` is supplied.
-- No secret material is committed; runtime values are injected via environment variables.
+## Cloudflare docs context
+
+The repo includes a Cloudflare docs cache workflow for agent upgrades:
+
+```bash
+bash scripts/cloudflare/fetch-cloudflare-llms-context.sh
+```
+
+See [`docs/CLOUDFLARE_LLM_CONTEXT.md`](docs/CLOUDFLARE_LLM_CONTEXT.md).
+
+---
 
 ## Security
 
-- **Never commit secrets.** `.gitignore` excludes `.env`, `*.tfvars`, `*.pem`, `*.agekey`, and backup directories.
-- **Scoped tokens only** for all automated operations. Avoid Cloudflare Global API Key usage in CI and GitOps.
-- **Token lifecycle actions are manual and reviewable.** Use dry-run first and keep rotation flows operator-triggered.
-- **SOPS + age** for all secret files that must be committed (e.g. `terraform.tfvars.enc`).
-- **Audit log** at `.cloudflare-token-audit.log` records every token action. Contains no secret values.
-- **Mode 600** enforced on `.env.cloudflare` and all backup files.
+- Never commit secrets.
+- `.gitignore` excludes `.env`, `.env.cloudflare`, `.cache`, state files, backups, and local agent folders.
+- Use scoped API tokens only.
+- Keep `COST_LOCK=true` for Free/no-cost mode.
+- Review all Terraform plans before apply.
+- Audit all token lifecycle changes.
+- Use local docs cache rather than vendoring Cloudflare documentation into Git.
 
-To report a security issue or leaked credential, see [`.github/SECURITY.md`](.github/SECURITY.md).
+To report a security issue or leaked credential, see [`.github/SECURITY.md`](.github/SECURITY.md) if present.
 
 ---
 
 ## Contributing
 
-1. Fork the repo and create a feature branch from `main`.
-2. Run `make shell-validate` and `make terraform-validate` before opening a PR.
-3. Never commit real credentials, token values, or `.tfstate` files.
-4. Reference the full platform specification in [`AGENTS.md`](AGENTS.md) for architectural decisions.
+1. Create a feature branch from `main`.
+2. Run validation before opening a PR:
+
+   ```bash
+   python3 -m pytest -q tests
+   python3 scripts/validate-yaml.py
+   make tf-fmt-check
+   make tf-validate
+   ```
+
+3. Never commit credentials, token values, `.tfstate`, tunnel credentials, or local caches.
+4. Reference [`AGENTS.md`](AGENTS.md) and the audit reports in `docs/` for architecture decisions.
 
 ---
 
-*Built for ZeazDev · Licensed under MIT · See [AGENTS.md](AGENTS.md) for the full platform specification.*
-
-
-## Phased deployment (F1-F6)
-
-- F1: Context + Variables (`bash scripts/validate.sh --offline --strict`)
-- F2: Terraform Foundation
-- F3: Zero Trust + Identity
-- F4: DNS + Tunnels + Networking
-- F5: Workers + Edge + AI
-- F6: Monitoring + DR + Security
-
-
-## Plan Matrix
-
-| Feature | Free | Pro | Business | Enterprise |
-|---|---:|---:|---:|---:|
-| Core DNS/Tunnel/Access | ✅ | ✅ | ✅ | ✅ |
-| API Shield | ❌ | ❌ | ❌ | ✅ |
-| Device Posture | ❌ | ❌ | ❌ | ✅ |
-| Bot Management Advanced | ❌ | ❌ | ❌ | ✅ |
-
-## Phased Deployment
-
-Deploy with `enabled_phases` (`F1`..`F6`) per environment root in `terraform/environments/*` and `opentofu/environments/*`.
-
-## Rollback
-
-Use saved Terraform/OpenTofu plans for controlled rollback, or run `terraform destroy`/`tofu destroy` only with explicit `CONFIRM_APPLY=yes` in non-production recovery windows. Operational rollback runbooks are in `docs/runbooks/`.
-
-## Security Model
-
-Least-privilege token separation is enforced (`CF_DNS_TOKEN`, `CF_ZT_TOKEN`, `CF_WORKERS_TOKEN`, `CF_WAF_TOKEN`, `CF_TUNNEL_TOKEN`, `CF_R2_TOKEN`), with policy-as-code in `policies/`, WAF controls in `waf/`, and Zero Trust identity definitions in `zero-trust/`.
-
-## GitOps Workflow
-
-1. Commit reviewed IaC and policy changes.
-2. Run `make validate`, `make test`, `make tf-validate`, and `make tofu-validate`.
-3. Open PR and require CI approval checks before merge.
-4. Apply per phase/environment from audited pipelines.
-
-## Setup
-
-See **Quickstart** above for bootstrap, validation, and phased apply commands.
-
-## zsp-aitool Health Verification
-
-Run environment-aware health checks from the workers workspace:
-
-- `npm run health` (repo-safe checks; runtime/public/db checks warn/skip outside production)
-- `ZSP_HEALTH_REQUIRE_RUNTIME=true npm run health` (fail if local runtime/service checks fail)
-- `ZSP_HEALTH_REQUIRE_DB=true npm run health` (fail if DB checks cannot run/pass)
-- `ZSP_HEALTH_REQUIRE_PUBLIC=true npm run health` (fail if public URL checks fail)
-
-The health script is designed for CI/container/Codex execution and avoids failing on production-only infrastructure unless explicitly required.
+Built for ZeazDev. Licensed under MIT.
