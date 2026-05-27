@@ -23,9 +23,11 @@ def base_env():
         "TERRAFORM_BACKEND_TYPE": "s3",
         "TERRAFORM_STATE_BUCKET": "state-bucket",
         "TERRAFORM_LOCK_TABLE": "locks",
-        "SOPS_AGE_KEY": "AGE-SECRET-KEY-1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "SOPS_AGE_KEY": "age-key-placeholder-for-tests-only",
         "SECRET_ROTATION_INTERVAL": "30d",
         "CLOUDFLARE_PLAN_TIER": "Pro",
+        "COST_LOCK": "true",
+        "ALLOW_PAID_CLOUDFLARE_FEATURES": "false",
     }
 
 
@@ -80,3 +82,29 @@ def test_short_token_warns():
     env["CLOUDFLARE_API_TOKEN"] = "short"
     result = validate_with_warnings(env)
     assert any("CLOUDFLARE_API_TOKEN" in w for w in result.warnings)
+
+
+def test_free_local_backend_does_not_require_remote_state_names():
+    env = base_env()
+    env["CLOUDFLARE_PLAN_TIER"] = "Free"
+    env["TERRAFORM_BACKEND_TYPE"] = "local"
+    env["TERRAFORM_STATE_BUCKET"] = ""
+    env["TERRAFORM_LOCK_TABLE"] = ""
+    assert validate(env) == []
+
+
+def test_free_plan_paid_override_warns():
+    env = base_env()
+    env["CLOUDFLARE_PLAN_TIER"] = "Free"
+    env["COST_LOCK"] = "true"
+    env["ALLOW_WORKERS_DEPLOY"] = "true"
+    result = validate_with_warnings(env)
+    assert any("ALLOW_WORKERS_DEPLOY" in warning for warning in result.warnings)
+
+
+def test_legacy_cloudflare_aliases_are_accepted():
+    env = base_env()
+    env["CLOUDFLARE_ACCOUNT_ID"] = env.pop("CF_ACCOUNT_ID")
+    env["CLOUDFLARE_ZONE_ID"] = env.pop("CF_ZONE_ID")
+    env["CLOUDFLARE_DNS_TOKEN"] = env.pop("CF_DNS_TOKEN")
+    assert validate(env) == []
