@@ -78,5 +78,11 @@ chmod 600 "$ENV_FILE"
 log "wrote $ENV_FILE with Free/no-cost defaults"
 
 if command -v python3 >/dev/null 2>&1 && [[ -f python/cfstack_validate_env.py ]]; then
-  python3 python/cfstack_validate_env.py || warn "validation reported missing values; fill .env and rerun validation"
+  set -a
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+  set +a
+  if ! python3 python/cfstack_validate_env.py; then
+    warn "strict deployment validation is incomplete; fill real Cloudflare tokens/IDs and run make validate-env-strict"
+  fi
 fi
