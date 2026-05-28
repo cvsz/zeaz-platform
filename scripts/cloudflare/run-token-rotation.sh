@@ -15,9 +15,10 @@ fi
 [[ "$ROOT" != "/" ]] || ROOT="$PWD"
 cd "$ROOT"
 
-API_BASE="${CLOUDFLARE_API_BASE:-${CF_API_BASE:-https://api.cloudflare.com/client/v4}}"
+API_BASE="${CLOUDFLARE_API_BASE:-https://api.cloudflare.com/client/v4}"
 
 log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+warn(){ log "WARN: $*" >&2; }
 die(){ log "ERROR: $*" >&2; exit 1; }
 
 load_env_file(){
@@ -27,42 +28,6 @@ load_env_file(){
   # shellcheck disable=SC1090
   source "$file"
   set +a
-}
-
-set_if_empty_from_alias(){
-  local canonical="$1" alias="$2"
-  if [[ -z "${!canonical:-}" && -n "${!alias:-}" ]]; then
-    export "$canonical=${!alias}"
-  fi
-}
-
-normalize_cloudflare_env(){
-  set_if_empty_from_alias CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
-  set_if_empty_from_alias CLOUDFLARE_ZONE_ID CLOUDFLARE_ZONE_ID
-  set_if_empty_from_alias CLOUDFLARE_BOOTSTRAP_TOKEN CLOUDFLARE_BOOTSTRAP_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_DNS_TOKEN CLOUDFLARE_DNS_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_WORKERS_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_ZT_TOKEN CLOUDFLARE_ZT_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_WAF_TOKEN CLOUDFLARE_WAF_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_TUNNEL_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_R2_TOKEN CLOUDFLARE_R2_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_AUDIT_TOKEN CLOUDFLARE_AUDIT_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_AI_GATEWAY_TOKEN CLOUDFLARE_AI_GATEWAY_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_AI_GATEWAY_SLUG CLOUDFLARE_AI_GATEWAY_SLUG
-
-  # Export legacy names for older helper scripts until they are fully migrated.
-  export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-}"
-  export CLOUDFLARE_ZONE_ID="${CLOUDFLARE_ZONE_ID:-}"
-  export CLOUDFLARE_BOOTSTRAP_TOKEN="${CLOUDFLARE_BOOTSTRAP_TOKEN:-}"
-  export CLOUDFLARE_DNS_TOKEN="${CLOUDFLARE_DNS_TOKEN:-}"
-  export CLOUDFLARE_WORKERS_TOKEN="${CLOUDFLARE_WORKERS_TOKEN:-}"
-  export CLOUDFLARE_ZT_TOKEN="${CLOUDFLARE_ZT_TOKEN:-}"
-  export CLOUDFLARE_WAF_TOKEN="${CLOUDFLARE_WAF_TOKEN:-}"
-  export CLOUDFLARE_TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-}"
-  export CLOUDFLARE_R2_TOKEN="${CLOUDFLARE_R2_TOKEN:-}"
-  export CLOUDFLARE_AUDIT_TOKEN="${CLOUDFLARE_AUDIT_TOKEN:-}"
-  export CLOUDFLARE_AI_GATEWAY_TOKEN="${CLOUDFLARE_AI_GATEWAY_TOKEN:-}"
-  export CLOUDFLARE_AI_GATEWAY_SLUG="${CLOUDFLARE_AI_GATEWAY_SLUG:-zeaz}"
 }
 
 contains_arg(){
@@ -90,35 +55,54 @@ value_after_arg(){
   return 1
 }
 
+is_cleanup_only(){
+  ! contains_arg --regenerate "$@"
+}
+
 verify_bootstrap_token(){
   command -v curl >/dev/null 2>&1 || die "curl is required"
   command -v jq >/dev/null 2>&1 || die "jq is required"
 
   local response ok errors
   response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" "${API_BASE}/user/tokens/verify" 2>/dev/null || true)"
-  [[ -n "$response" ]] || die "could not verify CLOUDFLARE_BOOTSTRAP_TOKEN. Check network access and token value."
+  [[ -n "$response" ]] || return 2
 
   ok="$(printf '%s' "$response" | jq -r '.success // false' 2>/dev/null || printf 'false')"
   if [[ "$ok" != "true" ]]; then
     errors="$(printf '%s' "$response" | jq -c '.errors // []' 2>/dev/null || printf '[]')"
-    die "CLOUDFLARE_BOOTSTRAP_TOKEN failed /user/tokens/verify: ${errors}. Check .env and .env.cloudflare; generated .env.cloudflare may be overriding .env."
+    warn "CLOUDFLARE_BOOTSTRAP_TOKEN failed /user/tokens/verify: ${errors}"
+    return 1
   fi
 
   log "verified CLOUDFLARE_BOOTSTRAP_TOKEN"
+  return 0
 }
 
-# Load .env first, then .env.cloudflare so generated token files can override.
+# Load .env first, then .env.cloudflare so generated token files can override intentionally.
 load_env_file .env
 load_env_file .env.cloudflare
-normalize_cloudflare_env
 
 : "${CLOUDFLARE_AI_GATEWAY_SLUG:=zeaz}"
-export CLOUDFLARE_AI_GATEWAY_SLUG CLOUDFLARE_AI_GATEWAY_SLUG
+export CLOUDFLARE_AI_GATEWAY_SLUG
 
-[[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || die "CLOUDFLARE_ACCOUNT_ID is missing. Fill it in .env before token rotation."
-[[ -n "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]] || die "CLOUDFLARE_BOOTSTRAP_TOKEN is missing. Fill it in .env before token rotation."
-
-verify_bootstrap_token
+# token-clean is a safe dry-run housekeeping target. It should not break local
+# make workflows when deployment token env is not configured yet.
+if is_cleanup_only "$@"; then
+  if [[ -z "${CLOUDFLARE_ACCOUNT_ID:-}" || -z "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]]; then
+    warn "token-clean skipped: CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_BOOTSTRAP_TOKEN is missing"
+    warn "run make token-verify after filling .env, then rerun make token-clean"
+    exit 0
+  fi
+  if ! verify_bootstrap_token; then
+    warn "token-clean skipped: bootstrap token is invalid, expired, revoked, malformed, or overridden by .env.cloudflare"
+    warn "run make token-verify for a masked diagnostic"
+    exit 0
+  fi
+else
+  [[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || die "CLOUDFLARE_ACCOUNT_ID is missing. Fill it in .env before token rotation."
+  [[ -n "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]] || die "CLOUDFLARE_BOOTSTRAP_TOKEN is missing. Fill it in .env before token rotation."
+  verify_bootstrap_token || die "CLOUDFLARE_BOOTSTRAP_TOKEN is invalid. Run make token-verify."
+fi
 
 if contains_arg --regenerate "$@"; then
   types="$(value_after_arg --types "$@" || true)"
