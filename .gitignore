@@ -12,6 +12,7 @@ secrets/*.env
 *.key
 *.p12
 *.agekey
+gh-set-env.sh
 
 # Cloudflare generated/local state
 cloudflared/
