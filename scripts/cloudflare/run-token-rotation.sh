@@ -15,6 +15,8 @@ fi
 [[ "$ROOT" != "/" ]] || ROOT="$PWD"
 cd "$ROOT"
 
+API_BASE="${CLOUDFLARE_API_BASE:-${CF_API_BASE:-https://api.cloudflare.com/client/v4}}"
+
 log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 die(){ log "ERROR: $*" >&2; exit 1; }
 
@@ -88,6 +90,23 @@ value_after_arg(){
   return 1
 }
 
+verify_bootstrap_token(){
+  command -v curl >/dev/null 2>&1 || die "curl is required"
+  command -v jq >/dev/null 2>&1 || die "jq is required"
+
+  local response ok errors
+  response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" "${API_BASE}/user/tokens/verify" 2>/dev/null || true)"
+  [[ -n "$response" ]] || die "could not verify CLOUDFLARE_BOOTSTRAP_TOKEN. Check network access and token value."
+
+  ok="$(printf '%s' "$response" | jq -r '.success // false' 2>/dev/null || printf 'false')"
+  if [[ "$ok" != "true" ]]; then
+    errors="$(printf '%s' "$response" | jq -c '.errors // []' 2>/dev/null || printf '[]')"
+    die "CLOUDFLARE_BOOTSTRAP_TOKEN failed /user/tokens/verify: ${errors}. Check .env and .env.cloudflare; generated .env.cloudflare may be overriding .env."
+  fi
+
+  log "verified CLOUDFLARE_BOOTSTRAP_TOKEN"
+}
+
 # Load .env first, then .env.cloudflare so generated token files can override.
 load_env_file .env
 load_env_file .env.cloudflare
@@ -98,6 +117,8 @@ export CLOUDFLARE_AI_GATEWAY_SLUG CF_AI_GATEWAY_SLUG
 
 [[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || die "CLOUDFLARE_ACCOUNT_ID is missing. Fill it in .env before token rotation."
 [[ -n "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]] || die "CLOUDFLARE_BOOTSTRAP_TOKEN is missing. Fill it in .env before token rotation."
+
+verify_bootstrap_token
 
 if contains_arg --regenerate "$@"; then
   types="$(value_after_arg --types "$@" || true)"
