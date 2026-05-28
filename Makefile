@@ -72,13 +72,10 @@ validate: test validate-env yaml-validate check-no-cf-vars tf-fmt-check tf-init 
 	@echo "Validation complete."
 
 validate-env:
-	@bash scripts/env-report-check.sh
+	@bash scripts/env-report-check.sh advisory
 
 validate-env-strict:
-	@if [ -f .env.cloudflare ]; then set -a; source .env.cloudflare; set +a; fi; \
-	if [ -f .env ]; then set -a; source .env; set +a; fi; \
-	if [ -x "$(VENV_DIR)/bin/python" ]; then "$(VENV_DIR)/bin/python" python/cfstack_validate_env.py --strict; \
-	else $(PYTHON) python/cfstack_validate_env.py --strict; fi
+	@bash scripts/env-report-check.sh strict
 
 maintenance:
 	@bash scripts/environments/maintenance.sh validate
