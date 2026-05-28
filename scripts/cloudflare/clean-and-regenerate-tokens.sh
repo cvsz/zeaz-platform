@@ -45,7 +45,7 @@ Regeneration:
 
 Notes:
   Canonical env names use CLOUDFLARE_*.
-  CLOUDFLARE_AUDIT_TOKEN and CLOUDFLARE_AI_GATEWAY_TOKEN are preserved.
+  CLOUDFLARE_AUDIT_TOKEN and CLOUDFLARE_AI_GATEWAY_TOKEN are optional.
   Bootstrap/audit/AI-gateway tokens are never revoked by default.
 
   --help, -h             Show help
@@ -152,30 +152,17 @@ fetch_permission_groups(){
   printf '%s' "$cache"
 }
 
-permission_text_expr='[.name // "", .description // "", .scope // "", (.scopes // [] | tostring), (.resource_groups // [] | tostring)] | join(" ")'
-
-print_permission_hints(){
-  local cache="$1" token_type="$2" hint_re="$3"
-  log_err "candidate permission groups for ${token_type}:"
-  jq -r --arg re "$hint_re" "
-    (.result // [])
-    | map(select((${permission_text_expr}) | test(\$re)))
-    | .[:12][]
-    | \"  - \(.id // \"\") :: \(.name // \"<unnamed>\") :: \(.description // \"\")\"
-  " "$cache" >&2 || true
-}
-
 resolve_permission_id(){
-  local token_type="$1" cache pattern hint_re env_key explicit id
+  local token_type="$1" cache pattern env_key explicit
   case "$token_type" in
-    dns) env_key="CLOUDFLARE_DNS_PERMISSION_GROUP_ID"; pattern='(?i)(dns).*(write|edit)|(write|edit).*(dns)'; hint_re='(?i)dns' ;;
-    zt) env_key="CLOUDFLARE_ZT_PERMISSION_GROUP_ID"; pattern='(?i)(zero[ -]?trust|access).*(write|edit)|(write|edit).*(zero[ -]?trust|access)'; hint_re='(?i)(zero[ -]?trust|access)' ;;
-    workers) env_key="CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID"; pattern='(?i)(workers?|workers scripts?).*(write|edit)|(write|edit).*(workers?|workers scripts?)'; hint_re='(?i)workers?' ;;
-    pages) env_key="CLOUDFLARE_PAGES_PERMISSION_GROUP_ID"; pattern='(?i)(pages).*(write|edit)|(write|edit).*(pages)'; hint_re='(?i)pages' ;;
-    waf) env_key="CLOUDFLARE_WAF_PERMISSION_GROUP_ID"; pattern='(?i)(waf|web application firewall|rulesets?|firewall rules?).*(write|edit)|(write|edit).*(waf|web application firewall|rulesets?|firewall rules?)'; hint_re='(?i)(waf|rulesets?|firewall)' ;;
-    tunnel) env_key="CLOUDFLARE_TUNNEL_PERMISSION_GROUP_ID"; pattern='(?i)(cloudflare tunnel|cloudflared|tunnel).*(write|edit)|(write|edit).*(cloudflare tunnel|cloudflared|tunnel)'; hint_re='(?i)(cloudflare tunnel|cloudflared|tunnel)' ;;
-    r2) env_key="CLOUDFLARE_R2_PERMISSION_GROUP_ID"; pattern='(?i)(r2|r2 storage|workers r2).*(write|edit)|(write|edit).*(r2|r2 storage|workers r2)'; hint_re='(?i)(r2|storage)' ;;
-    d1) env_key="CLOUDFLARE_D1_PERMISSION_GROUP_ID"; pattern='(?i)(d1|workers d1).*(write|edit)|(write|edit).*(d1|workers d1)'; hint_re='(?i)d1' ;;
+    dns) env_key="CLOUDFLARE_DNS_PERMISSION_GROUP_ID"; pattern='(?i)(zone.*dns.*(write|edit)|dns.*(write|edit))' ;;
+    zt) env_key="CLOUDFLARE_ZT_PERMISSION_GROUP_ID"; pattern='(?i)(zero trust.*(write|edit)|access.*(write|edit))' ;;
+    workers) env_key="CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID"; pattern='(?i)(workers.*(write|edit)|workers scripts.*(write|edit))' ;;
+    pages) env_key="CLOUDFLARE_PAGES_PERMISSION_GROUP_ID"; pattern='(?i)(pages.*(write|edit))' ;;
+    waf) env_key="CLOUDFLARE_WAF_PERMISSION_GROUP_ID"; pattern='(?i)(waf.*(write|edit)|rulesets.*(write|edit)|firewall.*(write|edit))' ;;
+    tunnel) env_key="CLOUDFLARE_TUNNEL_PERMISSION_GROUP_ID"; pattern='(?i)(tunnel.*(write|edit)|cloudflare tunnel.*(write|edit))' ;;
+    r2) env_key="CLOUDFLARE_R2_PERMISSION_GROUP_ID"; pattern='(?i)(r2.*(write|edit))' ;;
+    d1) env_key="CLOUDFLARE_D1_PERMISSION_GROUP_ID"; pattern='(?i)(d1.*(write|edit))' ;;
     *) return 1 ;;
   esac
 
@@ -185,17 +172,11 @@ resolve_permission_id(){
 
   cache="$(fetch_permission_groups)"
   [[ -f "$cache" ]] || die "permission-group cache file not found: $cache"
-  id="$(jq -r --arg re "$pattern" "
+  jq -r --arg re "$pattern" '
     (.result // [])
-    | map(select((${permission_text_expr}) | test(\$re)))
+    | map(select(([.name // "", .description // "", .scope // "", (.scopes // [] | tostring), (.resource_groups // [] | tostring)] | join(" ")) | test($re)))
     | .[0].id // empty
-  " "$cache")"
-
-  if [[ -z "$id" ]]; then
-    print_permission_hints "$cache" "$token_type" "$hint_re"
-  fi
-
-  printf '%s' "$id"
+  ' "$cache"
 }
 
 backup_json(){
@@ -220,6 +201,12 @@ env_file_value(){
   local file="$1" key="$2"
   [[ -f "$file" ]] || return 0
   awk -F= -v k="$key" '$1 == k {v=$0; sub(/^[^=]*=/, "", v); gsub(/^"|"$/, "", v); print v}' "$file" | tail -n 1
+}
+
+write_optional_env(){
+  local key="$1" value="$2"
+  [[ -n "${value//[[:space:]]/}" ]] || return 0
+  printf '%s="%s"\n' "$key" "$value"
 }
 
 epoch_of(){
@@ -429,10 +416,8 @@ for t in dns zt workers pages waf tunnel r2 d1; do
   fi
 done
 
-{
-  printf 'CLOUDFLARE_AUDIT_TOKEN="%s"\n' "${CLOUDFLARE_AUDIT_TOKEN:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AUDIT_TOKEN)}"
-  printf 'CLOUDFLARE_AI_GATEWAY_TOKEN="%s"\n' "${CLOUDFLARE_AI_GATEWAY_TOKEN:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AI_GATEWAY_TOKEN)}"
-} >> "$tmp"
+write_optional_env CLOUDFLARE_AUDIT_TOKEN "${CLOUDFLARE_AUDIT_TOKEN:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AUDIT_TOKEN)}" >> "$tmp"
+write_optional_env CLOUDFLARE_AI_GATEWAY_TOKEN "${CLOUDFLARE_AI_GATEWAY_TOKEN:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AI_GATEWAY_TOKEN)}" >> "$tmp"
 
 if $DRY_RUN; then
   log "DRY-RUN: preview of $OUT_FILE"
@@ -443,5 +428,6 @@ fi
 
 mv "$tmp" "$OUT_FILE"
 chmod 600 "$OUT_FILE"
+bash scripts/cloudflare/clean-env-empty-values.sh "$OUT_FILE"
 log "wrote $OUT_FILE"
 log "done"
