@@ -27,6 +27,42 @@ load_env_file(){
   set +a
 }
 
+set_if_empty_from_alias(){
+  local canonical="$1" alias="$2"
+  if [[ -z "${!canonical:-}" && -n "${!alias:-}" ]]; then
+    export "$canonical=${!alias}"
+  fi
+}
+
+normalize_cloudflare_env(){
+  set_if_empty_from_alias CLOUDFLARE_ACCOUNT_ID CF_ACCOUNT_ID
+  set_if_empty_from_alias CLOUDFLARE_ZONE_ID CF_ZONE_ID
+  set_if_empty_from_alias CLOUDFLARE_BOOTSTRAP_TOKEN CF_BOOTSTRAP_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_DNS_TOKEN CF_DNS_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_WORKERS_TOKEN CF_WORKERS_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_ZT_TOKEN CF_ZT_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_WAF_TOKEN CF_WAF_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_TUNNEL_TOKEN CF_TUNNEL_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_R2_TOKEN CF_R2_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_AUDIT_TOKEN CF_AUDIT_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_AI_GATEWAY_TOKEN CF_AI_GATEWAY_TOKEN
+  set_if_empty_from_alias CLOUDFLARE_AI_GATEWAY_SLUG CF_AI_GATEWAY_SLUG
+
+  # Export legacy names for older helper scripts until they are fully migrated.
+  export CF_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-}"
+  export CF_ZONE_ID="${CLOUDFLARE_ZONE_ID:-}"
+  export CF_BOOTSTRAP_TOKEN="${CLOUDFLARE_BOOTSTRAP_TOKEN:-}"
+  export CF_DNS_TOKEN="${CLOUDFLARE_DNS_TOKEN:-}"
+  export CF_WORKERS_TOKEN="${CLOUDFLARE_WORKERS_TOKEN:-}"
+  export CF_ZT_TOKEN="${CLOUDFLARE_ZT_TOKEN:-}"
+  export CF_WAF_TOKEN="${CLOUDFLARE_WAF_TOKEN:-}"
+  export CF_TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-}"
+  export CF_R2_TOKEN="${CLOUDFLARE_R2_TOKEN:-}"
+  export CF_AUDIT_TOKEN="${CLOUDFLARE_AUDIT_TOKEN:-}"
+  export CF_AI_GATEWAY_TOKEN="${CLOUDFLARE_AI_GATEWAY_TOKEN:-}"
+  export CF_AI_GATEWAY_SLUG="${CLOUDFLARE_AI_GATEWAY_SLUG:-zeaz}"
+}
+
 contains_arg(){
   local wanted="$1"
   shift
@@ -55,18 +91,19 @@ value_after_arg(){
 # Load .env first, then .env.cloudflare so generated token files can override.
 load_env_file .env
 load_env_file .env.cloudflare
+normalize_cloudflare_env
 
-: "${CF_AI_GATEWAY_SLUG:=zeaz}"
-export CF_AI_GATEWAY_SLUG
+: "${CLOUDFLARE_AI_GATEWAY_SLUG:=zeaz}"
+export CLOUDFLARE_AI_GATEWAY_SLUG CF_AI_GATEWAY_SLUG
 
-[[ -n "${CF_ACCOUNT_ID:-}" ]] || die "CF_ACCOUNT_ID is missing. Fill it in .env before token rotation."
-[[ -n "${CF_BOOTSTRAP_TOKEN:-}" ]] || die "CF_BOOTSTRAP_TOKEN is missing. Fill it in .env before token rotation."
+[[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || die "CLOUDFLARE_ACCOUNT_ID is missing. Fill it in .env before token rotation."
+[[ -n "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]] || die "CLOUDFLARE_BOOTSTRAP_TOKEN is missing. Fill it in .env before token rotation."
 
 if contains_arg --regenerate "$@"; then
   types="$(value_after_arg --types "$@" || true)"
   [[ -n "$types" ]] || die "--regenerate requires --types"
   if [[ "$types" == "all" || ",$types," == *",dns,"* ]]; then
-    [[ -n "${CF_ZONE_ID:-}" ]] || die "CF_ZONE_ID is missing. DNS token creation needs the real Cloudflare zone ID; otherwise Cloudflare receives invalid resource com.cloudflare.api.account.zone."
+    [[ -n "${CLOUDFLARE_ZONE_ID:-}" ]] || die "CLOUDFLARE_ZONE_ID is missing. DNS token creation needs the real Cloudflare zone ID."
   fi
 fi
 
