@@ -22,10 +22,15 @@ SKIP_PARTS = {
     "build",
     "coverage",
 }
+SKIP_PREFIXES = (
+    Path(".claude/homunculus"),
+)
 
 
 def should_skip(path: Path) -> bool:
-    return any(part in SKIP_PARTS for part in path.parts)
+    if any(part in SKIP_PARTS for part in path.parts):
+        return True
+    return any(path == prefix or prefix in path.parents for prefix in SKIP_PREFIXES)
 
 
 files = []
