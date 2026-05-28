@@ -47,9 +47,9 @@ Repository root: $ROOT
 
 ## Summary
 
-This report runs CI-safe local checks for environment validation, tests, YAML syntax, shell syntax, Terraform formatting/validation, OpenTofu validation, Cloudflare docs context cache readiness, and repository hygiene.
+This report runs CI-safe local checks for source health, tests, YAML syntax, shell syntax, Terraform formatting/validation, OpenTofu validation, Cloudflare docs context cache readiness, and repository hygiene.
 
-No secrets are printed intentionally. Review command output before sharing outside the project.
+Deployment secrets are treated as advisory here so the report can stay useful on fresh clones and CI. Use `make validate-env` for strict deployment validation.
 
 ## Tool inventory
 
@@ -76,7 +76,7 @@ done
   printf "\n\`\`\`\n"
 } >> "$REPORT_FILE"
 
-run_check "Python env validator" python3 python/cfstack_validate_env.py --json
+run_check "Environment advisory check" bash scripts/env-report-check.sh
 
 if has pytest; then
   run_check "Pytest" pytest -q tests
@@ -88,7 +88,7 @@ run_check "YAML validation" python3 scripts/validate-yaml.py
 run_check "Shell syntax" bash -lc 'find scripts ops -type f -name "*.sh" -print0 2>/dev/null | xargs -0 -r -I{} bash -n {}'
 
 if has shellcheck; then
-  run_check "Shellcheck" bash -lc 'find scripts ops -type f -name "*.sh" -print0 2>/dev/null | xargs -0 -r shellcheck'
+  run_check "Shellcheck" bash scripts/shellcheck-tracked.sh
 else
   run_check "Shellcheck" bash -lc 'echo "shellcheck missing; skipped"; exit 0'
 fi
@@ -133,6 +133,7 @@ cat >> "$REPORT_FILE" <<'FOOTER'
 
 ```bash
 python3 -m pip install -r requirements-dev.txt
+make setup-free
 make validate
 make yaml-validate
 make tf-fmt-check
