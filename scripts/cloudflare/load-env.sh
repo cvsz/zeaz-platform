@@ -29,15 +29,7 @@ find_root() {
 readonly CF_RUNTIME_KEYS=(
   CLOUDFLARE_ACCOUNT_ID
   CLOUDFLARE_ZONE_ID
-  CLOUDFLARE_ACCOUNT_ID
-  CLOUDFLARE_ZONE_ID
   CLOUDFLARE_API_TOKEN
-  CLOUDFLARE_DNS_TOKEN
-  CLOUDFLARE_ZT_TOKEN
-  CLOUDFLARE_WORKERS_TOKEN
-  CLOUDFLARE_WAF_TOKEN
-  CLOUDFLARE_TUNNEL_TOKEN
-  CLOUDFLARE_R2_TOKEN
   CLOUDFLARE_DNS_TOKEN
   CLOUDFLARE_ZT_TOKEN
   CLOUDFLARE_WORKERS_TOKEN
@@ -67,10 +59,20 @@ readonly CF_REQUIRED_VARS=(
 
 readonly S3_BACKEND_REQUIRED_VARS=(TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE)
 
+normalize_env_file() {
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+  local normalizer="${PROJECT_ROOT}/scripts/cloudflare/clean-env-empty-values.sh"
+  [[ -x "$normalizer" ]] || die "missing executable env normalizer: $normalizer"
+  bash "$normalizer" "$file"
+  chmod 600 "$file"
+}
+
 load_env_file() {
   local file="$1"
   [[ -f "$file" ]] || return 0
 
+  normalize_env_file "$file"
   set -a
   # shellcheck disable=SC1090
   source "$file" || { set +a; die "failed to source env file: $file"; }
@@ -97,30 +99,10 @@ restore_runtime_secrets() {
   done
 }
 
-set_if_empty_from_alias() {
-  local canonical="$1" alias="$2"
-  if [[ -z "${!canonical:-}" && -n "${!alias:-}" ]]; then
-    export "$canonical=${!alias}"
-  fi
-}
-
-normalize_cloudflare_env_aliases() {
-  set_if_empty_from_alias CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
-  set_if_empty_from_alias CLOUDFLARE_ZONE_ID CLOUDFLARE_ZONE_ID
-  set_if_empty_from_alias CLOUDFLARE_DNS_TOKEN CLOUDFLARE_DNS_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_ZT_TOKEN CLOUDFLARE_ZT_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_WORKERS_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_WAF_TOKEN CLOUDFLARE_WAF_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_TUNNEL_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_R2_TOKEN CLOUDFLARE_R2_TOKEN
-}
-
 validate_required_vars() {
   local strict="$1"
   local missing=0
   local key
-
-  normalize_cloudflare_env_aliases
 
   for key in "${CF_REQUIRED_VARS[@]}"; do
     if [[ -z "${!key:-}" ]]; then
@@ -170,10 +152,9 @@ main() {
   STRICT_ENV="${STRICT_ENV:-true}"
 
   capture_runtime_secrets
-  load_env_file "$TOKEN_ENV_FILE"
   load_env_file "$ENV_FILE"
+  load_env_file "$TOKEN_ENV_FILE"
   restore_runtime_secrets
-  normalize_cloudflare_env_aliases
 
   : "${CLOUDFLARE_AI_GATEWAY_SLUG:=zeaz}"
   : "${TERRAFORM_BACKEND_TYPE:=local}"
