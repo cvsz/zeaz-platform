@@ -63,13 +63,42 @@ verify_bootstrap_token(){
   command -v curl >/dev/null 2>&1 || die "curl is required"
   command -v jq >/dev/null 2>&1 || die "jq is required"
 
-  local response ok errors
-  response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" "${API_BASE}/user/tokens/verify" 2>/dev/null || true)"
-  [[ -n "$response" ]] || return 2
+  local body_file err_file http_code curl_rc body err ok errors
+  body_file="$(mktemp)"
+  err_file="$(mktemp)"
+  trap 'rm -f "$body_file" "$err_file"' RETURN
 
-  ok="$(printf '%s' "$response" | jq -r '.success // false' 2>/dev/null || printf 'false')"
+  set +e
+  http_code="$(curl -sS -o "$body_file" -w '%{http_code}' \
+    -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" \
+    "${API_BASE}/user/tokens/verify" 2>"$err_file")"
+  curl_rc=$?
+  set -e
+
+  body="$(cat "$body_file")"
+  err="$(cat "$err_file")"
+
+  if [[ "$curl_rc" -ne 0 ]]; then
+    warn "curl failed while verifying token: rc=${curl_rc} http=${http_code:-000} stderr=${err:-<empty>}"
+    return 2
+  fi
+  if [[ -z "$body" ]]; then
+    warn "Cloudflare token verify returned an empty body: http=${http_code:-000}; API_BASE=${API_BASE}"
+    return 2
+  fi
+  if [[ ! "$http_code" =~ ^2[0-9][0-9]$ ]]; then
+    if printf '%s' "$body" | jq -e . >/dev/null 2>&1; then
+      errors="$(printf '%s' "$body" | jq -c '.errors // []')"
+    else
+      errors="$body"
+    fi
+    warn "Cloudflare token verify failed: http=${http_code} errors=${errors}"
+    return 1
+  fi
+
+  ok="$(printf '%s' "$body" | jq -r '.success // false' 2>/dev/null || printf 'false')"
   if [[ "$ok" != "true" ]]; then
-    errors="$(printf '%s' "$response" | jq -c '.errors // []' 2>/dev/null || printf '[]')"
+    errors="$(printf '%s' "$body" | jq -c '.errors // []' 2>/dev/null || printf '[]')"
     warn "CLOUDFLARE_BOOTSTRAP_TOKEN failed /user/tokens/verify: ${errors}"
     return 1
   fi
@@ -94,14 +123,14 @@ if is_cleanup_only "$@"; then
     exit 0
   fi
   if ! verify_bootstrap_token; then
-    warn "token-clean skipped: bootstrap token is invalid, expired, revoked, malformed, or overridden by .env.cloudflare"
+    warn "token-clean skipped: bootstrap token verification failed"
     warn "run make token-verify for a masked diagnostic"
     exit 0
   fi
 else
   [[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || die "CLOUDFLARE_ACCOUNT_ID is missing. Fill it in .env before token rotation."
   [[ -n "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]] || die "CLOUDFLARE_BOOTSTRAP_TOKEN is missing. Fill it in .env before token rotation."
-  verify_bootstrap_token || die "CLOUDFLARE_BOOTSTRAP_TOKEN is invalid. Run make token-verify."
+  verify_bootstrap_token || die "CLOUDFLARE_BOOTSTRAP_TOKEN verification failed. Run make token-verify."
 fi
 
 if contains_arg --regenerate "$@"; then
