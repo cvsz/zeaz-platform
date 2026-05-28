@@ -23,7 +23,7 @@ export ENVIRONMENT
 export PYTHON
 export TF_ROOT
 
-.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
+.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
 
 help:
 	@bash scripts/make-help.sh
@@ -66,10 +66,10 @@ ci: validate
 
 validate-agent: ci-validate
 
-ci-validate: test yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
+ci-validate: test env-format-validate yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
 	@echo "CI validation complete."
 
-validate: test validate-env yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
+validate: test validate-env env-format-validate yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
 	@echo "Validation complete."
 
 validate-env:
@@ -77,6 +77,9 @@ validate-env:
 
 validate-env-strict:
 	@bash scripts/env-report-check.sh strict
+
+env-format-validate:
+	@$(PYTHON) scripts/validate-env-files.py .env.example
 
 maintenance:
 	@bash scripts/environments/maintenance.sh validate
