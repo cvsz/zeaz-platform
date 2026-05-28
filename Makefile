@@ -26,7 +26,7 @@ export STRICT_TOOLS
 export CODEX_CLOUD
 export STRICT_ENV
 
-.PHONY: help bootstrap setup setup-free env load-env docs-context upgrade-report validate validate-agent ci-validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
+.PHONY: help bootstrap setup setup-free env load-env docs-context upgrade-report validate validate-agent ci-validate validate-env validate-env-strict maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
 
 help:
 	@printf '%s\n' \
@@ -42,10 +42,11 @@ help:
 	'  make upgrade-report         Generate reports/project-upgrade-report.md' \
 	'' \
 	'Validation:' \
-	'  make validate               Run tests + env + Terraform validation' \
+	'  make validate               Run source checks; deployment env is advisory' \
 	'  make validate-agent         CI-safe validation without secrets' \
 	'  make ci                     Alias for validate' \
-	'  make validate-env           Run strict Python env validator' \
+	'  make validate-env           Advisory env check; does not fail on missing secrets' \
+	'  make validate-env-strict    Strict deployment env validator; requires real values' \
 	'  make maintenance            Run scripts/environments/maintenance.sh validate' \
 	'  make test                   Run pytest suite' \
 	'  make fmt                    Terraform fmt recursive' \
@@ -128,7 +129,11 @@ validate: test validate-env yaml-validate tf-fmt-check tf-init tf-validate
 	@echo "Validation complete."
 
 validate-env:
-	@if [ -f .env ]; then set -a; source .env; set +a; fi; \
+	@bash scripts/env-report-check.sh
+
+validate-env-strict:
+	@if [ -f .env.cloudflare ]; then set -a; source .env.cloudflare; set +a; fi; \
+	if [ -f .env ]; then set -a; source .env; set +a; fi; \
 	if [ -x "$(VENV_DIR)/bin/python" ]; then "$(VENV_DIR)/bin/python" python/cfstack_validate_env.py --strict; \
 	else $(PYTHON) python/cfstack_validate_env.py --strict; fi
 
@@ -148,7 +153,7 @@ lint: shellcheck yaml-validate
 	@if command -v tflint >/dev/null 2>&1; then tflint --recursive --chdir=$(TF_ROOT); else echo "WARN: tflint not installed; skipped"; fi
 
 shellcheck:
-	@if command -v shellcheck >/dev/null 2>&1; then find scripts ops -type f \( -name '*.sh' -o -perm -111 \) -print0 2>/dev/null | xargs -0 -r shellcheck; else echo "WARN: shellcheck not installed; skipped"; fi
+	@bash scripts/shellcheck-tracked.sh
 
 yaml-validate:
 	@if [ -f scripts/validate-yaml.py ]; then $(PYTHON) scripts/validate-yaml.py; else echo "INFO: scripts/validate-yaml.py not present; skipped"; fi
