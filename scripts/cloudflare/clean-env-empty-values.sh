@@ -25,6 +25,12 @@ optional_empty_drop = {
     "CLOUDFLARE_AUDIT_TOKEN",
     "CLOUDFLARE_AI_GATEWAY_TOKEN",
 }
+# .env.cloudflare is generated scoped-token output. These keys belong in .env
+# only. Keeping them in .env.cloudflare makes manual `source .env.cloudflare`
+# able to override a valid bootstrap token with a generated/expired token.
+protected_generated_env_drop = {
+    "CLOUDFLARE_BOOTSTRAP_TOKEN",
+}
 
 def normalize_value(raw: str) -> str:
     value = raw.strip()
@@ -40,6 +46,12 @@ for line in lines:
 
     key, raw_value = match.group(1), match.group(2)
     value = normalize_value(raw_value)
+
+    if key in protected_generated_env_drop and path.name == ".env.cloudflare":
+        if key in key_to_index:
+            output[key_to_index[key]] = None
+            key_to_index.pop(key, None)
+        continue
 
     if key in optional_empty_drop and value == "":
         if key in key_to_index:
