@@ -3,15 +3,15 @@ from python.cfstack_validate_env import validate, validate_with_warnings
 
 def base_env():
     return {
-        "CF_ACCOUNT_ID": "a" * 32,
-        "CF_ZONE_ID": "b" * 32,
+        "CLOUDFLARE_ACCOUNT_ID": "a" * 32,
+        "CLOUDFLARE_ZONE_ID": "b" * 32,
         "CLOUDFLARE_API_TOKEN": "tok" * 20,
-        "CF_DNS_TOKEN": "tok" * 20,
-        "CF_WORKERS_TOKEN": "tok" * 20,
-        "CF_ZT_TOKEN": "tok" * 20,
-        "CF_WAF_TOKEN": "tok" * 20,
-        "CF_TUNNEL_TOKEN": "tok" * 20,
-        "CF_R2_TOKEN": "tok" * 20,
+        "CLOUDFLARE_DNS_TOKEN": "tok" * 20,
+        "CLOUDFLARE_WORKERS_TOKEN": "tok" * 20,
+        "CLOUDFLARE_ZT_TOKEN": "tok" * 20,
+        "CLOUDFLARE_WAF_TOKEN": "tok" * 20,
+        "CLOUDFLARE_TUNNEL_TOKEN": "tok" * 20,
+        "CLOUDFLARE_R2_TOKEN": "tok" * 20,
         "IDENTITY_PROVIDER_TYPE": "saml",
         "IDENTITY_PROVIDER_VENDOR": "okta",
         "IDENTITY_PROVIDER_METADATA_URL": "https://idp.example.com/metadata",
@@ -55,8 +55,8 @@ def test_origin_hosts_invalid_fails():
 
 def test_missing_required_var_fails():
     env = base_env()
-    env.pop("CF_ZONE_ID")
-    assert any("CF_ZONE_ID" in e for e in validate(env))
+    env.pop("CLOUDFLARE_ZONE_ID")
+    assert any("CLOUDFLARE_ZONE_ID" in e for e in validate(env))
 
 
 def test_invalid_plan_tier_fails():
@@ -104,7 +104,7 @@ def test_free_plan_paid_override_warns():
 
 def test_legacy_cloudflare_aliases_are_accepted():
     env = base_env()
-    env["CLOUDFLARE_ACCOUNT_ID"] = env.pop("CF_ACCOUNT_ID")
-    env["CLOUDFLARE_ZONE_ID"] = env.pop("CF_ZONE_ID")
-    env["CLOUDFLARE_DNS_TOKEN"] = env.pop("CF_DNS_TOKEN")
+    env["CLOUDFLARE_ACCOUNT_ID"] = env.pop("CLOUDFLARE_ACCOUNT_ID")
+    env["CLOUDFLARE_ZONE_ID"] = env.pop("CLOUDFLARE_ZONE_ID")
+    env["CLOUDFLARE_DNS_TOKEN"] = env.pop("CLOUDFLARE_DNS_TOKEN")
     assert validate(env) == []

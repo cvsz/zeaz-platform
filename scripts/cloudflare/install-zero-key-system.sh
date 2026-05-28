@@ -28,8 +28,8 @@ set -Eeuo pipefail
 
 API="https://api.cloudflare.com/client/v4"
 
-: "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID required}"
-: "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN required}"
+: "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID required}"
+: "${CLOUDFLARE_BOOTSTRAP_TOKEN:?CLOUDFLARE_BOOTSTRAP_TOKEN required}"
 
 cf_api() {
   local method="$1"
@@ -40,7 +40,7 @@ cf_api() {
     -sS
     -X "$method"
     "$API$endpoint"
-    -H "Authorization: Bearer $CF_BOOTSTRAP_TOKEN"
+    -H "Authorization: Bearer $CLOUDFLARE_BOOTSTRAP_TOKEN"
     -H "Content-Type: application/json"
   )
 
@@ -51,7 +51,7 @@ cf_api() {
 permission_id_by_name() {
   local name="$1"
 
-  cf_api GET "/accounts/$CF_ACCOUNT_ID/tokens/permission_groups" |
+  cf_api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/permission_groups" |
     jq -r --arg name "$name" '
       (.result // [])
       | map(select(.name == $name))
@@ -81,7 +81,7 @@ if "permissions.sh" not in s:
 # --- Replace auth ---
 s = s.replace(
     'X-Auth-Email: ${CLOUDFLARE_EMAIL}',
-    'Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}'
+    'Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}'
 )
 s = s.replace(
     'X-Auth-Key: ${CF_GLOBAL_API_KEY}',
@@ -91,16 +91,16 @@ s = s.replace(
 # --- Replace env requirements ---
 s = s.replace(
     'CLOUDFLARE_EMAIL',
-    'CF_ACCOUNT_ID'
+    'CLOUDFLARE_ACCOUNT_ID'
 )
 s = s.replace(
     'CF_GLOBAL_API_KEY',
-    'CF_BOOTSTRAP_TOKEN'
+    'CLOUDFLARE_BOOTSTRAP_TOKEN'
 )
 
 # --- Replace endpoints ---
-s = s.replace("/user/tokens/", "/accounts/${CF_ACCOUNT_ID}/tokens/")
-s = s.replace("/user/tokens", "/accounts/${CF_ACCOUNT_ID}/tokens")
+s = s.replace("/user/tokens/", "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/")
+s = s.replace("/user/tokens", "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens")
 
 # --- Replace permission map ---
 if "_PERM_ID_MAP" in s:
@@ -141,11 +141,11 @@ fi'''
 # --- Fix resource scoping ---
 s = s.replace(
     "com.cloudflare.api.account.zone.*",
-    "com.cloudflare.api.account.zone.${CF_ZONE_ID}"
+    "com.cloudflare.api.account.zone.${CLOUDFLARE_ZONE_ID}"
 )
 s = s.replace(
     "com.cloudflare.api.account.*",
-    "com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+    "com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
 )
 
 p.write_text(s)
@@ -160,7 +160,7 @@ set -Eeuo pipefail
 
 source "$(dirname "$0")/permissions.sh"
 
-cf_api GET "/accounts/$CF_ACCOUNT_ID/tokens/permission_groups" |
+cf_api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/permission_groups" |
   jq -r '.result[] | [.name, .id] | @tsv'
 EOF2
 
@@ -172,9 +172,9 @@ echo
 echo "Next steps:"
 echo
 echo "1. Export variables:"
-echo "   export CF_ACCOUNT_ID=..."
-echo "   export CF_ZONE_ID=..."
-echo "   export CF_BOOTSTRAP_TOKEN=..."
+echo "   export CLOUDFLARE_ACCOUNT_ID=..."
+echo "   export CLOUDFLARE_ZONE_ID=..."
+echo "   export CLOUDFLARE_BOOTSTRAP_TOKEN=..."
 echo
 echo "2. Verify permissions:"
 echo "   $LIST"

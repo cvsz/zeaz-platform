@@ -140,8 +140,8 @@ Severity: Expected behavior
 
 The template intentionally leaves real values empty:
 
-- `CF_ACCOUNT_ID`
-- `CF_ZONE_ID`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_ZONE_ID`
 - scoped Cloudflare tokens
 - identity provider metadata
 - `SOPS_AGE_KEY`

@@ -10,17 +10,17 @@
     },
     "cloudflare-ai-gateway": {
       "type": "http",
-      "url": "https://gateway.ai.cloudflare.com/v1/${CF_ACCOUNT_ID}/${CF_AI_GATEWAY_SLUG}",
+      "url": "https://gateway.ai.cloudflare.com/v1/${CLOUDFLARE_ACCOUNT_ID}/${CLOUDFLARE_AI_GATEWAY_SLUG}",
       "headers": {
-        "Authorization": "Bearer ${CF_WORKERS_TOKEN}",
+        "Authorization": "Bearer ${CLOUDFLARE_WORKERS_TOKEN}",
         "Content-Type": "application/json"
       }
     },
     "cloudflare-logs": {
       "type": "http",
-      "url": "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/logs/retrieve",
+      "url": "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/logs/retrieve",
       "headers": {
-        "Authorization": "Bearer ${CF_AUDIT_TOKEN}",
+        "Authorization": "Bearer ${CLOUDFLARE_AUDIT_TOKEN}",
         "Content-Type": "application/json"
       }
     }

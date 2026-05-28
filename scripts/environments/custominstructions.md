@@ -55,20 +55,20 @@ Generate deterministic, production-ready infrastructure and security automation 
 - Use Cloudflare-native services where possible.
 - Prefer scoped API tokens over global keys.
 - Preserve:
-  - `CF_ACCOUNT_ID`
-  - `CF_ZONE_ID`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `CLOUDFLARE_ZONE_ID`
   - `CLOUDFLARE_API_TOKEN`
-  - `CF_DNS_TOKEN`
-  - `CF_WORKERS_TOKEN`
-  - `CF_ZT_TOKEN`
-  - `CF_WAF_TOKEN`
-  - `CF_TUNNEL_TOKEN`
-  - `CF_R2_TOKEN`
-  - `CF_AUDIT_TOKEN`
-  - `CF_AI_GATEWAY_TOKEN`
-  - `CF_AI_GATEWAY_SLUG`
-- Do not automatically regenerate `CF_AUDIT_TOKEN` or `CF_AI_GATEWAY_TOKEN` unless exact account-specific permission-group IDs are explicitly provided.
-- Default `CF_AI_GATEWAY_SLUG` to `zeaz` when unset.
+  - `CLOUDFLARE_DNS_TOKEN`
+  - `CLOUDFLARE_WORKERS_TOKEN`
+  - `CLOUDFLARE_ZT_TOKEN`
+  - `CLOUDFLARE_WAF_TOKEN`
+  - `CLOUDFLARE_TUNNEL_TOKEN`
+  - `CLOUDFLARE_R2_TOKEN`
+  - `CLOUDFLARE_AUDIT_TOKEN`
+  - `CLOUDFLARE_AI_GATEWAY_TOKEN`
+  - `CLOUDFLARE_AI_GATEWAY_SLUG`
+- Do not automatically regenerate `CLOUDFLARE_AUDIT_TOKEN` or `CLOUDFLARE_AI_GATEWAY_TOKEN` unless exact account-specific permission-group IDs are explicitly provided.
+- Default `CLOUDFLARE_AI_GATEWAY_SLUG` to `zeaz` when unset.
 
 ## TERRAFORM / OPENTOFU
 
@@ -156,18 +156,18 @@ When generating `.env`, preserve existing values and never replace a non-empty s
 Required Cloudflare platform env keys:
 
 ```env
-CF_ACCOUNT_ID=
-CF_ZONE_ID=
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_ZONE_ID=
 CLOUDFLARE_API_TOKEN=
-CF_DNS_TOKEN=
-CF_WORKERS_TOKEN=
-CF_ZT_TOKEN=
-CF_WAF_TOKEN=
-CF_TUNNEL_TOKEN=
-CF_R2_TOKEN=
-CF_AUDIT_TOKEN=
-CF_AI_GATEWAY_TOKEN=
-CF_AI_GATEWAY_SLUG=zeaz
+CLOUDFLARE_DNS_TOKEN=
+CLOUDFLARE_WORKERS_TOKEN=
+CLOUDFLARE_ZT_TOKEN=
+CLOUDFLARE_WAF_TOKEN=
+CLOUDFLARE_TUNNEL_TOKEN=
+CLOUDFLARE_R2_TOKEN=
+CLOUDFLARE_AUDIT_TOKEN=
+CLOUDFLARE_AI_GATEWAY_TOKEN=
+CLOUDFLARE_AI_GATEWAY_SLUG=zeaz
 CLOUDFLARE_PLAN_TIER=Free
 IDENTITY_PROVIDER_TYPE=saml
 IDENTITY_PROVIDER_VENDOR=authentik

@@ -17,8 +17,8 @@ set -Eeuo pipefail
 
 readonly CF_API_BASE="https://api.cloudflare.com/client/v4"
 
-: "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID required}"
-: "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN required}"
+: "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID required}"
+: "${CLOUDFLARE_BOOTSTRAP_TOKEN:?CLOUDFLARE_BOOTSTRAP_TOKEN required}"
 
 cf_api() {
   local method="$1"
@@ -29,7 +29,7 @@ cf_api() {
     -sS
     -X "$method"
     "${CF_API_BASE}${endpoint}"
-    -H "Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}"
+    -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}"
     -H "Content-Type: application/json"
   )
 
@@ -40,7 +40,7 @@ cf_api() {
 permission_id_by_name() {
   local wanted="$1"
 
-  cf_api GET "/accounts/${CF_ACCOUNT_ID}/tokens/permission_groups" |
+  cf_api GET "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups" |
     jq -r --arg wanted "$wanted" '
       (.result // [])
       | map(select(.name == $wanted))
@@ -60,8 +60,8 @@ s = p.read_text()
 s = s.replace(
 ''': "${CLOUDFLARE_EMAIL:?CLOUDFLARE_EMAIL must be exported, for example: export CLOUDFLARE_EMAIL=you@example.com}"
 : "${CF_GLOBAL_API_KEY:?CF_GLOBAL_API_KEY must be exported}"''',
-''': "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID must be exported}"
-: "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN must be exported}"'''
+''': "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID must be exported}"
+: "${CLOUDFLARE_BOOTSTRAP_TOKEN:?CLOUDFLARE_BOOTSTRAP_TOKEN must be exported}"'''
 )
 
 s = s.replace(
@@ -73,7 +73,7 @@ source "$(dirname "$0")/permissions.sh"'''
 s = s.replace(
 '''    -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}"
     -H "X-Auth-Key: ${CF_GLOBAL_API_KEY}"''',
-'''    -H "Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}"'''
+'''    -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}"'''
 )
 
 start = s.find("declare -A _PERM_ID_MAP=(")
@@ -103,14 +103,14 @@ s = s.replace(
   [r2]="com.cloudflare.api.account.*"
 )''',
 '''declare -A _RESOURCE_MAP=(
-  [dns]="com.cloudflare.api.account.zone.${CF_ZONE_ID}"
-  [zt]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [workers]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [pages]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [waf]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [tunnel]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [r2]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [d1]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+  [dns]="com.cloudflare.api.account.zone.${CLOUDFLARE_ZONE_ID}"
+  [zt]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [workers]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [pages]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [waf]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [tunnel]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [r2]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [d1]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
 )'''
 )
 
@@ -160,30 +160,30 @@ s = s.replace(
 )
 
 s = s.replace(
-'''  [workers]="CF_WORKERS_TOKEN"
-  [waf]="CF_WAF_TOKEN"''',
-'''  [workers]="CF_WORKERS_TOKEN"
+'''  [workers]="CLOUDFLARE_WORKERS_TOKEN"
+  [waf]="CLOUDFLARE_WAF_TOKEN"''',
+'''  [workers]="CLOUDFLARE_WORKERS_TOKEN"
   [pages]="CF_PAGES_TOKEN"
   [d1]="CF_D1_TOKEN"
-  [waf]="CF_WAF_TOKEN"'''
+  [waf]="CLOUDFLARE_WAF_TOKEN"'''
 )
 
 s = s.replace(
-'''  [CF_WORKERS_TOKEN]="workers"
-  [CF_WAF_TOKEN]="waf"''',
-'''  [CF_WORKERS_TOKEN]="workers"
+'''  [CLOUDFLARE_WORKERS_TOKEN]="workers"
+  [CLOUDFLARE_WAF_TOKEN]="waf"''',
+'''  [CLOUDFLARE_WORKERS_TOKEN]="workers"
   [CF_PAGES_TOKEN]="pages"
   [CF_D1_TOKEN]="d1"
-  [CF_WAF_TOKEN]="waf"'''
+  [CLOUDFLARE_WAF_TOKEN]="waf"'''
 )
 
 s = s.replace(
-'''  CF_WORKERS_TOKEN
-  CF_WAF_TOKEN''',
-'''  CF_WORKERS_TOKEN
+'''  CLOUDFLARE_WORKERS_TOKEN
+  CLOUDFLARE_WAF_TOKEN''',
+'''  CLOUDFLARE_WORKERS_TOKEN
   CF_PAGES_TOKEN
   CF_D1_TOKEN
-  CF_WAF_TOKEN'''
+  CLOUDFLARE_WAF_TOKEN'''
 )
 
 p.write_text(s)
@@ -195,7 +195,7 @@ set -Eeuo pipefail
 
 source "$(dirname "$0")/permissions.sh"
 
-cf_api GET "/accounts/${CF_ACCOUNT_ID}/tokens/permission_groups" |
+cf_api GET "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups" |
   jq -r '
     (.result // [])
     | sort_by(.name)
@@ -211,5 +211,5 @@ echo "Patch applied."
 echo "Backup created beside $SCRIPT"
 echo
 echo "Test:"
-echo "  CF_ACCOUNT_ID=... CF_ZONE_ID=... CF_BOOTSTRAP_TOKEN=... \\"
+echo "  CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_ZONE_ID=... CLOUDFLARE_BOOTSTRAP_TOKEN=... \\"
 echo "  $SCRIPT --dry-run --regenerate --types dns,workers,pages,r2,d1"

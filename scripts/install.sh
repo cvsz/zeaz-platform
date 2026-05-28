@@ -102,13 +102,13 @@ validate_plan || true
 
 case "$(basename "$0"):$MODE" in
   install.sh:*|*:install)
-    require_env CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || warn "install validation has missing env values"
+    require_env CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT PRIMARY_DOMAIN || warn "install validation has missing env values"
     info "initializing terraform and validating configuration"
     run_tf init -backend=false
     run_tf validate
     ;;
   uninstall.sh:*|*:uninstall)
-    require_env CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT || warn "uninstall validation has missing env values"
+    require_env CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_API_TOKEN ENVIRONMENT || warn "uninstall validation has missing env values"
     info "generating destroy plan only"
     run_tf plan -destroy -out=tfplan.destroy
     ;;
@@ -133,7 +133,7 @@ case "$(basename "$0"):$MODE" in
     tar -xzf "$BACKUP_ARCHIVE" -C "$PROJECT_ROOT"
     ;;
   validate.sh:*|*:validate)
-    require_env CF_ACCOUNT_ID CF_ZONE_ID CF_DNS_TOKEN CF_WORKERS_TOKEN CF_ZT_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN IDENTITY_PROVIDER_TYPE IDENTITY_PROVIDER_VENDOR IDENTITY_PROVIDER_METADATA_URL ENVIRONMENT REGION PRIMARY_DOMAIN ORIGIN_INFRA_TYPE ORIGIN_HOSTS TERRAFORM_BACKEND_TYPE TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE SOPS_AGE_KEY SECRET_ROTATION_INTERVAL CLOUDFLARE_PLAN_TIER || warn "validation has missing env values"
+    require_env CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_DNS_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN IDENTITY_PROVIDER_TYPE IDENTITY_PROVIDER_VENDOR IDENTITY_PROVIDER_METADATA_URL ENVIRONMENT REGION PRIMARY_DOMAIN ORIGIN_INFRA_TYPE ORIGIN_HOSTS TERRAFORM_BACKEND_TYPE TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE SOPS_AGE_KEY SECRET_ROTATION_INTERVAL CLOUDFLARE_PLAN_TIER || warn "validation has missing env values"
     run_tf fmt -check
     run_tf validate
     ;;

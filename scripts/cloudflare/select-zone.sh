@@ -19,7 +19,7 @@ if [[ "${success}" != "true" ]]; then
   exit 1
 fi
 
-CF_ZONE_ID="$(
+CLOUDFLARE_ZONE_ID="$(
   echo "${response}" \
     | jq -r \
       --arg DOMAIN "${TARGET_DOMAIN}" '
@@ -29,10 +29,10 @@ CF_ZONE_ID="$(
       '
 )"
 
-if [[ -z "${CF_ZONE_ID}" || "${CF_ZONE_ID}" == "null" ]]; then
+if [[ -z "${CLOUDFLARE_ZONE_ID}" || "${CLOUDFLARE_ZONE_ID}" == "null" ]]; then
   echo "Zone not found"
   exit 1
 fi
 
 printf '\nZone: %s\n' "${TARGET_DOMAIN}"
-printf 'Zone ID: %s\n' "${CF_ZONE_ID}"
+printf 'Zone ID: %s\n' "${CLOUDFLARE_ZONE_ID}"

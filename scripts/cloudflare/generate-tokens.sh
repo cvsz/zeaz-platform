@@ -74,15 +74,15 @@ api_call() {
   die "Cloudflare API call failed after ${MAX_RETRIES} attempts: ${method} ${endpoint}"
 }
 
-policy_dns() { jq -cn --arg zone "${CF_ZONE_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account.zone."+$zone):"*"},permission_groups:[{id:"82e64a83756745bbbb1c9c2701bf816b"},{id:"c8fed203ed3043cba015a93ad1616f1f"}]}]'; }
-policy_zt() { jq -cn --arg account "${CF_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"c1fde68c7bcc44588cbb6ddbc16d6480"},{id:"c1250ab6c65d4f1d8cc6f5f0476c9b3c"}]}]'; }
-policy_workers() { jq -cn --arg account "${CF_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"e086da7e2179491d91ee5f35b3ca210a"},{id:"f267e341f3dd4697bec6c725f3e7f2c4"}]}]'; }
-policy_waf() { jq -cn --arg zone "${CF_ZONE_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account.zone."+$zone):"*"},permission_groups:[{id:"5a9c0d1a4e0b4c8ba7e5d6d5b6e3b111"}]}]'; }
-policy_tunnel() { jq -cn --arg account "${CF_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"8d5f4f6c2c7f4a1d91aa8c6d2bcff111"}]}]'; }
-policy_r2() { jq -cn --arg account "${CF_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"0d8c9f5a6b2f4a5f8e7c3a2b1d4f1111"}]}]'; }
+policy_dns() { jq -cn --arg zone "${CLOUDFLARE_ZONE_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account.zone."+$zone):"*"},permission_groups:[{id:"82e64a83756745bbbb1c9c2701bf816b"},{id:"c8fed203ed3043cba015a93ad1616f1f"}]}]'; }
+policy_zt() { jq -cn --arg account "${CLOUDFLARE_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"c1fde68c7bcc44588cbb6ddbc16d6480"},{id:"c1250ab6c65d4f1d8cc6f5f0476c9b3c"}]}]'; }
+policy_workers() { jq -cn --arg account "${CLOUDFLARE_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"e086da7e2179491d91ee5f35b3ca210a"},{id:"f267e341f3dd4697bec6c725f3e7f2c4"}]}]'; }
+policy_waf() { jq -cn --arg zone "${CLOUDFLARE_ZONE_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account.zone."+$zone):"*"},permission_groups:[{id:"5a9c0d1a4e0b4c8ba7e5d6d5b6e3b111"}]}]'; }
+policy_tunnel() { jq -cn --arg account "${CLOUDFLARE_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"8d5f4f6c2c7f4a1d91aa8c6d2bcff111"}]}]'; }
+policy_r2() { jq -cn --arg account "${CLOUDFLARE_ACCOUNT_ID}" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:[{id:"0d8c9f5a6b2f4a5f8e7c3a2b1d4f1111"}]}]'; }
 policy_custom_account() {
   local permission_ids_csv="$1"
-  jq -cn --arg account "${CF_ACCOUNT_ID}" --arg ids "$permission_ids_csv" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:($ids|split(",")|map(select(length>0)|{id:.}))}]'
+  jq -cn --arg account "${CLOUDFLARE_ACCOUNT_ID}" --arg ids "$permission_ids_csv" '[{effect:"allow",resources:{("com.cloudflare.api.account."+$account):"*"},permission_groups:($ids|split(",")|map(select(length>0)|{id:.}))}]'
 }
 
 create_token() {
@@ -103,8 +103,8 @@ main() {
   ENV_FILE="${ENV_FILE:-${OUTPUT_DIR}/cloudflare.env}"
 
   require_env CLOUDFLARE_API_TOKEN
-  require_env CF_ACCOUNT_ID
-  require_env CF_ZONE_ID
+  require_env CLOUDFLARE_ACCOUNT_ID
+  require_env CLOUDFLARE_ZONE_ID
   command -v jq >/dev/null || die "jq is required"
   command -v curl >/dev/null || die "curl is required"
 
@@ -122,32 +122,32 @@ main() {
   cf_tunnel_token="$(create_token "zeaz-tunnel-token" "$(policy_tunnel)")"
   cf_r2_token="$(create_token "zeaz-r2-token" "$(policy_r2)")"
 
-  cf_audit_token="${CF_AUDIT_TOKEN:-}"
+  cf_audit_token="${CLOUDFLARE_AUDIT_TOKEN:-}"
   if [[ -n "${CF_AUDIT_PERMISSION_GROUP_IDS:-}" ]]; then
     cf_audit_token="$(create_token "zeaz-audit-token" "$(policy_custom_account "${CF_AUDIT_PERMISSION_GROUP_IDS}")")"
   else
-    warn "CF_AUDIT_PERMISSION_GROUP_IDS not set; CF_AUDIT_TOKEN is preserved from runtime env only"
+    warn "CF_AUDIT_PERMISSION_GROUP_IDS not set; CLOUDFLARE_AUDIT_TOKEN is preserved from runtime env only"
   fi
 
-  cf_ai_gateway_token="${CF_AI_GATEWAY_TOKEN:-}"
+  cf_ai_gateway_token="${CLOUDFLARE_AI_GATEWAY_TOKEN:-}"
   if [[ -n "${CF_AI_GATEWAY_PERMISSION_GROUP_IDS:-}" ]]; then
     cf_ai_gateway_token="$(create_token "zeaz-ai-gateway-token" "$(policy_custom_account "${CF_AI_GATEWAY_PERMISSION_GROUP_IDS}")")"
   else
-    warn "CF_AI_GATEWAY_PERMISSION_GROUP_IDS not set; CF_AI_GATEWAY_TOKEN is preserved from runtime env only"
+    warn "CF_AI_GATEWAY_PERMISSION_GROUP_IDS not set; CLOUDFLARE_AI_GATEWAY_TOKEN is preserved from runtime env only"
   fi
 
   umask 077
   cat >"${ENV_FILE}" <<EOV
 CLOUDFLARE_API_TOKEN=${cf_api_token}
-CF_DNS_TOKEN=${cf_dns_token}
-CF_ZT_TOKEN=${cf_zt_token}
-CF_WORKERS_TOKEN=${cf_workers_token}
-CF_WAF_TOKEN=${cf_waf_token}
-CF_TUNNEL_TOKEN=${cf_tunnel_token}
-CF_R2_TOKEN=${cf_r2_token}
-CF_AUDIT_TOKEN=${cf_audit_token}
-CF_AI_GATEWAY_TOKEN=${cf_ai_gateway_token}
-CF_AI_GATEWAY_SLUG=${CF_AI_GATEWAY_SLUG:-zeaz}
+CLOUDFLARE_DNS_TOKEN=${cf_dns_token}
+CLOUDFLARE_ZT_TOKEN=${cf_zt_token}
+CLOUDFLARE_WORKERS_TOKEN=${cf_workers_token}
+CLOUDFLARE_WAF_TOKEN=${cf_waf_token}
+CLOUDFLARE_TUNNEL_TOKEN=${cf_tunnel_token}
+CLOUDFLARE_R2_TOKEN=${cf_r2_token}
+CLOUDFLARE_AUDIT_TOKEN=${cf_audit_token}
+CLOUDFLARE_AI_GATEWAY_TOKEN=${cf_ai_gateway_token}
+CLOUDFLARE_AI_GATEWAY_SLUG=${CLOUDFLARE_AI_GATEWAY_SLUG:-zeaz}
 EOV
 
   chmod 600 "${ENV_FILE}"

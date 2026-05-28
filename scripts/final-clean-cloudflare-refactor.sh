@@ -91,9 +91,9 @@ echo
 echo "✅ FINAL CLEAN COMPLETE"
 echo
 echo "Now run:"
-echo "export TF_VAR_cloudflare_account_id=\$CF_ACCOUNT_ID"
-echo "export TF_VAR_cloudflare_zone_id=\$CF_ZONE_ID"
-echo "export TF_VAR_cloudflare_bootstrap_token=\$CF_BOOTSTRAP_TOKEN"
+echo "export TF_VAR_cloudflare_account_id=\$CLOUDFLARE_ACCOUNT_ID"
+echo "export TF_VAR_cloudflare_zone_id=\$CLOUDFLARE_ZONE_ID"
+echo "export TF_VAR_cloudflare_bootstrap_token=\$CLOUDFLARE_BOOTSTRAP_TOKEN"
 echo
 echo "cd terraform/environments/prod"
 echo "terraform init"

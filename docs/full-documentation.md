@@ -100,15 +100,15 @@ make restore
 
 Validation enforces all of the following as required:
 
-- `CF_ACCOUNT_ID`
-- `CF_ZONE_ID`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_ZONE_ID`
 - `CLOUDFLARE_API_TOKEN`
-- `CF_DNS_TOKEN`
-- `CF_WORKERS_TOKEN`
-- `CF_ZT_TOKEN`
-- `CF_WAF_TOKEN`
-- `CF_TUNNEL_TOKEN`
-- `CF_R2_TOKEN`
+- `CLOUDFLARE_DNS_TOKEN`
+- `CLOUDFLARE_WORKERS_TOKEN`
+- `CLOUDFLARE_ZT_TOKEN`
+- `CLOUDFLARE_WAF_TOKEN`
+- `CLOUDFLARE_TUNNEL_TOKEN`
+- `CLOUDFLARE_R2_TOKEN`
 - `IDENTITY_PROVIDER_TYPE`
 - `IDENTITY_PROVIDER_VENDOR`
 - `IDENTITY_PROVIDER_METADATA_URL`
@@ -125,7 +125,7 @@ Validation enforces all of the following as required:
 - `CLOUDFLARE_PLAN_TIER`
 
 ### Validation semantics
-- `CF_ACCOUNT_ID` / `CF_ZONE_ID`: must be 32-char lowercase hex.
+- `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_ZONE_ID`: must be 32-char lowercase hex.
 - `PRIMARY_DOMAIN`: lowercase domain-safe pattern.
 - `IDENTITY_PROVIDER_METADATA_URL`: must be HTTPS.
 - `SECRET_ROTATION_INTERVAL`: must match `<number>d`.
@@ -229,4 +229,3 @@ Recommended deterministic pipeline stages:
 - Add signed plan promotion (artifact hash verification between stages).
 - Add centralized metrics export for validation/drift job outcomes.
 - Expand Zero Trust posture checks and automated policy assertions.
-

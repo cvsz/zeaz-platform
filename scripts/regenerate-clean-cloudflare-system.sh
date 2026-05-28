@@ -147,7 +147,7 @@ jobs:
           node-version: 22
       - run: npx wrangler deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_WORKERS_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_WORKERS_TOKEN }}
 YAML
 
 echo "✅ Clean system regenerated."

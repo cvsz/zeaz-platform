@@ -111,29 +111,29 @@ write_kv "TERRAFORM_BACKEND_TYPE" "local"
 write_kv "TERRAFORM_STATE_BUCKET" ""
 write_kv "TERRAFORM_LOCK_TABLE" ""
 write_kv "SECRET_ROTATION_INTERVAL" "$(keep_or_default SECRET_ROTATION_INTERVAL 30d)"
-write_kv "CLOUDFLARE_AI_GATEWAY_SLUG" "$(keep_alias_or_blank CLOUDFLARE_AI_GATEWAY_SLUG CF_AI_GATEWAY_SLUG)"
+write_kv "CLOUDFLARE_AI_GATEWAY_SLUG" "$(keep_alias_or_blank CLOUDFLARE_AI_GATEWAY_SLUG CLOUDFLARE_AI_GATEWAY_SLUG)"
 
 cat >> "$TMP_ENV" <<'SECTION'
 
 # Cloudflare account / zone IDs. Fill real values from Cloudflare Dashboard.
 SECTION
-write_preserved_or_blank "CLOUDFLARE_ACCOUNT_ID" "CF_ACCOUNT_ID"
-write_preserved_or_blank "CLOUDFLARE_ZONE_ID" "CF_ZONE_ID"
+write_preserved_or_blank "CLOUDFLARE_ACCOUNT_ID" "CLOUDFLARE_ACCOUNT_ID"
+write_preserved_or_blank "CLOUDFLARE_ZONE_ID" "CLOUDFLARE_ZONE_ID"
 
 cat >> "$TMP_ENV" <<'SECTION'
 
 # Cloudflare tokens. Fill real scoped API tokens. Do not use Global API Key.
 SECTION
-write_preserved_or_blank "CLOUDFLARE_BOOTSTRAP_TOKEN" "CF_BOOTSTRAP_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_BOOTSTRAP_TOKEN" "CLOUDFLARE_BOOTSTRAP_TOKEN"
 write_preserved_or_blank "CLOUDFLARE_API_TOKEN" "CLOUDFLARE_API_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_DNS_TOKEN" "CF_DNS_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_WORKERS_TOKEN" "CF_WORKERS_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_ZT_TOKEN" "CF_ZT_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_WAF_TOKEN" "CF_WAF_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_TUNNEL_TOKEN" "CF_TUNNEL_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_R2_TOKEN" "CF_R2_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_AUDIT_TOKEN" "CF_AUDIT_TOKEN"
-write_preserved_or_blank "CLOUDFLARE_AI_GATEWAY_TOKEN" "CF_AI_GATEWAY_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_DNS_TOKEN" "CLOUDFLARE_DNS_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_WORKERS_TOKEN" "CLOUDFLARE_WORKERS_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_ZT_TOKEN" "CLOUDFLARE_ZT_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_WAF_TOKEN" "CLOUDFLARE_WAF_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_TUNNEL_TOKEN" "CLOUDFLARE_TUNNEL_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_R2_TOKEN" "CLOUDFLARE_R2_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_AUDIT_TOKEN" "CLOUDFLARE_AUDIT_TOKEN"
+write_preserved_or_blank "CLOUDFLARE_AI_GATEWAY_TOKEN" "CLOUDFLARE_AI_GATEWAY_TOKEN"
 
 cat >> "$TMP_ENV" <<'SECTION'
 

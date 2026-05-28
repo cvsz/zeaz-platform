@@ -6,12 +6,12 @@ IFS=$'\n\t'
 source secrets/cloudflare.env
 
 required=(
-  CF_DNS_TOKEN
-  CF_ZT_TOKEN
-  CF_WORKERS_TOKEN
-  CF_WAF_TOKEN
-  CF_TUNNEL_TOKEN
-  CF_R2_TOKEN
+  CLOUDFLARE_DNS_TOKEN
+  CLOUDFLARE_ZT_TOKEN
+  CLOUDFLARE_WORKERS_TOKEN
+  CLOUDFLARE_WAF_TOKEN
+  CLOUDFLARE_TUNNEL_TOKEN
+  CLOUDFLARE_R2_TOKEN
 )
 
 log() {
@@ -49,11 +49,11 @@ for key in "${required[@]}"; do
   fi
 done
 
-validate_token "CF_DNS_TOKEN" "${CF_DNS_TOKEN}"
-validate_token "CF_ZT_TOKEN" "${CF_ZT_TOKEN}"
-validate_token "CF_WORKERS_TOKEN" "${CF_WORKERS_TOKEN}"
-validate_token "CF_WAF_TOKEN" "${CF_WAF_TOKEN}"
-validate_token "CF_TUNNEL_TOKEN" "${CF_TUNNEL_TOKEN}"
-validate_token "CF_R2_TOKEN" "${CF_R2_TOKEN}"
+validate_token "CLOUDFLARE_DNS_TOKEN" "${CLOUDFLARE_DNS_TOKEN}"
+validate_token "CLOUDFLARE_ZT_TOKEN" "${CLOUDFLARE_ZT_TOKEN}"
+validate_token "CLOUDFLARE_WORKERS_TOKEN" "${CLOUDFLARE_WORKERS_TOKEN}"
+validate_token "CLOUDFLARE_WAF_TOKEN" "${CLOUDFLARE_WAF_TOKEN}"
+validate_token "CLOUDFLARE_TUNNEL_TOKEN" "${CLOUDFLARE_TUNNEL_TOKEN}"
+validate_token "CLOUDFLARE_R2_TOKEN" "${CLOUDFLARE_R2_TOKEN}"
 
 log "All tokens validated successfully"

@@ -6,15 +6,15 @@ Phase F1 provides strict runtime context validation before Terraform/OpenTofu or
 
 All variables are required at runtime:
 
-- `CF_ACCOUNT_ID`
-- `CF_ZONE_ID`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_ZONE_ID`
 - `CLOUDFLARE_API_TOKEN`
-- `CF_DNS_TOKEN`
-- `CF_WORKERS_TOKEN`
-- `CF_ZT_TOKEN`
-- `CF_WAF_TOKEN`
-- `CF_TUNNEL_TOKEN`
-- `CF_R2_TOKEN`
+- `CLOUDFLARE_DNS_TOKEN`
+- `CLOUDFLARE_WORKERS_TOKEN`
+- `CLOUDFLARE_ZT_TOKEN`
+- `CLOUDFLARE_WAF_TOKEN`
+- `CLOUDFLARE_TUNNEL_TOKEN`
+- `CLOUDFLARE_R2_TOKEN`
 - `IDENTITY_PROVIDER_TYPE`
 - `IDENTITY_PROVIDER_VENDOR`
 - `IDENTITY_PROVIDER_METADATA_URL`
@@ -32,7 +32,7 @@ All variables are required at runtime:
 
 ## Validation Rules
 
-- `CF_ACCOUNT_ID` and `CF_ZONE_ID` must be 32-character hexadecimal strings.
+- `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_ZONE_ID` must be 32-character hexadecimal strings.
 - Token variables must be present; values are never printed in logs.
 - `ENVIRONMENT` must be `dev`, `staging`, or `prod`.
 - `CLOUDFLARE_PLAN_TIER` must be `Free`, `Pro`, `Business`, or `Enterprise`.

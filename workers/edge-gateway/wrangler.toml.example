@@ -14,5 +14,5 @@ id = "00000000000000000000000000000000"
 [vars]
 JWT_AUDIENCE = "edge-gateway"
 EDGE_USE_DURABLE_LIMITER = "false"
-CF_AI_GATEWAY_SLUG = "zeaz-platform-ai-gateway"
+CLOUDFLARE_AI_GATEWAY_SLUG = "zeaz-platform-ai-gateway"
 # JWT_SECRET must be injected with `wrangler secret put JWT_SECRET` or GitHub Actions secret.

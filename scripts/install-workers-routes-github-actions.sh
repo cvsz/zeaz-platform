@@ -80,9 +80,9 @@ jobs:
       - run: terraform init
       - run: terraform apply -auto-approve
         env:
-          TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CF_BOOTSTRAP_TOKEN }}
-          TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
-          TF_VAR_cloudflare_zone_id: ${{ secrets.CF_ZONE_ID }}
+          TF_VAR_cloudflare_bootstrap_token: ${{ secrets.CLOUDFLARE_BOOTSTRAP_TOKEN }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
 
   wrangler-deploy:
     runs-on: ubuntu-latest
@@ -96,7 +96,7 @@ jobs:
       - run: npm install --no-audit --no-fund || true
       - run: npx wrangler deploy
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_WORKERS_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_WORKERS_TOKEN }}
 YAML
 
 echo "Installed Workers + Routes Terraform and GitHub Actions pipeline."

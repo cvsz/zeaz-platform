@@ -24,7 +24,7 @@ PERM_ID_OVERRIDE=""
 
 usage(){
   cat <<USAGE
-Usage: CF_ACCOUNT_ID=<email> CF_BOOTSTRAP_TOKEN=<key> $0 [options]
+Usage: CLOUDFLARE_ACCOUNT_ID=<email> CLOUDFLARE_BOOTSTRAP_TOKEN=<key> $0 [options]
 
 Cleaning:
   --name <token-name>    Restrict cleanup to an exact token name
@@ -43,9 +43,9 @@ Regeneration:
   --perm-id <id>         Override permission-group ID for every generated token
 
 Notes:
-  CF_AUDIT_TOKEN and CF_AI_GATEWAY_TOKEN are preserved from the environment or existing output file.
+  CLOUDFLARE_AUDIT_TOKEN and CLOUDFLARE_AI_GATEWAY_TOKEN are preserved from the environment or existing output file.
   Tokens with names matching PRESERVE_TOKEN_NAME_REGEX are never revoked by cleanup.
-  CF_AI_GATEWAY_SLUG defaults to zeaz when unset.
+  CLOUDFLARE_AI_GATEWAY_SLUG defaults to zeaz when unset.
 
   --help, -h             Show help
 USAGE
@@ -79,13 +79,13 @@ has jq || die "jq is required"
 [[ "$KEEP_MOST" =~ ^[0-9]+$ ]] || die "--keep-most must be a non-negative integer"
 [[ "$TOKEN_QUOTA" =~ ^[0-9]+$ ]] || die "TOKEN_QUOTA must be a non-negative integer"
 
-: "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID must be exported}"
-: "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN must be exported}"
+: "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID must be exported}"
+: "${CLOUDFLARE_BOOTSTRAP_TOKEN:?CLOUDFLARE_BOOTSTRAP_TOKEN must be exported}"
 
 cf_api(){
   local method="$1" endpoint="$2" payload="${3:-}"
   local args=(-sS -X "$method" "${API_BASE}${endpoint}"
-    -H "Authorization: Bearer ${CF_BOOTSTRAP_TOKEN}"
+    -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}"
     -H "Content-Type: application/json")
   [[ -n "$payload" ]] && args+=(--data "$payload")
   curl "${args[@]}"
@@ -93,7 +93,7 @@ cf_api(){
 
 fetch_token_list(){
   local json ok
-  json="$(cf_api GET /accounts/${CF_ACCOUNT_ID}/tokens)" || die "curl failed while fetching token list"
+  json="$(cf_api GET /accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens)" || die "curl failed while fetching token list"
   [[ -n "$json" ]] || die "empty response from Cloudflare API"
   ok="$(printf '%s' "$json" | jq -r '.success // false')" || die "invalid JSON from Cloudflare API"
   [[ "$ok" == "true" ]] || die "Cloudflare API error: $(printf '%s' "$json" | jq -c '.errors // []')"
@@ -209,7 +209,7 @@ else
     $DO_BACKUP && backup_json "$TOKEN_LIST_JSON" tokens.pre-revoke
     for id in "${FINAL_REVOKE[@]}"; do
       name="$(token_field "$id" name)"
-      resp="$(cf_api DELETE "/accounts/${CF_ACCOUNT_ID}/tokens/${id}")"
+      resp="$(cf_api DELETE "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/${id}")"
       ok="$(printf '%s' "$resp" | jq -r '.success // false')"
       if [[ "$ok" == "true" ]]; then
         log "revoked $id ($name)"
@@ -254,23 +254,23 @@ declare -A TOKEN_NAME_MAP=(
 )
 
 declare -A RESOURCE_MAP=(
-  [dns]="com.cloudflare.api.account.zone.${CF_ZONE_ID}"
-  [zt]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [workers]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [waf]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [tunnel]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
-  [r2]="com.cloudflare.api.account.${CF_ACCOUNT_ID}"
+  [dns]="com.cloudflare.api.account.zone.${CLOUDFLARE_ZONE_ID}"
+  [zt]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [workers]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [waf]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [tunnel]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
+  [r2]="com.cloudflare.api.account.${CLOUDFLARE_ACCOUNT_ID}"
 )
 
 declare -A ENV_KEY_MAP=(
-  [dns]="CF_DNS_TOKEN"
-  [zt]="CF_ZT_TOKEN"
-  [workers]="CF_WORKERS_TOKEN"
+  [dns]="CLOUDFLARE_DNS_TOKEN"
+  [zt]="CLOUDFLARE_ZT_TOKEN"
+  [workers]="CLOUDFLARE_WORKERS_TOKEN"
   [pages]="CF_PAGES_TOKEN"
   [d1]="CF_D1_TOKEN"
-  [waf]="CF_WAF_TOKEN"
-  [tunnel]="CF_TUNNEL_TOKEN"
-  [r2]="CF_R2_TOKEN"
+  [waf]="CLOUDFLARE_WAF_TOKEN"
+  [tunnel]="CLOUDFLARE_TUNNEL_TOKEN"
+  [r2]="CLOUDFLARE_R2_TOKEN"
 )
 
 IFS=',' read -r -a TYPES_ARR <<< "$TYPES_CSV"
@@ -282,7 +282,7 @@ for t in "${TYPES_ARR[@]}"; do
 
   if [[ "$t" == "audit" || "$t" == "ai-gateway" ]]; then
     warn "$t token is preserved only; automatic regeneration is skipped"
-    warn "set CF_AUDIT_TOKEN or CF_AI_GATEWAY_TOKEN manually, or generate a dedicated token in Cloudflare Dashboard"
+    warn "set CLOUDFLARE_AUDIT_TOKEN or CLOUDFLARE_AI_GATEWAY_TOKEN manually, or generate a dedicated token in Cloudflare Dashboard"
     continue
   fi
 
@@ -290,7 +290,7 @@ for t in "${TYPES_ARR[@]}"; do
   perm="${PERM_ID_OVERRIDE:-${PERM_ID_MAP[$t]:-}}"
   [[ -n "$perm" ]] || { warn "missing permission-group ID for $t; pass --perm-id or update PERM_ID_MAP"; continue; }
 
-  count_resp="$(cf_api GET /accounts/${CF_ACCOUNT_ID}/tokens)"
+  count_resp="$(cf_api GET /accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens)"
   count_ok="$(printf '%s' "$count_resp" | jq -r '.success // false')"
   [[ "$count_ok" == "true" ]] || die "failed checking token quota: $(printf '%s' "$count_resp" | jq -c '.errors // []')"
   current_count="$(printf '%s' "$count_resp" | jq '(.result // []) | length')"
@@ -304,7 +304,7 @@ for t in "${TYPES_ARR[@]}"; do
     continue
   fi
 
-  resp="$(cf_api POST /accounts/${CF_ACCOUNT_ID}/tokens "$payload")"
+  resp="$(cf_api POST /accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens "$payload")"
   ok="$(printf '%s' "$resp" | jq -r '.success // false')"
   [[ "$ok" == "true" ]] || die "token creation failed for ${TOKEN_NAME_MAP[$t]}: $(printf '%s' "$resp" | jq -c '.errors // []')"
   value="$(printf '%s' "$resp" | jq -r '.result.value // empty')"
@@ -319,7 +319,7 @@ done
 tmp="$(mktemp "${OUT_FILE}.XXXXXX")"
 chmod 600 "$tmp"
 
-MANAGED_KEYS=(CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN CF_AUDIT_TOKEN CF_AI_GATEWAY_TOKEN CF_AI_GATEWAY_SLUG)
+MANAGED_KEYS=(CLOUDFLARE_DNS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN CLOUDFLARE_AUDIT_TOKEN CLOUDFLARE_AI_GATEWAY_TOKEN CLOUDFLARE_AI_GATEWAY_SLUG)
 if [[ -f "$OUT_FILE" ]]; then
   while IFS= read -r line || [[ -n "$line" ]]; do
     key="$(printf '%s' "$line" | sed -E 's/^([A-Za-z0-9_]+)=.*/\1/')"
@@ -330,9 +330,9 @@ if [[ -f "$OUT_FILE" ]]; then
 fi
 
 {
-  printf 'CF_ACCOUNT_ID="%s"\n' "${CF_ACCOUNT_ID:-$(env_file_value "$OUT_FILE" CF_ACCOUNT_ID)}"
-  printf 'CF_ZONE_ID="%s"\n' "${CF_ZONE_ID:-$(env_file_value "$OUT_FILE" CF_ZONE_ID)}"
-  printf 'CF_AI_GATEWAY_SLUG="%s"\n' "${CF_AI_GATEWAY_SLUG:-$(env_file_value "$OUT_FILE" CF_AI_GATEWAY_SLUG || true)}" | sed 's/=""$/="zeaz"/'
+  printf 'CLOUDFLARE_ACCOUNT_ID="%s"\n' "${CLOUDFLARE_ACCOUNT_ID:-$(env_file_value "$OUT_FILE" CLOUDFLARE_ACCOUNT_ID)}"
+  printf 'CLOUDFLARE_ZONE_ID="%s"\n' "${CLOUDFLARE_ZONE_ID:-$(env_file_value "$OUT_FILE" CLOUDFLARE_ZONE_ID)}"
+  printf 'CLOUDFLARE_AI_GATEWAY_SLUG="%s"\n' "${CLOUDFLARE_AI_GATEWAY_SLUG:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AI_GATEWAY_SLUG || true)}" | sed 's/=""$/="zeaz"/'
   printf '\n'
 } >> "$tmp"
 
@@ -348,8 +348,8 @@ for t in dns zt workers waf tunnel r2; do
 done
 
 {
-  printf 'CF_AUDIT_TOKEN="%s"\n' "${CF_AUDIT_TOKEN:-$(env_file_value "$OUT_FILE" CF_AUDIT_TOKEN)}"
-  printf 'CF_AI_GATEWAY_TOKEN="%s"\n' "${CF_AI_GATEWAY_TOKEN:-$(env_file_value "$OUT_FILE" CF_AI_GATEWAY_TOKEN)}"
+  printf 'CLOUDFLARE_AUDIT_TOKEN="%s"\n' "${CLOUDFLARE_AUDIT_TOKEN:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AUDIT_TOKEN)}"
+  printf 'CLOUDFLARE_AI_GATEWAY_TOKEN="%s"\n' "${CLOUDFLARE_AI_GATEWAY_TOKEN:-$(env_file_value "$OUT_FILE" CLOUDFLARE_AI_GATEWAY_TOKEN)}"
 } >> "$tmp"
 
 if $DRY_RUN; then

@@ -28,13 +28,13 @@ load_env "$ENV_FILE"
 has cloudflared || fail "cloudflared is not installed; run make bootstrap first"
 has systemctl || fail "systemctl is required to install/manage cloudflared service"
 
-[[ -n "${CF_TUNNEL_TOKEN:-}" ]] || fail "CF_TUNNEL_TOKEN is missing; set it in .env.cloudflare or environment"
+[[ -n "${CLOUDFLARE_TUNNEL_TOKEN:-}" ]] || fail "CLOUDFLARE_TUNNEL_TOKEN is missing; set it in .env.cloudflare or environment"
 
 if systemctl list-unit-files | awk '{print $1}' | grep -qx "${SERVICE_NAME}.service"; then
   log "${SERVICE_NAME}.service already installed"
 else
-  log "installing ${SERVICE_NAME}.service from CF_TUNNEL_TOKEN"
-  sudo cloudflared service install "$CF_TUNNEL_TOKEN"
+  log "installing ${SERVICE_NAME}.service from CLOUDFLARE_TUNNEL_TOKEN"
+  sudo cloudflared service install "$CLOUDFLARE_TUNNEL_TOKEN"
 fi
 
 log "enabling and restarting ${SERVICE_NAME}.service"

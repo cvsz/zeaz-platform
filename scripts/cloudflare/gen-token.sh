@@ -95,7 +95,7 @@ declare -A RESOURCE_MAP=(
 )
 
 # Keys we manage in the env file
-MANAGED_KEYS=(CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN)
+MANAGED_KEYS=(CLOUDFLARE_DNS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_API_TOKEN)
 
 log() { printf '[%s] %s\n' "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" "$*"; }
 
@@ -387,12 +387,12 @@ if [[ -n "${OUT_FILE:-}" ]]; then
   declare -A NEW_VALUES=()
   for k in "${!GENERATED_TOKENS[@]}"; do
     case "$k" in
-      dns) NEW_VALUES[CF_DNS_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
-      zt) NEW_VALUES[CF_ZT_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
-      workers) NEW_VALUES[CF_WORKERS_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
-      waf) NEW_VALUES[CF_WAF_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
-      tunnel) NEW_VALUES[CF_TUNNEL_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
-      r2) NEW_VALUES[CF_R2_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
+      dns) NEW_VALUES[CLOUDFLARE_DNS_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
+      zt) NEW_VALUES[CLOUDFLARE_ZT_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
+      workers) NEW_VALUES[CLOUDFLARE_WORKERS_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
+      waf) NEW_VALUES[CLOUDFLARE_WAF_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
+      tunnel) NEW_VALUES[CLOUDFLARE_TUNNEL_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
+      r2) NEW_VALUES[CLOUDFLARE_R2_TOKEN]="${GENERATED_TOKENS[$k]}" ;;
     esac
   done
 
@@ -413,13 +413,13 @@ if [[ -n "${OUT_FILE:-}" ]]; then
 
   # Ensure account-level keys (preserve env values if set)
   {
-    printf 'CF_ACCOUNT_ID="%s"\n' "${CF_ACCOUNT_ID:-}"
-    printf 'CF_ZONE_ID="%s"\n' "${CF_ZONE_ID:-}"
+    printf 'CLOUDFLARE_ACCOUNT_ID="%s"\n' "${CLOUDFLARE_ACCOUNT_ID:-}"
+    printf 'CLOUDFLARE_ZONE_ID="%s"\n' "${CLOUDFLARE_ZONE_ID:-}"
     printf 'CLOUDFLARE_API_TOKEN="%s"\n\n' "${CLOUDFLARE_API_TOKEN:-}"
   } >> "${TMP}"
 
   # Append token keys (use generated values, else preserve env or template value)
-  for key in CF_DNS_TOKEN CF_ZT_TOKEN CF_WORKERS_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN; do
+  for key in CLOUDFLARE_DNS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN; do
     if [[ -n "${NEW_VALUES[$key]:-}" ]]; then
       printf '%s="%s"\n' "${key}" "${NEW_VALUES[$key]}" >> "${TMP}"
     else
@@ -478,12 +478,12 @@ printf '=========================================\n'
 for t in "${TYPES_ARR[@]}"; do
   t="$(echo -n "${t}" | tr -d '[:space:]')"
   case "$t" in
-    dns) key=CF_DNS_TOKEN ;;
-    zt) key=CF_ZT_TOKEN ;;
-    workers) key=CF_WORKERS_TOKEN ;;
-    waf) key=CF_WAF_TOKEN ;;
-    tunnel) key=CF_TUNNEL_TOKEN ;;
-    r2) key=CF_R2_TOKEN ;;
+    dns) key=CLOUDFLARE_DNS_TOKEN ;;
+    zt) key=CLOUDFLARE_ZT_TOKEN ;;
+    workers) key=CLOUDFLARE_WORKERS_TOKEN ;;
+    waf) key=CLOUDFLARE_WAF_TOKEN ;;
+    tunnel) key=CLOUDFLARE_TUNNEL_TOKEN ;;
+    r2) key=CLOUDFLARE_R2_TOKEN ;;
     *) key="" ;;
   esac
 

@@ -64,14 +64,14 @@ Status: **MOSTLY PASS (operational follow-ups required)**
 Re-check of production environment inputs indicates substantial progress:
 
 - Present secrets:
-  - `CF_WAF_TOKEN`
-  - `CF_DNS_TOKEN`
-  - `CF_WORKERS_TOKEN`
-  - `CF_ZT_TOKEN`
-  - `CF_TUNNEL_TOKEN`
-  - `CF_R2_TOKEN`
-  - `CF_ACCOUNT_ID`
-  - `CF_ZONE_ID`
+  - `CLOUDFLARE_WAF_TOKEN`
+  - `CLOUDFLARE_DNS_TOKEN`
+  - `CLOUDFLARE_WORKERS_TOKEN`
+  - `CLOUDFLARE_ZT_TOKEN`
+  - `CLOUDFLARE_TUNNEL_TOKEN`
+  - `CLOUDFLARE_R2_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `CLOUDFLARE_ZONE_ID`
   - `SOPS_AGE_KEY`
 - Present variables:
   - `PRIMARY_DOMAIN=zeaz.dev`
@@ -85,7 +85,7 @@ Re-check of production environment inputs indicates substantial progress:
 
 Remaining blocker is likely token scope, not repository configuration:
 - Prior WAF failure: `Unauthorized to access requested resource (9109)`.
-- Required immediate action: regenerate `CF_WAF_TOKEN` scoped to zone `zeaz.dev` with:
+- Required immediate action: regenerate `CLOUDFLARE_WAF_TOKEN` scoped to zone `zeaz.dev` with:
   - `Zone / Zone / Read`
   - `Zone / Zone Settings / Edit`
   - `Zone / WAF / Edit`
@@ -106,7 +106,7 @@ Decision: **CONDITIONALLY READY**
 The repository implementation and guardrails are in place and enforce secure defaults. With production environment values now mostly populated, release risk has shifted from configuration completeness to Cloudflare token permissions and deployment governance controls.
 
 ## Final actions to reach release state
-1. Regenerate and rotate `CF_WAF_TOKEN` with explicit WAF edit scope for `zeaz.dev`.
+1. Regenerate and rotate `CLOUDFLARE_WAF_TOKEN` with explicit WAF edit scope for `zeaz.dev`.
 2. Configure production deployment protection rules (reviewers + wait timer).
 3. Restrict production deployment branches to protected branches or explicit allowlist.
 4. Add `TUNNEL_SECRET` and `OPENAI_API_KEY` if tunnel/Workers-AI automation paths require them.

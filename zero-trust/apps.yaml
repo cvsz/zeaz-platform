@@ -1,7 +1,7 @@
 version: 1
 organization: ZeazDev
 environment: ${ENVIRONMENT}
-account_id: ${CF_ACCOUNT_ID}
+account_id: ${CLOUDFLARE_ACCOUNT_ID}
 applications:
   - key: auth
     name: zeazdev-${ENVIRONMENT}-auth

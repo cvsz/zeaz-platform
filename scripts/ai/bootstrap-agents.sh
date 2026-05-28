@@ -18,13 +18,13 @@ require_var() {
 }
 
 validate_environment() {
-  require_var CF_ACCOUNT_ID
+  require_var CLOUDFLARE_ACCOUNT_ID
   require_var CLOUDFLARE_API_TOKEN
-  require_var CF_ZONE_ID
+  require_var CLOUDFLARE_ZONE_ID
   require_var PRIMARY_DOMAIN
 
-  [[ "${CF_ACCOUNT_ID}" =~ ^[a-f0-9]{32}$ ]] || { log "CF_ACCOUNT_ID must be 32 lowercase hex chars"; return 1; }
-  [[ "${CF_ZONE_ID}" =~ ^[a-f0-9]{32}$ ]] || { log "CF_ZONE_ID must be 32 lowercase hex chars"; return 1; }
+  [[ "${CLOUDFLARE_ACCOUNT_ID}" =~ ^[a-f0-9]{32}$ ]] || { log "CLOUDFLARE_ACCOUNT_ID must be 32 lowercase hex chars"; return 1; }
+  [[ "${CLOUDFLARE_ZONE_ID}" =~ ^[a-f0-9]{32}$ ]] || { log "CLOUDFLARE_ZONE_ID must be 32 lowercase hex chars"; return 1; }
   [[ "${#CLOUDFLARE_API_TOKEN}" -ge 32 ]] || { log "CLOUDFLARE_API_TOKEN must be at least 32 chars"; return 1; }
 }
 
@@ -32,8 +32,8 @@ render_runtime_banner() {
   cat <<BANNER
 cloudflare-agent-bootstrap
 mode=${MODE}
-account=${CF_ACCOUNT_ID}
-zone=${CF_ZONE_ID}
+account=${CLOUDFLARE_ACCOUNT_ID}
+zone=${CLOUDFLARE_ZONE_ID}
 domain=${PRIMARY_DOMAIN}
 repo=${ROOT_DIR}
 BANNER

@@ -196,8 +196,8 @@ Copy `.env.example` to `.env` or run `make setup-free`, then fill values locally
 
 | Variable | Required | Description |
 |---|---:|---|
-| `CF_ACCOUNT_ID` | yes | Cloudflare account ID |
-| `CF_ZONE_ID` | yes | Zone ID for `zeaz.dev` |
+| `CLOUDFLARE_ACCOUNT_ID` | yes | Cloudflare account ID |
+| `CLOUDFLARE_ZONE_ID` | yes | Zone ID for `zeaz.dev` |
 | `PRIMARY_DOMAIN` | yes | default `zeaz.dev` |
 | `CLOUDFLARE_PLAN_TIER` | yes | `Free`, `Pro`, `Business`, or `Enterprise` |
 | `COST_LOCK` | yes | defaults to `true` |
@@ -207,13 +207,13 @@ Copy `.env.example` to `.env` or run `make setup-free`, then fill values locally
 | Variable | Required | Scope |
 |---|---:|---|
 | `CLOUDFLARE_API_TOKEN` | yes | general scoped token for Terraform fallback |
-| `CF_DNS_TOKEN` | yes | Zone DNS Edit + Zone Read |
-| `CF_ZT_TOKEN` | yes | Access apps/policies as needed |
-| `CF_WORKERS_TOKEN` | conditional | Workers operations; guarded in Free mode |
-| `CF_WAF_TOKEN` | conditional | WAF operations; guarded in Free mode |
-| `CF_TUNNEL_TOKEN` | yes | Cloudflare Tunnel operations |
-| `CF_R2_TOKEN` | conditional | R2 operations; guarded in Free mode |
-| `CF_AUDIT_TOKEN` | optional | audit/log read workflows |
+| `CLOUDFLARE_DNS_TOKEN` | yes | Zone DNS Edit + Zone Read |
+| `CLOUDFLARE_ZT_TOKEN` | yes | Access apps/policies as needed |
+| `CLOUDFLARE_WORKERS_TOKEN` | conditional | Workers operations; guarded in Free mode |
+| `CLOUDFLARE_WAF_TOKEN` | conditional | WAF operations; guarded in Free mode |
+| `CLOUDFLARE_TUNNEL_TOKEN` | yes | Cloudflare Tunnel operations |
+| `CLOUDFLARE_R2_TOKEN` | conditional | R2 operations; guarded in Free mode |
+| `CLOUDFLARE_AUDIT_TOKEN` | optional | audit/log read workflows |
 
 ### Terraform backend
 

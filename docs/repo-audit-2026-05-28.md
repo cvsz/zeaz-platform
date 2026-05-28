@@ -31,7 +31,7 @@ Key files inspected:
 Problem:
 
 - `.env.example` used `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID`, and `CLOUDFLARE_*_TOKEN` names.
-- Python and shell validators expected canonical `CF_ACCOUNT_ID`, `CF_ZONE_ID`, and `CF_*_TOKEN` names.
+- Python and shell validators expected canonical `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID`, and `CF_*_TOKEN` names.
 - A fresh user following `.env.example` could fill values and still fail validation.
 
 Fix:
@@ -173,7 +173,7 @@ For Free/no-cost mode:
 ```bash
 cp .env.example .env
 chmod 600 .env
-# Fill CF_ACCOUNT_ID, CF_ZONE_ID, and scoped token values.
+# Fill CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_ZONE_ID, and scoped token values.
 python3 python/cfstack_validate_env.py --strict
 ```
 

@@ -3,5 +3,5 @@ set -Eeuo pipefail
 
 source "$(dirname "$0")/permissions.sh"
 
-cf_api GET "/accounts/$CF_ACCOUNT_ID/tokens/permission_groups" |
+cf_api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/permission_groups" |
   jq -r '.result[] | [.name, .id] | @tsv'

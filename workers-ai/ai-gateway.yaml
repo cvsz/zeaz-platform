@@ -1,8 +1,8 @@
 version: 1
 gateway:
-  slug_var: CF_AI_GATEWAY_SLUG
+  slug_var: CLOUDFLARE_AI_GATEWAY_SLUG
   recommended_slug: zeaz-platform-ai-gateway
-  account_id_var: CF_ACCOUNT_ID
+  account_id_var: CLOUDFLARE_ACCOUNT_ID
 providers:
   - name: openai
     api_key_source: env

@@ -166,16 +166,16 @@ Finance capabilities:
 Implement strict validation for these variables where relevant:
 
 ```text
-CF_ACCOUNT_ID
-CF_ZONE_ID
+CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_ZONE_ID
 CLOUDFLARE_API_TOKEN
-CF_DNS_TOKEN
-CF_WORKERS_TOKEN
-CF_ZT_TOKEN
-CF_WAF_TOKEN
-CF_TUNNEL_TOKEN
-CF_R2_TOKEN
-CF_AI_GATEWAY_SLUG
+CLOUDFLARE_DNS_TOKEN
+CLOUDFLARE_WORKERS_TOKEN
+CLOUDFLARE_ZT_TOKEN
+CLOUDFLARE_WAF_TOKEN
+CLOUDFLARE_TUNNEL_TOKEN
+CLOUDFLARE_R2_TOKEN
+CLOUDFLARE_AI_GATEWAY_SLUG
 
 IDENTITY_PROVIDER_TYPE
 IDENTITY_PROVIDER_VENDOR
@@ -246,12 +246,12 @@ Use dedicated tokens by purpose. Never collapse all access into one global token
 
 Minimum token categories:
 
-- `CF_DNS_TOKEN`
-- `CF_WORKERS_TOKEN`
-- `CF_ZT_TOKEN`
-- `CF_WAF_TOKEN`
-- `CF_TUNNEL_TOKEN`
-- `CF_R2_TOKEN`
+- `CLOUDFLARE_DNS_TOKEN`
+- `CLOUDFLARE_WORKERS_TOKEN`
+- `CLOUDFLARE_ZT_TOKEN`
+- `CLOUDFLARE_WAF_TOKEN`
+- `CLOUDFLARE_TUNNEL_TOKEN`
+- `CLOUDFLARE_R2_TOKEN`
 - optional audit/read-only token
 
 Document scopes separately in `docs/token-scope-checklist.md` and `docs/required-secrets.md`.

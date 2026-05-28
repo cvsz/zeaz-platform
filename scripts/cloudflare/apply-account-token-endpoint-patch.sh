@@ -20,8 +20,8 @@ s = p.read_text()
 
 # ---- Replace all user token endpoints → account token endpoints ----
 replacements = [
-    ("/user/tokens/", "/accounts/${CF_ACCOUNT_ID}/tokens/"),
-    ("/user/tokens", "/accounts/${CF_ACCOUNT_ID}/tokens"),
+    ("/user/tokens/", "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/"),
+    ("/user/tokens", "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens"),
 ]
 
 for old, new in replacements:
@@ -31,9 +31,9 @@ for old, new in replacements:
 if "/user/tokens" in s:
     print("WARNING: Some /user/tokens still remain")
 
-# ---- Ensure CF_ACCOUNT_ID required ----
-if "CF_ACCOUNT_ID" not in s:
-    raise SystemExit("CF_ACCOUNT_ID missing in script")
+# ---- Ensure CLOUDFLARE_ACCOUNT_ID required ----
+if "CLOUDFLARE_ACCOUNT_ID" not in s:
+    raise SystemExit("CLOUDFLARE_ACCOUNT_ID missing in script")
 
 # ---- Optional: log migration marker ----
 if "ACCOUNT_TOKEN_MODE" not in s:
@@ -53,5 +53,5 @@ echo "Backup saved next to script."
 echo
 echo "Next: run dry test"
 echo
-echo "CF_ACCOUNT_ID=... CF_ZONE_ID=... CF_BOOTSTRAP_TOKEN=... \\"
+echo "CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_ZONE_ID=... CLOUDFLARE_BOOTSTRAP_TOKEN=... \\"
 echo "scripts/cloudflare/clean-and-regenerate-tokens.sh --dry-run"

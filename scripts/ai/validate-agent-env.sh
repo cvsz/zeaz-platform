@@ -30,7 +30,7 @@ validate_regex() {
 
 fail=0
 required_vars=(
-  CF_ACCOUNT_ID CF_ZONE_ID CLOUDFLARE_API_TOKEN CF_DNS_TOKEN CF_WORKERS_TOKEN CF_ZT_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN
+  CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_API_TOKEN CLOUDFLARE_DNS_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN
   IDENTITY_PROVIDER_TYPE IDENTITY_PROVIDER_VENDOR IDENTITY_PROVIDER_METADATA_URL
   ENVIRONMENT REGION PRIMARY_DOMAIN ORIGIN_INFRA_TYPE ORIGIN_HOSTS
   TERRAFORM_BACKEND_TYPE TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE
@@ -42,8 +42,8 @@ for v in "${required_vars[@]}"; do
 done
 
 validate_regex PRIMARY_DOMAIN '^zeaz\.dev$' 'must be zeaz.dev' || fail=1
-validate_regex CF_ACCOUNT_ID '^[a-f0-9]{32}$' 'must be a 32-char lowercase hex ID' || fail=1
-validate_regex CF_ZONE_ID '^[a-f0-9]{32}$' 'must be a 32-char lowercase hex ID' || fail=1
+validate_regex CLOUDFLARE_ACCOUNT_ID '^[a-f0-9]{32}$' 'must be a 32-char lowercase hex ID' || fail=1
+validate_regex CLOUDFLARE_ZONE_ID '^[a-f0-9]{32}$' 'must be a 32-char lowercase hex ID' || fail=1
 validate_regex CLOUDFLARE_PLAN_TIER '^(Free|Pro|Business|Enterprise)$' 'must be one of Free, Pro, Business, Enterprise' || fail=1
 validate_regex ENVIRONMENT '^(dev|staging|prod)$' 'must be one of dev, staging, prod' || fail=1
 validate_regex REGION '^[a-z]{2,}-[a-z]+-[0-9]+$' 'must be an IaaS-style region (example: us-east-1)' || fail=1
@@ -63,7 +63,7 @@ if [[ "${SOPS_AGE_KEY:-}" != age1* ]]; then
   fail=1
 fi
 
-for token_var in CLOUDFLARE_API_TOKEN CF_DNS_TOKEN CF_WORKERS_TOKEN CF_ZT_TOKEN CF_WAF_TOKEN CF_TUNNEL_TOKEN CF_R2_TOKEN; do
+for token_var in CLOUDFLARE_API_TOKEN CLOUDFLARE_DNS_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN; do
   token_value="${!token_var:-}"
   if [[ -n "$token_value" && ${#token_value} -lt 20 ]]; then
     log ERROR "${token_var} is unexpectedly short"

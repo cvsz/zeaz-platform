@@ -55,12 +55,12 @@ fi
 if $API_CHECK; then
   declare -A token_permission_map=(
     [CLOUDFLARE_API_TOKEN]='account'
-    [CF_DNS_TOKEN]='dns'
-    [CF_WORKERS_TOKEN]='workers'
-    [CF_ZT_TOKEN]='access'
-    [CF_WAF_TOKEN]='waf'
-    [CF_TUNNEL_TOKEN]='tunnel'
-    [CF_R2_TOKEN]='r2'
+    [CLOUDFLARE_DNS_TOKEN]='dns'
+    [CLOUDFLARE_WORKERS_TOKEN]='workers'
+    [CLOUDFLARE_ZT_TOKEN]='access'
+    [CLOUDFLARE_WAF_TOKEN]='waf'
+    [CLOUDFLARE_TUNNEL_TOKEN]='tunnel'
+    [CLOUDFLARE_R2_TOKEN]='r2'
   )
 
   for token_var in "${!token_permission_map[@]}"; do

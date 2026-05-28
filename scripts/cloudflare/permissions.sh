@@ -3,8 +3,8 @@ set -Eeuo pipefail
 
 API="https://api.cloudflare.com/client/v4"
 
-: "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID required}"
-: "${CF_BOOTSTRAP_TOKEN:?CF_BOOTSTRAP_TOKEN required}"
+: "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID required}"
+: "${CLOUDFLARE_BOOTSTRAP_TOKEN:?CLOUDFLARE_BOOTSTRAP_TOKEN required}"
 
 cf_api() {
   local method="$1"
@@ -15,7 +15,7 @@ cf_api() {
     -sS
     -X "$method"
     "$API$endpoint"
-    -H "Authorization: Bearer $CF_BOOTSTRAP_TOKEN"
+    -H "Authorization: Bearer $CLOUDFLARE_BOOTSTRAP_TOKEN"
     -H "Content-Type: application/json"
   )
 
@@ -26,7 +26,7 @@ cf_api() {
 permission_id_by_name() {
   local name="$1"
 
-  cf_api GET "/accounts/$CF_ACCOUNT_ID/tokens/permission_groups" |
+  cf_api GET "/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/permission_groups" |
     jq -r --arg name "$name" '
       (.result // [])
       | map(select(.name == $name))

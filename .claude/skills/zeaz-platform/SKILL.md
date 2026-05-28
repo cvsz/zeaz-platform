@@ -98,7 +98,7 @@ Prioritize strict validation coverage for:
 - origin and backend config
 - secret rotation and plan tier controls
 
-Keep token purpose separation explicit (`CF_DNS_TOKEN`, `CF_WORKERS_TOKEN`, `CF_ZT_TOKEN`, `CF_WAF_TOKEN`, `CF_TUNNEL_TOKEN`, `CF_R2_TOKEN`).
+Keep token purpose separation explicit (`CLOUDFLARE_DNS_TOKEN`, `CLOUDFLARE_WORKERS_TOKEN`, `CLOUDFLARE_ZT_TOKEN`, `CLOUDFLARE_WAF_TOKEN`, `CLOUDFLARE_TUNNEL_TOKEN`, `CLOUDFLARE_R2_TOKEN`).
 
 ## Validation Workflow
 

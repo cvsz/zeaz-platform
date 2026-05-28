@@ -7,14 +7,14 @@ if [[ "${1:-}" == "--offline" ]]; then
   offline=true
 fi
 
-: "${CF_ACCOUNT_ID:=offline-account}"
-: "${CF_AI_GATEWAY_SLUG:=zeaz-platform-ai-gateway}"
+: "${CLOUDFLARE_ACCOUNT_ID:=offline-account}"
+: "${CLOUDFLARE_AI_GATEWAY_SLUG:=zeaz-platform-ai-gateway}"
 
-if ! [[ "$CF_ACCOUNT_ID" =~ ^[a-fA-F0-9]{32}$|^offline-account$ ]]; then
+if ! [[ "$CLOUDFLARE_ACCOUNT_ID" =~ ^[a-fA-F0-9]{32}$|^offline-account$ ]]; then
   echo '{"level":"error","event":"invalid_account_id"}'
   exit 1
 fi
-if ! [[ "$CF_AI_GATEWAY_SLUG" =~ ^[a-z0-9-]{3,63}$ ]]; then
+if ! [[ "$CLOUDFLARE_AI_GATEWAY_SLUG" =~ ^[a-z0-9-]{3,63}$ ]]; then
   echo '{"level":"error","event":"invalid_gateway_slug"}'
   exit 1
 fi
@@ -26,7 +26,7 @@ import yaml
 cfg = yaml.safe_load(Path('workers-ai/ai-gateway.yaml').read_text())
 quota = yaml.safe_load(Path('workers-ai/quota-policy.yaml').read_text())
 
-assert cfg['gateway']['slug_var'] == 'CF_AI_GATEWAY_SLUG'
+assert cfg['gateway']['slug_var'] == 'CLOUDFLARE_AI_GATEWAY_SLUG'
 assert cfg['gateway']['recommended_slug'] == 'zeaz-platform-ai-gateway'
 assert cfg['providers'][0]['api_key_source'] == 'env'
 assert quota['abuse_controls']['max_prompt_bytes'] <= 131072
