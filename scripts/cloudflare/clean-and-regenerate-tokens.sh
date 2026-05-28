@@ -73,6 +73,7 @@ done
 log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 warn(){ log "WARN: $*" >&2; }
 die(){ log "ERROR: $*" >&2; exit 1; }
+log_err(){ log "$*" >&2; }
 has(){ command -v "$1" >/dev/null 2>&1; }
 
 has curl || die "curl is required"
@@ -147,7 +148,7 @@ fetch_permission_groups(){
   cf_request GET "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups" > "$file_tmp"
   chmod 600 "$file_tmp"
   mv "$file_tmp" "$cache"
-  log "permission-group cache refreshed: $cache"
+  log_err "permission-group cache refreshed: $cache"
   printf '%s' "$cache"
 }
 
@@ -170,6 +171,7 @@ resolve_permission_id(){
   [[ -n "$PERM_ID_OVERRIDE" ]] && { printf '%s' "$PERM_ID_OVERRIDE"; return 0; }
 
   cache="$(fetch_permission_groups)"
+  [[ -f "$cache" ]] || die "permission-group cache file not found: $cache"
   jq -r --arg re "$pattern" '
     (.result // [])
     | map(select(((.name // "") + " " + (.description // "") + " " + ((.scopes // []) | join(" "))) | test($re)))
@@ -291,7 +293,7 @@ else
     $DO_BACKUP && backup_json "$TOKEN_LIST_JSON" tokens.pre-revoke
     for id in "${FINAL_REVOKE[@]}"; do
       name="$(token_field "$id" name)"
-      resp="$(cf_request DELETE "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/${id}")"
+      cf_request DELETE "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/${id}" >/dev/null
       log "revoked $id ($name)"
       audit "$name" "$id" revoked
     done
@@ -354,7 +356,7 @@ for t in "${TYPES_ARR[@]}"; do
   fi
 
   perm="$(resolve_permission_id "$t")"
-  [[ -n "$perm" ]] || { warn "could not resolve permission-group ID for $t; skipping. Set ${t^^}_ permission env override or pass --perm-id."; continue; }
+  [[ -n "$perm" ]] || { warn "could not resolve permission-group ID for $t; skipping. Set CLOUDFLARE_${t^^}_PERMISSION_GROUP_ID or pass --perm-id."; continue; }
 
   current_count="$(printf '%s' "$TOKEN_LIST_JSON" | jq '(.result // []) | length')"
   [[ "$current_count" -lt "$TOKEN_QUOTA" ]] || die "token quota reached ($current_count/$TOKEN_QUOTA)"
