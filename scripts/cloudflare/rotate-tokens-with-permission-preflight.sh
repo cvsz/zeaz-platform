@@ -2,35 +2,19 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-ROOT="${PROJECT_ROOT:-}"
-if [[ -z "$ROOT" ]]; then
-  ROOT="$PWD"
-  while [[ "$ROOT" != "/" ]]; do
-    if [[ -d "$ROOT/.git" || -f "$ROOT/.env.example" || -f "$ROOT/Makefile" ]]; then
-      break
-    fi
-    ROOT="$(dirname "$ROOT")"
-  done
-fi
-[[ "$ROOT" != "/" ]] || ROOT="$PWD"
-cd "$ROOT"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/cloudflare/lib/env-scope.sh
+source "$SCRIPT_DIR/lib/env-scope.sh"
+cf_load_cloudflare_env_scope
+cd "$PROJECT_ROOT"
 
 API_BASE="${CLOUDFLARE_API_BASE:-https://api.cloudflare.com/client/v4}"
 CACHE_DIR="${CACHE_DIR:-./.cache/cloudflare-permissions}"
 REFRESH=false
 
-log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
-warn(){ log "WARN: $*" >&2; }
-die(){ log "ERROR: $*" >&2; exit 1; }
-
-load_env_file(){
-  local file="$1"
-  [[ -f "$file" ]] || return 0
-  set -a
-  # shellcheck disable=SC1090
-  source "$file"
-  set +a
-}
+log(){ cf_env_log "$*"; }
+warn(){ cf_env_warn "$*"; }
+die(){ cf_env_die "$*"; }
 
 contains_arg(){
   local wanted="$1"; shift
@@ -41,11 +25,7 @@ contains_arg(){
 
 for arg in "$@"; do
   [[ "$arg" == "--refresh-permissions" ]] && REFRESH=true
-  [[ "$arg" == "--regenerate" ]] && REGENERATE_SEEN=true
 done
-
-load_env_file .env
-load_env_file .env.cloudflare
 
 if ! contains_arg --regenerate "$@"; then
   exec bash scripts/cloudflare/run-token-rotation.sh "$@"
@@ -53,8 +33,7 @@ fi
 
 command -v curl >/dev/null 2>&1 || die "curl is required"
 command -v jq >/dev/null 2>&1 || die "jq is required"
-[[ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]] || die "CLOUDFLARE_ACCOUNT_ID is missing"
-[[ -n "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]] || die "CLOUDFLARE_BOOTSTRAP_TOKEN is missing"
+cf_require_env CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_BOOTSTRAP_TOKEN || exit 1
 
 mkdir -p "$CACHE_DIR"
 cache="$CACHE_DIR/account-token-permission-groups.${CLOUDFLARE_ACCOUNT_ID}.json"
