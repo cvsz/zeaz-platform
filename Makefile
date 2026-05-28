@@ -26,17 +26,20 @@ export STRICT_TOOLS
 export CODEX_CLOUD
 export STRICT_ENV
 
-.PHONY: help bootstrap setup env load-env validate validate-agent ci-validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
+.PHONY: help bootstrap setup setup-free env load-env docs-context upgrade-report validate validate-agent ci-validate validate-env maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
 
 help:
 	@printf '%s\n' \
-	'Cloudflare Platform Make Targets' \
+	'zeaz-platform Make Targets' \
 	'' \
 	'Bootstrap:' \
 	'  make bootstrap              Install/check local tools and Python venv' \
-	'  make setup                  Generate/preserve .env using setup script' \
+	'  make setup                  Generate/preserve .env using legacy setup script' \
+	'  make setup-free             Generate/preserve .env with Free/no-cost defaults' \
 	'  make env                    Load environment only; no strict validation' \
 	'  make load-env               Load Cloudflare env helper' \
+	'  make docs-context           Cache Cloudflare LLM docs context locally' \
+	'  make upgrade-report         Generate reports/project-upgrade-report.md' \
 	'' \
 	'Validation:' \
 	'  make validate               Run tests + env + Terraform validation' \
@@ -84,7 +87,7 @@ help:
 	'Tokens:' \
 	'  make token-clean            Dry-run token cleanup' \
 	'  make token-rotate-dry       Dry-run token regeneration' \
-	'  make token-rotate           Live token regeneration; requires CLOUDFLARE_EMAIL/CLOUDFLARE_GLOBAL_API_KEY' \
+	'  make token-rotate           Live token regeneration; requires CF_BOOTSTRAP_TOKEN' \
 	'' \
 	'Compatibility:' \
 	'  make secret-scan            Run gitleaks-only scan when available' \
@@ -99,6 +102,15 @@ bootstrap:
 setup:
 	@bash scripts/environments/setup.sh
 
+setup-free:
+	@bash scripts/environments/setup-free.sh
+
+docs-context:
+	@bash scripts/cloudflare/fetch-cloudflare-llms-context.sh
+
+upgrade-report:
+	@bash scripts/project-upgrade-report.sh
+
 env: load-env
 
 load-env:
@@ -109,10 +121,10 @@ ci: validate
 
 validate-agent: ci-validate
 
-ci-validate: test tf-fmt-check tf-init tf-validate
+ci-validate: test yaml-validate tf-fmt-check tf-init tf-validate
 	@echo "CI validation complete."
 
-validate: test validate-env tf-fmt-check tf-init tf-validate
+validate: test validate-env yaml-validate tf-fmt-check tf-init tf-validate
 	@echo "Validation complete."
 
 validate-env:
@@ -136,7 +148,7 @@ lint: shellcheck yaml-validate
 	@if command -v tflint >/dev/null 2>&1; then tflint --recursive --chdir=$(TF_ROOT); else echo "WARN: tflint not installed; skipped"; fi
 
 shellcheck:
-	@if command -v shellcheck >/dev/null 2>&1; then find scripts ops -type f -name '*.sh' -o -type f -perm -111 | xargs -r shellcheck; else echo "WARN: shellcheck not installed; skipped"; fi
+	@if command -v shellcheck >/dev/null 2>&1; then find scripts ops -type f \( -name '*.sh' -o -perm -111 \) -print0 2>/dev/null | xargs -0 -r shellcheck; else echo "WARN: shellcheck not installed; skipped"; fi
 
 yaml-validate:
 	@if [ -f scripts/validate-yaml.py ]; then $(PYTHON) scripts/validate-yaml.py; else echo "INFO: scripts/validate-yaml.py not present; skipped"; fi
@@ -317,6 +329,7 @@ doctor:
 	@echo "PROJECT_ROOT=$(PROJECT_ROOT)"
 	@echo "ENVIRONMENT=$(ENVIRONMENT)"
 	@echo "CODEX_CLOUD=$(CODEX_CLOUD)"
+	@echo "COST_LOCK=$${COST_LOCK:-true}"
 	@command -v $(TF_BIN) >/dev/null 2>&1 && $(TF_BIN) version | head -n 1 || echo "WARN: terraform missing"
 	@command -v $(TOFU_BIN) >/dev/null 2>&1 && $(TOFU_BIN) version | head -n 1 || echo "WARN: tofu missing"
 	@$(PYTHON) --version
@@ -325,7 +338,7 @@ doctor:
 	@command -v gh >/dev/null 2>&1 && gh --version | head -n 1 || echo "WARN: gh missing"
 
 clean:
-	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/$(TF_PLAN_FILE) $(TF_ROOT)/*.tfplan
+	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/$(TF_PLAN_FILE) $(TF_ROOT)/*.tfplan artifacts.sbom.spdx.json artifacts.sbom.spdx.json.sig
 	@find . -type d -name '.terraform' -prune -print -exec rm -rf {} +
 
 phase-f1: test validate-env
