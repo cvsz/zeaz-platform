@@ -45,28 +45,14 @@ load_env_file(){
   set +a
 }
 
-set_if_empty_from_alias(){
-  local canonical="$1" alias="$2"
-  if [[ -z "${!canonical:-}" && -n "${!alias:-}" ]]; then
-    export "$canonical=${!alias}"
-  fi
-}
-
 load_env_file .env
 load_env_file .env.cloudflare
-
-set_if_empty_from_alias CLOUDFLARE_ACCOUNT_ID CF_ACCOUNT_ID
-set_if_empty_from_alias CLOUDFLARE_ZONE_ID CF_ZONE_ID
-set_if_empty_from_alias CLOUDFLARE_BOOTSTRAP_TOKEN CF_BOOTSTRAP_TOKEN
 
 log "Cloudflare env source check"
 for key in CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_BOOTSTRAP_TOKEN; do
   sources=()
   file_has_key .env "$key" && sources+=(.env)
   file_has_key .env.cloudflare "$key" && sources+=(.env.cloudflare)
-  legacy="${key/CLOUDFLARE_/CF_}"
-  file_has_key .env "$legacy" && sources+=(".env:$legacy")
-  file_has_key .env.cloudflare "$legacy" && sources+=(".env.cloudflare:$legacy")
   printf '%s sources: %s\n' "$key" "${sources[*]:-<none>}"
 done
 
