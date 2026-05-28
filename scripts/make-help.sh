@@ -16,9 +16,9 @@ Bootstrap:
   make upgrade-report         Generate reports/project-upgrade-report.md
 
 Migration:
-  make refactor-cloudflare-vars-dry  Preview CF_* to CLOUDFLARE_* changes
-  make refactor-cloudflare-vars      Apply CF_* to CLOUDFLARE_* tracked-file migration
-  make check-no-cf-vars              Fail if active tracked CF_* env names remain
+  make refactor-cloudflare-vars-dry  Preview short env-name to CLOUDFLARE_* changes
+  make refactor-cloudflare-vars      Apply short env-name to CLOUDFLARE_* migration
+  make check-no-cf-vars              Fail if active tracked short Cloudflare env names remain
 
 Validation:
   make validate               Run source checks; deployment env is advisory
