@@ -152,17 +152,30 @@ fetch_permission_groups(){
   printf '%s' "$cache"
 }
 
+permission_text_expr='[.name // "", .description // "", .scope // "", (.scopes // [] | tostring), (.resource_groups // [] | tostring)] | join(" ")'
+
+print_permission_hints(){
+  local cache="$1" token_type="$2" hint_re="$3"
+  log_err "candidate permission groups for ${token_type}:"
+  jq -r --arg re "$hint_re" "
+    (.result // [])
+    | map(select((${permission_text_expr}) | test(\$re)))
+    | .[:12][]
+    | \"  - \(.id // \"\") :: \(.name // \"<unnamed>\") :: \(.description // \"\")\"
+  " "$cache" >&2 || true
+}
+
 resolve_permission_id(){
-  local token_type="$1" cache pattern env_key explicit
+  local token_type="$1" cache pattern hint_re env_key explicit id
   case "$token_type" in
-    dns) env_key="CLOUDFLARE_DNS_PERMISSION_GROUP_ID"; pattern='(?i)(zone.*dns.*edit|dns.*edit)' ;;
-    zt) env_key="CLOUDFLARE_ZT_PERMISSION_GROUP_ID"; pattern='(?i)(zero trust.*edit|access.*edit)' ;;
-    workers) env_key="CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID"; pattern='(?i)(workers.*edit|workers scripts.*edit)' ;;
-    pages) env_key="CLOUDFLARE_PAGES_PERMISSION_GROUP_ID"; pattern='(?i)(pages.*edit)' ;;
-    waf) env_key="CLOUDFLARE_WAF_PERMISSION_GROUP_ID"; pattern='(?i)(waf.*edit|rulesets.*edit|firewall.*edit)' ;;
-    tunnel) env_key="CLOUDFLARE_TUNNEL_PERMISSION_GROUP_ID"; pattern='(?i)(tunnel.*edit|cloudflare tunnel.*edit)' ;;
-    r2) env_key="CLOUDFLARE_R2_PERMISSION_GROUP_ID"; pattern='(?i)(r2.*edit)' ;;
-    d1) env_key="CLOUDFLARE_D1_PERMISSION_GROUP_ID"; pattern='(?i)(d1.*edit)' ;;
+    dns) env_key="CLOUDFLARE_DNS_PERMISSION_GROUP_ID"; pattern='(?i)(dns).*(write|edit)|(write|edit).*(dns)'; hint_re='(?i)dns' ;;
+    zt) env_key="CLOUDFLARE_ZT_PERMISSION_GROUP_ID"; pattern='(?i)(zero[ -]?trust|access).*(write|edit)|(write|edit).*(zero[ -]?trust|access)'; hint_re='(?i)(zero[ -]?trust|access)' ;;
+    workers) env_key="CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID"; pattern='(?i)(workers?|workers scripts?).*(write|edit)|(write|edit).*(workers?|workers scripts?)'; hint_re='(?i)workers?' ;;
+    pages) env_key="CLOUDFLARE_PAGES_PERMISSION_GROUP_ID"; pattern='(?i)(pages).*(write|edit)|(write|edit).*(pages)'; hint_re='(?i)pages' ;;
+    waf) env_key="CLOUDFLARE_WAF_PERMISSION_GROUP_ID"; pattern='(?i)(waf|web application firewall|rulesets?|firewall rules?).*(write|edit)|(write|edit).*(waf|web application firewall|rulesets?|firewall rules?)'; hint_re='(?i)(waf|rulesets?|firewall)' ;;
+    tunnel) env_key="CLOUDFLARE_TUNNEL_PERMISSION_GROUP_ID"; pattern='(?i)(cloudflare tunnel|cloudflared|tunnel).*(write|edit)|(write|edit).*(cloudflare tunnel|cloudflared|tunnel)'; hint_re='(?i)(cloudflare tunnel|cloudflared|tunnel)' ;;
+    r2) env_key="CLOUDFLARE_R2_PERMISSION_GROUP_ID"; pattern='(?i)(r2|r2 storage|workers r2).*(write|edit)|(write|edit).*(r2|r2 storage|workers r2)'; hint_re='(?i)(r2|storage)' ;;
+    d1) env_key="CLOUDFLARE_D1_PERMISSION_GROUP_ID"; pattern='(?i)(d1|workers d1).*(write|edit)|(write|edit).*(d1|workers d1)'; hint_re='(?i)d1' ;;
     *) return 1 ;;
   esac
 
@@ -172,11 +185,17 @@ resolve_permission_id(){
 
   cache="$(fetch_permission_groups)"
   [[ -f "$cache" ]] || die "permission-group cache file not found: $cache"
-  jq -r --arg re "$pattern" '
+  id="$(jq -r --arg re "$pattern" "
     (.result // [])
-    | map(select(((.name // "") + " " + (.description // "") + " " + ((.scopes // []) | join(" "))) | test($re)))
+    | map(select((${permission_text_expr}) | test(\$re)))
     | .[0].id // empty
-  ' "$cache"
+  " "$cache")"
+
+  if [[ -z "$id" ]]; then
+    print_permission_hints "$cache" "$token_type" "$hint_re"
+  fi
+
+  printf '%s' "$id"
 }
 
 backup_json(){
