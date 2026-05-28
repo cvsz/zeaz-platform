@@ -67,7 +67,7 @@ package-lock.json
 log.txt
 bootstrap-generate-tokens-once.sh
 zdash.sh
-
+*.log
 # OS
 .DS_Store
 Thumbs.db
