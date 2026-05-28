@@ -1,0 +1,87 @@
+You are working in repo cvsz/zeaz-platform.
+
+Goal:
+Deprecate all legacy Cloudflare Global API Key / X-Auth-Key token generation paths and route them to the modern account-token flow.
+
+Current verified state:
+- make validate passes.
+- make env-format-validate passes.
+- make token-verify works with CLOUDFLARE_BOOTSTRAP_TOKEN account-token flow.
+- make token-rotate works through:
+  scripts/cloudflare/rotate-tokens-with-permission-preflight.sh
+- Cloudflare auth must use:
+  Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}
+- Do not use:
+  CF_GLOBAL_API_KEY
+  CLOUDFLARE_EMAIL
+  X-Auth-Key
+  X-Auth-Email
+  Global API Key
+
+Target files to review:
+- scripts/cloudflare/gen-token.sh
+- scripts/cloudflare/master-gen-tokens.sh
+- scripts/cloudflare/generate-tokens.sh
+- scripts/cloudflare/apply-zero-global-key-patch.sh
+- scripts/cloudflare/install-zero-key-system.sh
+- docs and scripts referencing Global API Key auth
+
+Required changes:
+1. Convert legacy token scripts into compatibility wrappers.
+2. Wrappers must print a clear deprecation notice:
+   - Global API Key auth is disabled.
+   - Use CLOUDFLARE_BOOTSTRAP_TOKEN account-token flow.
+   - Forwarding to scripts/cloudflare/rotate-tokens-with-permission-preflight.sh
+3. Wrapper behavior:
+   - Preserve supported args:
+     --dry-run
+     --yes
+     --backup
+     --types
+     --write
+     --perm-id
+     --refresh-permissions
+   - Default missing args:
+     --regenerate
+     --types all
+     --backup
+     --write .env.cloudflare
+     --refresh-permissions
+   - Must not read or require CF_GLOBAL_API_KEY / CLOUDFLARE_EMAIL.
+4. For scripts whose only purpose is to install old Global API Key flow:
+   - Replace with safe no-op or migration notice.
+   - Exit 0 after printing modern commands:
+     make token-verify
+     make token-rotate-dry
+     make token-rotate
+5. Add or update tests to ensure no active script uses:
+   CF_GLOBAL_API_KEY
+   X-Auth-Key
+   X-Auth-Email
+   CLOUDFLARE_EMAIL
+6. Do not remove historical docs unless necessary; prefer marking them deprecated if they are documentation-only.
+7. Do not print token values.
+8. Do not modify local .env or .env.cloudflare.
+
+Validation commands:
+- make env-format-validate
+- make validate
+- bash scripts/cloudflare/gen-token.sh --dry-run
+- bash scripts/cloudflare/master-gen-tokens.sh --dry-run
+- grep -RInE 'CF_GLOBAL_API_KEY|X-Auth-Key|X-Auth-Email|CLOUDFLARE_EMAIL' scripts Makefile .env.example || true
+
+Acceptance criteria:
+- make validate passes.
+- No active executable token generator uses Global API Key auth.
+- Legacy scripts safely forward to modern rotation or print migration instructions.
+- No token secret is printed.
+- No generated env file contains KEY="" format.
+
+Used Validation
+- make validate
+- make token-verify
+- make token-rotate-dry
+
+Validation Final all done used commit command below
+bash gpg-loopback.sh commit [command] "phase-1-cloudflare-token-legacy-cleanup"
+git checkout -b codex/phase-1-cloudflare-token-legacy-cleanup

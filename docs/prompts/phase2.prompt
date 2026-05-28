@@ -1,0 +1,90 @@
+You are working in repo cvsz/zeaz-platform.
+
+Goal:
+Ensure every script that creates, rewrites, appends, or preserves .env / .env.cloudflare / env-like Cloudflare files runs the canonical env normalizer before final write or before sourcing.
+
+Canonical normalizer:
+scripts/cloudflare/clean-env-empty-values.sh
+
+Current expected normalizer behavior:
+- KEY=""      becomes KEY=
+- KEY=''      becomes KEY=
+- KEY="abc"   becomes KEY=abc
+- KEY='abc'   becomes KEY=abc
+- duplicate keys collapse to one effective key
+- CLOUDFLARE_AUDIT_TOKEN= is omitted if empty
+- CLOUDFLARE_AI_GATEWAY_TOKEN= is omitted if empty
+
+Files to review:
+- scripts/environments/setup.sh
+- scripts/environments/setup-free.sh
+- scripts/environments/generate-env-all.sh
+- scripts/cloudflare/write-env.sh
+- scripts/cloudflare/clean-and-regenerate-tokens.sh
+- scripts/cloudflare/generate-tokens.sh
+- scripts/cloudflare/load-env.sh
+- scripts/lib/env.sh
+- any script matching:
+  grep -RInE 'cat > .*\\.env|>> .*\\.env|printf .*CLOUDFLARE_|write_kv|source .*\\.env|set -a' scripts Makefile
+
+Required changes:
+1. All env writers must write unquoted shell-safe format:
+   KEY=value
+   EMPTY_KEY=
+   not:
+   KEY="value"
+   KEY=""
+2. Before finalizing any env file, run:
+   bash scripts/cloudflare/clean-env-empty-values.sh "$ENV_FILE"
+   or:
+   bash scripts/cloudflare/clean-env-empty-values.sh "$OUT_FILE"
+3. If the script writes .env.cloudflare, normalize .env.cloudflare before exit.
+4. If the script writes .env, normalize .env before exit.
+5. If the script sources .env after writing it, normalize before source.
+6. Do not normalize arbitrary user files unless they are explicitly env files created by this repo.
+7. Keep file permissions strict:
+   chmod 600 .env .env.cloudflare generated env backups when applicable
+8. Avoid breaking comments in .env.example.
+9. Do not print token values.
+
+Add or update tests:
+1. Add a test that creates a temp env file with:
+   A="1"
+   A="2"
+   EMPTY=""
+   CLOUDFLARE_AUDIT_TOKEN=""
+   CLOUDFLARE_AI_GATEWAY_TOKEN=""
+2. Run clean-env-empty-values.sh against it.
+3. Assert result:
+   A=2
+   EMPTY=
+   no CLOUDFLARE_AUDIT_TOKEN
+   no CLOUDFLARE_AI_GATEWAY_TOKEN
+   no quoted assignments
+4. Add a test for scripts/validate-env-files.py detecting:
+   duplicate keys
+   quoted values
+   optional empty token assignments
+
+Validation commands:
+- python3 scripts/validate-env-files.py .env.example
+- make env-format-validate
+- make validate
+- bash scripts/cloudflare/clean-env-empty-values.sh .env.example
+- python3 scripts/validate-env-files.py .env.example
+
+Acceptance criteria:
+- make validate passes.
+- All repo env generators normalize output.
+- No generated env file contains KEY="" or KEY="value".
+- Optional empty audit/AI gateway token keys are omitted.
+- Duplicate env keys are collapsed by the normalizer.
+
+Used Validation
+- make env-format-validate
+- make validate
+
+Validation Final all done used commit command below
+- bash gpg-loopback.sh commit [command] "phase-2-env-normalizer-everywhere"
+- git checkout -b codex/phase-2-env-normalizer-everywhere
+

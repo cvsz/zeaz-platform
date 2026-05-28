@@ -1,0 +1,84 @@
+You are working in repo cvsz/zeaz-platform.
+
+Goal:
+Add a local-only env validation target that checks .env and .env.cloudflare when present, while keeping CI safe and secret-free.
+
+Current state:
+- make env-format-validate checks .env.example.
+- make validate includes env-format-validate.
+- .env and .env.cloudflare are local secret files and should not be required in CI.
+- Existing validator:
+  scripts/validate-env-files.py
+- Existing normalizer:
+  scripts/cloudflare/clean-env-empty-values.sh
+
+Required Make targets:
+1. Keep existing:
+   make env-format-validate
+   It must check only repo-safe files:
+   .env.example
+2. Add:
+   make env-format-validate-local
+   It should check any local files that exist:
+   .env
+   .env.cloudflare
+   .env.example
+3. Add:
+   make env-normalize-local
+   It should run:
+   bash scripts/cloudflare/clean-env-empty-values.sh .env
+   bash scripts/cloudflare/clean-env-empty-values.sh .env.cloudflare
+   only if those files exist.
+4. Add these targets to .PHONY.
+5. Update scripts/make-help.sh to document:
+   make env-format-validate
+   make env-format-validate-local
+   make env-normalize-local
+
+Required behavior:
+- make validate must remain CI-safe and must not require .env or .env.cloudflare.
+- make env-format-validate-local must not print secret values.
+- If .env or .env.cloudflare are missing, local validation should skip them cleanly.
+- If .env or .env.cloudflare contain quoted values or duplicate keys, local validation should fail with masked secret output.
+- If local files contain CLOUDFLARE_AUDIT_TOKEN= or CLOUDFLARE_AI_GATEWAY_TOKEN= empty, local validation should fail and tell user to run make env-normalize-local.
+
+Improve validator:
+1. scripts/validate-env-files.py should accept:
+   --skip-missing
+2. When --skip-missing is used, missing files are ignored.
+3. Secret-looking values must remain masked in output:
+   keys containing TOKEN, SECRET, KEY, PASSWORD
+4. Non-secret values may be shown.
+5. Output should clearly say which files were checked.
+
+Add tests:
+- validate-env-files.py passes with --skip-missing on missing .env files.
+- validate-env-files.py fails on quoted values.
+- validate-env-files.py fails on duplicate keys.
+- validate-env-files.py masks token values.
+- env-normalize-local target is shell-safe even if .env files do not exist.
+
+Validation commands:
+- make env-format-validate
+- make env-format-validate-local
+- make env-normalize-local
+- make env-format-validate-local
+- make validate
+
+Acceptance criteria:
+- make validate passes.
+- CI-safe target checks only .env.example.
+- Local target checks .env and .env.cloudflare when present.
+- Normalizer target cleans local env files.
+- Help text documents all env validation/normalization targets.
+- No secret values are printed.
+
+Used Validation
+- make env-normalize-local
+- make env-format-validate-local
+- make validate
+
+Validation Final all done used commit command below
+bash gpg-loopback.sh commit [command] "phase-3-local-env-guardrails"
+git checkout -b codex/phase-3-local-env-guardrails
+
