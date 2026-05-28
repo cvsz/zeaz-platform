@@ -26,7 +26,7 @@ export STRICT_TOOLS
 export CODEX_CLOUD
 export STRICT_ENV
 
-.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all env load-env docs-context upgrade-report validate validate-agent ci-validate validate-env validate-env-strict maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
+.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci-validate validate-env validate-env-strict maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-rotate-dry token-rotate security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate ci health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
 
 help:
 	@printf '%s\n' \
@@ -42,6 +42,11 @@ help:
 	'  make load-env               Load Cloudflare env helper' \
 	'  make docs-context           Cache Cloudflare LLM docs context locally' \
 	'  make upgrade-report         Generate reports/project-upgrade-report.md' \
+	'' \
+	'Migration:' \
+	'  make refactor-cloudflare-vars-dry  Preview CF_* -> CLOUDFLARE_* changes' \
+	'  make refactor-cloudflare-vars      Apply CF_* -> CLOUDFLARE_* tracked-file migration' \
+	'  make check-no-cf-vars              Fail if active tracked CF_* env names remain' \
 	'' \
 	'Validation:' \
 	'  make validate               Run source checks; deployment env is advisory' \
@@ -90,7 +95,7 @@ help:
 	'Tokens:' \
 	'  make token-clean            Dry-run token cleanup' \
 	'  make token-rotate-dry       Dry-run token regeneration' \
-	'  make token-rotate           Live token regeneration; requires CF_BOOTSTRAP_TOKEN and CF_ZONE_ID' \
+	'  make token-rotate           Live token regeneration; requires CLOUDFLARE_BOOTSTRAP_TOKEN and CLOUDFLARE_ZONE_ID' \
 	'' \
 	'Compatibility:' \
 	'  make secret-scan            Run gitleaks-only scan when available' \
@@ -109,6 +114,15 @@ setup-free:
 
 generate-env-all:
 	@bash scripts/environments/generate-env-all.sh
+
+refactor-cloudflare-vars-dry:
+	@bash scripts/refactor-cloudflare-vars.sh --dry-run
+
+refactor-cloudflare-vars:
+	@bash scripts/refactor-cloudflare-vars.sh --apply
+
+check-no-cf-vars:
+	@bash scripts/check-no-cf-vars.sh
 
 setup-legacy:
 	@bash scripts/environments/setup.sh
@@ -129,10 +143,10 @@ ci: validate
 
 validate-agent: ci-validate
 
-ci-validate: test yaml-validate tf-fmt-check tf-init tf-validate
+ci-validate: test yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
 	@echo "CI validation complete."
 
-validate: test validate-env yaml-validate tf-fmt-check tf-init tf-validate
+validate: test validate-env yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
 	@echo "Validation complete."
 
 validate-env:
