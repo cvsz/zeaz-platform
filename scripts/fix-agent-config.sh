@@ -1,5 +1,5 @@
-# fix-agent-config.sh
 #!/usr/bin/env bash
+# fix-agent-config.sh
 
 set -Eeuo pipefail
 
