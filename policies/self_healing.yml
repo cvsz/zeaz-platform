@@ -1,0 +1,6 @@
+policies:
+  max_retries: 3
+  auto_rollback: true
+  circuit_breaker: true
+  isolation: enabled
+  backoff: exponential
