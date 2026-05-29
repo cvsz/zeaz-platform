@@ -140,7 +140,7 @@ make setup-free
 
 `make setup-free` creates or preserves `.env`, backs up any existing `.env`, and enforces Free/no-cost defaults.
 
-Fill `.env` using canonical `CF_*` variables. Legacy `CLOUDFLARE_*` aliases are accepted by validators, but new config should use `CF_*` names.
+Fill `.env` using canonical `CLOUDFLARE_*` variables. Stale short `CF_*` variables are forbidden by active source validators. New config should use `CLOUDFLARE_*` names only.
 
 ### 2. Validate source health
 
