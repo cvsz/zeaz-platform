@@ -138,17 +138,12 @@ permission_cache_file(){
 }
 
 fetch_permission_groups(){
-  local cache file_tmp
+  local cache script_dir
   cache="$(permission_cache_file)"
-  if [[ -f "$cache" && "$REFRESH_PERMISSIONS" != "true" ]]; then
-    printf '%s' "$cache"
-    return 0
-  fi
-  file_tmp="$(mktemp "${cache}.XXXXXX")"
-  cf_request GET "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups" > "$file_tmp"
-  chmod 600 "$file_tmp"
-  mv "$file_tmp" "$cache"
-  log_err "permission-group cache refreshed: $cache"
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local opts=()
+  [[ "$REFRESH_PERMISSIONS" == "true" ]] && opts+=(--refresh)
+  bash "${script_dir}/discover-permission-groups.sh" "${opts[@]}" >/dev/null || die "Permission-group discovery failed"
   printf '%s' "$cache"
 }
 

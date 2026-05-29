@@ -35,27 +35,12 @@ command -v curl >/dev/null 2>&1 || die "curl is required"
 command -v jq >/dev/null 2>&1 || die "jq is required"
 cf_require_env CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_BOOTSTRAP_TOKEN || exit 1
 
-mkdir -p "$CACHE_DIR"
+log "Running discover-permission-groups.sh preflight check..."
+opts=()
+$REFRESH && opts+=(--refresh)
+bash "$SCRIPT_DIR/discover-permission-groups.sh" "${opts[@]}" >/dev/null || die "Permission-group discovery preflight failed."
 cache="$CACHE_DIR/account-token-permission-groups.${CLOUDFLARE_ACCOUNT_ID}.json"
-if [[ ! -f "$cache" || "$REFRESH" == "true" ]]; then
-  tmp="$(mktemp "${cache}.XXXXXX")"
-  http_code="$(curl -sS -o "$tmp" -w '%{http_code}' \
-    -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" \
-    -H "Content-Type: application/json" \
-    "${API_BASE}/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups")"
-  if [[ ! "$http_code" =~ ^2[0-9][0-9]$ ]]; then
-    if jq -e . "$tmp" >/dev/null 2>&1; then
-      err="$(jq -c '{errors:(.errors // []),messages:(.messages // [])}' "$tmp")"
-    else
-      err="$(cat "$tmp")"
-    fi
-    rm -f "$tmp"
-    die "permission-group discovery failed: http=${http_code} ${err}"
-  fi
-  mv "$tmp" "$cache"
-  chmod 600 "$cache"
-  log "permission-group cache refreshed: $cache"
-fi
+[[ -f "$cache" ]] || die "Preflight completed but cache file not found at $cache"
 
 pick_permission(){
   local kind="$1"

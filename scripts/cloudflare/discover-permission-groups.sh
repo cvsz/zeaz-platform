@@ -1,67 +1,84 @@
 #!/usr/bin/env bash
-set -eo pipefail
 
-CACHE_DIR=".cache/cloudflare-permissions"
-CACHE_FILE="${CACHE_DIR}/permissions.json"
-CACHE_EXPIRY=86400 # 24 hours
+# discover-permission-groups.sh
+# Retrieves Cloudflare API token or IAM permission groups for the configured account and caches the result.
+#
+# Usage:
+#   discover-permission-groups.sh [--refresh] [--json] [--iam]
+#
+#   --refresh   Skip cache and fetch fresh data from Cloudflare API.
+#   --json      Output the raw JSON response to stdout.
+#   --iam       Fetch IAM groups instead of API token permission groups.
+#
+# Environment variables required:
+#   CLOUDFLARE_ACCOUNT_ID       Cloudflare account identifier.
+#   CLOUDFLARE_BOOTSTRAP_TOKEN  API token with appropriate permissions.
+#
+# The script writes a cached file to:
+#   - .cache/cloudflare-permissions/account-token-permission-groups.<account_id>.json (default)
+#   - .cache/cloudflare-permissions/groups.json (with --iam flag)
 
-usage() {
-    echo "Usage: $0 [--refresh] [--json]"
-    exit 1
-}
+set -euo pipefail
 
-REFRESH=0
-JSON_OUT=0
+# Parse flags
+REFRESH=false
+JSON_OUTPUT=false
+IAM_MODE=false
 
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --refresh) REFRESH=1 ;;
-        --json) JSON_OUT=1 ;;
-        -h|--help) usage ;;
-        *) echo "Unknown parameter passed: $1"; usage ;;
-    esac
-    shift
+while (( "$#" )); do
+  case "$1" in
+    --refresh) REFRESH=true ; shift ;;
+    --json)    JSON_OUTPUT=true ; shift ;;
+    --iam)     IAM_MODE=true ; shift ;;
+    -h|--help) echo "Usage: $0 [--refresh] [--json] [--iam]" ; exit 0 ;;
+    *) echo "Unknown option: $1" ; exit 1 ;;
+  esac
 done
 
-if [ -z "${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" ]; then
-    echo "Error: CLOUDFLARE_BOOTSTRAP_TOKEN environment variable is not set." >&2
-    exit 1
+# Verify required env vars
+: "${CLOUDFLARE_ACCOUNT_ID:?Missing CLOUDFLARE_ACCOUNT_ID}"
+: "${CLOUDFLARE_BOOTSTRAP_TOKEN:?Missing CLOUDFLARE_BOOTSTRAP_TOKEN}"
+
+CACHE_DIR=".cache/cloudflare-permissions"
+if $IAM_MODE; then
+  CACHE_FILE="$CACHE_DIR/groups.json"
+  ENDPOINT="/accounts/${CLOUDFLARE_ACCOUNT_ID}/iam/groups"
+else
+  CACHE_FILE="$CACHE_DIR/account-token-permission-groups.${CLOUDFLARE_ACCOUNT_ID}.json"
+  ENDPOINT="/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups"
 fi
 
 mkdir -p "$CACHE_DIR"
 
-fetch_permissions() {
-    # Using Cloudflare API to fetch User permission groups
-    # Endpoint: GET https://api.cloudflare.com/client/v4/user/tokens/permission_groups
-    local response
-    response=$(curl -s -X GET "https://api.cloudflare.com/client/v4/user/tokens/permission_groups" \
-        -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" \
-        -H "Content-Type: application/json")
-    
-    local success
-    success=$(echo "$response" | jq -r '.success')
-    
-    if [ "$success" != "true" ]; then
-        echo "Error fetching permissions from Cloudflare API." >&2
-        echo "$response" | jq -r '.errors[] | .message' >&2
-        exit 1
-    fi
-    
-    echo "$response" > "$CACHE_FILE"
+# Function to fetch from API
+fetch_groups() {
+  local api_base="${CLOUDFLARE_API_BASE:-https://api.cloudflare.com/client/v4}"
+  local url="${api_base}${ENDPOINT}"
+  local response
+  response=$(curl -sSf -X GET "$url" \
+    -H "Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}" \
+    -H "Content-Type: application/json")
+  # Save cache
+  echo "$response" > "$CACHE_FILE"
+  chmod 600 "$CACHE_FILE"
+  echo "$response"
 }
 
-if [ "$REFRESH" -eq 1 ] || [ ! -f "$CACHE_FILE" ]; then
-    fetch_permissions
+# Main logic
+if $REFRESH || [ ! -f "$CACHE_FILE" ]; then
+  RESULT=$(fetch_groups)
 else
-    # Check if cache is older than 24 hours
-    if test "$(find "$CACHE_FILE" -mmin +1440)"; then
-        fetch_permissions
-    fi
+  RESULT=$(cat "$CACHE_FILE")
 fi
 
-if [ "$JSON_OUT" -eq 1 ]; then
-    cat "$CACHE_FILE"
+if $JSON_OUTPUT; then
+  echo "$RESULT"
 else
-    echo "Cloudflare IAM Permission Groups mapped dynamically:"
-    jq -r '.result[] | "\(.id) \(.name)"' < "$CACHE_FILE"
+  # Pretty‑print a summary: list group name -> id
+  if $IAM_MODE; then
+    echo "IAM groups for account ${CLOUDFLARE_ACCOUNT_ID}:"
+  else
+    echo "API Token Permission groups for account ${CLOUDFLARE_ACCOUNT_ID}:"
+  fi
+  echo "$RESULT" | jq -r '.result[] | "- \(.name): \(.id)"'
 fi

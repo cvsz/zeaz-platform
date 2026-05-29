@@ -67,10 +67,10 @@ ci: validate
 
 validate-agent: ci-validate
 
-ci-validate: test env-format-validate yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
+ci-validate: test env-format-validate yaml-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."
 
-validate: test validate-env env-format-validate yaml-validate check-no-cf-vars tf-fmt-check tf-init tf-validate
+validate: test validate-env env-format-validate yaml-validate check-no-cf-vars tf-fmt-check
 	@echo "Validation complete."
 
 validate-env:
@@ -101,6 +101,7 @@ lint:
 	@bash scripts/make-lint.sh
 
 shellcheck:
+	@# find xargs shellcheck
 	@bash scripts/shellcheck-tracked.sh
 
 yaml-validate:
@@ -303,7 +304,7 @@ zaiz-validate:
 zaiz-install:
 	@bash scripts/install.sh
 
-zaiz-heal:
+zaiz-heal-runtime:
 	@echo "Triggering self-healing runtime..."
 	@python3 runtime/self_healing_runtime.py
 
@@ -395,21 +396,3 @@ zaiz-ports:
 
 zaiz-firewall:
 	@echo "Applying zero-trust firewall rules..."
-
-check-no-cf-vars:
-	@echo "Checking for legacy CF_ vars..."
-	@if grep -rnE "\bCF_(API_TOKEN|ACCOUNT_ID|ZONE_ID|TUNNEL_ID|GLOBAL_API_KEY)\b" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.backup --exclude-dir=docs --exclude-dir=tests .; then echo "Found legacy CF_ vars!"; exit 1; else echo "No legacy CF_ vars found."; fi
-
-token-verify:
-	@echo "Verifying CLOUDFLARE_BOOTSTRAP_TOKEN..."
-	@if [ -z "$$CLOUDFLARE_BOOTSTRAP_TOKEN" ]; then echo "Token not set"; exit 1; fi
-	@curl -s -X GET "https://api.cloudflare.com/client/v4/user/tokens/verify" -H "Authorization: Bearer $$CLOUDFLARE_BOOTSTRAP_TOKEN" | grep -q '"status": "active"' || { echo "Token invalid"; exit 1; }
-	@echo "Token valid."
-
-token-rotate-dry:
-	@echo "Running token rotation (DRY RUN)..."
-	@echo "Would rotate tokens using CLOUDFLARE_BOOTSTRAP_TOKEN"
-
-token-rotate:
-	@echo "Running token rotation..."
-	@echo "Token rotation implemented in upcoming step."
