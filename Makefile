@@ -67,6 +67,12 @@ ci: validate
 
 validate-agent: ci-validate
 
+validate-ai-stack:
+	@echo "Validating AI Stack config and agent environment..."
+	@bash scripts/validate-ai-gateway.sh --offline
+	@bash -c "source scripts/cloudflare/load-env.sh && bash scripts/ai/validate-agent-env.sh"
+	@echo "AI Stack validation passed."
+
 ci-validate: test env-format-validate yaml-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."
 
