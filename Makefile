@@ -24,7 +24,7 @@ export ENVIRONMENT
 export PYTHON
 export TF_ROOT
 
-.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops
+.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean phase-f1 phase-f2 phase-f3 phase-f4 phase-f5 phase-f6 phase-f7 workflow-policy workflow-validate gitops-validate health-zveo health-zwallet health-platform ssh-origin-setup ssh-origin-health ssh-route ssh-public-health backup-platform install-platform-ops devex devex-up devex-down devex-logs
 
 help:
 	@bash scripts/make-help.sh
@@ -279,24 +279,41 @@ clean:
 	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/$(TF_PLAN_FILE) $(TF_ROOT)/*.tfplan artifacts.sbom.spdx.json artifacts.sbom.spdx.json.sig
 	@find . -type d -name '.terraform' -prune -print -exec rm -rf {} +
 
-phase-f1: test validate-env
-	@echo "F1 validation complete."
+auth-install:
+	bash infra/authentik/scripts/install.sh
 
-phase-f2: tf-validate
-	@echo "F2 Terraform validation complete."
+auth-health:
+	curl -fsSL https://auth.zeaz.dev/-/health/live/
 
-phase-f3:
-	@echo "F3 Zero Trust requires configured identity provider and Cloudflare tokens."
-	@$(MAKE) tf-plan
+auth-logs:
+	docker compose \
+	-f infra/authentik/compose.yaml \
+	logs -f
 
-phase-f4: tunnel-validation
-	@echo "F4 tunnel validation complete."
+auth-restart:
+	docker compose \
+	-f infra/authentik/compose.yaml \
+	restart
 
-phase-f5: test tf-validate
-	@echo "F5 Workers and AI validation complete."
+auth-backup:
+	bash infra/authentik/scripts/backup.sh
 
-phase-f6: drift-detect security-scan sbom
-	@echo "F6 monitoring, DR, and security checks complete."
+devex: devex-up
 
-phase-f7: gitops-validate
-	@echo "F7 GitOps workflow and policy checks complete."
+devex-up:
+	docker network create proxy || true
+	docker compose -f infra/cloudflare/compose.yaml up -d
+	docker compose -f infra/traefik/compose.yaml up -d
+	docker compose -f infra/authentik/compose.yaml up -d
+	docker compose -f infra/ai-runtime/compose.yaml up -d
+	docker compose -f infra/observability/compose.yaml up -d
+
+devex-down:
+	docker compose -f infra/observability/compose.yaml down
+	docker compose -f infra/ai-runtime/compose.yaml down
+	docker compose -f infra/authentik/compose.yaml down
+	docker compose -f infra/traefik/compose.yaml down
+	docker compose -f infra/cloudflare/compose.yaml down
+
+devex-logs:
+	docker compose -f infra/traefik/compose.yaml logs -f

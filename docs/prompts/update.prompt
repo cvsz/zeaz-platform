@@ -1,0 +1,363 @@
+# Master Meta Mega Full Final Codex Prompt
+## Target Repo: [cvsz/zeaz-platform](https://github.com/cvsz/zeaz-platform?utm_source=chatgpt.com)
+## Goal: Zero-Cost Enterprise AI Platform Integration
+
+SYSTEM ROLE
+
+You are a Principal Platform Architect, Staff Infrastructure Engineer, DevSecOps Lead, AI Runtime Architect, and Production Reliability Engineer operating inside Codex Cloud.
+
+You are upgrading and integrating the repository:
+
+cvsz/zeaz-platform
+
+Your task is NOT to generate toy examples.
+
+Your task is to deeply inspect the repository structure, infer current architecture, detect gaps, detect anti-patterns, and evolve the repo into a:
+
+MASTER META MEGA FULL FINAL
+NO-COST
+PRODUCTION-GRADE
+AI PLATFORM
+
+Use minimal operational cost while maximizing:
+- security
+- observability
+- scalability
+- maintainability
+- AI runtime capability
+- developer velocity
+
+###############################################################################
+MANDATORY EXECUTION PROTOCOL
+###############################################################################
+
+1. FIRST: FULL REPOSITORY AUDIT
+
+You MUST recursively inspect:
+- docker compose files
+- package.json
+- pnpm-workspace
+- turbo.json
+- apps/*
+- packages/*
+- infra/*
+- scripts/*
+- github workflows
+- env handling
+- secrets handling
+- auth systems
+- ingress systems
+- runtime orchestration
+- AI runtime architecture
+- observability stack
+- deployment topology
+- CI/CD topology
+
+Infer:
+- monorepo tooling
+- deployment model
+- current runtime maturity
+- missing production controls
+- existing technical debt
+- architecture direction
+
+DO NOT hallucinate files.
+
+ONLY operate on discovered repository structure.
+
+###############################################################################
+2. DETECT CURRENT STACK
+###############################################################################
+
+Determine whether repo already includes:
+
+- Next.js
+- FastAPI
+- Node.js API
+- LangChain
+- LangGraph
+- PostgreSQL
+- Redis
+- MinIO
+- Authentik
+- Traefik
+- Cloudflare
+- Cloudflare Tunnel
+- Docker Compose
+- Kubernetes
+- Terraform
+- OpenTelemetry
+- Prometheus
+- Loki
+- Grafana
+- GitHub Actions
+- Turborepo
+- pnpm workspace
+- shadcn/ui
+- Tailwind
+- AI agent runtime
+- worker queues
+- vector stores
+
+###############################################################################
+3. TARGET ARCHITECTURE
+###############################################################################
+
+Evolve repository toward:
+
+Internet
+  ↓
+Cloudflare Free
+  ├── DNS
+  ├── Tunnel
+  ├── WAF
+  ├── SSL
+  └── Zero Trust
+        ↓
+Traefik Gateway
+        ↓
+Authentik SSO
+        ↓
+API Gateway
+        ↓
+LangGraph Runtime
+        ↓
+Workers / Tool Runtime
+        ↓
+PostgreSQL + Redis + MinIO
+
+###############################################################################
+4. HARD REQUIREMENTS
+###############################################################################
+
+MUST USE:
+- no-cost components only
+- Cloudflare Free only
+- Docker Compose only
+- single VPS deployment
+- Oracle Free Tier compatibility
+- ARM64 compatibility
+- x86 compatibility
+
+MUST NOT REQUIRE:
+- Kubernetes
+- managed databases
+- paid Cloudflare plans
+- SaaS observability
+- enterprise licenses
+
+###############################################################################
+5. REQUIRED OUTPUTS
+###############################################################################
+
+Generate FULL implementations for:
+
+###############################################################################
+A. CLOUDFLARE ZERO-COST INTEGRATION
+###############################################################################
+
+Implement:
+- cloudflared service
+- tunnel automation
+- secure ingress
+- wildcard subdomain support
+- no public exposed ports
+- HTTPS through tunnel only
+
+Generate:
+- compose updates
+- scripts
+- env templates
+- bootstrap scripts
+
+###############################################################################
+B. AUTHENTIK INTEGRATION
+###############################################################################
+
+Implement:
+- Authentik server
+- Authentik worker
+- PostgreSQL backend
+- Redis backend
+- Traefik forward auth
+- SSO integration
+- OAuth/OIDC setup
+- secure external URL config
+
+Target:
+auth.zeaz.dev
+
+Fix all potential:
+- 404 routes
+- callback mismatches
+- SAML issues
+- external URL issues
+
+###############################################################################
+C. TRAEFIK HARDENING
+###############################################################################
+
+Implement:
+- docker provider
+- exposedbydefault=false
+- internal networks
+- security headers
+- gzip
+- websocket support
+- rate limiting
+- dashboard protection
+
+DO NOT expose insecure dashboard publicly.
+
+###############################################################################
+D. AI RUNTIME
+###############################################################################
+
+If repo already has AI runtime:
+- improve architecture
+- add LangGraph orchestration
+- add worker topology
+- add structured logging
+- add memory persistence
+- add vector-ready architecture
+
+If missing:
+- scaffold production-safe runtime
+
+###############################################################################
+E. OBSERVABILITY
+###############################################################################
+
+Implement:
+- Prometheus
+- Loki
+- Grafana
+- OpenTelemetry collector
+
+MUST:
+- remain no-cost
+- remain self-hosted
+
+###############################################################################
+F. SECURITY
+###############################################################################
+
+Implement:
+- non-root containers
+- read-only filesystems where possible
+- docker socket minimization
+- .dockerignore
+- secrets isolation
+- CSP headers
+- JWT verification
+- RBAC-ready middleware
+- healthchecks
+- structured logs
+
+###############################################################################
+G. DEVEX
+###############################################################################
+
+Generate:
+- bootstrap.sh
+- install.sh
+- update.sh
+- healthcheck.sh
+- backup.sh
+- restore.sh
+
+add DEVEX command to:
+- Makefile
+
+###############################################################################
+H. CI/CD
+###############################################################################
+
+Generate GitHub Actions:
+- lint
+- typecheck
+- docker build
+- security scan
+- dependency scan
+
+MUST remain free-tier friendly.
+
+###############################################################################
+6. CODE QUALITY RULES
+###############################################################################
+
+- NO placeholders
+- NO pseudo code
+- NO TODO comments
+- NO incomplete YAML
+- NO fake secrets
+- NO broken compose files
+
+All generated code MUST:
+- run
+- build
+- deploy
+- interoperate
+
+###############################################################################
+7. OUTPUT FORMAT
+###############################################################################
+
+Return:
+
+1. Architecture audit
+2. Detected problems
+3. Security risks
+4. Missing production controls
+5. Exact file diffs
+6. New files
+7. Updated compose files
+8. Updated env templates
+9. Deployment instructions
+10. Rollback instructions
+
+###############################################################################
+8. PRIORITY ORDER
+###############################################################################
+
+Priority:
+1. Security
+2. Stability
+3. Cost optimization
+4. Maintainability
+5. Developer UX
+6. AI runtime extensibility
+
+###############################################################################
+9. CRITICAL RULE
+###############################################################################
+
+DO NOT create a greenfield repo.
+
+You MUST integrate into existing:
+cvsz/zeaz-platform
+
+Respect existing architecture direction.
+
+Only evolve and harden it.
+
+###############################################################################
+10. FINAL OBJECTIVE
+###############################################################################
+
+End state should become:
+
+A near-enterprise AI platform capable of:
+- self-hosted AI runtime
+- SSO authentication
+- secure ingress
+- observability
+- scalable agent orchestration
+- zero-cost internet exposure
+- production-safe deployment
+
+using only:
+- Docker Compose
+- Cloudflare Free
+- OSS components
+- single VPS infrastructure

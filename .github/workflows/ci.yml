@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Shellcheck
+        run: sudo apt-get install shellcheck && find . -name "*.sh" -exec shellcheck {} + || true
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck, security-scan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and Test compose configs
+        run: |
+          docker compose -f infra/traefik/compose.yaml config
+          docker compose -f infra/authentik/compose.yaml config
+          docker compose -f infra/ai-runtime/compose.yaml config
+          docker compose -f infra/observability/compose.yaml config
