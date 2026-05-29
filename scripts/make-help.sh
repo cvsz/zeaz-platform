@@ -26,6 +26,10 @@ Validation:
   make ci                     Alias for validate
   make validate-env           Advisory env check; does not fail on missing secrets
   make validate-env-strict    Strict deployment env validator; requires real values
+  make env-format-validate    CI-safe env format check for .env.example only
+  make env-format-validate-local
+                              Local env format check for .env, .env.cloudflare, and .env.example when present
+  make env-normalize-local    Normalize local .env and .env.cloudflare when present
   make maintenance            Run scripts/environments/maintenance.sh validate
   make test                   Run pytest suite
   make fmt                    Terraform fmt recursive
