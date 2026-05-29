@@ -2,18 +2,22 @@ import asyncio
 import logging
 import json
 import time
+import uuid
 from typing import Dict, Any, List, Optional
 import redis
 from runtime.swarm.marketplace import TaskMarketplace
 from runtime.swarm.consensus_engine import ConsensusEngine
+from runtime.scheduler.scheduler_engine import SchedulerEngine
+from runtime.scheduler.models import CognitiveTask
 
 logger = logging.getLogger("SwarmOrchestrator")
 
 class SwarmOrchestrator:
-    def __init__(self, redis_url: str = "redis://localhost:6379/0"):
+    def __init__(self, redis_url: str = "redis://localhost:6379/0", scheduler: Optional[SchedulerEngine] = None):
         self.redis = redis.from_url(redis_url)
         self.marketplace = TaskMarketplace(redis_url)
         self.consensus = ConsensusEngine(redis_url)
+        self.scheduler = scheduler
 
     async def manage_swarm(self):
         logger.info("Swarm Orchestrator started.")
@@ -24,8 +28,6 @@ class SwarmOrchestrator:
                 logger.debug(f"Active agents in swarm: {len(active_agents)}")
                 
                 # 2. Resolve marketplace tasks
-                # In a real system, this would look at bids and assign tasks
-                # based on affinity, score, and consensus requirements.
                 await self._resolve_bids()
                 
             except Exception as e:
@@ -34,8 +36,25 @@ class SwarmOrchestrator:
 
     async def _resolve_bids(self):
         # Scan for tasks with bids but no assignment
-        # This is a simplified auction resolver
+        # Simplified resolver: Pick the best bid and submit to Scheduler
         pass
+
+    async def submit_to_scheduler(self, task_id: str, tenant_id: str, action_type: str, payload: Dict[str, Any]):
+        """
+        Submits an agent-derived task to the Cognitive Scheduler.
+        """
+        if not self.scheduler:
+            logger.warning("Scheduler not integrated with Orchestrator. Direct execution only.")
+            return
+            
+        task = CognitiveTask(
+            task_id=task_id,
+            tenant_id=tenant_id,
+            action_type=action_type,
+            payload=payload
+        )
+        await self.scheduler.submit_task(task)
+        logger.info(f"Orchestrator submitted task {task_id} to Scheduler.")
 
     async def coordinate_incident_swarm(self, incident_id: str, severity: str):
         """

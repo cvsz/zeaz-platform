@@ -436,8 +436,22 @@ zaiz-scheduler-test:
 	  -d '{"action_type": "HEALING", "tenant_id": "test-tenant", "payload": {"target": "worker-pool-1"}}' | jq .
 
 zaiz-swarm:
-	@echo "Initializing Autonomous Agent Swarm..."
-	@bash -c "source .venv/bin/activate && python3 -c 'import asyncio; from runtime.swarm.agents.telemetry_agent import TelemetryAgent; from runtime.swarm.agents.security_agent import SecurityAgent; from runtime.swarm.agents.healing_agent import HealingAgent; from runtime.swarm.orchestrator import SwarmOrchestrator; async def start(): t=TelemetryAgent(); s=SecurityAgent(); h=HealingAgent(); o=SwarmOrchestrator(); await asyncio.gather(t.start(), s.start(), h.start(), o.manage_swarm()); asyncio.run(start())'"
+	@echo "Initializing Autonomous Agent Swarm (Full Roster)..."
+	@bash -c "source .venv/bin/activate && python3 -c 'import asyncio; \
+	from runtime.swarm.agents.telemetry_agent import TelemetryAgent; \
+	from runtime.swarm.agents.security_agent import SecurityAgent; \
+	from runtime.swarm.agents.healing_agent import HealingAgent; \
+	from runtime.swarm.agents.governance_agent import GovernanceAgent; \
+	from runtime.swarm.agents.reasoning_agent import ReasoningAgent; \
+	from runtime.swarm.agents.deployment_agent import DeploymentAgent; \
+	from runtime.swarm.agents.predictive_agent import PredictiveAgent; \
+	from runtime.swarm.orchestrator import SwarmOrchestrator; \
+	async def start(): \
+		t=TelemetryAgent(); s=SecurityAgent(); h=HealingAgent(); \
+		g=GovernanceAgent(); r=ReasoningAgent(); d=DeploymentAgent(); p=PredictiveAgent(); \
+		o=SwarmOrchestrator(); \
+		await asyncio.gather(t.start(), s.start(), h.start(), g.start(), r.start(), d.start(), p.start(), o.manage_swarm()); \
+	asyncio.run(start())'"
 
 zaiz-swarm-incident:
 	@echo "Triggering test incident in Agent Swarm..."
