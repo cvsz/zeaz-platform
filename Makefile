@@ -10,6 +10,10 @@ PYTHON ?= python3
 VENV_DIR ?= .venv
 TF_PLAN_FILE ?= tfplan
 TF_ARGS ?=
+COMMIT_MSG ?=
+GIT_REMOTE ?= origin
+GIT_BRANCH ?= $(shell git branch --show-current 2>/dev/null)
+GPG_LOOPBACK ?= bash gpg-loopback.sh
 
 TF_ROOT := terraform
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
@@ -20,7 +24,7 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
-.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean workflow-policy workflow-validate gitops-validate zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
+.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
 
 help:
 	@bash scripts/make-help.sh
@@ -204,6 +208,27 @@ workflow-validate: workflow-policy
 
 gitops-validate: workflow-validate drift-detect
 	@echo "GitOps validation complete."
+
+git-status:
+	@git status --short
+
+gpg-commit:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@test -f gpg-loopback.sh || (echo "ERROR: gpg-loopback.sh not found" && exit 1)
+	@if git diff --cached --quiet; then echo "ERROR: no staged changes. Stage intended files first."; exit 1; fi
+	@if git diff --cached --name-only | grep -E '^(\.env|\.env\.cloudflare|\.wrangler/|\.terraform/|.*\.tfstate|.*\.tfvars)$$' >/dev/null; then echo "ERROR: refusing to commit env/cache/state files"; git diff --cached --name-only; exit 1; fi
+	@$(GPG_LOOPBACK) commit -m "$(COMMIT_MSG)"
+
+gpg-push:
+	@branch="$(GIT_BRANCH)"; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push $(GIT_REMOTE) "$$branch"
+
+gpg-finalize: validate
+	@$(MAKE) git-status
+	@$(MAKE) gpg-commit COMMIT_MSG="$(COMMIT_MSG)"
+	@$(MAKE) gpg-push GIT_BRANCH="$(GIT_BRANCH)" GIT_REMOTE="$(GIT_REMOTE)"
+	@git status --short
+
+git-finalize: gpg-finalize
 
 zaiz-validate: validate
 
