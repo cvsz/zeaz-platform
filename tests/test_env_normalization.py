@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -9,10 +10,10 @@ NORMALIZER = ROOT / "scripts" / "cloudflare" / "clean-env-empty-values.sh"
 VALIDATOR = ROOT / "scripts" / "validate-env-files.py"
 
 
-def run_cmd(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run_cmd(*args: str, check: bool = True, cwd: Path = ROOT) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         list(args),
-        cwd=ROOT,
+        cwd=cwd,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -93,5 +94,35 @@ def test_validate_env_files_detects_duplicate_quoted_and_optional_empty_tokens(t
     assert "quoted env value for A" in combined
     assert "optional empty CLOUDFLARE_AUDIT_TOKEN should be omitted" in combined
     assert "optional empty CLOUDFLARE_AI_GATEWAY_TOKEN should be omitted" in combined
+    assert "run make env-normalize-local" in combined
     assert "secret-value" not in combined
     assert "<redacted>" in combined
+
+
+def test_validate_env_files_skip_missing_passes_and_reports_skips(tmp_path: Path) -> None:
+    existing = tmp_path / ".env.example"
+    missing = tmp_path / ".env"
+    existing.write_text("A=1\n", encoding="utf-8")
+
+    proc = run_cmd("python3", str(VALIDATOR), "--skip-missing", str(missing), str(existing))
+
+    assert proc.returncode == 0
+    combined = proc.stdout + proc.stderr
+    assert f"Env formatting validation passed: {existing}" in combined
+    assert f"Env formatting validation skipped missing files: {missing}" in combined
+
+
+def test_env_normalize_local_target_is_safe_without_local_env_files(tmp_path: Path) -> None:
+    # Copy only the small pieces needed by the Make target so it can run without touching repo-local secrets.
+    scripts_dir = tmp_path / "scripts"
+    cloudflare_dir = scripts_dir / "cloudflare"
+    cloudflare_dir.mkdir(parents=True)
+    shutil.copy2(ROOT / "Makefile", tmp_path / "Makefile")
+    shutil.copy2(NORMALIZER, cloudflare_dir / "clean-env-empty-values.sh")
+
+    proc = run_cmd("make", "env-normalize-local", cwd=tmp_path)
+
+    assert proc.returncode == 0
+    combined = proc.stdout + proc.stderr
+    assert "skip .env: not found" in combined
+    assert "skip .env.cloudflare: not found" in combined
