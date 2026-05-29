@@ -71,3 +71,4 @@ zdash.sh
 # OS
 .DS_Store
 Thumbs.db
+.ecc/
