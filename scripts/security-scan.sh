@@ -27,18 +27,27 @@ run_with_retry() {
 run_optional() {
   local tool="$1"
   shift
-  if has_cmd "$tool"; then
-    log "running ${tool}"
-    run_with_retry "$tool" "$@"
+
+  if ! has_cmd "$tool"; then
+    if [[ "$STRICT_SECURITY_SCAN" == "true" ]]; then
+      echo "missing required tool: $tool" >&2
+      return 1
+    fi
+    warn "missing optional tool: ${tool}; skipped. Set STRICT_SECURITY_SCAN=true to require it."
+    return 0
+  fi
+
+  log "running ${tool}"
+  if run_with_retry "$tool" "$@"; then
     return 0
   fi
 
   if [[ "$STRICT_SECURITY_SCAN" == "true" ]]; then
-    echo "missing required tool: $tool" >&2
+    warn "${tool} reported findings or failed in strict mode"
     return 1
   fi
 
-  warn "missing optional tool: ${tool}; skipped. Set STRICT_SECURITY_SCAN=true to require it."
+  warn "${tool} reported findings or failed; continuing because STRICT_SECURITY_SCAN=false"
   return 0
 }
 
@@ -65,7 +74,14 @@ fi
 
 if has_cmd syft; then
   log "running syft"
-  run_with_retry syft . -o spdx-json > "$SBOM_FILE"
+  if run_with_retry syft . -o spdx-json > "$SBOM_FILE"; then
+    log "wrote SBOM: ${SBOM_FILE}"
+  elif [[ "$STRICT_SECURITY_SCAN" == "true" ]]; then
+    warn "syft failed in strict mode"
+    exit 1
+  else
+    warn "syft failed; continuing because STRICT_SECURITY_SCAN=false"
+  fi
 else
   if [[ "$STRICT_SECURITY_SCAN" == "true" ]]; then
     echo "missing required tool: syft" >&2
