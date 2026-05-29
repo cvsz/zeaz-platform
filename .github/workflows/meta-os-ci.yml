@@ -1,0 +1,41 @@
+name: Zeaz Meta OS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Validate Compose
+      run: docker compose config > /dev/null
+      
+    - name: Install API Deps
+      run: |
+        cd apps/api
+        pip install -r requirements.txt
+        
+    - name: Install Web Deps
+      run: |
+        cd apps/web
+        npm install
+        
+    - name: Build Web
+      run: |
+        cd apps/web
+        npm run build

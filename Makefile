@@ -282,19 +282,23 @@ clean:
 zaiz: zaiz-up
 
 zaiz-up:
-	docker network create proxy || true
-	docker compose -f infra/cloudflare/compose.yaml up -d
-	docker compose -f infra/traefik/compose.yaml up -d
-	docker compose -f infra/authentik/compose.yaml up -d
-	docker compose -f infra/ai-runtime/compose.yaml up -d
-	docker compose -f infra/observability/compose.yaml up -d
+	@echo "Starting Zeaz Meta OS via unified root compose and deployment scripts..."
+	docker compose up -d --build
+	@bash scripts/meta_os_deploy.sh
 
 zaiz-down:
-	docker compose -f infra/observability/compose.yaml down
-	docker compose -f infra/ai-runtime/compose.yaml down
-	docker compose -f infra/authentik/compose.yaml down
-	docker compose -f infra/traefik/compose.yaml down
-	docker compose -f infra/cloudflare/compose.yaml down
+	@echo "Stopping Zeaz Meta OS..."
+	docker compose down
+	pkill -f "uvicorn main:app" || true
+	pkill -f "npm start" || true
+	pkill -f "python self_healing_runtime.py" || true
+	pkill -f "python queue_supervisor.py" || true
 
 zaiz-logs:
-	docker compose -f infra/traefik/compose.yaml logs -f
+	docker compose logs -f
+
+zaiz-validate:
+	@bash scripts/validation.sh
+
+zaiz-install:
+	@bash scripts/install.sh

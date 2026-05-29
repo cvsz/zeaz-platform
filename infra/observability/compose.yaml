@@ -1,7 +1,7 @@
 ---
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.52.0
     restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -29,7 +29,7 @@ services:
       - observability_internal
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.4.2
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=$${GRAFANA_PASSWORD:-admin}
@@ -46,7 +46,7 @@ services:
       - "traefik.http.routers.grafana.middlewares=auth@file"
 
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector:0.100.0
     restart: unless-stopped
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:

@@ -1,0 +1,7 @@
+name: zeaz-platform
+include:
+  - infra/traefik/compose.yaml
+  - infra/cloudflare/compose.yaml
+  - infra/authentik/compose.yaml
+  - infra/observability/compose.yaml
+  - infra/ai-runtime/compose.yaml

@@ -19,9 +19,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic.yml:/etc/traefik/dynamic.yml:ro
-    ports:
-      - "80:80"
-      - "443:443"
+    # Ports removed for Zero-Trust via Cloudflare Tunnel
     networks:
       - proxy
     labels:
