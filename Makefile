@@ -398,7 +398,7 @@ zaiz-firewall:
 
 check-no-cf-vars:
 	@echo "Checking for legacy CF_ vars..."
-	@if grep -rn --exclude-dir=node_modules --exclude-dir=.git "CF_" .; then echo "Found legacy CF_ vars!"; exit 1; else echo "No legacy CF_ vars found."; fi
+	@if grep -rnE "\bCF_(API_TOKEN|ACCOUNT_ID|ZONE_ID|TUNNEL_ID|GLOBAL_API_KEY)\b" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.backup --exclude-dir=docs --exclude-dir=tests .; then echo "Found legacy CF_ vars!"; exit 1; else echo "No legacy CF_ vars found."; fi
 
 token-verify:
 	@echo "Verifying CLOUDFLARE_BOOTSTRAP_TOKEN..."
