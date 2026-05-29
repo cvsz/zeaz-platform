@@ -434,3 +434,20 @@ zaiz-scheduler-test:
 	curl -s -X POST http://localhost:8000/api/runtime/scheduler/tasks \
 	  -H "Content-Type: application/json" \
 	  -d '{"action_type": "HEALING", "tenant_id": "test-tenant", "payload": {"target": "worker-pool-1"}}' | jq .
+
+###############################################################################
+# DEPENDENCY FIXERS
+###############################################################################
+
+.PHONY: zaiz-fix-google-genai
+zaiz-fix-google-genai:
+	@bash scripts/fixers/fix-google-genai-websockets.sh
+
+.PHONY: zaiz-deps-check
+zaiz-deps-check:
+	@python3 -m venv .venv-depcheck
+	@. .venv-depcheck/bin/activate && python -m pip install --upgrade pip setuptools wheel
+	@if [ -f requirements.txt ]; then \
+		. .venv-depcheck/bin/activate && python -m pip install --dry-run -r requirements.txt; \
+	fi
+	@rm -rf .venv-depcheck
