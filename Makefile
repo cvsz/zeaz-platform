@@ -402,3 +402,25 @@ zaiz-ports:
 
 zaiz-firewall:
 	@echo "Applying zero-trust firewall rules..."
+###############################################################################
+# GOOGLE VERTEX AI
+###############################################################################
+
+zaiz-vertex-test:
+	python3 scripts/test_vertex.py
+
+zaiz-gcloud-env:
+	@bash scripts/google_vertex_runtime.sh
+
+zaiz-llm-v2:
+	@echo "Initializing Cognitive Fabric v2 Mesh..."
+	docker compose up -d redis postgres grafana prometheus
+	@bash -c "source .venv/bin/activate && uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload"
+
+zaiz-vertex-v2:
+	@echo "Testing Vertex AI Cognitive Mesh connectivity..."
+	@bash scripts/validate_cognitive_fabric.sh --provider vertex-ai
+
+zaiz-token-metrics:
+	@echo "Fetching token burn analytics..."
+	curl -s http://localhost:8000/api/runtime/llm/metrics | jq .

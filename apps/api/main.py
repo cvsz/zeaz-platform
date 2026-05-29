@@ -2,7 +2,7 @@ import asyncio
 import json
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from routers import runtime, agents, healing, observability, auth
+from routers import runtime, agents, healing, observability, auth, llm
 import docker
 
 app = FastAPI(title="Zeaz Meta OS API", version="1.0.0")
@@ -20,6 +20,7 @@ app.include_router(agents.router, prefix="/api/runtime/agents")
 app.include_router(healing.router, prefix="/api/runtime/healing")
 app.include_router(observability.router, prefix="/api/runtime/observability")
 app.include_router(auth.router, prefix="/api/runtime/auth")
+app.include_router(llm.router, prefix="/api/runtime/llm")
 
 class ConnectionManager:
     def __init__(self):

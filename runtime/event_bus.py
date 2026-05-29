@@ -34,9 +34,12 @@ class EventBus:
         except Exception as e:
             logger.error(f"Failed to publish event: {e}")
 
-    def subscribe(self, stream_name: str, consumer_group: str, consumer_name: str):
-        try:
-            self.redis_client.xgroup_create(stream_name, consumer_group, id="0", mkstream=True)
-        except redis.exceptions.ResponseError:
-            pass # Group already exists
-        logger.info(f"Subscribed to {stream_name} as {consumer_name} in {consumer_group}")
+    def publish_llm_event(self, provider_id: str, event_type: str, payload: Dict[str, Any]):
+        """Specialized high-performance event stream for LLM activities"""
+        topic = f"llm.{provider_id}.{event_type}"
+        self.publish(topic, payload, priority=EventPriority.NORMAL)
+
+    def publish_mutation(self, action_id: str, action_type: str, payload: Dict[str, Any]):
+        """Stream for AI-driven system mutations (requires high durability/logging)"""
+        topic = f"mutation.{action_type}.{action_id}"
+        self.publish(topic, payload, priority=EventPriority.HIGH)
