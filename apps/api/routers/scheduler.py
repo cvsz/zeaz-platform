@@ -11,8 +11,11 @@ from runtime.scheduler.affinity_engine import AffinityEngine
 from runtime.llm.provider_registry import ProviderRegistry
 from runtime.llm.token_budget_engine import TokenBudgetEngine
 
+<<<<<<< HEAD
 from runtime.policy_engine import PolicyEngine
 
+=======
+>>>>>>> f2f2392 (Codex/final cleanup docs env backups (#122))
 router = APIRouter()
 
 # Setup (In a real app, use dependency injection/global state)
@@ -23,15 +26,22 @@ balancer = WorkloadBalancer(registry, budget_engine, affinity_engine)
 backpressure = BackpressureManager()
 lease_manager = LeaseManager()
 journal = ExecutionJournal()
+<<<<<<< HEAD
 policy_engine = PolicyEngine()
+=======
+>>>>>>> f2f2392 (Codex/final cleanup docs env backups (#122))
 
 scheduler = SchedulerEngine(
     "redis://localhost:6379/0",
     lease_manager,
     journal,
     balancer,
+<<<<<<< HEAD
     backpressure,
     policy_engine
+=======
+    backpressure
+>>>>>>> f2f2392 (Codex/final cleanup docs env backups (#122))
 )
 
 @router.post("/tasks")
