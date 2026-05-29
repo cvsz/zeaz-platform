@@ -19,7 +19,6 @@ tunnels/cloudflared/config.yml
 .cloudflare-backups/
 .cache/
 reports/
-
 # Terraform / OpenTofu
 .terraform/
 .terraform.lock.hcl
@@ -31,7 +30,6 @@ terraform/tfplan.drift
 terraform/**/*.tfplan
 crash.log
 terraform/backend/
-
 # Python
 __pycache__/
 *.pyc
@@ -39,13 +37,11 @@ __pycache__/
 .pytest_cache/
 .coverage
 coverage/
-
 # Node / frontend
 node_modules/
 dist/
 build/
 package-lock.json
-
 # IDE / local agent harness state
 .vscode/
 .idea/
@@ -58,7 +54,6 @@ package-lock.json
 .codebuddy/
 .joycode/
 .zed/
-
 # Backups and generated repair artifacts
 .backup/
 .backup-refactor-*
@@ -67,8 +62,10 @@ package-lock.json
 log.txt
 bootstrap-generate-tokens-once.sh
 zdash.sh
-
 # OS
 .DS_Store
 Thumbs.db
 .ecc/
+# local Cloudflare / Wrangler secret caches
+.wrangler/
+cloudflare-platform/.cloudflare-token-audit.log
