@@ -39,12 +39,18 @@ Validation:
   make yaml-validate          Validate YAML files with repository ignore rules
 
 Security:
-  make secret-scan            Run current-tree gitleaks scan only (--no-git)
+  make secret-scan            Run tracked-file gitleaks release gate
   make secret-scan-history    Run full git-history gitleaks scan for remediation work
   make security-scan          Run aggregate advisory scanner script when present
   make policy-test            Validate workflow policy rules
   make sbom                   Generate SBOM when syft is installed
   make cosign-sign            Sign SBOM when cosign and SBOM artifact exist
+
+Supabase AI tools:
+  make supabase-docs-context  Cache Supabase llms.txt and guides context locally
+  make supabase-mcp-check     Validate Supabase MCP env without printing secrets
+  make supabase-mcp-config    Write local .agent/supabase-mcp.json with token placeholder
+  make supabase-ai-tools      Run docs cache and MCP env validation
 
 Terraform root:
   make tf-init                Load scoped env, then terraform -chdir=terraform init
