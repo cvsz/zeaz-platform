@@ -52,7 +52,7 @@ jobs:
           npx wrangler pages project create "${CLOUDFLARE_PAGES_PROJECT_NAME}" --production-branch=main || true
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
