@@ -1,0 +1,596 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 2 · TRADING CORE
+XAU Scanner + MT5 Integration + Funnel Filter 21/10/3 + Dry-Run Execution
+
+Do not rebuild Phase 1 from scratch.
+Extend the existing Phase 1 foundation cleanly.
+
+Assume Phase 1 already exists:
+
+- FastAPI Janie Server
+- Agent Runtime
+- Base Agent class
+- CEO Agent
+- Janie Agent
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event bus
+- Standard API response wrapper
+- Health, agents, and logs endpoints
+- Pytest setup
+
+============================================================
+PHASE 2 OBJECTIVE
+============================================================
+
+Build the trading core foundation for zDash.
+
+Main goals:
+
+1. Add trading domain models
+2. Add MT5 adapter shell
+3. Add XAUUSD M5 scanner
+4. Add Funnel Filter 21/10/3
+5. Add Claude/mock AI analysis module for signals
+6. Add signal validation service
+7. Add dry-run execution engine
+8. Add trading API endpoints
+9. Add trading events
+10. Add tests for scanner, filters, validation, and dry-run execution
+
+IMPORTANT:
+- This phase must be simulation-safe.
+- Do not enable live trading.
+- DRY_RUN must remain true by default.
+- MT5 integration must be an adapter shell with mock fallback.
+- No broker credentials may be hardcoded.
+- No order should be sent to a real broker in Phase 2.
+- This is a technical implementation for dry-run/paper-trading only.
+- Do not provide financial advice.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/trading/
+  __init__.py
+  models.py
+  mt5_adapter.py
+  market_data.py
+  xau_scanner.py
+  funnel_filter.py
+  ai_analysis.py
+  signal_validation.py
+  execution_engine.py
+  trading_service.py
+
+backend/app/api/trading.py
+
+backend/app/tests/
+  test_trading_models.py
+  test_mt5_adapter_mock.py
+  test_xau_scanner.py
+  test_funnel_filter.py
+  test_signal_validation.py
+  test_dry_run_execution.py
+  test_trading_api.py
+
+Update if needed:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/agents/registry.py
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update `.env.example` with:
+
+TRADING_ENABLED=true
+DRY_RUN=true
+LIVE_TRADING_ACK=false
+
+MT5_ENABLED=false
+MT5_LOGIN=
+MT5_PASSWORD=
+MT5_SERVER=
+MT5_PATH=
+
+TRADING_DEFAULT_SYMBOL=XAUUSD
+TRADING_DEFAULT_TIMEFRAME=M5
+TRADING_DEFAULT_STRATEGY=ob_aggressive
+TRADING_MAX_SIGNAL_AGE_SECONDS=300
+
+FUNNEL_FAST_PERIOD=21
+FUNNEL_MEDIUM_PERIOD=10
+FUNNEL_SLOW_PERIOD=3
+
+AI_TRADING_ANALYSIS_ENABLED=true
+AI_TRADING_PROVIDER=mock
+
+Rules:
+- Missing config must fail safely.
+- DRY_RUN must default to true.
+- LIVE_TRADING_ACK must default to false.
+- MT5_ENABLED must default to false.
+- If MT5 is unavailable, use mock market data.
+
+============================================================
+TRADING MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models in:
+
+backend/app/trading/models.py
+
+Models:
+
+1. Candle
+
+Fields:
+- timestamp: datetime
+- open: float
+- high: float
+- low: float
+- close: float
+- volume: float = 0
+
+Validation:
+- open/high/low/close must be positive
+- high >= open, close, low
+- low <= open, close, high
+
+2. TradingSignal
+
+Fields:
+- id: str
+- symbol: str
+- timeframe: str
+- direction: str
+- strategy: str
+- confidence: float
+- entry: float
+- stop_loss: float
+- take_profit: float
+- reason: str
+- metadata: dict
+- created_at: datetime
+
+Allowed directions:
+- buy
+- sell
+- hold
+
+3. SignalValidationResult
+
+Fields:
+- valid: bool
+- reason: str
+- warnings: list[str]
+- signal: TradingSignal | None
+- timestamp: datetime
+
+4. ExecutionRequest
+
+Fields:
+- signal: TradingSignal
+- dry_run: bool = true
+- confirmation: bool = false
+
+5. ExecutionResult
+
+Fields:
+- ok: bool
+- status: str
+- dry_run: bool
+- signal: TradingSignal
+- message: str
+- simulated_order_id: str | None
+- timestamp: datetime
+
+Statuses:
+- simulated
+- blocked_by_config
+- blocked_by_validation
+- failed
+
+6. ScannerResult
+
+Fields:
+- symbol: str
+- timeframe: str
+- candles_analyzed: int
+- latest_signal: TradingSignal | None
+- validation: SignalValidationResult | None
+- ai_summary: str
+- timestamp: datetime
+
+============================================================
+MT5 ADAPTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/mt5_adapter.py
+
+Implement:
+
+MT5Adapter
+
+Methods:
+- is_available() -> bool
+- connect() -> dict
+- get_candles(symbol: str, timeframe: str, limit: int = 300) -> list[Candle]
+- get_account_snapshot() -> dict
+- send_order(signal: TradingSignal) -> ExecutionResult
+
+Rules:
+- If MT5_ENABLED=false, return safe mock mode.
+- If MetaTrader5 package is missing, do not crash.
+- If credentials are missing, do not crash.
+- send_order must block real execution unless DRY_RUN=false AND LIVE_TRADING_ACK=true.
+- In Phase 2, live execution should still be blocked by default.
+- Mock candles must be deterministic enough for tests.
+
+============================================================
+MARKET DATA REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/market_data.py
+
+Implement deterministic mock XAUUSD M5 candles.
+
+Requirements:
+- Generate at least 300 candles.
+- Include trend and pullback patterns.
+- No external API calls.
+- Same input should produce same output.
+- Valid Candle models only.
+
+============================================================
+XAU SCANNER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/xau_scanner.py
+
+Implement:
+
+XAUScanner
+
+Methods:
+- scan(symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult
+- scan_with_candles(candles: list[Candle], symbol: str, timeframe: str) -> ScannerResult
+
+Behavior:
+- Load candles from MT5Adapter or mock data provider.
+- Run Funnel Filter 21/10/3.
+- Generate a candidate signal.
+- Run AI analysis summary.
+- Run signal validation.
+- Return ScannerResult.
+
+============================================================
+FUNNEL FILTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/funnel_filter.py
+
+Implement:
+
+FunnelFilter
+
+Default periods:
+- fast = 21
+- medium = 10
+- slow = 3
+
+Methods:
+- calculate_sma(values: list[float], period: int) -> list[float]
+- evaluate(candles: list[Candle]) -> dict
+- generate_signal(candles: list[Candle], symbol: str, timeframe: str) -> TradingSignal
+
+Simplified signal rules:
+- Buy bias when close > SMA21 and SMA3 > SMA10 > SMA21.
+- Sell bias when close < SMA21 and SMA3 < SMA10 < SMA21.
+- Otherwise hold.
+- Confidence should be between 0 and 1.
+- Stop loss and take profit must be valid.
+- Use recent volatility to calculate SL/TP.
+
+============================================================
+AI ANALYSIS REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/ai_analysis.py
+
+Implement:
+
+TradingAIAnalysis
+
+Methods:
+- summarize_signal(signal: TradingSignal, context: dict | None = None) -> str
+- analyze_scanner_context(candles: list[Candle], signal: TradingSignal) -> str
+
+Rules:
+- Use existing AI adapter if available.
+- Fall back to deterministic mock text.
+- Do not provide financial advice.
+- Include dry-run/simulation disclaimer in analysis.
+
+============================================================
+SIGNAL VALIDATION REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/signal_validation.py
+
+Implement:
+
+SignalValidationService
+
+Methods:
+- validate(signal: TradingSignal) -> SignalValidationResult
+
+Validation rules:
+- symbol must be XAUUSD unless config allows otherwise.
+- timeframe must be M5 unless config allows otherwise.
+- confidence must be 0 <= confidence <= 1.
+- direction must be buy/sell/hold.
+- buy signal: stop_loss < entry < take_profit.
+- sell signal: take_profit < entry < stop_loss.
+- hold signal may skip SL/TP strictness but should not execute.
+- signal must not be older than TRADING_MAX_SIGNAL_AGE_SECONDS.
+
+============================================================
+DRY-RUN EXECUTION REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/execution_engine.py
+
+Implement:
+
+ExecutionEngine
+
+Methods:
+- execute(request: ExecutionRequest) -> ExecutionResult
+
+Rules:
+- Validate the signal before execution.
+- If validation fails, return blocked_by_validation.
+- If direction=hold, return blocked_by_validation.
+- If dry_run=true, simulate only.
+- If dry_run=false, require LIVE_TRADING_ACK=true.
+- If LIVE_TRADING_ACK=false, return blocked_by_config.
+- Do not send real orders in tests.
+- Emit events for simulated/blocked/failed execution.
+
+============================================================
+TRADING SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/trading_service.py
+
+Methods:
+- get_status() -> dict
+- scan_xau(symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult
+- validate_signal(signal: TradingSignal) -> SignalValidationResult
+- dry_run_execute(signal: TradingSignal) -> ExecutionResult
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/trading.py
+
+Endpoints:
+
+1. GET /api/trading/status
+
+Returns:
+- enabled
+- dry_run
+- live_trading_ack
+- mt5_enabled
+- default symbol/timeframe
+
+2. POST /api/trading/scan
+
+Request:
+{
+  "symbol": "XAUUSD",
+  "timeframe": "M5"
+}
+
+Returns:
+- ScannerResult
+
+3. POST /api/trading/validate-signal
+
+Request:
+TradingSignal JSON
+
+Returns:
+- SignalValidationResult
+
+4. POST /api/trading/dry-run-execute
+
+Request:
+{
+  "signal": { ... TradingSignal ... },
+  "dry_run": true,
+  "confirmation": false
+}
+
+Returns:
+- ExecutionResult
+
+All endpoints must use the existing standard response shape.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+- trading.scan.started
+- trading.scan.completed
+- trading.signal.generated
+- trading.signal.validated
+- trading.signal.rejected
+- trading.execution.simulated
+- trading.execution.blocked
+- trading.execution.failed
+- mt5.mock.enabled
+- mt5.connection.failed
+
+Every event must include:
+- id
+- type
+- source
+- message
+- payload
+- created_at
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create tests:
+
+1. test_trading_models.py
+- Candle validation
+- TradingSignal direction validation
+- ExecutionRequest dry_run default
+
+2. test_mt5_adapter_mock.py
+- mock mode works when MT5 disabled
+- missing MetaTrader5 package does not crash
+- mock candles are returned
+
+3. test_xau_scanner.py
+- scan returns ScannerResult
+- result includes latest signal
+- AI summary is present
+
+4. test_funnel_filter.py
+- SMA calculation works
+- buy/sell/hold signals are valid
+- confidence is in range
+
+5. test_signal_validation.py
+- valid buy passes
+- invalid SL/TP fails
+- old signal fails
+- hold signal does not execute
+
+6. test_dry_run_execution.py
+- dry-run execution simulates
+- live execution blocked by config
+- invalid signal blocked
+
+7. test_trading_api.py
+- GET /api/trading/status
+- POST /api/trading/scan
+- POST /api/trading/validate-signal
+- POST /api/trading/dry-run-execute
+
+All tests must pass with:
+
+cd backend
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 2 overview
+- Trading architecture
+- MT5 adapter safety notes
+- XAU scanner behavior
+- Funnel Filter 21/10/3 explanation
+- Dry-run execution behavior
+- API examples
+- Test commands
+- Safety notes
+
+Add curl examples:
+
+Trading status:
+
+curl http://localhost:8000/api/trading/status
+
+Run scan:
+
+curl -X POST http://localhost:8000/api/trading/scan \
+  -H "Content-Type: application/json" \
+  -d '{"symbol":"XAUUSD","timeframe":"M5"}'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 2 is complete only when:
+
+- Trading models exist.
+- MT5 adapter shell exists and safely falls back to mock.
+- Mock market data works.
+- XAU Scanner works.
+- Funnel Filter 21/10/3 works.
+- AI analysis summary works with mock fallback.
+- Signal validation works.
+- Dry-run execution works.
+- Live trading is blocked by default.
+- Trading API endpoints work.
+- Event logs are created.
+- Tests pass.
+- README documents the Phase 2 system.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new file
+3. Full patched code for every updated file
+4. Test files
+5. .env.example updates
+6. README updates
+7. Run instructions
+8. Test instructions
+9. Acceptance checklist
+10. Known limitations
+11. Phase 3 handoff notes
+
+Now generate the complete Phase 2 implementation.

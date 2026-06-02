@@ -1,0 +1,2 @@
+class ScenarioPackService:
+    pass

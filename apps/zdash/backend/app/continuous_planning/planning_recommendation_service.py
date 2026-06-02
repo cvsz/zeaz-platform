@@ -1,0 +1,2 @@
+class PlanningRecommendationService:
+    pass

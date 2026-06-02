@@ -1,0 +1,15 @@
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
+import IncidentCenter from '../pages/IncidentCenter'
+
+describe('IncidentCenter', () => {
+  it('renders incident center heading', () => {
+    render(
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <IncidentCenter />
+      </BrowserRouter>,
+    )
+    expect(screen.getByRole('heading', { name: 'Incidents', level: 1 })).toBeTruthy()
+  })
+})

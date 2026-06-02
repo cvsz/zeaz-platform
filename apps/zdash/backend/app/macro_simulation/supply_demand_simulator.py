@@ -1,0 +1,2 @@
+class SupplyDemandSimulator:
+    pass
