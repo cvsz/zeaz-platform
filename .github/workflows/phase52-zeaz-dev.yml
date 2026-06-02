@@ -1,6 +1,12 @@
 name: Phase 52 zeaz.dev Production Update
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Manual run reason
+        required: false
+        default: manual
   push:
   pull_request:
 

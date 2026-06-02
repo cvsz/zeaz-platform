@@ -44,6 +44,9 @@ SKIP_PARTS = {
 SKIP_PREFIXES = (
     Path(".claude/homunculus"),
     Path(".cache/ecc"),
+    # Imported application workflows are source artifacts, not root repo workflows.
+    # GitHub Actions only executes workflows under the root .github/workflows.
+    Path("apps/zdash/.github/workflows"),
 )
 
 

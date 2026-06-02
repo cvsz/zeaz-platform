@@ -1,6 +1,15 @@
 name: zDash Monorepo Validation
 
+permissions:
+  contents: read
+
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Manual run reason
+        required: false
+        default: manual
   push:
     branches: [main]
   pull_request:
