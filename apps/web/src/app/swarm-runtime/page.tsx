@@ -11,7 +11,7 @@ export default function SwarmRuntimePage() {
   useEffect(() => {
     const fetchStatus = async () => {
       const res = await fetch('http://localhost:8000/api/runtime/swarm/agents');
-      const data = await res.getJson();
+      const data = await res.json();
       setAgents(data);
     };
 
