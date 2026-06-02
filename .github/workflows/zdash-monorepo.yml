@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check apps/zdash exists
         run: |
           test -d apps/zdash || { echo "ERROR: apps/zdash missing"; exit 1; }
