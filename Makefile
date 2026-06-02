@@ -601,6 +601,11 @@ tf-zdash-validate: tf-zdash-init ## Validate zDash Cloudflare Terraform
 tf-zdash-plan: tf-zdash-init ## Plan zDash Cloudflare Terraform
 	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)
 
+.PHONY: tf-zdash-plan-out
+tf-zdash-plan-out: tf-zdash-init ## Save zDash Cloudflare Terraform plan
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan -out=$(TF_PLAN_FILE) $(TF_ARGS)
+	@echo "Saved zDash Terraform plan: $(TF_ZDASH_ROOT)/$(TF_PLAN_FILE)"
+
 .PHONY: tf-zdash-apply
 tf-zdash-apply: ## Guarded zDash Terraform apply
 	@test "$${APPLY:-false}" = "true" || (echo "ERROR: APPLY=true required"; exit 1)

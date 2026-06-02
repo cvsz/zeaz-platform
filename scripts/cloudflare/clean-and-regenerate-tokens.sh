@@ -11,6 +11,7 @@ TOKEN_QUOTA="${TOKEN_QUOTA:-50}"
 PRESERVE_TOKEN_NAME_REGEX="${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$)}"
 
 NAME_FILTER=""
+NAME_REGEX_FILTER=""
 UNUSED_DAYS=0
 KEEP_MOST=1
 DO_BACKUP=false
@@ -28,6 +29,7 @@ Usage: CLOUDFLARE_ACCOUNT_ID=<id> CLOUDFLARE_BOOTSTRAP_TOKEN=<token> $0 [options
 
 Cleaning:
   --name <token-name>    Restrict cleanup to an exact token name
+  --name-regex <regex>   Restrict cleanup to token names matching regex
   --unused-days <N>      Revoke tokens inactive for more than N days; 0 disables
   --keep-most <N>        Keep N newest tokens per name; revoke older duplicates
 
@@ -55,6 +57,7 @@ USAGE
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --name) shift; NAME_FILTER="${1:-}"; shift || true ;;
+    --name-regex) shift; NAME_REGEX_FILTER="${1:-}"; shift || true ;;
     --unused-days) shift; UNUSED_DAYS="${1:-0}"; shift || true ;;
     --keep-most) shift; KEEP_MOST="${1:-1}"; shift || true ;;
     --backup) DO_BACKUP=true; shift ;;
@@ -231,6 +234,7 @@ for line in "${ALL_TOKENS[@]}"; do
   IFS=$'\t' read -r id name created last_used <<< "$line"
   [[ -z "$id" ]] && continue
   [[ -n "$NAME_FILTER" && "$name" != "$NAME_FILTER" ]] && continue
+  [[ -n "$NAME_REGEX_FILTER" && ! "$name" =~ $NAME_REGEX_FILTER ]] && continue
   if [[ -n "$name" ]] && [[ "$name" =~ $PRESERVE_TOKEN_NAME_REGEX ]]; then
     log "preserving token from cleanup by name policy: $name"
     continue
