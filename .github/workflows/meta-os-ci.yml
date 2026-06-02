@@ -14,6 +14,7 @@ jobs:
   meta-os-ci:
     name: Meta OS CI
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     env:
       APPLY: "false"
