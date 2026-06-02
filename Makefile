@@ -25,7 +25,7 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
-.PHONY: help bootstrap cloudflare-stability-check setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
+.PHONY: help bootstrap cloudflare-stability-check setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-clean-delete token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
 
 help:
 	@bash scripts/make-help.sh
@@ -168,7 +168,13 @@ drift-detect: tf-init
 	@set +e; bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -detailed-exitcode -out=tfplan.drift $(TF_ARGS); rc=$$?; set -e; case "$$rc" in 0) echo "No drift detected." ;; 2) echo "WARN: drift detected. Saved plan: $(TF_ROOT)/tfplan.drift"; exit 2 ;; *) echo "ERROR: drift check failed rc=$$rc"; exit "$$rc" ;; esac
 
 token-clean:
-	@bash scripts/cloudflare/run-token-rotation.sh --dry-run --keep-most 1 --unused-days 90 || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
+	@bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"} || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
+
+token-clean-delete:
+	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
+	@test -n "$${CLOUDFLARE_ACCOUNT_ID:-}" || (echo "ERROR: CLOUDFLARE_ACCOUNT_ID is required"; exit 1)
+	@test -n "$${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" || (echo "ERROR: CLOUDFLARE_BOOTSTRAP_TOKEN is required"; exit 1)
+	@bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"}
 
 token-verify:
 	@bash scripts/cloudflare/verify-token-env.sh || { echo "WARN: token verification failed; use make token-verify-strict when a hard failure is required"; true; }
@@ -547,6 +553,21 @@ authentik-update: authentik-env
 authentik-open:
 	@echo "Open: http://localhost:$(AUTHENTIK_HTTP_PORT)"
 
+# =============================================================================
+# zDash Cloudflare Terraform Integration
+# =============================================================================
+
+.PHONY: zdash-terraform-integrate
+zdash-terraform-integrate: ## Generate zDash Terraform source files
+	@bash scripts/cloudflare/zdash-terraform-integrate.sh
+
+.PHONY: cf-zdash-preflight
+cf-zdash-preflight: ## Resolve Cloudflare zone/tunnel/DNS IDs for zDash
+	@bash scripts/cloudflare/zdash-cloudflare-preflight.sh
+
+.PHONY: cf-zdash-import-existing
+cf-zdash-import-existing: ## Import existing zDash DNS records into Terraform state
+	@bash scripts/cloudflare/zdash-terraform-import-existing.sh
 
 .PHONY: tf-zdash-init
 tf-zdash-init: ## Init zDash Cloudflare Terraform
@@ -568,10 +589,6 @@ tf-zdash-validate: tf-zdash-init ## Validate zDash Cloudflare Terraform
 tf-zdash-plan: tf-zdash-init ## Plan zDash Cloudflare Terraform
 	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)
 
-.PHONY: tf-zdash-plan-out
-tf-zdash-plan-out: tf-zdash-init ## Save zDash Cloudflare Terraform plan
-	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan -out=$(TF_PLAN_FILE) $(TF_ARGS)
-
 .PHONY: tf-zdash-apply
 tf-zdash-apply: ## Guarded zDash Terraform apply
 	@test "$${APPLY:-false}" = "true" || (echo "ERROR: APPLY=true required"; exit 1)
@@ -579,3 +596,4 @@ tf-zdash-apply: ## Guarded zDash Terraform apply
 	@test "$${COST_LOCK:-true}" = "true" || (echo "ERROR: COST_LOCK=true required"; exit 1)
 	@test "$${ALLOW_PAID_CLOUDFLARE_FEATURES:-false}" = "false" || (echo "ERROR: paid Cloudflare features must stay disabled"; exit 1)
 	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
+
