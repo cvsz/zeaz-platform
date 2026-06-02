@@ -35,8 +35,22 @@ if [[ ! -d "${ZDASH_DIR}/frontend/node_modules" ]]; then
   )
 fi
 
-echo "=== running apps/zdash make validate-fast ==="
+echo "=== running apps/zdash make validate-fast with isolated test env ==="
 (
   cd "${ZDASH_DIR}"
-  make validate-fast
+
+  env \
+    APP_ENV=test \
+    ENVIRONMENT=test \
+    DATABASE_URL=sqlite:///./test.db \
+    DRY_RUN=true \
+    LIVE_TRADING_ACK=false \
+    MT5_ENABLED=false \
+    PRODUCTION_ALLOW_LIVE_ACTIONS=false \
+    BILLING_PROVIDER=mock \
+    BILLING_ENABLED=true \
+    BILLING_FAIL_CLOSED=false \
+    SOCIAL_DRY_RUN=true \
+    SOCIAL_APPROVAL_REQUIRED=true \
+    make validate-fast
 )
