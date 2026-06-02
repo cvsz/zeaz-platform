@@ -13,7 +13,7 @@ TF_ARGS ?=
 COMMIT_MSG ?=
 GIT_REMOTE ?= origin
 GIT_BRANCH ?=
-GPG_LOOPBACK ?= bash gpg-loopback.sh
+GPG_LOOPBACK ?= GPG_ENV_FILE="$(PROJECT_ROOT)/.env" bash apps/zdash/scripts/git/gpg-loopback.sh
 
 TF_ROOT := terraform
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
@@ -226,7 +226,7 @@ git-status:
 
 gpg-commit:
 	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
-	@test -f gpg-loopback.sh || (echo "ERROR: gpg-loopback.sh not found" && exit 1)
+	@test -f apps/zdash/scripts/git/gpg-loopback.sh || (echo "ERROR: apps/zdash/scripts/git/gpg-loopback.sh not found" && exit 1)
 	@if git diff --cached --quiet; then echo "ERROR: no staged changes. Stage intended files first."; exit 1; fi
 	@if git diff --cached --name-only | grep -E '^(\.env|\.env\.cloudflare|\.wrangler/|\.terraform/|.*\.tfstate|.*\.tfvars)$$' >/dev/null; then echo "ERROR: refusing to commit env/cache/state files"; git diff --cached --name-only; exit 1; fi
 	@$(GPG_LOOPBACK) commit -m "$(COMMIT_MSG)"
@@ -311,7 +311,7 @@ zdash-validate-fast: ## Run zDash validate-fast with dependency bootstrap
 .PHONY: zdash-backend-test
 zdash-backend-test: ## Run zDash backend tests (apps/zdash)
 	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
-	@$(MAKE) -C apps/zdash backend-test
+	@cd apps/zdash && env APP_ENV=test ENVIRONMENT=test DATABASE_URL=sqlite:///./test.db DRY_RUN=true LIVE_TRADING_ACK=false MT5_ENABLED=false PRODUCTION_ALLOW_LIVE_ACTIONS=false $(MAKE) backend-test
 
 .PHONY: zdash-frontend-test
 zdash-frontend-test: ## Run zDash frontend tests (apps/zdash)
@@ -346,7 +346,7 @@ zdash-server-status: ## Show zDash server status (apps/zdash)
 .PHONY: zdash-validate
 zdash-validate: ## Run full zDash validation (apps/zdash)
 	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
-	@$(MAKE) -C apps/zdash validate
+	@cd apps/zdash && env APP_ENV=test ENVIRONMENT=test DATABASE_URL=sqlite:///./test.db DRY_RUN=true LIVE_TRADING_ACK=false MT5_ENABLED=false PRODUCTION_ALLOW_LIVE_ACTIONS=false $(MAKE) validate
 
 .PHONY: zdash-release-evidence
 zdash-release-evidence: ## Collect zDash release evidence (apps/zdash)
@@ -356,7 +356,7 @@ zdash-release-evidence: ## Collect zDash release evidence (apps/zdash)
 .PHONY: zdash-phase48-validate
 zdash-phase48-validate: ## Run zDash Phase 48 validation (apps/zdash)
 	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
-	@$(MAKE) -C apps/zdash phase48-validate
+	@cd apps/zdash && env APP_ENV=test ENVIRONMENT=test DATABASE_URL=sqlite:///./test.db DRY_RUN=true LIVE_TRADING_ACK=false MT5_ENABLED=false PRODUCTION_ALLOW_LIVE_ACTIONS=false $(MAKE) phase48-validate
 
 .PHONY: zdash-cloudflare-handoff
 zdash-cloudflare-handoff: ## Run zDash Cloudflare handoff checks
