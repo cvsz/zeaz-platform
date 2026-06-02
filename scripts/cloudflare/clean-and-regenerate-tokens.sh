@@ -8,7 +8,7 @@ BACKUP_DIR="${BACKUP_DIR:-./.cloudflare-backups}"
 CACHE_DIR="${CACHE_DIR:-./.cache/cloudflare-permissions}"
 DEFAULT_OUT="${DEFAULT_OUT:-.env.cloudflare}"
 TOKEN_QUOTA="${TOKEN_QUOTA:-50}"
-PRESERVE_TOKEN_NAME_REGEX="${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap)([-_]|$)}"
+PRESERVE_TOKEN_NAME_REGEX="${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$)}"
 
 NAME_FILTER=""
 UNUSED_DAYS=0

@@ -25,7 +25,7 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
-.PHONY: help bootstrap cloudflare-stability-check setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-clean-delete token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
+.PHONY: help bootstrap cloudflare-stability-check setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-clean-delete token-clean-all token-clean-all-delete token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
 
 help:
 	@bash scripts/make-help.sh
@@ -175,6 +175,14 @@ token-clean-delete:
 	@test -n "$${CLOUDFLARE_ACCOUNT_ID:-}" || (echo "ERROR: CLOUDFLARE_ACCOUNT_ID is required"; exit 1)
 	@test -n "$${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" || (echo "ERROR: CLOUDFLARE_BOOTSTRAP_TOKEN is required"; exit 1)
 	@bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"}
+
+
+token-clean-all:
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$$)}" bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most 0 --unused-days 0
+
+token-clean-all-delete:
+	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$$)}" bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most 0 --unused-days 0
 
 token-verify:
 	@bash scripts/cloudflare/verify-token-env.sh || { echo "WARN: token verification failed; use make token-verify-strict when a hard failure is required"; true; }
