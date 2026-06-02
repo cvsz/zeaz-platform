@@ -4,13 +4,26 @@ import React, { useEffect, useState } from 'react';
 import { TopologyGraph } from '@/components/TopologyGraph';
 import { motion } from 'framer-motion';
 import { Activity, Zap, Shield, Database } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
+
+type ProviderStatus = {
+  state: string;
+};
+
+type RuntimeMetrics = {
+  global_usage?: number;
+  global_quota?: number;
+  provider_usage?: Record<string, number>;
+};
 
 export default function LLMRuntimePage() {
-  const [topology, setTopology] = useState({});
-  const [metrics, setMetrics] = useState<any>(null);
+  const [topology, setTopology] = useState<Record<string, ProviderStatus>>({});
+  const [metrics, setMetrics] = useState<RuntimeMetrics | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8000/api/runtime/llm/ws/topology');
+    const apiUrl = new URL(getApiUrl('/api/runtime/llm/ws/topology'));
+    apiUrl.protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(apiUrl.toString());
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'FULL') {
@@ -19,11 +32,18 @@ export default function LLMRuntimePage() {
       } else if (data.type === 'DELTA') {
         setTopology(prev => ({ ...prev, ...data.data.topology }));
         if (data.data.metrics) {
-          setMetrics((prev: any) => ({ ...prev, ...data.data.metrics }));
+          setMetrics((prev) => ({ ...(prev ?? {}), ...data.data.metrics }));
         }
       }
     };
-    return () => ws.close();
+    const globalUsage = metrics?.global_usage ?? 0;
+  const globalQuota = metrics?.global_quota ?? 0;
+  const globalUsagePct =
+    globalQuota > 0
+      ? Math.min(100, Math.max(0, (globalUsage / globalQuota) * 100))
+      : 0;
+
+  return () => ws.close();
   }, []);
 
   return (
@@ -74,13 +94,13 @@ export default function LLMRuntimePage() {
                 <div className="w-full bg-slate-700 h-1.5 mt-3 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${(metrics?.global_usage / metrics?.global_quota) * 100 || 0}%` }}
+                    animate={{ width: `${globalUsagePct}%` }}
                     className="h-full bg-blue-500"
                   />
                 </div>
               </div>
 
-              {metrics?.provider_usage && Object.entries(metrics.provider_usage).map(([id, usage]: any) => (
+              {metrics?.provider_usage && Object.entries(metrics.provider_usage).map(([id, usage]) => (
                 <div key={id} className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium text-slate-300">{id}</span>
@@ -100,7 +120,7 @@ export default function LLMRuntimePage() {
               Provider Health Quorum
             </h2>
             <div className="space-y-3">
-              {Object.entries(topology).map(([id, status]: any) => (
+              {Object.entries(topology).map(([id, status]) => (
                 <div key={id} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${status.state === 'HEALTHY' ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
