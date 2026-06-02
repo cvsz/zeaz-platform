@@ -70,3 +70,7 @@ Thumbs.db
 # local Cloudflare / Wrangler secret caches
 .wrangler/
 cloudflare-platform/.cloudflare-token-audit.log
+
+# Keep required phase validation evidence tracked
+!docs/reports/PHASE51_ZDASH_MONOREPO_IMPORT_REPORT.md
+!docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md
