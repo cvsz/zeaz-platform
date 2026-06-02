@@ -1,39 +1,3 @@
-terraform {
-  required_providers {
-    cloudflare = {
-      source = "cloudflare/cloudflare"
-    }
-  }
-}
-
-variable "cloudflare_zone_id" {
-  description = "Cloudflare zone ID for zeaz.dev"
-  type        = string
-}
-
-variable "cloudflare_tunnel_id" {
-  description = "Cloudflare Tunnel UUID for zeaz.dev"
-  type        = string
-}
-
-variable "zdash_domain" {
-  description = "Primary zDash frontend hostname"
-  type        = string
-  default     = "zdash.zeaz.dev"
-}
-
-variable "zdash_api_domain" {
-  description = "zDash API hostname. Existing Cloudflare route currently uses api-zdash.zeaz.dev."
-  type        = string
-  default     = "api-zdash.zeaz.dev"
-}
-
-variable "zdash_release_domain" {
-  description = "Optional public release evidence hostname"
-  type        = string
-  default     = "release.zeaz.dev"
-}
-
 locals {
   tunnel_target = "${var.cloudflare_tunnel_id}.cfargotunnel.com"
 
