@@ -17,10 +17,19 @@ else
   npm install --include=optional --no-audit --fund=false
 fi
 
-POSTCSS_VERSION="$(node -p "require('@tailwindcss/postcss/package.json').version")"
+TAILWIND_POSTCSS_VERSION="$(
+  node - <<'NODE'
+const fs = require("node:fs");
+const path = require("node:path");
+
+const pkgPath = path.join(process.cwd(), "node_modules", "@tailwindcss", "postcss", "package.json");
+const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+console.log(pkg.version);
+NODE
+)"
 
 if ! node -e "require('@tailwindcss/oxide-linux-x64-gnu')" >/dev/null 2>&1; then
-  npm install -D "@tailwindcss/oxide-linux-x64-gnu@$POSTCSS_VERSION" --include=optional --no-audit --fund=false
+  npm install -D "@tailwindcss/oxide-linux-x64-gnu@${TAILWIND_POSTCSS_VERSION}" --include=optional --no-audit --fund=false
 fi
 
 if ! node -e "require('tailwindcss-animate')" >/dev/null 2>&1; then
