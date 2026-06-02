@@ -168,7 +168,7 @@ drift-detect: tf-init
 	@set +e; bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -detailed-exitcode -out=tfplan.drift $(TF_ARGS); rc=$$?; set -e; case "$$rc" in 0) echo "No drift detected." ;; 2) echo "WARN: drift detected. Saved plan: $(TF_ROOT)/tfplan.drift"; exit 2 ;; *) echo "ERROR: drift check failed rc=$$rc"; exit "$$rc" ;; esac
 
 token-clean:
-	@bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"} || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
+	@bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"} $${TOKEN_NAME_REGEX:+--name-regex "$${TOKEN_NAME_REGEX}"} || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
 
 token-clean-delete:
 	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
@@ -565,6 +565,10 @@ authentik-open:
 # zDash Cloudflare Terraform Integration
 # =============================================================================
 
+# =============================================================================
+# zDash Cloudflare Terraform Integration
+# =============================================================================
+
 .PHONY: zdash-terraform-integrate
 zdash-terraform-integrate: ## Generate zDash Terraform source files
 	@bash scripts/cloudflare/zdash-terraform-integrate.sh
@@ -591,11 +595,11 @@ tf-zdash-fmt-check: ## Check zDash Cloudflare Terraform formatting
 
 .PHONY: tf-zdash-validate
 tf-zdash-validate: tf-zdash-init ## Validate zDash Cloudflare Terraform
-	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) validate
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) validate
 
 .PHONY: tf-zdash-plan
 tf-zdash-plan: tf-zdash-init ## Plan zDash Cloudflare Terraform
-	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)
 
 .PHONY: tf-zdash-apply
 tf-zdash-apply: ## Guarded zDash Terraform apply
@@ -603,5 +607,10 @@ tf-zdash-apply: ## Guarded zDash Terraform apply
 	@test "$${CONFIRM_TERRAFORM_APPLY:-no}" = "yes" || (echo "ERROR: CONFIRM_TERRAFORM_APPLY=yes required"; exit 1)
 	@test "$${COST_LOCK:-true}" = "true" || (echo "ERROR: COST_LOCK=true required"; exit 1)
 	@test "$${ALLOW_PAID_CLOUDFLARE_FEATURES:-false}" = "false" || (echo "ERROR: paid Cloudflare features must stay disabled"; exit 1)
-	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
 
+
+
+.PHONY: cf-zdash-token-diagnose
+cf-zdash-token-diagnose: ## Diagnose Cloudflare token permissions for zDash
+	@bash scripts/cloudflare/zdash-cloudflare-token-diagnose.sh

@@ -19,22 +19,42 @@ cf_cost_lock_check
 cf_require_tools
 cf_require_token
 
-zone_id="${TF_VAR_cloudflare_zone_id:-}"
-if [[ -z "$zone_id" || "$zone_id" == REPLACE_* ]]; then
-  zone_id="$(cf_zone_id_by_name "$ZONE_NAME")"
+echo "=== zDash Cloudflare API preflight ==="
+
+zone_id="${TF_VAR_cloudflare_zone_id:-${CLOUDFLARE_ZONE_ID:-}}"
+
+if [[ -n "$zone_id" && "$zone_id" != REPLACE_* ]]; then
+  cf_validate_zone_id "$zone_id"
+  echo "Using supplied Cloudflare zone id for ${ZONE_NAME}"
+
+  tmp="$(mktemp)"
+  if ! cf_api GET "/zones/${zone_id}" >"$tmp"; then
+    rm -f "$tmp"
+    cf_fail "token cannot read supplied zone id. Required: Zone/Zone Read on zeaz.dev"
+  fi
+
+  zone_name_from_api="$(jq -r '.result.name // empty' "$tmp")"
+  rm -f "$tmp"
+
+  if [[ "$zone_name_from_api" != "$ZONE_NAME" ]]; then
+    cf_fail "supplied zone id does not match ${ZONE_NAME}; got ${zone_name_from_api:-empty}"
+  fi
+else
+  echo "No zone id supplied; trying zone lookup by name"
+  zone_id="$(cf_zone_id_by_name "$ZONE_NAME" || true)"
+  [[ -n "$zone_id" ]] || cf_fail "could not resolve zone id for ${ZONE_NAME}; set CLOUDFLARE_ZONE_ID or TF_VAR_cloudflare_zone_id"
+  cf_validate_zone_id "$zone_id"
 fi
 
-[[ -n "$zone_id" ]] || cf_fail "could not resolve zone id for ${ZONE_NAME}"
-cf_validate_zone_id "$zone_id"
+tunnel_id="${TF_VAR_cloudflare_tunnel_id:-${CLOUDFLARE_TUNNEL_ID:-}}"
 
-tunnel_id="${TF_VAR_cloudflare_tunnel_id:-}"
 if [[ -z "$tunnel_id" || "$tunnel_id" == REPLACE_* ]]; then
   if command -v cloudflared >/dev/null 2>&1; then
     tunnel_id="$(cloudflared tunnel list 2>/dev/null | awk 'NR>1 && $1 ~ /^[0-9a-fA-F-]{36}$/ {print $1; exit}' || true)"
   fi
 fi
 
-[[ -n "$tunnel_id" ]] || cf_fail "could not resolve tunnel UUID; set TF_VAR_cloudflare_tunnel_id"
+[[ -n "$tunnel_id" ]] || cf_fail "could not resolve tunnel UUID; set CLOUDFLARE_TUNNEL_ID or TF_VAR_cloudflare_tunnel_id"
 cf_validate_tunnel_uuid "$tunnel_id"
 
 frontend_id="$(cf_dns_record_id "$zone_id" "$ZDASH_FRONTEND_HOST" || true)"
