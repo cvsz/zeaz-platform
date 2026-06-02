@@ -16,6 +16,7 @@ GIT_BRANCH ?=
 GPG_LOOPBACK ?= GPG_ENV_FILE="$(PROJECT_ROOT)/.env" bash apps/zdash/scripts/git/gpg-loopback.sh
 
 TF_ROOT := terraform
+TF_ZDASH_ROOT := terraform/zdash
 TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
 TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
 PYTEST := $(VENV_DIR)/bin/pytest
@@ -486,3 +487,95 @@ phase52-validate: ## Validate Phase 52 zeaz.dev production routing update
 
 cloudflare-stability-check: ## Run full Cloudflare stability checks
 	@bash scripts/cloudflare/cloudflare-stability-check.sh
+
+# -------------------------------------------------------------------
+# Authentik local runtime
+# -------------------------------------------------------------------
+AUTHENTIK_DIR ?= runtime/authentik
+AUTHENTIK_COMPOSE ?= $(AUTHENTIK_DIR)/compose.yml
+AUTHENTIK_ENV ?= $(AUTHENTIK_DIR)/.env
+AUTHENTIK_HTTP_PORT ?= 9000
+AUTHENTIK_HTTPS_PORT ?= 9443
+
+.PHONY: authentik-env authentik-install authentik-pull authentik-up authentik-start authentik-down authentik-stop authentik-restart authentik-status authentik-logs authentik-update authentik-open
+
+authentik-env:
+	@mkdir -p "$(AUTHENTIK_DIR)"
+	@chmod 700 "$(AUTHENTIK_DIR)"
+	@if [ ! -f "$(AUTHENTIK_ENV)" ]; then \
+		echo "PG_PASS=$$(openssl rand -base64 36 | tr -d '\n')" > "$(AUTHENTIK_ENV)"; \
+		echo "AUTHENTIK_SECRET_KEY=$$(openssl rand -base64 60 | tr -d '\n')" >> "$(AUTHENTIK_ENV)"; \
+		echo "COMPOSE_PORT_HTTP=$(AUTHENTIK_HTTP_PORT)" >> "$(AUTHENTIK_ENV)"; \
+		echo "COMPOSE_PORT_HTTPS=$(AUTHENTIK_HTTPS_PORT)" >> "$(AUTHENTIK_ENV)"; \
+		echo "AUTHENTIK_ERROR_REPORTING__ENABLED=false" >> "$(AUTHENTIK_ENV)"; \
+		chmod 600 "$(AUTHENTIK_ENV)"; \
+		echo "Created $(AUTHENTIK_ENV)"; \
+	else \
+		echo "$(AUTHENTIK_ENV) already exists; preserving secrets"; \
+	fi
+
+authentik-install: authentik-env
+	@curl -fsSLo "$(AUTHENTIK_COMPOSE)" https://docs.goauthentik.io/compose.yml
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" pull
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" up -d
+	@echo "Authentik started: http://localhost:$(AUTHENTIK_HTTP_PORT)"
+
+authentik-pull:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" pull
+
+authentik-up authentik-start:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" up -d
+	@echo "Authentik: http://localhost:$(AUTHENTIK_HTTP_PORT)"
+
+authentik-down authentik-stop:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" down
+
+authentik-restart:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" restart
+
+authentik-status:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" ps
+
+authentik-logs:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" logs -f
+
+authentik-update: authentik-env
+	@curl -fsSLo "$(AUTHENTIK_COMPOSE)" https://docs.goauthentik.io/compose.yml
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" pull
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" up -d
+
+authentik-open:
+	@echo "Open: http://localhost:$(AUTHENTIK_HTTP_PORT)"
+
+
+.PHONY: tf-zdash-init
+tf-zdash-init: ## Init zDash Cloudflare Terraform
+	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) init $(TF_ARGS)
+
+.PHONY: tf-zdash-fmt
+tf-zdash-fmt: ## Format zDash Cloudflare Terraform
+	@$(TF_BIN) fmt -recursive $(TF_ZDASH_ROOT)
+
+.PHONY: tf-zdash-fmt-check
+tf-zdash-fmt-check: ## Check zDash Cloudflare Terraform formatting
+	@$(TF_BIN) fmt -check -recursive $(TF_ZDASH_ROOT)
+
+.PHONY: tf-zdash-validate
+tf-zdash-validate: tf-zdash-init ## Validate zDash Cloudflare Terraform
+	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) validate
+
+.PHONY: tf-zdash-plan
+tf-zdash-plan: tf-zdash-init ## Plan zDash Cloudflare Terraform
+	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)
+
+.PHONY: tf-zdash-plan-out
+tf-zdash-plan-out: tf-zdash-init ## Save zDash Cloudflare Terraform plan
+	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan -out=$(TF_PLAN_FILE) $(TF_ARGS)
+
+.PHONY: tf-zdash-apply
+tf-zdash-apply: ## Guarded zDash Terraform apply
+	@test "$${APPLY:-false}" = "true" || (echo "ERROR: APPLY=true required"; exit 1)
+	@test "$${CONFIRM_TERRAFORM_APPLY:-no}" = "yes" || (echo "ERROR: CONFIRM_TERRAFORM_APPLY=yes required"; exit 1)
+	@test "$${COST_LOCK:-true}" = "true" || (echo "ERROR: COST_LOCK=true required"; exit 1)
+	@test "$${ALLOW_PAID_CLOUDFLARE_FEATURES:-false}" = "false" || (echo "ERROR: paid Cloudflare features must stay disabled"; exit 1)
+	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
