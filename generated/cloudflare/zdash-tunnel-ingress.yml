@@ -1,0 +1,20 @@
+# zDash Tunnel Ingress Config — generated reference
+# Source: configs/cloudflare/zdash/zdash.edge.routes.example.json
+# Status: dry-run reference, not applied
+# Apply: requires CONFIRM_DEPLOY=yes
+
+ingress:
+  - hostname: zdash.zeaz.dev
+    service: http://localhost:5173
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  - hostname: zdash-api.zeaz.dev
+    service: http://localhost:8005
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  # Default catch-all — block if not matched
+  - service: http_status:403

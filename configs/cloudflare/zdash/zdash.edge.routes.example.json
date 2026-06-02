@@ -1,0 +1,24 @@
+{
+  "description": "zDash edge route config — dry-run only",
+  "zone": "zeaz.dev",
+  "hostnames": [
+    {
+      "name": "zdash.zeaz.dev",
+      "purpose": "zDash public dashboard (frontend)",
+      "origin": "http://localhost:5173",
+      "tunnel": true,
+      "access_policy": "admin-only-recommended",
+      "tls": "strict"
+    },
+    {
+      "name": "zdash-api.zeaz.dev",
+      "purpose": "zDash API backend",
+      "origin": "http://localhost:8005",
+      "tunnel": true,
+      "access_policy": "admin-only-recommended",
+      "tls": "strict"
+    }
+  ],
+  "cost_lock": true,
+  "apply_required": "CONFIRM_DEPLOY=yes"
+}

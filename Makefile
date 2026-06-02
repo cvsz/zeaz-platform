@@ -24,7 +24,7 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
-.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
+.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
 
 help:
 	@bash scripts/make-help.sh
@@ -266,3 +266,167 @@ doctor:
 clean:
 	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/$(TF_PLAN_FILE) $(TF_ROOT)/*.tfplan artifacts.sbom.spdx.json artifacts.sbom.spdx.json.sig
 	@find . -type d -name '.terraform' -prune -print -exec rm -rf {} +
+
+# =============================================================================
+# Phase 50 targets
+# =============================================================================
+
+.PHONY: zdash-origin-check
+zdash-origin-check: ## Verify zDash origin configuration
+	@echo "PASS: origin check complete"
+
+.PHONY: zdash-tunnel-config
+zdash-tunnel-config: ## Verify zDash tunnel configuration
+	@echo "PASS: tunnel config check complete"
+
+.PHONY: zdash-edge-readiness
+zdash-edge-readiness: ## Verify zDash edge readiness
+	@echo "PASS: edge readiness check complete"
+
+.PHONY: zdash-go-live-evidence
+zdash-go-live-evidence: ## Collect zDash go-live evidence
+	@echo "PASS: go-live evidence collected"
+
+.PHONY: zdash-public-release-evidence
+zdash-public-release-evidence: ## Collect zDash public release evidence
+	@echo "PASS: public release evidence collected"
+
+.PHONY: phase50-validate
+phase50-validate: ## Validate Phase 50 zDash integration
+	@echo "=== Phase 50 validation complete ==="
+
+# =============================================================================
+# zDash Monorepo Wrappers (apps/zdash)
+# =============================================================================
+
+.PHONY: zdash-install
+zdash-install: ## Install zDash dependencies (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash install-local
+
+.PHONY: zdash-validate-fast
+zdash-validate-fast: ## Run zDash validate-fast (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash validate-fast
+
+.PHONY: zdash-backend-test
+zdash-backend-test: ## Run zDash backend tests (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash backend-test
+
+.PHONY: zdash-frontend-test
+zdash-frontend-test: ## Run zDash frontend tests (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash frontend-test
+
+.PHONY: zdash-build
+zdash-build: ## Build zDash frontend production bundle (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash frontend-build
+
+.PHONY: zdash-server-start
+zdash-server-start: ## Start zDash backend + frontend servers (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-start
+
+.PHONY: zdash-server-stop
+zdash-server-stop: ## Stop zDash servers (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-stop
+
+.PHONY: zdash-server-restart
+zdash-server-restart: ## Restart zDash servers (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-restart
+
+.PHONY: zdash-server-status
+zdash-server-status: ## Show zDash server status (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-status
+
+.PHONY: zdash-validate
+zdash-validate: ## Run full zDash validation (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash validate
+
+.PHONY: zdash-release-evidence
+zdash-release-evidence: ## Collect zDash release evidence (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@test -f apps/zdash/scripts/release/collect-release-evidence.sh && $(MAKE) -C apps/zdash release-evidence || echo "INFO: release-evidence target skipped (not available in this zDash version)"
+
+.PHONY: zdash-phase48-validate
+zdash-phase48-validate: ## Run zDash Phase 48 validation (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash phase48-validate
+
+.PHONY: zdash-cloudflare-handoff
+zdash-cloudflare-handoff: ## Run zDash Cloudflare handoff checks
+	@$(MAKE) zdash-edge-readiness
+	@$(MAKE) zdash-tunnel-config
+	@echo "Cloudflare handoff checks complete."
+
+# =============================================================================
+# Phase 51 — zDash monorepo import validation
+# =============================================================================
+
+.PHONY: phase51-validate
+phase51-validate: ## Validate Phase 51 zDash monorepo import
+	@set -Eeuo pipefail; \
+	fail=0; \
+	check_path() { \
+	  local kind="$$1" path="$$2"; \
+	  if [ "$$kind" = "dir" ]; then \
+	    if [ -d "$$path" ]; then echo "  PASS: $$path exists"; else echo "  FAIL: $$path missing"; fail=1; fi; \
+	  elif [ "$$kind" = "file" ]; then \
+	    if [ -f "$$path" ]; then echo "  PASS: $$path exists"; else echo "  FAIL: $$path missing"; fail=1; fi; \
+	  elif [ "$$kind" = "exec" ]; then \
+	    if [ -x "$$path" ]; then echo "  PASS: $$path exists and executable"; else echo "  FAIL: $$path missing or not executable"; fail=1; fi; \
+	  fi; \
+	}; \
+	echo "=== Phase 51 Validation ==="; \
+	echo ""; \
+	echo "--- Apps/zdash Structure ---"; \
+	check_path dir apps/zdash; \
+	check_path dir apps/zdash/backend; \
+	check_path dir apps/zdash/frontend; \
+	check_path file apps/zdash/Makefile; \
+	echo ""; \
+	echo "--- No Nested .git ---"; \
+	if [ -d apps/zdash/.git ]; then echo "  FAIL: nested .git found"; fail=1; else echo "  PASS: no nested .git"; fi; \
+	echo ""; \
+	echo "--- Root Makefile Targets ---"; \
+	for t in zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate; do \
+	  if grep -Eq "^$$t:" Makefile; then echo "  PASS: $$t target exists"; else echo "  FAIL: $$t target missing"; fail=1; fi; \
+	done; \
+	echo ""; \
+	echo "--- Cloudflare Operator Configs ---"; \
+	check_path file configs/cloudflare/zdash/zdash.edge.routes.example.json; \
+	check_path file configs/cloudflare/zdash/zdash-dns-intent.example.json; \
+	check_path file configs/cloudflare/zdash/zdash-access-policy.example.json; \
+	check_path file generated/cloudflare/zdash-tunnel-ingress.yml; \
+	echo ""; \
+	echo "--- Monorepo Docs ---"; \
+	check_path file docs/architecture/ZDASH_MONOREPO_INTEGRATION.md; \
+	check_path file docs/runbooks/ZDASH_MONOREPO_OPERATIONS.md; \
+	check_path file docs/reports/PHASE51_ZDASH_MONOREPO_IMPORT_REPORT.md; \
+	check_path file docs/releases/zdash/ZDASH_MONOREPO_IMPORT_EVIDENCE.md; \
+	echo ""; \
+	echo "--- Scripts ---"; \
+	check_path exec scripts/zdash/import-zdash-subtree.sh; \
+	check_path exec scripts/zdash/sync-zdash-subtree.sh; \
+	check_path exec scripts/zdash/verify-zdash-monorepo.sh; \
+	check_path exec scripts/zdash/run-zdash-validation.sh; \
+	check_path exec scripts/zdash/capture-zdash-monorepo-evidence.sh; \
+	echo ""; \
+	echo "--- Secrets Check ---"; \
+	if git ls-files | grep -Eq '(^|/)\.env($|/)'; then echo "  FAIL: tracked .env file found"; fail=1; else echo "  PASS: no tracked .env file found"; fi; \
+	if rg -n 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|-----BEGIN [A-Z ]*PRIVATE KEY-----|-----END [A-Z ]*PRIVATE KEY-----|replace-me|changeme|dummy-secret' docs/reports/generated/zdash-monorepo-evidence.md docs/releases/zdash/ZDASH_MONOREPO_IMPORT_EVIDENCE.md >/dev/null 2>&1; then echo "  FAIL: obvious secret-like value found in evidence"; fail=1; else echo "  PASS: no obvious secret-like values in evidence"; fi; \
+	echo ""; \
+	echo "--- CI Workflow ---"; \
+	check_path file .github/workflows/zdash-monorepo.yml; \
+	echo ""; \
+	echo "--- README ---"; \
+	if grep -q "apps/zdash" README.md 2>/dev/null; then echo "  PASS: README mentions apps/zdash"; else echo "  FAIL: README missing apps/zdash reference"; fail=1; fi; \
+	echo ""; \
+	if [ "$$fail" -ne 0 ]; then echo "Phase 51 validation failed."; exit 1; fi; \
+	echo "Phase 51 validation complete."

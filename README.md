@@ -75,6 +75,12 @@ Paid or overage-prone features must remain disabled unless the owner explicitly 
 | Observability | Grafana + Prometheus + local checks | local metrics and health checks | optional |
 | Workers/R2/D1/WAF advanced | Cloudflare platform services | edge compute/storage/security modules | guarded |
 
+## Integrated applications
+
+| App | Path | Notes |
+|---|---|---|
+| zDash | `apps/zdash/` | Integrated monorepo subtree for the zDash application, backend, frontend, tests, and release tooling. |
+
 ---
 
 ## Free/no-cost mode
@@ -111,6 +117,8 @@ Blocked by default in Free mode:
 - Workers deployment unless explicitly enabled
 - advanced WAF templates unless explicitly enabled
 - Enterprise-only APIs
+
+zDash remains integrated under the same free/no-cost guardrails. The root operator repo stays responsible for Cloudflare DNS, Tunnel, Access, IaC, and release orchestration, while zDash is run from `apps/zdash/`.
 
 ---
 
@@ -258,6 +266,9 @@ zeaz-platform/
 make doctor                 # show local tool status
 make test                   # run pytest when available
 make validate-env           # advisory environment check for repo/CI health
+make zdash-validate-fast    # run zDash structural + safety validation
+make zdash-server-start     # start the zDash backend/frontend dev servers
+make phase51-validate       # validate the monorepo import and wrapper contract
 make validate-env-strict    # strict deployment validation with real values
 make yaml-validate          # validate active YAML files
 make shellcheck             # shellcheck tracked scripts when installed
@@ -313,8 +324,41 @@ Safety rules:
 | F5 | Workers + Edge | Guarded edge compute/storage modules | disabled by default in Free mode |
 | F6 | Monitoring + DR | Drift, backups, audit, security scans | `make drift-detect && make security-scan` |
 | F7 | GitOps | workflow policy and PR checks | `make gitops-validate` |
+| F9 | zDash Monorepo | Full zDash app imported under apps/zdash, Makefile wrappers, monorepo operations runbooks | `make phase51-validate` |
 
 ---
+
+## zDash monorepo
+
+zDash (`cvsz/zdash`) is integrated under `apps/zdash/` via **git subtree --squash**.
+
+### Why subtree (not submodule)
+
+- **History preservation**: subtree inlines history under `--squash` — no nested `.git`.
+- **Simpler CI**: no submodule init/update; all code present after a standard clone.
+- **Rollback is `git revert`**: no detached submodule pointers.
+- **Submodule overhead**: subtree avoids submodule management complexity.
+
+### Key commands
+
+| Command | Purpose |
+|---------|---------|
+| `make zdash-validate-fast` | Safety scan + lint + backend tests + frontend tests + build |
+| `make zdash-server-start` | Start backend (8005) + frontend (5173) concurrently |
+| `make phase51-validate` | Full Phase 51 validation chain |
+| `make zdash-backend-test` | Run zDash backend tests |
+| `make zdash-frontend-test` | Run zDash frontend tests |
+| `make zdash-build` | Build frontend production bundle |
+| `make zdash-release-evidence` | Generate release evidence report |
+| `bash scripts/zdash/sync-zdash-subtree.sh` | Sync latest zDash changes from upstream |
+
+### Warnings
+
+- Original zDash safety invariants are preserved (dry-run, cost lock, no live trading by default).
+- Old `apps/zdash` content (Cloudflare Pages dashboard) was moved aside before import.
+- All Cloudflare configs for zDash live in `configs/cloudflare/zdash/*.example.json` — dry-run only.
+
+See `docs/architecture/ZDASH_MONOREPO_INTEGRATION.md` and `docs/runbooks/ZDASH_MONOREPO_OPERATIONS.md` for full details.
 
 ## Cloudflare docs context
 
