@@ -73,3 +73,50 @@ cf_validate_zone_id() {
 cf_validate_tunnel_uuid() {
   [[ "$1" =~ ^[0-9a-fA-F-]{8}-[0-9a-fA-F-]{4}-[0-9a-fA-F-]{4}-[0-9a-fA-F-]{4}-[0-9a-fA-F-]{12}$ ]] || cf_fail "invalid Cloudflare tunnel UUID: $1"
 }
+
+
+cf_tunnel_id_by_name() {
+  local account_id="$1"
+  local tunnel_name="$2"
+
+  [[ -n "$account_id" ]] || cf_fail "missing Cloudflare account id"
+  [[ -n "$tunnel_name" ]] || cf_fail "missing Cloudflare tunnel name"
+
+  cf_api GET "/accounts/${account_id}/cfd_tunnel?name=${tunnel_name}" \
+    | jq -r '.result[0].id // empty'
+}
+
+cf_tunnel_id_first_healthy() {
+  local account_id="$1"
+
+  [[ -n "$account_id" ]] || cf_fail "missing Cloudflare account id"
+
+  cf_api GET "/accounts/${account_id}/cfd_tunnel" \
+    | jq -r '
+        (.result // [])
+        | map(select((.deleted_at // null) == null))
+        | sort_by(
+            if (.status // "") == "healthy" then 0
+            elif (.status // "") == "degraded" then 1
+            elif (.status // "") == "inactive" then 2
+            else 3 end
+          )
+        | .[0].id // empty
+      '
+}
+
+cf_tunnel_list_report() {
+  local account_id="$1"
+
+  [[ -n "$account_id" ]] || cf_fail "missing Cloudflare account id"
+
+  cf_api GET "/accounts/${account_id}/cfd_tunnel" \
+    | jq -r '
+        (.result // [])
+        | map(select((.deleted_at // null) == null))
+        | .[]
+        | [.id, (.name // ""), (.status // ""), (.created_at // "")]
+        | @tsv
+      '
+}
+
