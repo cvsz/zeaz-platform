@@ -22,6 +22,9 @@ TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
 PYTEST := $(VENV_DIR)/bin/pytest
 TF_ENV_WRAPPER := scripts/terraform/export-tf-vars.sh
 ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
+TOKEN_KEEP_MOST ?= 1
+TOKEN_UNUSED_DAYS ?= 90
+TOKEN_SAFE_PRESERVE_REGEX ?= (^|[-_.])(zeaz[.]dev|bootstrap|audit|admin|ai[-_]?gateway)([-_.]|$$)
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
@@ -168,21 +171,18 @@ drift-detect: tf-init
 	@set +e; bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -detailed-exitcode -out=tfplan.drift $(TF_ARGS); rc=$$?; set -e; case "$$rc" in 0) echo "No drift detected." ;; 2) echo "WARN: drift detected. Saved plan: $(TF_ROOT)/tfplan.drift"; exit 2 ;; *) echo "ERROR: drift check failed rc=$$rc"; exit "$$rc" ;; esac
 
 token-clean:
-	@bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"} $${TOKEN_NAME_REGEX:+--name-regex "$${TOKEN_NAME_REGEX}"} || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"} || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
 
 token-clean-delete:
 	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
-	@test -n "$${CLOUDFLARE_ACCOUNT_ID:-}" || (echo "ERROR: CLOUDFLARE_ACCOUNT_ID is required"; exit 1)
-	@test -n "$${CLOUDFLARE_BOOTSTRAP_TOKEN:-}" || (echo "ERROR: CLOUDFLARE_BOOTSTRAP_TOKEN is required"; exit 1)
-	@bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"}
-
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"}
 
 token-clean-all:
-	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$$)}" bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most 0 --unused-days 0
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most 0 --unused-days 0
 
 token-clean-all-delete:
 	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
-	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$$)}" bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most 0 --unused-days 0
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most 0 --unused-days 0
 
 token-verify:
 	@bash scripts/cloudflare/verify-token-env.sh || { echo "WARN: token verification failed; use make token-verify-strict when a hard failure is required"; true; }
