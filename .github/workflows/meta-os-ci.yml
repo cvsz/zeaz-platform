@@ -2,48 +2,52 @@ name: Zeaz Meta OS CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  validate:
+  meta-os-ci:
+    name: Meta OS CI
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-    - uses: actions/checkout@v6
-    
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.11'
-        
-    - name: Set up Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '18'
-        
-    - name: Validate Compose
-      run: docker compose config > /dev/null
-      
-    - name: Install API Deps
-      run: |
-        cd apps/api
-        pip install -r requirements.txt
-        
-    - name: Install Web Deps
-      run: |
-        cd apps/web
-        npm install
-        
-    - name: Install web dependencies safely
-  run: scripts/ci/install-web-deps-safe.sh
 
-- name: Build web
-  working-directory: apps/web
-  env:
-    NEXT_TELEMETRY_DISABLED: "1"
-  run: npm run build
+    env:
+      APPLY: "false"
+      COST_LOCK: "true"
+      ALLOW_PAID_CLOUDFLARE_FEATURES: "false"
+      CLOUDFLARE_PLAN_TIER: "Free"
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate YAML
+        run: python3 scripts/validate-yaml.py
+
+      - name: Validate Phase 51
+        run: make phase51-validate
+
+      - name: Validate Phase 52
+        run: make phase52-validate
+
+      - name: Install Web Deps
+        run: scripts/ci/install-web-deps-safe.sh
+
+      - name: Build web
+        working-directory: apps/web
+        run: npm run build
