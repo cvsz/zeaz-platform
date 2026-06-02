@@ -1,5 +1,11 @@
 'use client';
 
+function safePct(used?: number, quota?: number): number {
+  if (!quota || quota <= 0) return 0;
+  return Math.min(100, Math.max(0, ((used ?? 0) / quota) * 100));
+}
+
+
 import React, { useEffect, useState } from 'react';
 import { TopologyGraph } from '@/components/TopologyGraph';
 import { motion } from 'framer-motion';
@@ -36,12 +42,6 @@ export default function LLMRuntimePage() {
         }
       }
     };
-    const globalUsage = metrics?.global_usage ?? 0;
-  const globalQuota = metrics?.global_quota ?? 0;
-  const globalUsagePct =
-    globalQuota > 0
-      ? Math.min(100, Math.max(0, (globalUsage / globalQuota) * 100))
-      : 0;
 
   return () => ws.close();
   }, []);
@@ -94,7 +94,7 @@ export default function LLMRuntimePage() {
                 <div className="w-full bg-slate-700 h-1.5 mt-3 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${globalUsagePct}%` }}
+                    animate={{ width: `${safePct(metrics?.global_usage, metrics?.global_quota)}%` }}
                     className="h-full bg-blue-500"
                   />
                 </div>
