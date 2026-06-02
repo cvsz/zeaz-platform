@@ -305,9 +305,8 @@ zdash-install: ## Install zDash dependencies (apps/zdash)
 	@$(MAKE) -C apps/zdash install-local
 
 .PHONY: zdash-validate-fast
-zdash-validate-fast: ## Run zDash validate-fast (apps/zdash)
-	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
-	@$(MAKE) -C apps/zdash validate-fast
+zdash-validate-fast: ## Run zDash validate-fast with dependency bootstrap
+	@bash scripts/zdash/run-zdash-validation.sh
 
 .PHONY: zdash-backend-test
 zdash-backend-test: ## Run zDash backend tests (apps/zdash)
