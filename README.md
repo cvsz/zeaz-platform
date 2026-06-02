@@ -31,9 +31,10 @@ Paid or overage-prone features must remain disabled unless the owner explicitly 
 7. [Makefile targets](#makefile-targets)
 8. [Token management](#token-management)
 9. [Deployment phases](#deployment-phases)
-10. [Cloudflare docs context](#cloudflare-docs-context)
-11. [Security](#security)
-12. [Contributing](#contributing)
+10. [Phase 52: zeaz.dev production routing](#phase-52-zeazdev-production-routing)
+11. [Cloudflare docs context](#cloudflare-docs-context)
+12. [Security](#security)
+13. [Contributing](#contributing)
 
 ---
 
@@ -46,8 +47,11 @@ Paid or overage-prone features must remain disabled unless the owner explicitly 
   Users ──────────────►  │  DNS → Access → Tunnel → Self-hosted VM     │
                          │                                             │
                          │  Domains:                                   │
-                         │  ├── panel.zeaz.dev        (control panel)  │
-                         │  ├── api.zeaz.dev          (control API)    │
+                         │  ├── www.zeaz.dev          (public landing) │
+                         │  ├── zeaz.dev              (redirect)       │
+                         │  ├── zdash.zeaz.dev        (zDash frontend) │
+                         │  ├── zdash-api.zeaz.dev    (zDash API)      │
+                         │  ├── release.zeaz.dev      (evidence page)  │
                          │  ├── ssh.zeaz.dev          (Access SSH)     │
                          │  ├── auth.zeaz.dev         (identity)       │
                          │  ├── app.zeaz.dev          (zWallet)        │
@@ -325,6 +329,40 @@ Safety rules:
 | F6 | Monitoring + DR | Drift, backups, audit, security scans | `make drift-detect && make security-scan` |
 | F7 | GitOps | workflow policy and PR checks | `make gitops-validate` |
 | F9 | zDash Monorepo | Full zDash app imported under apps/zdash, Makefile wrappers, monorepo operations runbooks | `make phase51-validate` |
+| F52 | zeaz.dev production routing | Controlled DNS, Tunnel, and Access apply mode for `www.zeaz.dev`, `zeaz.dev`, and zDash routes | `make phase52-validate` |
+
+## Phase 52: zeaz.dev production routing
+
+Phase 52 adds controlled apply mode for the production `zeaz.dev` routing surface.
+
+Key hostnames:
+
+- `www.zeaz.dev` for the public landing page
+- `zeaz.dev` for redirecting to `www.zeaz.dev`
+- `zdash.zeaz.dev` for the zDash frontend
+- `zdash-api.zeaz.dev` for the zDash backend API
+- `release.zeaz.dev` for optional public release evidence
+- `ssh.zeaz.dev` remains unchanged
+
+Guardrails:
+
+- dry-run by default
+- no Cloudflare changes unless `APPLY=true`
+- DNS changes require `CONFIRM_DNS_APPLY=yes`
+- Tunnel changes require `CONFIRM_TUNNEL_APPLY=yes`
+- Access changes require `CONFIRM_ACCESS_APPLY=yes`
+- paid Cloudflare features remain disabled
+- `COST_LOCK=true`
+- `CLOUDFLARE_PLAN_TIER=Free`
+- `ALLOW_PAID_CLOUDFLARE_FEATURES=false`
+
+Commands:
+
+```bash
+make zeaz-dev-plan
+make phase52-validate
+APPLY=true CONFIRM_DNS_APPLY=yes CONFIRM_TUNNEL_APPLY=yes CONFIRM_ACCESS_APPLY=yes make zeaz-dev-apply
+```
 
 ---
 

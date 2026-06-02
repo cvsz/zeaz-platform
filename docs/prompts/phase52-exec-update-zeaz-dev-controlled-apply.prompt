@@ -1,0 +1,228 @@
+Implement Phase 52: Update zeaz.dev Production Routing + Controlled Cloudflare Apply Mode.
+
+Primary repo:
+- cvsz/zeaz-platform
+
+Integrated app:
+- apps/zdash
+
+Goal:
+Prepare zeaz.dev production routing for the integrated zDash app using zeaz-platform as the Cloudflare operator. This phase must create controlled apply mode for DNS, Tunnel, and Access configuration while staying dry-run by default.
+
+Target domains:
+- www.zeaz.dev              → public landing / main website
+- zeaz.dev                  → public landing / redirect to www.zeaz.dev
+- zdash.zeaz.dev            → zDash frontend
+- zdash-api.zeaz.dev        → zDash backend API
+- release.zeaz.dev          → optional public release evidence page
+- ssh.zeaz.dev              → existing Access SSH route, do not break
+
+Hard safety rules:
+- Dry-run by default.
+- No Cloudflare changes unless APPLY=true.
+- No DNS changes unless CONFIRM_DNS_APPLY=yes.
+- No Access changes unless CONFIRM_ACCESS_APPLY=yes.
+- No Tunnel changes unless CONFIRM_TUNNEL_APPLY=yes.
+- No paid Cloudflare features.
+- Keep COST_LOCK=true.
+- Keep CLOUDFLARE_PLAN_TIER=Free.
+- Keep ALLOW_PAID_CLOUDFLARE_FEATURES=false.
+- Do not enable Load Balancing, Argo, paid WAF, Bot Management, Logpush, Workers deploy, or R2 writes by default.
+- Use scoped Cloudflare API tokens only.
+- Never use Global API Key.
+- Never print secrets.
+- Never track .env files.
+- All generated configs must be examples or dry-run manifests unless explicit apply confirmations are set.
+
+Deliverables:
+
+1. zeaz.dev route manifest
+Create:
+- configs/cloudflare/zeaz-dev/zeaz-dev-route-intent.example.json
+
+Must include:
+- zone: zeaz.dev
+- intended hostnames:
+  - zeaz.dev
+  - www.zeaz.dev
+  - zdash.zeaz.dev
+  - zdash-api.zeaz.dev
+  - release.zeaz.dev
+- DNS record intent:
+  - CNAME records where appropriate
+  - proxied=true
+  - ttl=auto
+- rollback intent:
+  - disable route
+  - restore previous DNS target
+  - lock Access policy
+- no destructive deletes by default
+
+2. zDash production tunnel config
+Create/update:
+- generated/cloudflare/zdash-production-tunnel-ingress.yml
+- configs/cloudflare/zdash/zdash.production.routes.example.json
+
+Ingress must include:
+- zdash.zeaz.dev → frontend origin
+- zdash-api.zeaz.dev → backend origin
+- health route if needed
+- fallback 404 service
+- local origin defaults:
+  - frontend: http://localhost:5173
+  - backend: http://localhost:8005
+- production override variables:
+  - ZDASH_FRONTEND_ORIGIN
+  - ZDASH_BACKEND_ORIGIN
+
+3. Controlled apply scripts
+Create:
+- scripts/cloudflare/zeaz-dev-plan.sh
+- scripts/cloudflare/zeaz-dev-apply.sh
+- scripts/cloudflare/zeaz-dev-rollback-plan.sh
+- scripts/cloudflare/zeaz-dev-verify-live.sh
+
+Requirements:
+- zeaz-dev-plan.sh:
+  - Reads route intent.
+  - Prints safe plan.
+  - Redacts tokens.
+  - Does not mutate Cloudflare.
+- zeaz-dev-apply.sh:
+  - Requires APPLY=true.
+  - Requires COST_LOCK=true.
+  - Requires CONFIRM_DNS_APPLY=yes for DNS.
+  - Requires CONFIRM_TUNNEL_APPLY=yes for Tunnel.
+  - Requires CONFIRM_ACCESS_APPLY=yes for Access.
+  - Refuses paid features.
+  - Refuses Global API Key variables.
+  - Supports DRY_RUN=true default.
+- zeaz-dev-rollback-plan.sh:
+  - Generates rollback checklist and commands.
+  - Does not apply rollback unless APPLY=true and CONFIRM_ROLLBACK=yes.
+- zeaz-dev-verify-live.sh:
+  - Checks public URLs with curl.
+  - Does not require secrets.
+  - Writes docs/reports/generated/zeaz-dev-live-verification.md.
+
+4. Access policy update
+Create:
+- configs/cloudflare/access/zeaz-dev-zdash-access-policy.example.json
+- docs/cloudflare/ZEAZ_DEV_ACCESS_POLICY.md
+
+Modes:
+- private-admin-only default for rehearsal
+- public-read frontend optional
+- backend protected by default
+- release evidence public optional
+- bypass disabled by default
+
+5. Public release evidence page plan
+Create:
+- docs/releases/zeaz-dev/PUBLIC_RELEASE_EVIDENCE_INDEX.md
+- scripts/release/build-zeaz-dev-public-evidence.sh
+
+Must collect:
+- zDash Phase 48 evidence
+- Phase 51 monorepo validation
+- Phase 52 route plan
+- DNS intent
+- Tunnel ingress
+- Access policy
+- rollback plan
+- no-secret confirmation
+
+6. Operator runbooks
+Create:
+- docs/runbooks/ZEAZ_DEV_PRODUCTION_UPDATE.md
+- docs/runbooks/ZEAZ_DEV_ROLLBACK.md
+- docs/runbooks/ZEAZ_DEV_POST_DEPLOY_CHECKLIST.md
+
+Include:
+- preflight
+- dry-run plan
+- apply confirmations
+- validation
+- evidence capture
+- rollback
+- post-deploy monitoring
+- no-cost guardrails
+
+7. Makefile targets
+Add:
+- zeaz-dev-plan
+- zeaz-dev-apply
+- zeaz-dev-rollback-plan
+- zeaz-dev-verify-live
+- zeaz-dev-public-evidence
+- phase52-validate
+
+phase52-validate must check:
+- route intent exists
+- tunnel ingress exists
+- access policy exists
+- scripts are executable
+- runbooks exist
+- public evidence index exists
+- Makefile targets exist
+- no .env tracked
+- no secret-looking values in generated evidence
+- dry-run defaults are present
+- paid Cloudflare features are disabled by default
+- apps/zdash exists
+
+8. CI workflow
+Create:
+- .github/workflows/phase52-zeaz-dev.yml
+
+Workflow:
+- push and pull_request
+- dry-run only
+- no secrets required
+- run phase52-validate
+- upload generated evidence if present
+- never print secrets
+
+9. README update
+Update root README:
+- Add Phase 52 section.
+- Add zeaz.dev routing overview.
+- Add commands:
+  - make zeaz-dev-plan
+  - make phase52-validate
+  - APPLY=true CONFIRM_DNS_APPLY=yes CONFIRM_TUNNEL_APPLY=yes CONFIRM_ACCESS_APPLY=yes make zeaz-dev-apply
+- Keep no-cost / Cloudflare Free guardrails.
+
+10. Final report
+Create:
+- docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md
+
+Include:
+- files changed
+- route intent
+- apply safety
+- rollback safety
+- validation evidence
+- remaining manual operator steps
+
+Validation commands:
+- make phase51-validate
+- make zdash-validate-fast
+- make zeaz-dev-plan
+- make zeaz-dev-public-evidence
+- make phase52-validate
+- git diff --check
+- git status --short
+
+Acceptance criteria:
+- zeaz.dev route plan exists.
+- zDash production route plan exists.
+- Controlled apply mode exists and is dry-run by default.
+- Cloudflare paid features are blocked by default.
+- Access policy templates exist.
+- Rollback runbooks exist.
+- Public release evidence is generated.
+- phase52-validate passes.
+- No secrets.
+- No tracked .env.
+- No force push.

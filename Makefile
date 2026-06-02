@@ -24,7 +24,7 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
-.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
+.PHONY: help bootstrap setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai zaiz-deps-check
 
 help:
 	@bash scripts/make-help.sh
@@ -429,3 +429,56 @@ phase51-validate: ## Validate Phase 51 zDash monorepo import
 	echo ""; \
 	if [ "$$fail" -ne 0 ]; then echo "Phase 51 validation failed."; exit 1; fi; \
 	echo "Phase 51 validation complete."
+
+.PHONY: zeaz-dev-plan
+zeaz-dev-plan: ## Print the zeaz.dev production route plan
+	@bash scripts/cloudflare/zeaz-dev-plan.sh
+
+.PHONY: zeaz-dev-apply
+zeaz-dev-apply: ## Run controlled zeaz.dev apply checks
+	@bash scripts/cloudflare/zeaz-dev-apply.sh
+
+.PHONY: zeaz-dev-rollback-plan
+zeaz-dev-rollback-plan: ## Generate zeaz.dev rollback plan
+	@bash scripts/cloudflare/zeaz-dev-rollback-plan.sh
+
+.PHONY: zeaz-dev-verify-live
+zeaz-dev-verify-live: ## Verify live zeaz.dev public URLs
+	@bash scripts/cloudflare/zeaz-dev-verify-live.sh
+
+.PHONY: zeaz-dev-public-evidence
+zeaz-dev-public-evidence: ## Generate zeaz.dev public release evidence
+	@bash scripts/release/build-zeaz-dev-public-evidence.sh
+
+.PHONY: phase52-validate
+phase52-validate: ## Validate Phase 52 zeaz.dev production routing update
+	@set -Eeuo pipefail; \
+	fail=0; \
+	check_file() { if [ -f "$$1" ]; then echo "  PASS: $$1 exists"; else echo "  FAIL: $$1 missing"; fail=1; fi; }; \
+	check_exec() { if [ -x "$$1" ]; then echo "  PASS: $$1 executable"; else echo "  FAIL: $$1 missing or not executable"; fail=1; fi; }; \
+	echo "=== Phase 52 Validation ==="; \
+	check_file configs/cloudflare/zeaz-dev/zeaz-dev-route-intent.example.json; \
+	check_file generated/cloudflare/zdash-production-tunnel-ingress.yml; \
+	check_file configs/cloudflare/zdash/zdash.production.routes.example.json; \
+	check_file configs/cloudflare/access/zeaz-dev-zdash-access-policy.example.json; \
+	check_file docs/cloudflare/ZEAZ_DEV_ACCESS_POLICY.md; \
+	check_file docs/releases/zeaz-dev/PUBLIC_RELEASE_EVIDENCE_INDEX.md; \
+	check_file docs/runbooks/ZEAZ_DEV_PRODUCTION_UPDATE.md; \
+	check_file docs/runbooks/ZEAZ_DEV_ROLLBACK.md; \
+	check_file docs/runbooks/ZEAZ_DEV_POST_DEPLOY_CHECKLIST.md; \
+	check_file docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md; \
+	check_exec scripts/cloudflare/zeaz-dev-plan.sh; \
+	check_exec scripts/cloudflare/zeaz-dev-apply.sh; \
+	check_exec scripts/cloudflare/zeaz-dev-rollback-plan.sh; \
+	check_exec scripts/cloudflare/zeaz-dev-verify-live.sh; \
+	check_exec scripts/release/build-zeaz-dev-public-evidence.sh; \
+	for t in zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate; do \
+	  if grep -Eq "^$$t:" Makefile; then echo "  PASS: $$t target exists"; else echo "  FAIL: $$t target missing"; fail=1; fi; \
+	done; \
+	if git ls-files | grep -Eq '(^|/)\\.env($|/)'; then echo "  FAIL: tracked .env file found"; fail=1; else echo "  PASS: no tracked .env file found"; fi; \
+	if rg -n 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|-----BEGIN [A-Z ]*PRIVATE KEY-----|replace-me|changeme|dummy-secret|fake-token' docs/reports/generated/ docs/releases/zeaz-dev/ >/dev/null 2>&1; then echo "  FAIL: secret-like content detected in generated evidence"; fail=1; else echo "  PASS: no secret-like content in generated evidence"; fi; \
+	if grep -RIn 'DRY_RUN=true\|APPLY=false\|dry-run by default' scripts/cloudflare scripts/release configs/cloudflare docs/runbooks >/dev/null 2>&1; then echo "  PASS: dry-run defaults present"; else echo "  FAIL: dry-run defaults not evident"; fail=1; fi; \
+	if grep -RIn 'ALLOW_PAID_CLOUDFLARE_FEATURES=false\|COST_LOCK=true\|CLOUDFLARE_PLAN_TIER=Free' README.md docs configs scripts Makefile >/dev/null 2>&1; then echo "  PASS: paid-feature guardrails documented"; else echo "  FAIL: paid-feature guardrails not found"; fail=1; fi; \
+	if [ -d apps/zdash ]; then echo "  PASS: apps/zdash exists"; else echo "  FAIL: apps/zdash missing"; fail=1; fi; \
+	if [ "$$fail" -ne 0 ]; then echo "Phase 52 validation failed."; exit 1; fi; \
+	echo "Phase 52 validation complete."
