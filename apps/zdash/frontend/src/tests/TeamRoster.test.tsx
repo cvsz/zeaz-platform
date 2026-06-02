@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import TeamRoster from "../pages/TeamRoster";
 import { waitForStableUi } from "./utils/settle";
@@ -49,15 +50,18 @@ describe("TeamRoster", () => {
   });
 
   it("renders members table with search", async () => {
+    const user = userEvent.setup();
+
     render(
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <TeamRoster />
       </BrowserRouter>,
     );
+
     await waitForStableUi();
-    const membersTab = screen.getByText("Members");
-    membersTab.click();
+    await user.click(await screen.findByText("Members"));
     await waitForStableUi();
+
     expect(await screen.findByText("Admin User")).toBeTruthy();
   });
 
