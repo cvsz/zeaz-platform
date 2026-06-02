@@ -25,8 +25,9 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 TOKEN_KEEP_MOST ?= 1
 TOKEN_UNUSED_DAYS ?= 90
 TOKEN_SAFE_PRESERVE_REGEX ?= (^|[-_.])(zeaz[.]dev|bootstrap|audit|admin|ai[-_]?gateway)([-_.]|$$)
-TOKEN_ROTATE_TYPES ?= dns,zt,tunnel
+TOKEN_ROTATE_TYPES ?= all
 TOKEN_ROTATE_OUT ?= .env.cloudflare
+TOKEN_ROTATE_SYNC_ENV ?= .env
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
@@ -198,6 +199,8 @@ token-rotate-dry:
 token-rotate:
 	@test "$${CONFIRM_TOKEN_ROTATE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_ROTATE=yes required"; exit 1)
 	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --regenerate --yes --types "$${TOKEN_ROTATE_TYPES:-$(TOKEN_ROTATE_TYPES)}" --backup --write "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" --refresh-permissions
+	@bash scripts/cloudflare/sync-cloudflare-env-files.sh "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" "$${TOKEN_ROTATE_SYNC_ENV:-$(TOKEN_ROTATE_SYNC_ENV)}"
+	@bash scripts/cloudflare/sync-cloudflare-env-files.sh "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" "$${TOKEN_ROTATE_SYNC_ENV:-$(TOKEN_ROTATE_SYNC_ENV)}"
 
 token-rotate-refresh: token-rotate-dry
 
@@ -622,3 +625,8 @@ tf-zdash-apply: ## Guarded zDash Terraform apply
 .PHONY: cf-zdash-token-diagnose
 cf-zdash-token-diagnose: ## Diagnose Cloudflare token permissions for zDash
 	@bash scripts/cloudflare/zdash-cloudflare-token-diagnose.sh
+
+
+.PHONY: cf-zdash-sync-env
+cf-zdash-sync-env: ## Sync zDash Terraform env vars from Cloudflare API into .env/.env.cloudflare
+	@bash scripts/cloudflare/sync-zdash-terraform-env-from-api.sh
