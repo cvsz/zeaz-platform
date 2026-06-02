@@ -1,0 +1,448 @@
+=== repo status ===
+## main...origin/main
+?? .runtime/
+5195534 (HEAD -> main, tag: v2.1.0, origin/main) Enable manual workflows and skip imported app workflow YAML
+069c650 Fix zeaz-platform Makefile zDash helper paths
+ced2a7e Align zDash API hostname with Cloudflare route
+412d972 Silence zDash dependency testclient deprecation warning
+6820065 Fix zDash monorepo frontend act warning
+
+=== root zeaz-platform validation ===
+Validated 96 YAML files
+[2026-06-02T11:16:19Z] INFO: workflow policy validation passed
+{"level":"INFO","msg":"workflow policy validation passed","codex_cloud":"false","strict_tools":"false"}
+Workflow validation complete.
+=== Phase 51 Validation ===
+
+--- Apps/zdash Structure ---
+  PASS: apps/zdash exists
+  PASS: apps/zdash/backend exists
+  PASS: apps/zdash/frontend exists
+  PASS: apps/zdash/Makefile exists
+
+--- No Nested .git ---
+  PASS: no nested .git
+
+--- Root Makefile Targets ---
+  PASS: zdash-install target exists
+  PASS: zdash-validate-fast target exists
+  PASS: zdash-backend-test target exists
+  PASS: zdash-frontend-test target exists
+  PASS: zdash-build target exists
+  PASS: zdash-server-start target exists
+  PASS: zdash-server-stop target exists
+  PASS: zdash-server-restart target exists
+  PASS: zdash-server-status target exists
+  PASS: zdash-validate target exists
+  PASS: zdash-release-evidence target exists
+  PASS: zdash-phase48-validate target exists
+  PASS: zdash-cloudflare-handoff target exists
+  PASS: phase51-validate target exists
+
+--- Cloudflare Operator Configs ---
+  PASS: configs/cloudflare/zdash/zdash.edge.routes.example.json exists
+  PASS: configs/cloudflare/zdash/zdash-dns-intent.example.json exists
+  PASS: configs/cloudflare/zdash/zdash-access-policy.example.json exists
+  PASS: generated/cloudflare/zdash-tunnel-ingress.yml exists
+
+--- Monorepo Docs ---
+  PASS: docs/architecture/ZDASH_MONOREPO_INTEGRATION.md exists
+  PASS: docs/runbooks/ZDASH_MONOREPO_OPERATIONS.md exists
+  PASS: docs/reports/PHASE51_ZDASH_MONOREPO_IMPORT_REPORT.md exists
+  PASS: docs/releases/zdash/ZDASH_MONOREPO_IMPORT_EVIDENCE.md exists
+
+--- Scripts ---
+  PASS: scripts/zdash/import-zdash-subtree.sh exists and executable
+  PASS: scripts/zdash/sync-zdash-subtree.sh exists and executable
+  PASS: scripts/zdash/verify-zdash-monorepo.sh exists and executable
+  PASS: scripts/zdash/run-zdash-validation.sh exists and executable
+  PASS: scripts/zdash/capture-zdash-monorepo-evidence.sh exists and executable
+
+--- Secrets Check ---
+  PASS: no tracked .env file found
+  PASS: no obvious secret-like values in evidence
+
+--- CI Workflow ---
+  PASS: .github/workflows/zdash-monorepo.yml exists
+
+--- README ---
+  PASS: README mentions apps/zdash
+
+Phase 51 validation complete.
+=== Phase 52 Validation ===
+  PASS: configs/cloudflare/zeaz-dev/zeaz-dev-route-intent.example.json exists
+  PASS: generated/cloudflare/zdash-production-tunnel-ingress.yml exists
+  PASS: configs/cloudflare/zdash/zdash.production.routes.example.json exists
+  PASS: configs/cloudflare/access/zeaz-dev-zdash-access-policy.example.json exists
+  PASS: docs/cloudflare/ZEAZ_DEV_ACCESS_POLICY.md exists
+  PASS: docs/releases/zeaz-dev/PUBLIC_RELEASE_EVIDENCE_INDEX.md exists
+  PASS: docs/runbooks/ZEAZ_DEV_PRODUCTION_UPDATE.md exists
+  PASS: docs/runbooks/ZEAZ_DEV_ROLLBACK.md exists
+  PASS: docs/runbooks/ZEAZ_DEV_POST_DEPLOY_CHECKLIST.md exists
+  PASS: docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md exists
+  PASS: scripts/cloudflare/zeaz-dev-plan.sh executable
+  PASS: scripts/cloudflare/zeaz-dev-apply.sh executable
+  PASS: scripts/cloudflare/zeaz-dev-rollback-plan.sh executable
+  PASS: scripts/cloudflare/zeaz-dev-verify-live.sh executable
+  PASS: scripts/release/build-zeaz-dev-public-evidence.sh executable
+  PASS: zeaz-dev-plan target exists
+  PASS: zeaz-dev-apply target exists
+  PASS: zeaz-dev-rollback-plan target exists
+  PASS: zeaz-dev-verify-live target exists
+  PASS: zeaz-dev-public-evidence target exists
+  PASS: phase52-validate target exists
+  PASS: no tracked .env file found
+  PASS: no secret-like content in generated evidence
+  PASS: dry-run defaults present
+  PASS: paid-feature guardrails documented
+  PASS: apps/zdash exists
+Phase 52 validation complete.
+
+=== zDash integrated validation ===
+=== zDash validation bootstrap ===
+=== running apps/zdash make validate-fast with isolated test env ===
+make[1]: Entering directory '/home/zeazdev/zeaz-platform/apps/zdash'
+Checking forbidden tracked files...
+PASSED: no forbidden tracked files
+Scanning tracked runtime/source files for old backend port 8000...
+PASSED: no old backend port 8000 found
+Scanning tracked runtime/source files for actual secret-looking values...
+PASSED: no actual secret-looking tracked values
+All checks passed!
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 47%]
+........................................................................ [ 59%]
+........................................................................ [ 70%]
+........................................................................ [ 82%]
+........................................................................ [ 94%]
+..................................                                       [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/zeazdev/zeaz-platform/apps/zdash/backend/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+> zdash-frontend@2.0.2 test
+> vitest --run --passWithNoTests
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90m/home/zeazdev/zeaz-platform/apps/zdash/frontend[39m
+
+ [32m✓[39m src/tests/Scheduler.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 1136[2mms[22m[39m
+     [33m[2m✓[22m[39m renders scheduler controls and safety labels [33m 1121[2mms[22m[39m
+ [32m✓[39m src/tests/AITrader.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 1420[2mms[22m[39m
+     [33m[2m✓[22m[39m renders simulation-only controls, strategies, compare, and dry-run wording [33m 1411[2mms[22m[39m
+ [32m✓[39m src/tests/Enterprise.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 1402[2mms[22m[39m
+     [33m[2m✓[22m[39m renders license status, branding editor, onboarding checklist, and enforces export secrets validation input check [33m 1389[2mms[22m[39m
+ [32m✓[39m src/tests/ContentPipeline.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1412[2mms[22m[39m
+     [33m[2m✓[22m[39m renders content board, policy notes, and dry-run safety indicators [33m 1022[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps publish action disabled until approved [33m 377[2mms[22m[39m
+ [32m✓[39m src/tests/Dashboard.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1162[2mms[22m[39m
+     [33m[2m✓[22m[39m renders metric cards and key sections [33m 853[2mms[22m[39m
+ [32m✓[39m src/tests/MarketplaceActions.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 3027[2mms[22m[39m
+     [33m[2m✓[22m[39m renders install button for not-installed plugin [33m 769[2mms[22m[39m
+     [33m[2m✓[22m[39m renders enable/disable and uninstall buttons for installed plugin [33m 412[2mms[22m[39m
+     [33m[2m✓[22m[39m opens detail panel with dry-run console when console clicked [33m 434[2mms[22m[39m
+     [33m[2m✓[22m[39m detail panel shows action form and run button [33m 599[2mms[22m[39m
+     [33m[2m✓[22m[39m detail panel shows source type for builtin plugin [33m 442[2mms[22m[39m
+ [32m✓[39m src/tests/TeamActions.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1179[2mms[22m[39m
+     [33m[2m✓[22m[39m invite form has id/name fields [33m 587[2mms[22m[39m
+     [33m[2m✓[22m[39m clicking invite changes form state [33m 321[2mms[22m[39m
+ [32m✓[39m src/tests/RiskPanel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1178[2mms[22m[39m
+     [33m[2m✓[22m[39m renders kill-switch, halt, and drawdown risk status [33m 736[2mms[22m[39m
+     [33m[2m✓[22m[39m requires resume reason before confirmation [33m 434[2mms[22m[39m
+ [32m✓[39m src/tests/Workers.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 921[2mms[22m[39m
+   [33m[2m✓[22m[39m renders workers header [33m 519[2mms[22m[39m
+ [32m✓[39m src/tests/Marketplace.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 1424[2mms[22m[39m
+     [33m[2m✓[22m[39m renders plugin grid, safety notes, installed plugins table, and install button [33m 1409[2mms[22m[39m
+ [32m✓[39m src/tests/Login.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 962[2mms[22m[39m
+     [33m[2m✓[22m[39m shows warning for default admin credentials [33m 445[2mms[22m[39m
+     [33m[2m✓[22m[39m submits credentials through auth hook [33m 491[2mms[22m[39m
+ [32m✓[39m src/tests/TeamRoster.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1051[2mms[22m[39m
+     [33m[2m✓[22m[39m renders members table with search [33m 541[2mms[22m[39m
+ [32m✓[39m src/tests/App.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 4558[2mms[22m[39m
+     [33m[2m✓[22m[39m app renders [33m 1734[2mms[22m[39m
+     [33m[2m✓[22m[39m sidebar navigation exists [33m 716[2mms[22m[39m
+     [33m[2m✓[22m[39m dashboard route works [33m 603[2mms[22m[39m
+     [33m[2m✓[22m[39m renders risk route [33m 353[2mms[22m[39m
+     [33m[2m✓[22m[39m renders scheduler route [33m 435[2mms[22m[39m
+     [33m[2m✓[22m[39m renders content route [33m 412[2mms[22m[39m
+ [32m✓[39m src/tests/XauDashboard.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 799[2mms[22m[39m
+     [33m[2m✓[22m[39m renders dashboard heading [33m 782[2mms[22m[39m
+ [32m✓[39m src/tests/Admin.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 939[2mms[22m[39m
+     [33m[2m✓[22m[39m renders admin controls and current user [33m 604[2mms[22m[39m
+     [33m[2m✓[22m[39m filters audit logs by action [33m 325[2mms[22m[39m
+ [32m✓[39m src/tests/ZFinance.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 545[2mms[22m[39m
+     [33m[2m✓[22m[39m renders page title header [33m 428[2mms[22m[39m
+ [32m✓[39m src/tests/Alerts.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 658[2mms[22m[39m
+   [33m[2m✓[22m[39m renders alerts [33m 647[2mms[22m[39m
+ [32m✓[39m src/tests/Billing.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 900[2mms[22m[39m
+     [33m[2m✓[22m[39m renders subscription status, pricing table, plan comparison, and invoice history table [33m 881[2mms[22m[39m
+ [32m✓[39m src/tests/SessionLogs.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 771[2mms[22m[39m
+     [33m[2m✓[22m[39m renders session logs heading [33m 752[2mms[22m[39m
+ [32m✓[39m src/tests/IncidentCenter.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 749[2mms[22m[39m
+     [33m[2m✓[22m[39m renders incident center heading [33m 716[2mms[22m[39m
+ [32m✓[39m src/tests/RealtimeFeed.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 513[2mms[22m[39m
+ [32m✓[39m src/tests/Usage.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 533[2mms[22m[39m
+     [33m[2m✓[22m[39m renders usage cards, quota warning at >80%, and exceeded quota banner [33m 514[2mms[22m[39m
+ [32m✓[39m src/tests/Onboarding.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 615[2mms[22m[39m
+     [33m[2m✓[22m[39m renders onboarding checklists, safety checklists, and dry-run labeled actions [33m 603[2mms[22m[39m
+ [32m✓[39m src/tests/Workspace.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m shows workspace [33m 337[2mms[22m[39m
+ [32m✓[39m src/tests/WorkspaceTimeline.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 260[2mms[22m[39m
+ [32m✓[39m src/tests/WorkspaceLive.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 212[2mms[22m[39m
+ [32m✓[39m src/tests/Organizations.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 359[2mms[22m[39m
+   [33m[2m✓[22m[39m renders organizations page [33m 348[2mms[22m[39m
+ [32m✓[39m src/tests/ErrorBoundary.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 290[2mms[22m[39m
+ [32m✓[39m src/tests/Settings.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 471[2mms[22m[39m
+     [33m[2m✓[22m[39m renders settings heading [33m 445[2mms[22m[39m
+ [32m✓[39m src/tests/SystemHealthRealtime.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 553[2mms[22m[39m
+   [33m[2m✓[22m[39m shows websocket diagnostics rows [33m 536[2mms[22m[39m
+ [32m✓[39m src/tests/SystemHealth.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 415[2mms[22m[39m
+     [33m[2m✓[22m[39m renders diagnostics safely [33m 402[2mms[22m[39m
+ [32m✓[39m src/tests/EventTimeline.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 195[2mms[22m[39m
+ [32m✓[39m src/tests/SafetyState.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[33m 325[2mms[22m[39m
+ [32m✓[39m src/tests/NotificationCenter.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 162[2mms[22m[39m
+ [32m✓[39m src/tests/RealtimeHooks.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 267[2mms[22m[39m
+ [32m✓[39m src/tests/WorkspaceNotes.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 232[2mms[22m[39m
+ [32m✓[39m src/tests/useApi.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 260[2mms[22m[39m
+ [32m✓[39m src/tests/ProtectedRoute.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 225[2mms[22m[39m
+ [32m✓[39m src/tests/RealtimeClient.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 104[2mms[22m[39m
+ [32m✓[39m src/tests/ErrorBoundaryRealtime.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 182[2mms[22m[39m
+ [32m✓[39m src/tests/useCollaboration.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+ [32m✓[39m src/tests/useRealtime.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 224[2mms[22m[39m
+ [32m✓[39m src/tests/AuthClient.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/tests/apiClient.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 131[2mms[22m[39m
+ [32m✓[39m src/tests/Storage.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/tests/RealtimeReconnect.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/tests/ApiMockHarness.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m47 passed[39m[22m[90m (47)[39m
+[2m      Tests [22m [1m[32m110 passed[39m[22m[90m (110)[39m
+[2m   Start at [22m 11:16:45
+[2m   Duration [22m 40.86s[2m (transform 13.81s, setup 58.66s, import 24.10s, tests 33.30s, environment 119.41s)[22m
+
+
+> zdash-frontend@2.0.2 build
+> tsc -p tsconfig.build.json && vite build
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 2370 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.51 kB │ gzip:   0.32 kB
+dist/assets/index-BhC9hRkK.css   47.37 kB │ gzip:   9.23 kB
+dist/assets/react-_aZr7v5Y.js   163.63 kB │ gzip:  53.70 kB
+dist/assets/index-Deaq9KHZ.js   935.12 kB │ gzip: 241.14 kB
+✓ built in 14.27s
+make[1]: Leaving directory '/home/zeazdev/zeaz-platform/apps/zdash'
+
+=== zeaz.dev route plan / live check ===
+=== zeaz.dev route plan ===
+dry-run: true
+apply_required: APPLY=true
+cost_lock_required: true
+paid_features_allowed: false
+
+--- route intent ---
+{
+  "description": "zeaz.dev production routing intent — dry-run by default",
+  "zone": "zeaz.dev",
+  "apply_required": "APPLY=true",
+  "cost_lock": true,
+  "plan_tier": "Free",
+  "allow_paid_cloudflare_features": false,
+  "hostnames": [
+    {
+      "name": "zeaz.dev",
+      "purpose": "public landing redirect to www.zeaz.dev",
+      "target": "www.zeaz.dev",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "www.zeaz.dev",
+      "purpose": "public landing / main website",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "zdash.zeaz.dev",
+      "purpose": "zDash frontend",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "api-zdash.zeaz.dev",
+      "purpose": "zDash backend API",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "release.zeaz.dev",
+      "purpose": "optional public release evidence page",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    }
+  ],
+  "rollback": {
+    "disable_route": true,
+    "restore_previous_dns_target": true,
+    "lock_access_policy": true,
+    "no_destructive_deletes": true
+  },
+  "notes": [
+    "Existing ssh.zeaz.dev route must remain unchanged.",
+    "No Load Balancing, Argo, paid WAF, Bot Management, Logpush, Workers deploy, or R2 writes are enabled.",
+    "Use scoped Cloudflare tokens only; never Global API Key."
+  ]
+}
+
+--- zDash routes ---
+{
+  "description": "zDash production routes for zeaz.dev — dry-run by default",
+  "zone": "zeaz.dev",
+  "apply_required": "APPLY=true",
+  "frontend_origin_default": "http://localhost:5173",
+  "backend_origin_default": "http://localhost:8005",
+  "frontend_origin_env": "ZDASH_FRONTEND_ORIGIN",
+  "backend_origin_env": "ZDASH_BACKEND_ORIGIN",
+  "routes": [
+    {
+      "hostname": "zdash.zeaz.dev",
+      "origin": "http://localhost:5173",
+      "kind": "frontend",
+      "proxied": true
+    },
+    {
+      "hostname": "api-zdash.zeaz.dev",
+      "origin": "http://localhost:8005",
+      "kind": "backend",
+      "proxied": true
+    },
+    {
+      "hostname": "zdash.zeaz.dev/health",
+      "origin": "http://localhost:8005/health",
+      "kind": "health",
+      "proxied": true
+    }
+  ],
+  "fallback": {
+    "service": "http_status:404",
+    "purpose": "block unmatched ingress"
+  },
+  "notes": [
+    "Override origins only with ZDASH_FRONTEND_ORIGIN and ZDASH_BACKEND_ORIGIN.",
+    "Do not add paid Cloudflare features by default.",
+    "Existing ssh.zeaz.dev Access route must stay intact."
+  ]
+}
+
+--- access policy ---
+{
+  "description": "zDash Access policy template — private-admin-only default",
+  "zone": "zeaz.dev",
+  "modes": {
+    "private_admin_only": true,
+    "public_read_frontend_optional": false,
+    "backend_protected_by_default": true,
+    "release_evidence_public_optional": true,
+    "bypass_disabled_by_default": true
+  },
+  "policies": [
+    {
+      "hostname": "zdash.zeaz.dev",
+      "decision": "allow",
+      "mode": "private-admin-only",
+      "include": [
+        { "email_domain": { "domain": "zeaz.dev" } }
+      ],
+      "exclude": [],
+      "require": [
+        { "mfa": { "enabled": true } }
+      ]
+    },
+    {
+      "hostname": "api-zdash.zeaz.dev",
+      "decision": "allow",
+      "mode": "backend-protected",
+      "include": [
+        { "email_domain": { "domain": "zeaz.dev" } }
+      ],
+      "exclude": [],
+      "require": [
+        { "mfa": { "enabled": true } }
+      ]
+    },
+    {
+      "hostname": "release.zeaz.dev",
+      "decision": "allow",
+      "mode": "release-evidence-public-optional",
+      "include": [],
+      "exclude": [],
+      "require": [],
+      "bypass": false
+    }
+  ],
+  "notes": [
+    "Public read frontend is optional and disabled by default.",
+    "Do not add any allow-all policy.",
+    "Disable bypass unless an operator explicitly enables a narrower exception."
+  ]
+}
+
+--- tunnel ingress ---
+# zDash Production Tunnel Ingress Config - generated reference
+# Source: configs/cloudflare/zdash/zdash.production.routes.example.json
+# Status: dry-run reference, not applied
+# Apply: requires APPLY=true and explicit confirmations
+
+ingress:
+  - hostname: zdash.zeaz.dev
+    service: http://localhost:5173
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  - hostname: api-zdash.zeaz.dev
+    service: http://localhost:8005
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  - hostname: zdash.zeaz.dev/health
+    service: http://localhost:8005/health
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  # Default catch-all - block if not matched
+  - service: http_status:404
+
+No Cloudflare changes were made.
+curl: (6) Could not resolve host: release.zeaz.dev
+# zeaz.dev live verification
+
+Generated: 2026-06-02T11:17:59Z
+
+- https://zeaz.dev -> 404
+- https://www.zeaz.dev -> 200
+- https://zdash.zeaz.dev -> 403
+- https://api-zdash.zeaz.dev -> 404
+- https://release.zeaz.dev -> 000000
+
+=== final source checks ===
+?? .runtime/
