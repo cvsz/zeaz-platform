@@ -39,7 +39,11 @@ jobs:
         cd apps/web
         npm install
         
-    - name: Build Web
-      run: |
-        cd apps/web
-        npm run build
+    - name: Install web dependencies safely
+  run: scripts/ci/install-web-deps-safe.sh
+
+- name: Build web
+  working-directory: apps/web
+  env:
+    NEXT_TELEMETRY_DISABLED: "1"
+  run: npm run build
