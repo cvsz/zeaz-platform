@@ -25,6 +25,8 @@ ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
 TOKEN_KEEP_MOST ?= 1
 TOKEN_UNUSED_DAYS ?= 90
 TOKEN_SAFE_PRESERVE_REGEX ?= (^|[-_.])(zeaz[.]dev|bootstrap|audit|admin|ai[-_]?gateway)([-_.]|$$)
+TOKEN_ROTATE_TYPES ?= dns,zt,tunnel
+TOKEN_ROTATE_OUT ?= .env.cloudflare
 
 export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 
@@ -191,10 +193,11 @@ token-verify-strict:
 	@bash scripts/cloudflare/verify-token-env.sh
 
 token-rotate-dry:
-	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --dry-run --regenerate --types all --backup --write .env.cloudflare --refresh-permissions
+	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --dry-run --regenerate --types "$${TOKEN_ROTATE_TYPES:-$(TOKEN_ROTATE_TYPES)}" --backup --write "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" --refresh-permissions
 
 token-rotate:
-	@echo "Live token rotation must be run from a reviewed local shell after validating dry-run output."
+	@test "$${CONFIRM_TOKEN_ROTATE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_ROTATE=yes required"; exit 1)
+	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --regenerate --yes --types "$${TOKEN_ROTATE_TYPES:-$(TOKEN_ROTATE_TYPES)}" --backup --write "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" --refresh-permissions
 
 token-rotate-refresh: token-rotate-dry
 
