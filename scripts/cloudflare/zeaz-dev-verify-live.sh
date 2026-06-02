@@ -10,7 +10,7 @@ urls=(
   "https://zeaz.dev"
   "https://www.zeaz.dev"
   "https://zdash.zeaz.dev"
-  "https://zdash-api.zeaz.dev"
+  "https://api-zdash.zeaz.dev"
   "https://release.zeaz.dev"
 )
 

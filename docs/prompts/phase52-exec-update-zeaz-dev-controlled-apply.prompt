@@ -13,7 +13,7 @@ Target domains:
 - www.zeaz.dev              → public landing / main website
 - zeaz.dev                  → public landing / redirect to www.zeaz.dev
 - zdash.zeaz.dev            → zDash frontend
-- zdash-api.zeaz.dev        → zDash backend API
+- api-zdash.zeaz.dev        → zDash backend API
 - release.zeaz.dev          → optional public release evidence page
 - ssh.zeaz.dev              → existing Access SSH route, do not break
 
@@ -46,7 +46,7 @@ Must include:
   - zeaz.dev
   - www.zeaz.dev
   - zdash.zeaz.dev
-  - zdash-api.zeaz.dev
+  - api-zdash.zeaz.dev
   - release.zeaz.dev
 - DNS record intent:
   - CNAME records where appropriate
@@ -65,7 +65,7 @@ Create/update:
 
 Ingress must include:
 - zdash.zeaz.dev → frontend origin
-- zdash-api.zeaz.dev → backend origin
+- api-zdash.zeaz.dev → backend origin
 - health route if needed
 - fallback 404 service
 - local origin defaults:

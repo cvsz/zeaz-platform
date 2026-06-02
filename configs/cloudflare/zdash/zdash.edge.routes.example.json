@@ -11,7 +11,7 @@
       "tls": "strict"
     },
     {
-      "name": "zdash-api.zeaz.dev",
+      "name": "api-zdash.zeaz.dev",
       "purpose": "zDash API backend",
       "origin": "http://localhost:8005",
       "tunnel": true,

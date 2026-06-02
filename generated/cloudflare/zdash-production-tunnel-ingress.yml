@@ -10,7 +10,7 @@ ingress:
       noTLSVerify: false
       originServerName: ""
 
-  - hostname: zdash-api.zeaz.dev
+  - hostname: api-zdash.zeaz.dev
     service: http://localhost:8005
     originRequest:
       noTLSVerify: false

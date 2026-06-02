@@ -1,11 +1,11 @@
 # zeaz.dev Access Policy
 
-This document describes the Phase 52 Access posture for `zdash.zeaz.dev`, `zdash-api.zeaz.dev`, and the optional public release evidence route.
+This document describes the Phase 52 Access posture for `zdash.zeaz.dev`, `api-zdash.zeaz.dev`, and the optional public release evidence route.
 
 ## Default mode
 
 - `zdash.zeaz.dev`: private-admin-only rehearsal mode.
-- `zdash-api.zeaz.dev`: protected by default.
+- `api-zdash.zeaz.dev`: protected by default.
 - `release.zeaz.dev`: public only when explicitly approved.
 - `ssh.zeaz.dev`: unchanged by this phase.
 - Bypass is disabled by default.

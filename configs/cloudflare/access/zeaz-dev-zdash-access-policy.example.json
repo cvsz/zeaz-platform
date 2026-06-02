@@ -22,7 +22,7 @@
       ]
     },
     {
-      "hostname": "zdash-api.zeaz.dev",
+      "hostname": "api-zdash.zeaz.dev",
       "decision": "allow",
       "mode": "backend-protected",
       "include": [
