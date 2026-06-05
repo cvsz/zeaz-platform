@@ -1,0 +1,18 @@
+ErrorDocument 500 /error.php
+ErrorDocument 404 /error.php
+ErrorDocument 403 /error.php
+
+Options -Indexes
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^www\.
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+
+
+#RewriteCond %{REQUEST_METHOD} POST
+#### allow the server to POST to itself
+#RewriteCond %{REMOTE_ADDR} !127.0.0.1   
+#### allow POST from trusted users
+#RewriteCond %{REMOTE_ADDR} !123.456.789.123   
+#### send all other post requests to 403 forbidden
+#RewriteRule ^ http://www.%{HTTP_HOST}/ [R,L]  

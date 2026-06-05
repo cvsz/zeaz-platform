@@ -1,0 +1,13 @@
+{
+  "name": "zlms-frontend-runtime-migration",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "audit:frontend-runtime": "node scripts/frontend-runtime-migration-audit.mjs",
+    "codemod:frontend-runtime": "node scripts/run-frontend-codemods.mjs",
+    "typecheck:frontend-runtime": "tsc -p tsconfig.strict.json --noEmit",
+    "migration:phase-abcd": "node scripts/execute-phase-abcd-migration.mjs"
+  },
+  "devDependencies": {}
+}

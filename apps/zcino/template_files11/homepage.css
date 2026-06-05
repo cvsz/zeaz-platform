@@ -1,0 +1,585 @@
+@charset "utf-8";
+@import '../template_files11/navigati.css';
+#login_box_con {right:-6px!important;top:5px!important;}
+* html #navigation {top:76px!important;}
+/* game elements on line 180+ */
+.facebookicon {position:absolute;right:119px;top:-27px;}
+
+
+.gamelist img:hover {
+	opacity:0.6;
+	filter:alpha(opacity=60);
+	}
+#categ img:hover {
+	opacity:0.6;
+	filter:alpha(opacity=60);
+}
+#jpbox{padding:10px;background-image:url('Banner-Top1.jpg');height:280px;width:280px;background-repeat:no-repeat;margin-top:10px;margin-left:10px;}
+
+.divider{
+	background-image:url('/images/divider.jpg');
+	background-repeat:no-repeat;
+	width:900px;
+	height:1px;
+	margin:10px 0px 10px 0px;
+	float:left;
+	clear:both;
+}
+
+.customBox{
+	color:white;
+	width:360px;
+	background:url('acc_box.png');
+	background-repeat:no-repeat;
+	padding:7px;
+	height:220px;	
+	font-size:10px;
+	margin-top:-20px;
+}
+
+#header{margin:0;padding:0;height:92px;float:none;position:absolute; width:880px; clear:both;}
+#header-logo{position:absolute;}
+#header-logo h2{background:url("../template_files11/logo.png") no-repeat scroll 50% 50% transparent;cursor:pointer;height:85px;margin:0 0 0 6px;padding:0;text-indent:-200000px;width:220px;}
+#header-logo h2 a{display:block;width:220px;height:85px;}
+#header-content{float:left;width:462px;padding-right:18px;}
+#header-content p{color:#FFFFFF;text-align:right;}
+#header-content p a{color:#FFFFFF;text-decoration:none;}
+#header-content a:hover{text-decoration:underline;}
+#header-ticker{clear:both;margin:0;padding-right:5px;text-align:right;}
+#header-strip{color:#ffffff;float:none;height:30px;width:880px;margin:0;padding:0;position:static;}
+#header-strip a{color:#ffffff;}
+#header-strip strong a{color:#fffc00;}
+#header-strip p{padding:8px 0 0 12px;margin:0;overflow:hidden;}
+
+/*from navigation.css */
+#buttons,#enbuttons{height:18px;position:absolute;right:-6px;top:77px;}
+* html #enbuttons {top:72px;}
+#buttons ul,#enbuttons ul{float:right;margin:0;height:18px;}
+#buttons ul li,#enbuttons ul li{float:left;margin:0;padding:0;display:block;list-style:none outside none;}
+#buttons ul li a,#enbuttons ul li a{color:#FFFFFF;text-decoration:none;display:block;font-size:0.95em;padding:0 10px;}
+#enbuttons ul li.lastItem{background-image:none;}
+#buttons ul li a:hover,#enbuttons ul li a:hover{text-decoration:none;}
+#buttons ul li#points,#enbuttons ul li#points{background:url(../template_files11/points.gif) no-repeat 0 2px;}
+#buttons ul li#account,#enbuttons ul li#account{background:url(../template_files11/account.gif) no-repeat 0 2px;}
+#buttons ul li#account a,#enbuttons ul li#account a{padding:2px 14px 3px 18px;}
+#buttons li a:hover,#enbuttons li a:hover{text-decoration:underline;}
+/* from reset.css */
+div.awards{width:300px;position:absolute;right:225px;text-align:center;color:#ffffff;font-size:11px;padding-top:25px;font-family:Verdana,Arial,Helvetica,sans-serif;}
+div.awards p.big{font-weight:bold;font-size:14px;}
+div.awards p{margin:0;padding-bottom:0px;text-align:center;}
+div.ml p{margin:0px 0px;}
+div.ml p.big{margin:0px;}
+div.btm{position:absolute;right:0px;text-align:center;color:#ffffff;font-size:11px;vertical-align:bottom;font-family:Verdana,Arial,Helvetica,sans-serif;margin-top:50px;}
+div.btm p{margin:0;padding:0;}
+div.btm img{display:inline;vertical-align:text-bottom;}
+*{margin:0;padding:0;}
+a,object{outline:none;}
+body{text-align:center;font-size:11px;background:url('t11/BG.jpg') center 0 no-repeat #000000; background-attachment:fixed}
+body div{position:relative;float:left;font-family:verdana,arial,helvetica,sans-serif;}
+body div p{font-size:1em;margin:5px 20px;display:block;position:relative;}
+body div h1 a,body div p a,body div p a:hover,.terms a{color:#ffdf6f;text-decoration:underline;}
+body div img{border:0;position:relative;}
+body td,th {
+	color: #FFF;
+}
+#topbar{
+	height:30px;
+	width:100%;
+	background: url('t11/topmenu.jpg');
+	background-repeat:repeat-x;
+	padding-top:9px;
+	font-family:verdana,arial,helvetica,sans-serif;
+	font-weight:bold;
+	border-bottom:2px solid #333;
+	}
+#top_menu{padding:0;top:0;width:900px;margin:0 auto;float:none;text-align:left;position:relative;margin-top:-30px}
+#pc_container{padding:0;top:35px;width:1000px;margin:0 auto;float:none;text-align:left;position:relative;}
+#header_container{z-index:9999;position:absolute;width:880px;margin:0 auto;float:none;height:52px;padding:0; top:0; left:0;}
+#pc_container .imagetitle{position:absolute;}
+#pc_container #welcome_bonus{width:889px;height:241px;background:url(../template_files11/party_ca.jpg) no-repeat;margin:78px 0 0 0;padding:0;}
+#pc_container #welcome_bonus a,#bottom_promo_section #secure_gambling a{text-decoration:none;}
+#welcome_bonus #welcome_bonus_content{width:350px;height:250px;position:absolute;right:0;z-index:10;}
+#welcome_bonus #welcome_bonus_content h1{font-size:11px;margin:5px 30px;}
+#welcome_bonus #welcome_bonus_content p{margin:5px 30px;font-size:10px;}
+#welcome_bonus #welcome_offer{top:5px;left:25px;position:absolute;z-index:90;}
+#welcome_bonus #welcome_offer{text-decoration:none;}
+#welcome_bonus #hp_quote{position:absolute; right:46px;top:45px;z-index:10;}
+#welcome_bonus #hp_top_jackpot{position:absolute; right:96px;top:122px;z-index:10;}
+#welcome_bonus #download_btn{top:175px;left:31px;position:absolute;z-index:90;}
+#welcome_bonus #instantplay_btn{left:272px;position:absolute;top:176px;z-index:10;}
+#welcome_bonus .downloadclick{display:block;height:241px;position:absolute;top:0;float:none;z-index:80;width:889px;left:0;background: url(../template_files11/clear000.gif);}
+#welcome_bonus #casino_jackpot_total_ticker{position:absolute;right:106px;top:161px;visibility:visible;z-index:10;font-size:18px;font-weight:bold;font-family:"Trebuchet MS", Arial, Helvetica, sans-serif}
+#welcome_bonus #casino_jackpot_total_ticker .currency{margin-right:5px;float:left;}
+#welcome_bonus #casino_jackpot_total_ticker img{display:block;float:left;}
+#welcome_bonus #casino_jackpot_total_ticker img.v{width:22px;height:35px;}
+#welcome_bonus #casino_jackpot_total_ticker img.v_s{width:16px;height:25px;margin:8px 0 0 2px;}
+#welcome_bonus #casino_jackpot_total_ticker img.ticker_dot{margin:21px 0 0 0;width:10px;height:10px;}
+#welcome_bonus #casino_jackpot_total_ticker img.ticker_coma{margin:25px 1px 0;width:10px;height:10px;}
+
+#bottom_promo_section{width:601px; background: url(../template_files11/casino_n.jpg) no-repeat; width:889px; height:205px;}
+#bottom_promo_section img {border:0;}
+#bottom_promo_section #why_pc {width:405px;height:160px;position:absolute;top:35px;left:13px;}
+#bottom_promo_section #why_pc a{color:#ffdf6f;text-decoration:underline;}
+#bottom_promo_section #why_pc #bottom_link{font-weight:bold; position:absolute; bottom:11px;left:20px;}
+#bottom_promo_section #why_pc #title{height:30px;position:absolute;top:-33px;left:0;}
+#bottom_promo_section #why_pc ul{margin:15px 5px 0 20px;}
+#bottom_promo_section #why_pc ul li{padding: 0 0 9px 20px; list-style:none; background: url(../template_files11/arrow_v4.png) no-repeat 0 0;}
+
+
+#bottom_promo_section #secure_gambling{width:150px;height:160px;position:absolute;top:35px;left:437px;}
+#bottom_promo_section #secure_gambling #title{height:30px;position:absolute;top:-33px;left:0;}
+#bottom_promo_section #secure_gambling #secure_icons{position:absolute; top:5px;}
+#bottom_promo_section #last_games{width:280px;height:163px;position:absolute;top:30px;left:603px;}
+#bottom_promo_section #last_games #title{height:30px;position:absolute;top:-26px;left:0;}
+#bottom_promo_section #last_games #featured_games{
+	width:280px;
+	height:164px;
+	position:absolute;
+	top:0;
+	left:0;
+}
+#bottom_promo_section #last_games #game_info{width:279px;height:26px; position:absolute; top:137px; left:0;}
+
+#bottom_promo_section #last_games #featured_flash {height: 160px;left:0;position: absolute;top:0;width: 280px;}
+
+.reset_p{margin:0; padding:0;width:auto!important;}
+
+#information_area_box{padding:0 0 30px 0;}
+.information_content_area_box{display:none;}
+.information_content_area_box_input p{margin:5px 5px 8px 7px; padding:0;}
+.information_content_area_box_input{width:867px;background:url(../template_files11/hp_frame.gif) repeat-y;float:none; margin:50px 0 10px 0; left:0;}
+.information_content_area_box p{padding:2px;}
+.information_content_topcap{padding:0;margin:0;position:absolute;top:0;width:867px;height:37px; float:left; display:block; top:-37px; left:0;}
+.information_content_bottomcap{padding:0;margin:0;position:absolute;width:867px;height:2px;bottom:-2px;left:0;}
+
+
+.information_content_area_box_input .play_casino_games_online{width:300px; display:block;float:left;margin:-33px 7px 10px 1px; padding:0; display:inline;}
+
+.information_content_area_box_input .first{margin:-33px 7px 10px 17px;}
+
+.information_content_area_box_input .play_casino_games_online p.title{font-weight:bold; width: 290px;font-size:10px; overflow:hidden; margin-left:10px; height:14px; display:block; margin: 8px 0 18px 5px;}
+
+.information_content_area_box_input .play_casino_games_online_middle{width:208px; display:block;float:left; margin: -33px 8px 10px 12px; padding:0; display:inline;}
+.information_content_area_box_input .play_casino_games_online_middle p.title{font-weight:bold; width: 195px; font-size:10px; overflow:hidden;height:14px;display:block;margin:8px 0 18px 0; text-align:center;}
+
+
+.download_main_layer{position:absolute;z-index:99999;width:276px;height:181px;background:url(../template_files11/casino_hp_pop.jpg);display:none;left:0;top:0;}
+.download_main_layer .ok{position:absolute;top:130px;left:33px;width:99px;height:29px;}
+.download_main_layer .cancel{position:absolute;top:130px;left:144px;width:99px;height:29px;}
+.download_main_layer .x{position:absolute;top:2px;left:249px;width:25px;height:25px;}
+.download_main_overlay{top:0;left:0;position:absolute;width:100%;height:100%;z-index:99990;background:#000;opacity:0.7;filter:alpha(opacity=70);}
+.download_main_layer_btn_download{display:none;position:absolute;left:0;top:310px;width:254px;height:81px;z-index:99999;}
+.download_main_layer_btn_welcome{display:none;position:absolute;left:0;top:171px;width:205px;height:138px;z-index:99999;}
+
+
+#my_casino_payment_methods{margin:35px 0 0 0;}
+#information_content_area_box_rights{text-align:center;margin:10px 0 10px 0;width:99%;}
+#information_content_area_box_rights p{margin:0 0 8px 0;}
+#information_area_box #informationbox_icons{position:relative;padding:0;overflow:hidden;position:relative;width:890px;}
+#informationbox_icons ul{list-style-image:none;list-style-position:outside;list-style-type:none;left:50%;float:left;clear:left;position:relative;}
+#informationbox_icons li{display:inline;float:left;position:relative;right:50%;margin:0 10px;}
+
+#navigation,#navigation li,#navigation ul{height:24px;}
+#navigation{margin:0 0 0 6px!important;}
+.download_main_layer .ok{position:absolute;top:130px;left:33px;width:99px;height:29px;}
+.download_main_layer .cancel{position:absolute;top:130px;left:144px;width:99px;height:29px;}
+.download_main_layer .x{position:absolute;top:2px;left:249px;width:25px;height:25px;}
+.download_main_overlay{top:0;left:0;position:absolute;width:100%;height:100%;z-index:99990;background:#000;opacity:0.7;filter:alpha(opacity=70);}
+.download_main_layer_btn_download{display:none;position:absolute;left:0;top:310px;width:254px;height:81px;z-index:99999;}
+.download_main_layer_btn_welcome{display:none;position:absolute;left:0;top:171px;width:205px;height:138px;z-index:99999;}
+#bodyimposter{position:static !important;float:none !important;}
+
+
+.play_tv_ad{position:absolute;display:block;width:200px;height:45px;right:11px;bottom:34px;z-index:1000;}
+.play_tv_ad a{display:block;text-indent:-10000px;width:100%;height:100%; background:url(../template_files11/clear000.gif);}
+
+.ddialog{display:none;position:absolute;top:0;left:0;width:880px;background:url(../template_files11/flash_container_bg.jpg);color:#333;border:1px solid #1ab9ee;padding:0;height:231px;z-index:9999;}
+.ddialog .dclose{width:24px;height:24px;z-index:9998;position:absolute;top:-10px;right:-10px;display:block;}
+.ddialog .dclose img{border:0;display:block;width:24px;height:24px;}
+#videoflashcontainer {position:absolute; right:0;}
+
+#welcome_bonus #download_btn_vid{top:95px;left:28px;position:absolute;z-index:10;}
+#welcome_bonus #instantplay_btn_vid{left:50px;position:absolute;top:130px;z-index:10;}
+.clear{
+	height:50px;
+	width:50px;
+}
+#login {
+	width:175px;
+	background-color: #333;
+	font-size:10px;
+	font-weight:bold;
+	color:orange;
+	text-align:center;
+	}
+.price {
+	color:red;
+	}
+
+.myaccount {
+	font-size:12px;
+	font-weight:bold;
+}
+.myaccount a {
+	line-height:15pt;
+	font-size:12px;
+	font-weight:bold;
+	padding-top:2px;
+	padding-bottom:2px;
+	text-decoration:none;
+	color:white;
+}
+.myaccount a:hover{
+	text-decoration:underline;
+	color:grey;
+}
+.gameName{
+	width:225px;
+	font-weight:bold;
+	font-size:11px;
+	overflow:hidden;
+	text-align:left;	
+	padding:4px 4px 4px 4px;
+	float:left;
+}
+.launchgame{
+	color:#09C;
+	font-size:11px;
+	font-weight:bold;
+	text-decoration:underline;
+}
+#categories {
+	border:1px;
+	margin:9px 9px 9px 9px;
+	float:left;
+}
+#games {
+	font-weight:bold;
+	text-align:center;
+	border:1px;
+	width:404px;
+	margin:9px 9px 9px 9px;
+	float:left;
+}
+#currentgame{
+	border:1px solid #222;
+	position:relative;
+	top:166px;
+	left:20px;
+}
+.categorylist {
+	width:120px;
+	height:18px;
+	padding : 4px 2px 4px 2px;
+	float:left;
+	text-align:center;
+	float:none;
+	font-size;14px;
+	font-weight:bold;
+	border:1px solid #222;
+	}
+#jackpot{
+	margin-left:-7px;
+	height:50px;
+	width:180px;
+	padding-top:70px;
+	padding-left:40px;
+	background-image:url('rightmenu/JACKPOT.png');
+	background-repeat:no-repeat;
+	font-size:16px;
+	font-weight:bold;
+}
+.gamelist {
+	font-family:Arial, Helvetica, sans-serif;
+	width:155px;
+	height:150px;
+	padding : 0px 5px 5px 5px;
+	float:left;
+	color:white;
+	background-color:#000;
+	border:1px solid #333;
+	margin-left:15px;
+	margin-bottom:15px;
+	}
+.gameName {
+	font-size:10px;
+	text-align:center;
+	width:152px;
+	height:10px;
+	overflow:hidden;
+}
+.gamelist a {
+	font-size:10px;
+	font-weight:bold;
+	text-decoration:none;
+	color:#FFC;
+	}
+.gamelist a:hover {
+	font-size:10px;
+	font-weight:bold;
+	text-decoration:underline;
+	color:#FFF;
+	}
+.gamelist img:hover {
+	opacity:0.6;
+	filter:alpha(opacity=60);
+	}
+.cash {
+	font-weight:bold;
+	font-size:11px;
+	color:#0C3;
+}
+#openAccount{
+	width:275px;
+}
+#loginDiv {
+	width:460px;
+	float:right;
+	line-height:1.6em;
+}
+#registerDiv {
+	width:340px;
+	font-size:11px;
+	line-height:1.4em;
+}
+#registerDiv a {
+	font-size:12px;
+}
+
+.hidd {
+	  display:none; 
+      position:absolute; 
+      background-color: black; 
+	  width:184px;
+	  min-height:50px;
+	  z-index:100;
+	  color:white;
+	  font-size:12px;
+}
+#content {
+	color:black;
+	width:920px;
+	min-height:400px;
+	margin-left:0px;
+	background-color: #000;
+	background-image:url('../images/bg2.jpg');
+	background-repeat:repeat;
+	float:left;
+	padding-bottom:15px;
+	}
+#leftmenu {
+	color:black;
+	width:180px;
+	float: left;
+	padding-left:10px;
+	padding-top:10px;
+	background-color:#FFF;
+	}
+#centermenu{
+	color:black;
+	width:750px;
+	min-height:400px;
+	background-color:#FFF;
+	}
+#rightmenu{
+	text-align:center;
+	float:right;
+	padding-left:10px;
+	width:240px;
+	background-color:#FFF;
+}
+#all{
+	margin-top:0px;
+	width:1000px;
+	background-color:#FFF;
+}
+
+
+
+li#user input[type="text"] {
+    background: url("../template_files11/new/input_lo.png") no-repeat scroll -3px 0 transparent;
+    border: 0 none !important;
+    color: #1E1D1D;
+    float: left;
+    font-size: 12px;
+    height: 21px;
+    outline: medium none;
+    padding: 7px 14px 5px 45px;
+    width: 82px !important;
+}
+li#user input[type="text"]:focus {
+    background-position: -3px -32px;
+}
+li#pass input[type="password"] {
+    background: url("../template_files11/new/input_lo.png") no-repeat scroll -145px 0 transparent;
+    border: 0 none !important;
+    color: #1E1D1D;
+    float: left;
+    font-size: 12px;
+    height: 21px;
+    outline: medium none;
+    padding: 7px 14px 5px 45px;
+    width: 82px !important;
+}
+li {
+	list-style:none;
+}
+li#pass input[type="password"]:focus {
+    background-position: -145px -32px;
+}
+#formlogin_container {
+    float: left;
+	padding-top:20px;
+    font-size: 12px;
+    height: 40px;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: -25px;
+    top: 20px;
+    width: 450px;
+    z-index: 100;
+}
+#form_direct {
+    border: 0 solid #CCCCCC;
+    font-size: 11pt;
+}
+#form_direct fieldset {
+    border: medium none;
+    width: 380px !important;
+}
+#user label, #pass label {
+    color: #1E1D1D;
+    font-size: 12px;
+    font-style: italic;
+    left: 0;
+    padding: 9px 4px 4px 3px;
+    position: absolute;
+}
+#user label, #pass label {
+    font-style: italic;
+    padding: 10px 4px 4px 3px;
+}
+#user label, html.gecko #user label {
+    padding-left: 45px;
+}
+#pass label {
+    left: 183px;
+}
+
+li#ok input#loginbutton {
+     background: url("../template_files11/new/input_lo.png") no-repeat scroll -287px 0 transparent;
+    border: 0 none;
+    color: black;
+    cursor: pointer;
+    float: left;
+    font-weight: bold;
+    height: 33px;
+    outline: medium none;
+    padding: 5px 0 6px;
+    position: absolute;
+    text-shadow: 1px 1px 0 white;
+    width: 140px;
+}
+li#ok input#loginbutton:hover {
+    background-position: -287px -32px;
+}
+/* ====== BC.GAME REDESIGN OVERRIDES ====== */
+body {
+    background: #1c1e22 !important;
+    color: #fff !important;
+    font-family: 'Inter', Roboto, Arial, sans-serif !important;
+}
+
+#topbar {
+    background: #24262b !important;
+    border-bottom: none !important;
+    height: 60px !important;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+#topbar a.topmenu {
+    color: #99a4b0 !important;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 0 15px;
+    text-decoration: none !important;
+    transition: color 0.3s;
+}
+
+#topbar a.topmenu:hover {
+    color: #00e701 !important;
+}
+
+#pc_container {
+    width: 1200px !important;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.customBox {
+    background: #24262b !important;
+    border-radius: 12px;
+    padding: 20px !important;
+    height: auto !important;
+    width: 320px !important;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+    margin-top: 20px !important;
+}
+
+#jpbox {
+    background: #24262b !important;
+    border: 2px solid #00e701 !important;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 231, 1, 0.2);
+}
+
+.gamelist img, #categ img {
+    border-radius: 12px;
+    transition: transform 0.3s, filter 0.3s !important;
+}
+
+.gamelist img:hover, #categ img:hover {
+    transform: translateY(-5px);
+    filter: brightness(1.2);
+    opacity: 1 !important;
+}
+
+#footer {
+    background: #1c1e22 !important;
+    border-top: 1px solid #24262b;
+}
+
+h1, h2, h3, p, div {
+    font-family: 'Inter', Roboto, Arial, sans-serif !important;
+}
+
+/* Button overrides */
+input[type="submit"], input[type="button"], button, .button {
+    background: #00e701 !important;
+    color: #1c1e22 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 10px 20px !important;
+    font-weight: bold !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="submit"]:hover, input[type="button"]:hover, button:hover, .button:hover {
+    background: #00c700 !important;
+    box-shadow: 0 4px 10px rgba(0, 231, 1, 0.4);
+}
+
+input[type="text"], input[type="password"] {
+    background: #1c1e22 !important;
+    border: 1px solid #3b3f46 !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+}

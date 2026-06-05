@@ -1,0 +1,49 @@
+[Unit]
+Description=OpenWork (%i) — local-first agentic desktop runtime
+Documentation=https://github.com/different-ai/openwork
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/projects/openwork
+EnvironmentFile=-%h/.config/openwork/openwork.env
+Environment=OPENWORK_DEV_MODE=1
+
+# Run as the invoking user; expand %h for the user's home.
+ExecStart=/usr/bin/env pnpm dev
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+# Logging goes to the user journal; `make logs` / `make follow` read it.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openwork
+
+# --- Hardening -------------------------------------------------------------
+# Keep privileges minimal; OpenWork does not need them.
+NoNewPrivileges=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+MemoryDenyWriteExecute=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+UMask=0077
+
+[Install]
+WantedBy=default.target

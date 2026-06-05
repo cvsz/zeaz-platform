@@ -1,0 +1,61 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:ca64301c-1332-46bc-be79-44026976a0f6",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-05-21T00:44:24Z",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "cyclonedx-gomod",
+        "version": "v1.9.0",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "29ec22e85cbcb8efb958d2b26b0787a3"
+          },
+          {
+            "alg": "SHA-1",
+            "content": "4d67f822098d5a65e6fc28275e29ab114a65fab3"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "efe5002fbe170cf0c025f568c47f893bcf00a94c9d2347737297e5c88f8bf3cc"
+          },
+          {
+            "alg": "SHA-384",
+            "content": "bfa33e64628633366d70eee21387059683f7be247cc7cfd6df3d00563319beb6ac29b3dbec6ae8f384c28327bf2ab69f"
+          },
+          {
+            "alg": "SHA-512",
+            "content": "16a1c54db156bb2e45537ecb06fcd45c8e8ec243c39896f19112989c7501c1cac38784eba503ad3e3532e72db59be352d67a97ffd7e9942fa77ceedf9087d65a"
+          }
+        ],
+        "externalReferences": [
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-gomod",
+            "type": "vcs"
+          },
+          {
+            "url": "https://cyclonedx.org",
+            "type": "website"
+          }
+        ]
+      }
+    ],
+    "component": {
+      "bom-ref": "pkg:golang/zacademy/tests/platform@v0.0.0-20260520230039-b9457a3365b4?type=module",
+      "type": "application",
+      "name": "zacademy/tests/platform",
+      "version": "v0.0.0-20260520230039-b9457a3365b4",
+      "purl": "pkg:golang/zacademy/tests/platform@v0.0.0-20260520230039-b9457a3365b4?type=module\u0026goos=linux\u0026goarch=amd64"
+    }
+  },
+  "dependencies": [
+    {
+      "ref": "pkg:golang/zacademy/tests/platform@v0.0.0-20260520230039-b9457a3365b4?type=module"
+    }
+  ]
+}

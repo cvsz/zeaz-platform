@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-05-07T00:00:00.000Z",
+  "attestationPolicy": {
+    "imageDigestPinned": "required sha256 digest",
+    "sbomDigestPinned": "required sha256 digest",
+    "slsaProvenance": "signed and verified",
+    "runtimeAssets": "immutable with sha256 and matching build provenance",
+    "sandbox": {
+      "nonRoot": "required",
+      "readOnlyFilesystem": "required",
+      "seccompProfile": "required and not unconfined",
+      "networkPolicy": "required"
+    }
+  },
+  "sampleResult": {
+    "passed": true,
+    "score": 100,
+    "failures": [],
+    "requiredEvidence": [
+      "workloadId",
+      "container image digest",
+      "SBOM digest",
+      "SLSA provenance predicate",
+      "immutable runtime asset manifest",
+      "sandbox posture"
+    ]
+  },
+  "provenanceVerification": {
+    "autoRollbackOnFailure": true,
+    "canaryRolloutStrategy": "freeze canary, route traffic to last-known-good release, invoke SOAR rollback playbook"
+  }
+}

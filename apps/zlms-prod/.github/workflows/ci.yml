@@ -1,0 +1,229 @@
+name: CI – Build, Test & Security
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: windows-2022
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
+        with:
+          dotnet-version: '8.0.416'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57
+
+      - name: Restore NuGet packages
+        shell: pwsh
+        run: nuget restore app/lms.csproj -SolutionDirectory "${{ github.workspace }}"
+
+      - name: Build project
+        shell: pwsh
+        run: |
+          msbuild app/lms.csproj `
+            /p:Configuration=Release `
+            /p:Platform="Any CPU" `
+            /m
+
+      - name: Run unit tests when test projects exist
+        shell: pwsh
+        run: |
+          $testProjects = Get-ChildItem -Path . -Recurse -Filter '*Tests.csproj' | ForEach-Object { $_.FullName }
+          if ($testProjects.Count -eq 0) {
+            Write-Output 'No .NET test projects were detected.'
+            exit 0
+          }
+          foreach ($project in $testProjects) {
+            dotnet test $project --configuration Release --logger "console;verbosity=normal"
+          }
+
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
+        with:
+          dotnet-version: '8.0.416'
+
+      - name: Find Android-capable projects
+        id: detect_android
+        shell: bash
+        run: |
+          set -euo pipefail
+          android_projects=$(find . -name '*.csproj' -print0 | xargs -0 -r rg -l '<TargetFrameworks?>[^<]*android' || true)
+          if [ -z "$android_projects" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            printf '%s\n' 'No Android target frameworks found in this repository.'
+          else
+            {
+              echo 'found=true'
+              echo 'projects<<EOF'
+              echo "$android_projects"
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Android workload
+        if: steps.detect_android.outputs.found == 'true'
+        run: dotnet workload install maui-android
+
+      - name: Build Android projects
+        if: steps.detect_android.outputs.found == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r project; do
+            [ -z "$project" ] && continue
+            dotnet build "$project" -c Release -f net8.0-android
+          done <<< "${{ steps.detect_android.outputs.projects }}"
+
+      - name: Skip note when no Android project was found
+        if: steps.detect_android.outputs.found != 'true'
+        run: printf '%s\n' 'Android build skipped because no Android-capable project was detected.'
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-14
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
+        with:
+          dotnet-version: '8.0.416'
+
+      - name: Find iOS-capable projects
+        id: detect_ios
+        shell: bash
+        run: |
+          set -euo pipefail
+          ios_projects=$(find . -name '*.csproj' -print0 | xargs -0 -r rg -l '<TargetFrameworks?>[^<]*ios' || true)
+          if [ -z "$ios_projects" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            printf '%s\n' 'No iOS target frameworks found in this repository.'
+          else
+            {
+              echo 'found=true'
+              echo 'projects<<EOF'
+              echo "$ios_projects"
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install iOS workload
+        if: steps.detect_ios.outputs.found == 'true'
+        run: dotnet workload install maui-ios
+
+      - name: Build iOS projects
+        if: steps.detect_ios.outputs.found == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r project; do
+            [ -z "$project" ] && continue
+            dotnet build "$project" -c Release -f net8.0-ios
+          done <<< "${{ steps.detect_ios.outputs.projects }}"
+
+      - name: Skip note when no iOS project was found
+        if: steps.detect_ios.outputs.found != 'true'
+        run: printf '%s\n' 'iOS build skipped because no iOS-capable project was detected.'
+
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: csharp
+            build-mode: none
+          - language: javascript-typescript
+            build-mode: none
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@87557b9c84dde89fdd9b10e88954ac2f4248e463
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          config-file: ./.github/codeql/codeql-config.yml
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@87557b9c84dde89fdd9b10e88954ac2f4248e463
+        with:
+          category: ci/codeql/${{ matrix.language }}
+
+  semgrep:
+    name: Semgrep OWASP Top Ten
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Set up Python for Semgrep
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.11'
+      - name: Install pinned Semgrep CLI
+        env:
+          SEMGREP_VERSION: 1.162.0
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir "semgrep==${SEMGREP_VERSION}"
+          semgrep --version
+      - name: Run Semgrep OWASP Top Ten ruleset
+        env:
+          SEMGREP_SEND_METRICS: 'off'
+        run: |
+          set -euo pipefail
+          semgrep scan --config p/owasp-top-ten --metrics=off --timeout 60 .

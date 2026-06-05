@@ -1,0 +1,60 @@
+name: Deploy to Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_name:
+        description: Signed package artifact name
+        required: false
+        default: zlms-prod-package
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    environment: staging
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download signed package artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: artifact
+
+      - name: Validate signed package artifact
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'artifact/package.zip')) {
+            throw 'Required deployment package artifact/package.zip was not found.'
+          }
+          if (-not (Test-Path 'artifact/package.zip.bundle')) {
+            throw 'Required Cosign signature bundle artifact/package.zip.bundle was not found.'
+          }
+
+      - name: Deploy to IIS with Web Deploy
+        shell: pwsh
+        env:
+          STAGING_SERVER_NAME: ${{ secrets.STAGING_SERVER_NAME }}
+          STAGING_USERNAME: ${{ secrets.STAGING_USERNAME }}
+          STAGING_PASSWORD: ${{ secrets.STAGING_PASSWORD }}
+        run: |
+          foreach ($required in 'STAGING_SERVER_NAME', 'STAGING_USERNAME', 'STAGING_PASSWORD') {
+            if ([string]::IsNullOrWhiteSpace((Get-Item "env:$required").Value)) {
+              throw "$required environment secret is required."
+            }
+          }
+
+          msdeploy.exe `
+            -source:package='${{ github.workspace }}\artifact\package.zip' `
+            -dest:auto,computerName="$env:STAGING_SERVER_NAME",userName="$env:STAGING_USERNAME",password="$env:STAGING_PASSWORD",authType=Basic `
+            -verb:sync `
+            -retryAttempts:3

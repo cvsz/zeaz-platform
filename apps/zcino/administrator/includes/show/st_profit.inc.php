@@ -1,0 +1,1 @@
+<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/administrator/includes/show/st_profit_chart.inc.php" height="800" width="100%" scrolling="no">

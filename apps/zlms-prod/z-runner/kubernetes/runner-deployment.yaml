@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: z-runner
+  namespace: z-runner
+  labels:
+    app.kubernetes.io/name: z-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: z-runner
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: z-runner
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/runner: localhost/z-runner
+    spec:
+      serviceAccountName: z-runner
+      runtimeClassName: gvisor
+      automountServiceAccountToken: false
+      restartPolicy: Always
+      nodeSelector:
+        node.kubernetes.io/runner-isolation: gvisor
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: z-runner
+          effect: NoSchedule
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: runner
+          image: ghcr.io/cvsz/z-runner@sha256:0000000000000000000000000000000000000000000000000000000000000000
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: z-runner-github-app
+            - configMapRef:
+                name: z-runner-config
+          ports:
+            - name: metrics
+              containerPort: 9102
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+              ephemeral-storage: "4Gi"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+              ephemeral-storage: "20Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: work
+              mountPath: /var/lib/z-runner/work
+            - name: tmp
+              mountPath: /tmp
+            - name: logs
+              mountPath: /var/log/z-runner
+            - name: github-app-key
+              mountPath: /etc/z-runner/github-app.pem
+              subPath: github-app.pem
+              readOnly: true
+          livenessProbe:
+            exec:
+              command: ["/opt/z-runner/healthcheck.sh"]
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            exec:
+              command: ["/opt/z-runner/healthcheck.sh"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: work
+          emptyDir:
+            sizeLimit: 20Gi
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+        - name: logs
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: github-app-key
+          secret:
+            secretName: z-runner-github-app
+            defaultMode: 0400
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: z-runner
+  namespace: z-runner
+  labels:
+    app.kubernetes.io/name: z-runner

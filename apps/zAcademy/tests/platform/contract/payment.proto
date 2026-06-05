@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package payment.v1;
+
+option go_package = "zacademy/tests/platform/contract/paymentv1";
+
+message AuthorizePaymentRequest {
+  string payment_id = 1;
+  string user_id = 2;
+  int64 amount_minor = 3;
+  string currency = 4;
+  string merchant_id = 5;
+  string country_code = 6;
+}
+
+message AuthorizePaymentResponse {
+  string decision_id = 1;
+  bool allowed = 2;
+  string reason = 3;
+}
+
+service PaymentGateway {
+  rpc AuthorizePayment(AuthorizePaymentRequest) returns (AuthorizePaymentResponse);
+}

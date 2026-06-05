@@ -1,0 +1,2968 @@
+{
+  "generatedAt": "2026-05-07T03:59:41.270Z",
+  "nextConfig": "next.config.ts",
+  "cspMiddleware": "csp-middleware.ts",
+  "hydrationIntegrity": "hydration-integrity.ts",
+  "ssrCandidates": [
+    {
+      "file": "app/Register.aspx",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/Scripts/jquery-1.10.2.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/Scripts/knockout-3.0.0.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/ckeditor/samples/jquery.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/agenda-views.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/background-events.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/basic-views.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/default.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/external-dragging.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/gcal.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/json.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/languages.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/selectable.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/theme.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/fullcalendar/demos/timezones.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/icheck/demo/index.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/icheck/demo/js/custom.min.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/apartment.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/australia.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/brazil.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/canada.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/china.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/continents.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/europe.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/france.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/germany.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/index.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/italy.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/russia.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/switzerland.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/uk.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/usa.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/global/plugins/mapplic/world.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/pages/scripts/contact.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/assets/pages/scripts/contact.min.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/assets/admin/plugins/summernote/index.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/assets/plugins/summernote/index.html",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/doctools.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/jquery-3.1.0.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/js/oldtheme.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/js/theme.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/searchtools.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/websupport.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/doctools.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/jquery-3.1.0.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/js/oldtheme.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/js/theme.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/searchtools.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/websupport.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/jquery-2.2.4.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/jquery-3.1.1.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/jquery-3.1.1.slim.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/yafEditor/yafEditor.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/yafEditor/yafEditor.min.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge_crash/forum/editors/yafEditor/yafEditor.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge_crash/forum/install/default.aspx",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge_crash/forum/themes/cleanSlate/cleanslate.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge_old/forum/editors/yafEditor/yafEditor.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge_old/forum/install/default.aspx",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/knowledge_old/forum/themes/cleanSlate/cleanslate.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/login.aspx",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/doc/html/_static/doctools.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/doc/html/_static/jquery.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/doc/html/_static/searchtools.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/doc/html/_static/websupport.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/js/shortcuts_handler.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/js/tbl_operations.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/js/vendor/openlayers/OpenLayers.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/setup/ajax.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    },
+    {
+      "file": "app/phpMyAdmin/setup/scripts.js",
+      "strategy": "Move data fetching to server boundary and hydrate only islands."
+    }
+  ],
+  "rscCandidates": [
+    {
+      "file": "app/Admin/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/Certificate_adjust.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/Certificate_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/Certificatedetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/Certificatedetail_user.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/Issue.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/ViewCertificate.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Certificate/WebForm1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Checkservice.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/Class.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/ClassItemdetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/Coursecalenda.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/Coursedetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/Question.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/Viewresult.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/class_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/classitem_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/classitemupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/course_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/period.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/period_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course/setusercourse.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/Course_enroll.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/Coursedetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/View_pollresult.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/class.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/classitemdetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/period.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/poll.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/poll1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Course_user/profile.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Dummy.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Multimedia/Room1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Multimedia/Roomdetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Multimedia/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Multimedia/live_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Multimedia_user/Roomdetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Multimedia_user/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Police - Copy (2).Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Police - Copy.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Police.20190722.master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Police.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Police_noform.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Police_user.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Activities.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Activityupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Poll_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Project_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Standard.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Standard_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/Standard_detail_add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/View_detail_report.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/View_report.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/activities_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/activities_detail_list.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/asset.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/asset_add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/asset_add_detial.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/asset_add_file.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/asset_detail_add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/compareresult.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/indicator.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/resultupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/setpoll.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA/treeview.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Activities.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Activities_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Activityupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Editstd1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Editstd2.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Poll_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Poll_detail1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Standard.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Standard1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Standard2.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Standard_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/Standard_detail_add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/View_detail_report.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/View_detail_report1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/View_report1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/activities_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/activities_detail_list.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/asset.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/indicator.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/setpoll.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/QA_NEW/survey_list.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Question_View - Copy.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Question_View.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Question_View1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Question_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Question_select_make.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questionanswer.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questiondetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questiondetail_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questiondetailupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questiongroup_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questionitemupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/Questionmaker.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/default_backup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question/makequestion.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Question_View.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Question_View1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Question_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Question_select_make.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questionanswer.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questiondetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questiondetail_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questiondetailupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questiongroup_edit.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questionitemupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/Questionmaker.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/default_backup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Question - Copy/makequestion.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Register.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/Polltail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/Reportdetail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/View_userreport.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/Viewclassreport.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/Viewcoursereport.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/Viewuserreport.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USERREPORT/user_report.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/Activities.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/Activityupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/ReportQA.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/SARForm.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/Uploadfile.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/Uploadfile1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/View_detail_report.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/activities_detail.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/activities_detail_list.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/asset.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/asset_add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/asset_add_file.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/asset_detail_add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/asset_list.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/asset_list_1.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/resultupload.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/USER_QA/survey_list.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/UpdatingSystem.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/User/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Usergroup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Userpermission.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/Userpermission_backup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/devexpress/UnitaMisura.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/ebook/add.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/ebook/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/ebook/default_backup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/ebook/default_user.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/About.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/Site.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/forum/Forum.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/forum/auth.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/forum/digest.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/forum/error.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/forum/install/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge/forum/popup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/About.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/Site.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/forum/Forum.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/forum/digest.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/forum/error.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/forum/install/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_crash/forum/popup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/About.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/Site.Master",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/forum/Forum.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/forum/digest.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/forum/error.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/forum/install/default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/knowledge_old/forum/popup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/login.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/logout.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/profile.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/selectusergroup.aspx",
+      "strategy": "Extract route shell into app router server component."
+    },
+    {
+      "file": "app/web/Default.aspx",
+      "strategy": "Extract route shell into app router server component."
+    }
+  ],
+  "bootstrapCandidates": [
+    {
+      "file": "app/Certificate/Default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Certificate/Issue.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course/Class.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course/Coursedetail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course/Default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course/period.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course_user/Course_enroll.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course_user/class.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Course_user/profile.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Multimedia/default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Multimedia_user/default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Police - Copy (2).Master",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Police - Copy.Master",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Police.20190722.master",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Police.Master",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Police_noform.Master",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Police_user.Master",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/Activities.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/Default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/Poll_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/Standard.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/Standard_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/Standard_detail_add.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/View_report.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/activities_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/indicator.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA/setpoll.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Activities.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Poll_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Poll_detail1.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Standard.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Standard1.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Standard2.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Standard_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/Standard_detail_add.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/activities_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/indicator.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/setpoll.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/QA_NEW/survey_list.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/Question_select_make.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/Questionanswer.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/Questiondetail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/Questionmaker.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/default_backup.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question/makequestion.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/Question_select_make.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/Questionanswer.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/Questiondetail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/Questionmaker.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/default_backup.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Question - Copy/makequestion.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Register.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/USER_QA/Activities.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/USER_QA/SARForm.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/USER_QA/activities_detail.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Usergroup.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Userpermission.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/Userpermission_backup.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/angularjs/plugins/ui-bootstrap-tpls.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap/js/bootstrap.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap/js/bootstrap.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-contextmenu/bootstrap-contextmenu.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-editable/bootstrap-editable/js/bootstrap-editable.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-editable/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-editable/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-growl/demo.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-select/js/bootstrap-select.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-summernote/summernote.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-summernote/summernote.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-tabdrop/js/bootstrap-tabdrop.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-table/bootstrap-table.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-table/bootstrap-table.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-table/extensions/export/bootstrap-table-export.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-table/extensions/export/bootstrap-table-export.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/codemirror/mode/jade/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/owl-carousel/assets/js/bootstrap-collapse.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/owl-carousel/assets/js/bootstrap-tab.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/plugins/tabdrop/js/bootstrap-tabdrop.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/scripts/app.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/global/scripts/app.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/layouts/layout/scripts/layout.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/layouts/layout/scripts/layout.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/lms/js/bootstrap.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/lms/js/bootstrap.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/lms/js/offcanvas.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-buttons.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-colreorder.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-editable.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-fixedheader.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-responsive.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-rowreorder.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/table-datatables-scroller.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/assets/pages/scripts/v,..js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/admin/js/bootstrap.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/admin/js/bootstrap.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/admin/plugins/summernote/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/plugins/summernote/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/plugins/tagsinput/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/web/lib/bootstrap/js/bootstrap.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/assets/web/lib/bootstrap/js/bootstrap.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/DCO.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/js/oldtheme.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/_static/js/theme.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/changelog.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/contributing/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/caching.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/call_function.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/configuration.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/connecting.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/db_driver_reference.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/examples.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/forge.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/helpers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/metadata.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/queries.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/query_builder.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/results.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/transactions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/database/utilities.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/documentation/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/alternative_php.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/ancillary_classes.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/autoloader.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/caching.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/cli.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/common_functions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/compatibility_functions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/controllers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/core_classes.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/creating_drivers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/creating_libraries.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/credits.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/drivers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/environments.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/errors.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/helpers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/hooks.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/libraries.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/managing_apps.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/models.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/profiling.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/requirements.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/reserved_names.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/routing.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/security.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/styleguide.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/urls.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/views.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/general/welcome.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/genindex.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/array_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/captcha_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/cookie_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/date_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/directory_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/download_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/email_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/file_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/form_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/html_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/inflector_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/language_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/number_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/path_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/security_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/smiley_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/string_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/text_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/typography_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/url_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/helpers/xml_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/downloads.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/troubleshooting.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_120.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_130.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_131.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_132.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_133.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_140.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_141.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_150.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_152.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_153.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_154.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_160.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_161.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_162.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_163.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_170.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_171.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_172.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_200.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_201.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_202.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_203.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_210.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_211.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_212.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_213.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_214.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_220.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_221.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_222.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_223.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_300.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_301.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_302.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_303.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_304.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_305.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_306.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_310.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_311.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_3110.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_312.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_313.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_314.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_315.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_316.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_317.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_318.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_319.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrade_b11.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/installation/upgrading.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/benchmark.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/caching.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/calendar.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/cart.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/config.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/email.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/encrypt.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/encryption.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/file_uploading.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/form_validation.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/ftp.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/image_lib.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/input.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/javascript.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/language.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/loader.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/migration.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/output.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/pagination.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/parser.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/security.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/sessions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/table.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/trackback.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/typography.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/unit_testing.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/uri.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/user_agent.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/xmlrpc.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/libraries/zip.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/license.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/appflow.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/at_a_glance.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/features.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/getting_started.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/goals.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/overview/mvc.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/search.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/tutorial/conclusion.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/tutorial/create_news_items.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/tutorial/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/tutorial/news_section.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/courseware/user_guide/tutorial/static_pages.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/DCO.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/js/oldtheme.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/_static/js/theme.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/changelog.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/contributing/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/caching.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/call_function.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/configuration.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/connecting.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/db_driver_reference.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/examples.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/forge.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/helpers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/metadata.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/queries.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/query_builder.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/results.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/transactions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/database/utilities.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/documentation/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/alternative_php.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/ancillary_classes.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/autoloader.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/caching.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/cli.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/common_functions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/compatibility_functions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/controllers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/core_classes.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/creating_drivers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/creating_libraries.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/credits.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/drivers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/environments.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/errors.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/helpers.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/hooks.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/libraries.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/managing_apps.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/models.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/profiling.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/requirements.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/reserved_names.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/routing.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/security.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/styleguide.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/urls.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/views.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/general/welcome.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/genindex.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/array_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/captcha_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/cookie_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/date_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/directory_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/download_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/email_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/file_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/form_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/html_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/inflector_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/language_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/number_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/path_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/security_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/smiley_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/string_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/text_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/typography_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/url_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/helpers/xml_helper.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/downloads.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/troubleshooting.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_120.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_130.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_131.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_132.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_133.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_140.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_141.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_150.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_152.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_153.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_154.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_160.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_161.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_162.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_163.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_170.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_171.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_172.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_200.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_201.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_202.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_203.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_210.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_211.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_212.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_213.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_214.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_220.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_221.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_222.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_223.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_300.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_301.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_302.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_303.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_304.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_305.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_306.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_310.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_311.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_3110.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_312.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_313.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_314.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_315.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_316.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_317.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_318.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_319.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrade_b11.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/installation/upgrading.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/benchmark.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/caching.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/calendar.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/cart.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/config.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/email.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/encrypt.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/encryption.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/file_uploading.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/form_validation.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/ftp.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/image_lib.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/input.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/javascript.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/language.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/loader.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/migration.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/output.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/pagination.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/parser.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/security.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/sessions.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/table.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/trackback.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/typography.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/unit_testing.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/uri.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/user_agent.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/xmlrpc.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/libraries/zip.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/license.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/appflow.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/at_a_glance.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/features.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/getting_started.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/goals.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/overview/mvc.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/search.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/tutorial/conclusion.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/tutorial/create_news_items.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/tutorial/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/tutorial/news_section.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/examdb/user_guide/tutorial/static_pages.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/InstallWizard.comb.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/ckeditor/plugins/codemirror/plugin.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/knowledge/forum/Scripts/jquery.ForumExtensions.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/login.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/profile.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/admin.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/e_view.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/index.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/js/bootstrap.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/js/bootstrap.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/js/offcanvas.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/ui__/login.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/Default.aspx",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/admin.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/e_view.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/index_.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/js/bootstrap.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/js/bootstrap.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/js/offcanvas.min.js",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    },
+    {
+      "file": "app/web/login.html",
+      "strategy": "Replace plugin behavior with isolated typed component."
+    }
+  ]
+}

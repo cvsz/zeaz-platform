@@ -1,0 +1,39 @@
+<script type="text/javascript">
+$(document).ready(function(){
+$('.slider').advancedSlider({width:750, height:386, pauseSlideshowOnHover:true, slideProperties:{
+																					0:{effectType:'scale', horizontalSlices:'6', verticalSlices:'3', slicePattern:'spiralCenterToMarginCW', sliceDelay:'80',
+																					   captionSize:'35', captionHideEffect:'slide'},
+																					1:{effectType:'fade', horizontalSlices:'1', verticalSlices:'1', slicePattern:'leftToRight', captionPosition:'custom',
+																					   captionShowEffect:'fade', captionHeight:120, slideshowDelay:12000},
+																					2:{effectType:'slide', horizontalSlices:'10', verticalSlices:'1', slicePattern:'rightToLeft', sliceDuration:'700'},
+																					3:{effectType:'height', horizontalSlices:'10', verticalSlices:'1', slicePattern:'leftToRight', slicePoint:'centerBottom',
+																					   sliceDuration:'500', captionSize:'45'}
+																				}
+									});
+});
+</script>
+<div class="slider" style="margin-left:25px">
+    	<div class="slider-item">
+    		<img src="images/slider/1.jpg" height="345" width="750"/>
+    		<img class="thumbnail" src="images/slider/thumb/1.jpg"/>
+			<div class="caption"></div>
+      </div>
+        
+        <div class="slider-item">
+            <img src="images/slider/2.jpg" height="345" width="750"/>
+            <img class="thumbnail" src="images/slider/thumb/2.jpg"/>
+			<div class="caption"></div>
+      </div>
+        
+        <div class="slider-item">
+            <img src="images/slider/3.jpg" height="345" width="750"/>
+            <img class="thumbnail" src="images/slider/thumb/3.jpg"/>
+      </div>
+        
+        <div class="slider-item">
+            <img src="images/slider/4.jpg" height="345" width="750"/>
+            <img class="thumbnail" src="images/slider/thumb/4.jpg"/>
+			<div class="caption"></div>
+      </div>
+
+    </div>

@@ -1,0 +1,36 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: z-runner-supply-chain-controls
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-digest-images
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+              namespaces: ["z-runner"]
+      validate:
+        message: "Runner images must be immutable digest references."
+        foreach:
+          - list: "request.object.spec.containers"
+            deny:
+              conditions:
+                any:
+                  - key: "{{ element.image }}"
+                    operator: NotContains
+                    value: "@sha256:"
+    - name: block-hostpath
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+              namespaces: ["z-runner"]
+      validate:
+        message: "hostPath volumes are forbidden for z-runner."
+        pattern:
+          spec:
+            =(volumes):
+              - X(hostPath): "null"

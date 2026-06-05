@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "policyId": "zlms-immutable-deployment-delivery",
+  "enforcement": "deny-by-default",
+  "artifactRequirements": {
+    "contentAddressedFilenames": true,
+    "minimumHashCharactersInFilename": 16,
+    "sriRequired": true,
+    "httpsRequired": true,
+    "redirectsAllowed": false,
+    "credentialsMode": "omit",
+    "cacheMode": "no-store-then-memory-by-sri",
+    "mutableTagsAllowed": false
+  },
+  "provenance": {
+    "slsaMinimumLevel": 3,
+    "signedManifestRequired": true,
+    "trustedBuilderRequired": true,
+    "trustedRepositoryRequired": true,
+    "sourceRevisionRequired": true,
+    "validityWindowRequired": true
+  },
+  "rollbackOrchestration": {
+    "strategy": "manifest-pointer-rollback",
+    "rollbackUnit": "signed-remote-manifest",
+    "preRollbackChecks": [
+      "verify-previous-manifest-signature",
+      "verify-artifact-sri",
+      "verify-provenance-validity",
+      "warm-isolated-runtime-domain"
+    ],
+    "activation": [
+      "quarantine-current-remote",
+      "publish-previous-manifest-pointer",
+      "attest-restored-remote",
+      "close-circuit-breaker-after-health-check"
+    ],
+    "postRollbackChecks": [
+      "runtime-attestation-present",
+      "csp-digest-matches-manifest",
+      "wasm-policy-enforced",
+      "security-telemetry-emitted"
+    ]
+  },
+  "incidentControls": {
+    "remoteKillSwitch": true,
+    "exploitContainmentBoundary": "per-remote-csp-trusted-types-state-and-wasm-sandbox",
+    "auditRetentionDays": 365
+  }
+}

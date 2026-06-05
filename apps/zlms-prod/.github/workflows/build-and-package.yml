@@ -1,0 +1,140 @@
+name: Build & Package Artifact
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version tag (optional)
+        required: false
+      package_environment:
+        description: GitHub Environment containing GOOGLECALENDAR_API_KEY
+        type: environment
+        required: false
+        default: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    runs-on: windows-2022
+    environment: ${{ github.event.inputs.package_environment || 'production' }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Inject Google Calendar API key
+        env:
+          GOOGLECALENDAR_API_KEY: ${{ secrets.GOOGLECALENDAR_API_KEY }}
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:GOOGLECALENDAR_API_KEY)) {
+            throw 'GOOGLECALENDAR_API_KEY environment secret is required.'
+          }
+
+          $paths = @(
+            'app/assets/global/plugins/fullcalendar/demos/gcal.html',
+            'app/bin/Release/Publish/assets/global/plugins/fullcalendar/demos/gcal.html',
+            'app/obj/Release/Package/PackageTmp/assets/global/plugins/fullcalendar/demos/gcal.html'
+          )
+
+          foreach ($path in $paths) {
+            if (Test-Path $path) {
+              $content = Get-Content $path -Raw
+              $updated = $content.Replace('__GOOGLECALENDAR_API_KEY__', $env:GOOGLECALENDAR_API_KEY)
+              Set-Content -Path $path -Value $updated -NoNewline
+            }
+          }
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57
+
+      - name: Restore packages
+        shell: pwsh
+        run: nuget restore app/lms.csproj -SolutionDirectory "${{ github.workspace }}"
+
+      - name: Build Release
+        shell: pwsh
+        run: msbuild app/lms.csproj /p:Configuration=Release /p:Platform="Any CPU" /m
+
+      - name: Package Web Deploy
+        shell: pwsh
+        run: |
+          msbuild app/lms.csproj `
+            /t:Package `
+            /p:Configuration=Release `
+            /p:DeployOnBuild=true `
+            /p:DeployDefaultTarget=WebPublish `
+            /p:WebPublishMethod=Package `
+            /p:PackageAsSingleFile=true `
+            /p:SkipInvalidConfigurations=true `
+            /p:DesktopBuildPackageLocation="${{ github.workspace }}\artifact\package.zip"
+
+      - name: Install Cosign for keyless artifact signing
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+
+      - name: Sign package artifact with Cosign keyless identity
+        shell: pwsh
+        run: |
+          cosign sign-blob --yes --bundle artifact/package.zip.bundle artifact/package.zip
+
+      - name: Upload signed package artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: zlms-prod-package
+          path: |
+            artifact/package.zip
+            artifact/package.zip.bundle
+          if-no-files-found: error
+          retention-days: 7
+
+  release-sbom:
+    name: Generate release SBOM
+    needs: package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Generate release SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: release-sbom.cdx.json
+          upload-artifact: false
+
+      - name: Install Cosign for SBOM signing
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+
+      - name: Sign release SBOM with Cosign keyless identity
+        run: cosign sign-blob --yes --bundle release-sbom.cdx.json.bundle release-sbom.cdx.json
+
+      - name: Upload signed release SBOM
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: zlms-prod-release-sbom
+          path: |
+            release-sbom.cdx.json
+            release-sbom.cdx.json.bundle
+          if-no-files-found: error
+          retention-days: 90

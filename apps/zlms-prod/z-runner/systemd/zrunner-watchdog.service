@@ -1,0 +1,27 @@
+[Unit]
+Description=ZeaZDev Secure GitHub Runner Watchdog
+After=network-online.target zrunner.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/etc/z-runner/runner.env
+WorkingDirectory=/opt/z-runner
+ExecStart=/opt/z-runner/watchdog.sh
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/z-runner /var/log/z-runner /run/z-runner
+CapabilityBoundingSet=CAP_KILL CAP_DAC_READ_SEARCH CAP_NET_ADMIN CAP_NET_RAW
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

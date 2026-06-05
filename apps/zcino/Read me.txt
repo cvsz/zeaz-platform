@@ -1,0 +1,45 @@
+You can find the documentation inside the "documentation" folder.
+
+Installation method 1 - easiest and fastest
+1) Upload files to directory
+
+2) Create Mysql database and user for the database
+
+3) Run www.yourwebdomain.com/install2.php
+
+
+Or
+
+Installation method 2 - more customisable
+
+1) Upload files to directory
+
+2) Create Mysql database
+
+3) import SQL to database
+
+4) Edit includes/connection.inc.php
+
+5) Edit includes/config.inc.php
+
+6) Edit administrator/.htaccess and make sure the path to the .htpasswd file is correct
+
+7) Login http://www.yourdomain.com/administrator/ 
+PANEL LOGIN DETAILS: admin / password : admin (you can change this from PROFILE after you login to administrator panel)
+
+8) If you cannot install the script or if you require a custom template, contact us at sales@zcino or visit zcino
+Custom template design - 500 Euro
+Script instalation - 100 Euro
+
+9) Make sure you delete "bigdump.php" and "install2.php" from the server, after finishing the installation.
+
+
+PLEASE NOTE:
+Make sure your php.ini has short tags turned on ("short_open_tag = On").
+You will also need to have the following PHP extensions enabled:
+-mCrypt;
+-mysqli;
+-PHP GD;
+
+
+

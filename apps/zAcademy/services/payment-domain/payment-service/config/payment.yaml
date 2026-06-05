@@ -1,0 +1,26 @@
+service:
+  name: payment-service
+  domain: auth.zeaz.dev
+  port: 3009
+
+security:
+  oidc: true
+  rbac: true
+  audit: true
+
+observability:
+  metrics: true
+  tracing: true
+
+integration:
+  provider: marqeta
+
+bounded_context:
+  name: payment-domain
+
+subdomains:
+  - authorization
+  - ledger
+  - funding
+  - card-management
+  - webhook-processing

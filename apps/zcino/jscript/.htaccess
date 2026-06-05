@@ -1,0 +1,4 @@
+Options -Indexes
+Options +FollowSymLinks
+RewriteEngine on
+RewriteRule jquery-1.(.*).js$ jquerydynamic.php?id=$1		

@@ -1,0 +1,144 @@
+
+/* ################################################################# */
+/*                          Footer elements                          */
+/* ################################################################# */
+div#footer {
+	height:340px;
+	margin-left:-30px;
+	padding-top:0px;
+	position:relative;
+	width:100%;
+	z-index:100;
+
+}
+div#wrapper_footer {
+	text-align:center;
+	margin:0 auto;
+position:static !important;float:none !important;
+	width:960px;
+}
+div#sitemap {
+	position:relative;
+	width:auto;
+}
+#sitemap table {
+	border-collapse:collapse;
+	color:#CCCCCC;
+}
+#sitemap div.links {
+	float:left;
+	position:relative;
+	width:119px;
+}
+#sitemap div.links p {
+	color:#666666;
+	font-size:0.7em;
+	line-height:100%;
+	margin-bottom:5px;
+	text-align:left;
+	word-spacing:normal;
+}
+#sitemap div.links a.h {
+	font-weight:bold;
+	color: #FFFFFF;
+}
+#sitemap div.links a {
+	color:#666666;
+	text-decoration:none;
+}
+#sitemap div.links a:hover, #sitemap div.links a.h:hover {
+	color:#fff;
+	text-decoration:underline;
+}
+
+div#about {
+	color:#999999;
+	font-size:13px;
+	font-weight:bold;
+	height:41px;
+	line-height:41px;
+	margin-top:8px;
+	position:relative;
+	text-align:center;
+	width:960px;
+}
+div#about a {
+	color:#FFFFFF;
+	text-decoration: none;
+	padding: 0 5px 0 5px;
+}
+div#about a:hover {
+	text-decoration: underline;
+}
+div#pay {
+	margin:14px auto;
+	position:relative;
+	width:970px;
+	height: 30px;
+	text-align: center;
+}
+div#pay a {
+	margin-right: 20px;
+}
+div#cr {
+	background: url(../template_files11/footer_c.png) no-repeat top;
+	color:#FFF;
+	font-size:0.9em;
+	line-height:140%;
+	text-align:center;
+	padding-top: 7px;
+}
+div#cr a{
+	color:#666666;
+	text-decoration:none;
+}
+div#cr a:visited{
+	color:#666666;
+}
+div#associated {
+	background: url(../template_files11/footer_c.png) no-repeat top;
+	height: 47px;
+	margin: 20px 100px auto;
+}
+html>body div#associated ul {
+	margin: 0px;
+}
+div#associated ul {
+	list-style-type: none;
+	margin: 20px auto;
+	width: 1000px;
+}
+div#associated ul li {
+	float: left;
+	margin-right: 20px;
+	font-size: 10px;
+	line-height: 27px;
+	color: #999;
+	margin-top: -10px;
+	
+}
+div#associated ul li img {
+	position: relative;
+	top: 20px;
+}
+div#associated ul li a {
+	text-decoration: none;
+}
+div#small-text {
+	background: url(../template_files11/footer_c.png) no-repeat top;
+	height: 60px;
+	padding-top: 20px;
+}
+div#small-text p {
+	font-size: 11px;
+	line-height: 12px;
+	color: #999;
+	text-align: center;
+}
+div#small-text p a {
+	color: #fff;
+	text-decoration: none;
+}
+div#small-text p a:hover {
+	text-decoration: underline;
+}

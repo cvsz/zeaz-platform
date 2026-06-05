@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Responsible security disclosure
+    url: https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities
+    about: Report exploitable vulnerabilities through the repository Security tab/private advisory flow. Do not disclose secrets, exploit payloads, or sensitive production data in public issues.
+  - name: Operational emergency
+    url: https://docs.github.com/en/code-security/getting-started/adding-a-security-policy-to-your-repository
+    about: Use the repository security policy and incident response path for active incidents, outages, credential exposure, or suspected compromise.
