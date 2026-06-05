@@ -1,4 +1,13 @@
 {
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server"],
+      "url": "https://mcp.supabase.com/mcp"
+    }
+  }
+}
+{
   "servers": {
     "cloudflare-rest": {
       "type": "http",

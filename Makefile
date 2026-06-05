@@ -200,7 +200,6 @@ token-rotate:
 	@test "$${CONFIRM_TOKEN_ROTATE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_ROTATE=yes required"; exit 1)
 	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --regenerate --yes --types "$${TOKEN_ROTATE_TYPES:-$(TOKEN_ROTATE_TYPES)}" --backup --write "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" --refresh-permissions
 	@bash scripts/cloudflare/sync-cloudflare-env-files.sh "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" "$${TOKEN_ROTATE_SYNC_ENV:-$(TOKEN_ROTATE_SYNC_ENV)}"
-	@bash scripts/cloudflare/sync-cloudflare-env-files.sh "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" "$${TOKEN_ROTATE_SYNC_ENV:-$(TOKEN_ROTATE_SYNC_ENV)}"
 
 token-rotate-refresh: token-rotate-dry
 
@@ -571,10 +570,6 @@ authentik-open:
 # zDash Cloudflare Terraform Integration
 # =============================================================================
 
-# =============================================================================
-# zDash Cloudflare Terraform Integration
-# =============================================================================
-
 .PHONY: zdash-terraform-integrate
 zdash-terraform-integrate: ## Generate zDash Terraform source files
 	@bash scripts/cloudflare/zdash-terraform-integrate.sh
@@ -620,13 +615,26 @@ tf-zdash-apply: ## Guarded zDash Terraform apply
 	@test "$${ALLOW_PAID_CLOUDFLARE_FEATURES:-false}" = "false" || (echo "ERROR: paid Cloudflare features must stay disabled"; exit 1)
 	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
 
-
-
 .PHONY: cf-zdash-token-diagnose
 cf-zdash-token-diagnose: ## Diagnose Cloudflare token permissions for zDash
 	@bash scripts/cloudflare/zdash-cloudflare-token-diagnose.sh
 
-
 .PHONY: cf-zdash-sync-env
 cf-zdash-sync-env: ## Sync zDash Terraform env vars from Cloudflare API into .env/.env.cloudflare
 	@bash scripts/cloudflare/sync-zdash-terraform-env-from-api.sh
+
+# =============================================================================
+# Phase 55 — Repository deep-dive and Makefile hygiene
+# =============================================================================
+
+.PHONY: repo-deep-dive makefile-audit makefile-refactor
+repo-deep-dive: ## Generate full repository deep-dive report
+	@bash scripts/repo/deep-dive-report.sh
+
+makefile-audit: ## Audit root Makefile for duplicate targets and risky patterns
+	@$(PYTHON) scripts/make/audit-makefile.py Makefile
+
+makefile-refactor: ## Re-run safe root Makefile cleanup
+	@$(PYTHON) scripts/make/refactor-root-makefile.py
+	@$(PYTHON) scripts/make/audit-makefile.py Makefile
+
