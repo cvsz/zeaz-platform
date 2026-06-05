@@ -27,7 +27,7 @@ redact() {
   echo '```text'
   find . -maxdepth 2 \
     \( -path './.git' -o -path './node_modules' -o -path './apps/zdash/frontend/node_modules' -o -path './apps/zdash/backend/.venv' \) -prune \
-    -o -maxdepth 2 -type d -print | sort | head -200
+    -o -type d -print | sort | head -200
   echo '```'
   echo
   echo "## Makefile audit"
