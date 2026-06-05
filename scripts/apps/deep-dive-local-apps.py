@@ -31,6 +31,11 @@ EXCLUDE_DIRS = {
     ".mypy_cache",
     ".ruff_cache",
     ".terraform",
+    ".agent",
+    ".agents",
+    ".gemini",
+    ".claude",
+    ".codex",
     "vendor",
     "target",
     ".pnpm-store",
@@ -84,7 +89,7 @@ SECRET_PATTERNS = [
 PORT_PATTERNS = [
     re.compile(r"\blocalhost:(\d{2,5})\b"),
     re.compile(r"\b127\.0\.0\.1:(\d{2,5})\b"),
-    re.compile(r"\b(?:PORT|[A-Z0-9_]+_PORT)\s*[:=]\s*[\"']?(\d{2,5})[\"']?", re.I),
+    re.compile(r"\b(?:PORT|[A-Z0-9_]+_PORT)\s*[:=]\s*[\"']?(\d{3,5})[\"']?", re.I),
     re.compile(r"[\"'](\d{2,5}):(\d{2,5})[\"']"),
 ]
 
@@ -252,10 +257,10 @@ def scan_text_signals(app_dir: Path, root: Path) -> dict[str, Any]:
             for hit in m.findall(text):
                 if isinstance(hit, tuple):
                     for h in hit:
-                        if h.isdigit() and 1 <= int(h) <= 65535:
+                        if h.isdigit() and 100 <= int(h) <= 65535:
                             ports[h].add(rp)
                 else:
-                    if hit.isdigit() and 1 <= int(hit) <= 65535:
+                    if hit.isdigit() and 100 <= int(hit) <= 65535:
                         ports[hit].add(rp)
 
         for d in DOMAIN_RE.findall(text):

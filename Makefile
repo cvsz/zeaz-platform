@@ -663,3 +663,7 @@ apps-deep-dive: ## Deep-dive local apps under apps/*
 
 apps-inventory: apps-deep-dive ## Alias for local apps inventory
 
+.PHONY: apps-inventory-validate
+apps-inventory-validate: apps-deep-dive ## Validate generated apps inventory
+	@$(PYTHON) scripts/apps/validate-apps-inventory.py generated/integration/apps-inventory.json
+

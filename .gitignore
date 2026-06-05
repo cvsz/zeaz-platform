@@ -97,3 +97,11 @@ apps/zdash/.env.local
 apps/zdash/.env.production
 apps/zdash/backend/.env
 apps/zdash/frontend/.env.local
+
+# Local app secrets
+apps/*/.env
+apps/*/.env.local
+apps/*/.env.production
+apps/*/.env.cloudflare
+apps/*/backend/.env
+apps/*/frontend/.env.local
