@@ -1,0 +1,1449 @@
+{
+  "apps": [
+    {
+      "app_id": "ABTPi18n",
+      "path": "apps/ABTPi18n",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "node",
+        "pnpm",
+        "python"
+      ],
+      "stack_files": [
+        "apps/ABTPi18n/apps/backend/Dockerfile",
+        "apps/ABTPi18n/apps/backend/requirements.txt",
+        "apps/ABTPi18n/apps/frontend/Dockerfile",
+        "apps/ABTPi18n/apps/frontend/next.config.js",
+        "apps/ABTPi18n/apps/frontend/package.json",
+        "apps/ABTPi18n/apps/frontend/tsconfig.json",
+        "apps/ABTPi18n/docker-compose.yml",
+        "apps/ABTPi18n/package.json",
+        "apps/ABTPi18n/pnpm-lock.yaml",
+        "apps/ABTPi18n/pyproject.toml",
+        "apps/ABTPi18n/tools/package.json"
+      ],
+      "package": {
+        "name": "zeaZdev-abtpro-i18n-monorepo",
+        "version": "1.0.1",
+        "scripts": [
+          "dev:backend",
+          "dev:frontend",
+          "format",
+          "format:js",
+          "format:py",
+          "generate-metaultra",
+          "install-metaultra",
+          "lint",
+          "lint:js",
+          "lint:py",
+          "preview-metaultra",
+          "prisma:generate",
+          "prisma:migrate",
+          "test:js",
+          "test:py",
+          "validate-metaultra"
+        ],
+        "dependencies_count": 0,
+        "dev_dependencies_count": 6
+      },
+      "signals": {
+        "ports": {
+          "375": [
+            "apps/ABTPi18n/tools/ARCHITECTURE.md"
+          ],
+          "587": [
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md"
+          ],
+          "768": [
+            "apps/ABTPi18n/tools/ARCHITECTURE.md"
+          ],
+          "1920": [
+            "apps/ABTPi18n/tools/ARCHITECTURE.md"
+          ],
+          "3000": [
+            "apps/ABTPi18n/.env.example",
+            "apps/ABTPi18n/README.md",
+            "apps/ABTPi18n/apps/backend/main.py",
+            "apps/ABTPi18n/apps/backend/src/auth/google_provider.py",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase3/PHASE3_GUIDE.md",
+            "apps/ABTPi18n/install.sh",
+            "apps/ABTPi18n/tools/ARCHITECTURE.md",
+            "apps/ABTPi18n/tools/EXAMPLES.md",
+            "apps/ABTPi18n/tools/README.md",
+            "apps/ABTPi18n/tools/README_SCREENSHOTS.md",
+            "apps/ABTPi18n/tools/package.json",
+            "apps/ABTPi18n/tools/run_screenshots.sh",
+            "apps/ABTPi18n/tools/screenshot_pages.js",
+            "apps/ABTPi18n/verify.sh"
+          ],
+          "3001": [
+            "apps/ABTPi18n/README.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md",
+            "apps/ABTPi18n/docs/enterprise/TROUBLESHOOTING.en.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_SUMMARY.md",
+            "apps/ABTPi18n/tools/EXAMPLES.md",
+            "apps/ABTPi18n/tools/README.md",
+            "apps/ABTPi18n/tools/README_SCREENSHOTS.md"
+          ],
+          "5432": [
+            "apps/ABTPi18n/.env.example",
+            "apps/ABTPi18n/Grok.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md",
+            "apps/ABTPi18n/docs/enterprise/DEPLOYMENT.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_SUMMARY.md",
+            "apps/ABTPi18n/docs/strategy/DR_FAILOVER_STRATEGY.md"
+          ],
+          "6379": [
+            "apps/ABTPi18n/apps/backend/src/api/health_endpoints.py",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_SUMMARY.md"
+          ],
+          "6432": [
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md"
+          ],
+          "8000": [
+            "apps/ABTPi18n/.env.example",
+            "apps/ABTPi18n/Grok.md",
+            "apps/ABTPi18n/README.md",
+            "apps/ABTPi18n/apps/backend/Dockerfile",
+            "apps/ABTPi18n/apps/backend/src/api/tradingview_endpoints.py",
+            "apps/ABTPi18n/apps/frontend/src/app/[lng]/dashboard/page.tsx",
+            "apps/ABTPi18n/apps/frontend/src/app/[lng]/settings/page.tsx",
+            "apps/ABTPi18n/apps/frontend/src/components/auth/GoogleSignIn.tsx",
+            "apps/ABTPi18n/apps/frontend/src/components/settings/NotificationPreferences.tsx",
+            "apps/ABTPi18n/apps/frontend/src/components/settings/TelegramLink.tsx",
+            "apps/ABTPi18n/docs/TRADINGVIEW_SUMMARY.md",
+            "apps/ABTPi18n/docs/enterprise/API_REFERENCE.en.md",
+            "apps/ABTPi18n/docs/enterprise/DEPLOYMENT.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md",
+            "apps/ABTPi18n/docs/integrations/TRADINGVIEW_INTEGRATION.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase1/PHASE1_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase5/PHASE5_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase5/PHASE5_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md",
+            "apps/ABTPi18n/docs/phases/phase6/PHASE6_QUICK_START.md",
+            "apps/ABTPi18n/install.sh",
+            "apps/ABTPi18n/verify.sh"
+          ],
+          "9090": [
+            "apps/ABTPi18n/README.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
+            "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
+            "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_GUIDE.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md",
+            "apps/ABTPi18n/docs/phases/phase2/PHASE2_SUMMARY.md"
+          ],
+          "22022": [
+            "apps/ABTPi18n/.env.example",
+            "apps/ABTPi18n/docker-compose.yml"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".py": 112,
+          ".md": 77,
+          ".yml": 13,
+          ".tsx": 13,
+          ".sh": 11,
+          ".json": 9,
+          ".yaml": 6,
+          ".js": 4,
+          ".toml": 2,
+          ".dockerignore": 2,
+          "Dockerfile": 2,
+          ".ts": 2,
+          ".example": 1,
+          ".cjs": 1,
+          ".gitignore": 1,
+          ".prettierrc": 1,
+          ".bandit": 1,
+          "LICENSE": 1,
+          ".txt": 1,
+          ".prisma": 1
+        }
+      }
+    },
+    {
+      "app_id": "api",
+      "path": "apps/api",
+      "nested_git": false,
+      "root_tracked_files": 10,
+      "git_status": [],
+      "stack": [
+        "python"
+      ],
+      "stack_files": [
+        "apps/api/requirements.txt"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "6379": [
+            "apps/api/routers/scheduler.py",
+            "apps/api/routers/swarm.py"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".py": 9,
+          ".bak": 1,
+          ".txt": 1
+        }
+      }
+    },
+    {
+      "app_id": "web",
+      "path": "apps/web",
+      "nested_git": false,
+      "root_tracked_files": 43,
+      "git_status": [],
+      "stack": [
+        "node",
+        "npm"
+      ],
+      "stack_files": [
+        "apps/web/next.config.ts",
+        "apps/web/package-lock.json",
+        "apps/web/package.json",
+        "apps/web/tsconfig.json"
+      ],
+      "package": {
+        "name": "zeaz-platform",
+        "version": "0.2.0",
+        "scripts": [
+          "build",
+          "dev",
+          "lint",
+          "start"
+        ],
+        "dependencies_count": 14,
+        "dev_dependencies_count": 9
+      },
+      "signals": {
+        "ports": {
+          "3000": [
+            "apps/web/README.md"
+          ],
+          "8000": [
+            "apps/web/src/app/swarm-runtime/page.tsx",
+            "apps/web/src/lib/api.ts"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".tsx": 25,
+          ".ts": 5,
+          ".svg": 5,
+          ".json": 4,
+          ".mjs": 2,
+          ".md": 1,
+          ".gitignore": 1,
+          ".ico": 1,
+          ".css": 1
+        }
+      }
+    },
+    {
+      "app_id": "zAcademy",
+      "path": "apps/zAcademy",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "node",
+        "npm"
+      ],
+      "stack_files": [
+        "apps/zAcademy/Makefile",
+        "apps/zAcademy/package-lock.json",
+        "apps/zAcademy/package.json",
+        "apps/zAcademy/tests/platform/Makefile"
+      ],
+      "package": {
+        "name": null,
+        "version": null,
+        "scripts": [],
+        "dependencies_count": 1,
+        "dev_dependencies_count": 0
+      },
+      "signals": {
+        "ports": {
+          "443": [
+            "apps/zAcademy/infra/kubernetes/payment/networkpolicy.yaml"
+          ],
+          "3009": [
+            "apps/zAcademy/services/payment-domain/payment-service/config/payment.yaml"
+          ],
+          "4317": [
+            "apps/zAcademy/infra/kubernetes/payment/networkpolicy.yaml"
+          ],
+          "8084": [
+            "apps/zAcademy/infra/kubernetes/payment/deployment.yaml",
+            "apps/zAcademy/infra/kubernetes/payment/networkpolicy.yaml",
+            "apps/zAcademy/tests/platform/load/payment_load.js"
+          ],
+          "9090": [
+            "apps/zAcademy/infra/kubernetes/payment/deployment.yaml",
+            "apps/zAcademy/infra/kubernetes/payment/service.yaml"
+          ]
+        },
+        "domains": {
+          "auth.zeaz.dev": [
+            "apps/zAcademy/services/payment-domain/payment-service/config/payment.yaml"
+          ]
+        },
+        "extension_counts": {
+          ".go": 61,
+          ".md": 29,
+          ".yaml": 12,
+          ".tf": 9,
+          ".json": 5,
+          ".sh": 5,
+          "Makefile": 2,
+          ".mod": 2,
+          ".py": 2,
+          ".gitignore": 1,
+          ".yml": 1,
+          ".sum": 1,
+          ".out": 1,
+          ".js": 1,
+          ".proto": 1,
+          ".sha256": 1
+        }
+      }
+    },
+    {
+      "app_id": "zcino",
+      "path": "apps/zcino",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "unknown"
+      ],
+      "stack_files": [
+        "apps/zcino/Makefile"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {},
+        "domains": {},
+        "extension_counts": {
+          ".png": 1921,
+          ".php": 264,
+          ".gif": 147,
+          ".xml": 100,
+          ".js": 77,
+          ".jpg": 59,
+          ".htm": 57,
+          ".map": 40,
+          ".css": 30,
+          ".html": 16,
+          ".psd": 11,
+          ".DS_Store": 10,
+          ".ttf": 10,
+          ".txt": 8,
+          ".swf": 7,
+          ".htaccess": 6,
+          ".swz": 5,
+          ".pdf": 5,
+          ".mno": 5,
+          ".ico": 2
+        }
+      }
+    },
+    {
+      "app_id": "zcino-modern",
+      "path": "apps/zcino-modern",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "docker"
+      ],
+      "stack_files": [
+        "apps/zcino-modern/Dockerfile",
+        "apps/zcino-modern/frontend/Dockerfile",
+        "apps/zcino-modern/frontend/package-lock.json",
+        "apps/zcino-modern/frontend/package.json",
+        "apps/zcino-modern/frontend/tsconfig.json",
+        "apps/zcino-modern/infra/docker-compose.yml",
+        "apps/zcino-modern/infra/zeaz-testnet/docker-compose.yml",
+        "apps/zcino-modern/sdk/typescript/package-lock.json",
+        "apps/zcino-modern/sdk/typescript/package.json",
+        "apps/zcino-modern/sdk/typescript/tsconfig.json"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "3000": [
+            "apps/zcino-modern/README.md",
+            "apps/zcino-modern/frontend/Dockerfile",
+            "apps/zcino-modern/frontend/start_next.sh"
+          ],
+          "4222": [
+            "apps/zcino-modern/docs/source-checklist.md",
+            "apps/zcino-modern/infra/docker-compose.yml",
+            "apps/zcino-modern/k8s/baseline/network-policies.yaml"
+          ],
+          "5432": [
+            "apps/zcino-modern/README.md",
+            "apps/zcino-modern/docs/source-checklist.md",
+            "apps/zcino-modern/infra/docker-compose.yml",
+            "apps/zcino-modern/k8s/baseline/network-policies.yaml"
+          ],
+          "6379": [
+            "apps/zcino-modern/README.md",
+            "apps/zcino-modern/docs/operations.md",
+            "apps/zcino-modern/docs/source-checklist.md",
+            "apps/zcino-modern/infra/docker-compose.yml",
+            "apps/zcino-modern/k8s/baseline/network-policies.yaml"
+          ],
+          "6443": [
+            "apps/zcino-modern/release/zeaz_release_v2.sh"
+          ],
+          "8080": [
+            "apps/zcino-modern/README.md",
+            "apps/zcino-modern/docs/api.md",
+            "apps/zcino-modern/docs/operations.md",
+            "apps/zcino-modern/infra/docker-compose.yml",
+            "apps/zcino-modern/k8s/game-service.yaml"
+          ],
+          "8082": [
+            "apps/zcino-modern/README.md",
+            "apps/zcino-modern/infra/docker-compose.yml"
+          ],
+          "8090": [
+            "apps/zcino-modern/README.md",
+            "apps/zcino-modern/docs/source-checklist.md",
+            "apps/zcino-modern/k8s/zeaz-testnet/zeaz-node.yaml"
+          ],
+          "8123": [
+            "apps/zcino-modern/infra/docker-compose.yml",
+            "apps/zcino-modern/k8s/baseline/network-policies.yaml"
+          ],
+          "8222": [
+            "apps/zcino-modern/infra/docker-compose.yml"
+          ],
+          "9000": [
+            "apps/zcino-modern/infra/docker-compose.yml"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".go": 96,
+          ".tsx": 31,
+          ".md": 19,
+          ".ts": 18,
+          ".yaml": 9,
+          ".json": 8,
+          ".sql": 5,
+          ".yml": 3,
+          ".dockerignore": 2,
+          ".gitkeep": 2,
+          "Dockerfile": 2,
+          ".gitignore": 2,
+          ".sh": 2,
+          ".mjs": 2,
+          ".proto": 2,
+          ".sum": 1,
+          ".zeaznode": 1,
+          ".mod": 1,
+          ".conf": 1,
+          ".rego": 1
+        }
+      }
+    },
+    {
+      "app_id": "zdash",
+      "path": "apps/zdash",
+      "nested_git": false,
+      "root_tracked_files": 1121,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "python"
+      ],
+      "stack_files": [
+        "apps/zdash/Makefile",
+        "apps/zdash/backend/Dockerfile",
+        "apps/zdash/backend/pyproject.toml",
+        "apps/zdash/backend/requirements.txt",
+        "apps/zdash/docker-compose.yml",
+        "apps/zdash/frontend/Dockerfile",
+        "apps/zdash/frontend/package-lock.json",
+        "apps/zdash/frontend/package.json",
+        "apps/zdash/frontend/tsconfig.json",
+        "apps/zdash/frontend/vite.config.ts",
+        "apps/zdash/infra/docker/backend.Dockerfile",
+        "apps/zdash/infra/docker/frontend.Dockerfile",
+        "apps/zdash/infra/docker/nginx.Dockerfile"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "443": [
+            "apps/zdash/install-zdash-prod.sh"
+          ],
+          "587": [
+            "apps/zdash/.env.example",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt"
+          ],
+          "3000": [
+            "apps/zdash/infra/k8s/configmap.yaml"
+          ],
+          "5173": [
+            "apps/zdash/.env.example",
+            "apps/zdash/.github/workflows/e2e.yml",
+            "apps/zdash/README.md",
+            "apps/zdash/backend/app/core/config.py",
+            "apps/zdash/backend/app/tests/test_phase7_dashboard_api.py",
+            "apps/zdash/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
+            "apps/zdash/docs/runbooks/GO_LIVE_CHECKLIST.md",
+            "apps/zdash/docs/runbooks/INSTALLATION.md",
+            "apps/zdash/docs/runbooks/QUICK_START.md",
+            "apps/zdash/docs/runbooks/ROLLBACK_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/START_SERVER.md",
+            "apps/zdash/docs/runbooks/rollback-runbook.md",
+            "apps/zdash/scripts/prod/capture-go-live-evidence.sh",
+            "apps/zdash/tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md"
+          ],
+          "5432": [
+            "apps/zdash/.github/workflows/e2e.yml",
+            "apps/zdash/README.md",
+            "apps/zdash/backend/app/tests/test_production_safety.py",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
+            "apps/zdash/infra/k8s/postgres-statefulset.yaml"
+          ],
+          "6379": [
+            "apps/zdash/infra/k8s/redis-deployment.yaml"
+          ],
+          "8000": [
+            "apps/zdash/Makefile",
+            "apps/zdash/docs/prompts/AI_CODING_PROMPTS_INDEX.md",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt"
+          ],
+          "8005": [
+            "apps/zdash/.env.example",
+            "apps/zdash/.github/workflows/e2e.yml",
+            "apps/zdash/AGENTS.md",
+            "apps/zdash/README.md",
+            "apps/zdash/docker-compose.prod.yml",
+            "apps/zdash/docker-compose.yml",
+            "apps/zdash/docs/AI_TRADER_CONTROL_PLANE.md",
+            "apps/zdash/docs/architecture/PHASE_10_SAAS_MONETIZATION.md",
+            "apps/zdash/docs/architecture/PHASE_33_AI_TRADER_SIMULATION.md",
+            "apps/zdash/docs/releases/final-release-checklist.md",
+            "apps/zdash/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md",
+            "apps/zdash/docs/reports/zdash-deep-scan/04-routes-api.txt",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
+            "apps/zdash/docs/runbooks/BILLING_INCIDENT_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/GO_LIVE_CHECKLIST.md",
+            "apps/zdash/docs/runbooks/INCIDENT_RESPONSE.md",
+            "apps/zdash/docs/runbooks/INSTALLATION.md",
+            "apps/zdash/docs/runbooks/MARKETPLACE_REVIEW_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/OBSERVABILITY.md",
+            "apps/zdash/docs/runbooks/OPERATOR_HANDOFF.md",
+            "apps/zdash/docs/runbooks/QUICK_START.md",
+            "apps/zdash/docs/runbooks/REALTIME_GATEWAY.md",
+            "apps/zdash/docs/runbooks/ROLLBACK.md",
+            "apps/zdash/docs/runbooks/ROLLBACK_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/START_SERVER.md",
+            "apps/zdash/docs/runbooks/SUBSCRIPTION_SUPPORT_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/final-release-runbook.md",
+            "apps/zdash/docs/runbooks/incident-response-runbook.md",
+            "apps/zdash/docs/runbooks/rollback-runbook.md"
+          ],
+          "9009": [
+            "apps/zdash/docs/reports/zdash-deep-scan/06-package-make-scripts.txt"
+          ]
+        },
+        "domains": {
+          "api-zzdash.zeaz.dev": [
+            "apps/zdash/IMPORT_SOURCE.md",
+            "apps/zdash/infra/cloudflare/tunnel-config.example.yml",
+            "apps/zdash/infra/k8s/nginx-ingress.yaml"
+          ],
+          "release.zeaz.dev": [
+            "apps/zdash/IMPORT_SOURCE.md"
+          ],
+          "zdash.zeaz.dev": [
+            "apps/zdash/IMPORT_SOURCE.md",
+            "apps/zdash/docs/reports/zdash-deep-scan/04-routes-api.txt",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
+            "apps/zdash/frontend/src/api/endpoints.ts",
+            "apps/zdash/frontend/src/tests/Enterprise.test.tsx",
+            "apps/zdash/frontend/src/tests/mocks/apiMockData.ts",
+            "apps/zdash/frontend/src/tests/setup.ts"
+          ],
+          "zzdash.zeaz.dev": [
+            "apps/zdash/.env.example",
+            "apps/zdash/CODE-OF-CONDUCT.md",
+            "apps/zdash/COMMUNITY.md",
+            "apps/zdash/CONTRIBUTING.md",
+            "apps/zdash/IMPORT_SOURCE.md",
+            "apps/zdash/Makefile",
+            "apps/zdash/README.md",
+            "apps/zdash/SECURITY.md",
+            "apps/zdash/docs/ops/SIGNED_RELEASE_ATTESTATION.md",
+            "apps/zdash/docs/releases/FINAL_RELEASE_NOTES.md",
+            "apps/zdash/docs/releases/v0.42.0-rc1.md",
+            "apps/zdash/docs/releases/v2.0.1.md",
+            "apps/zdash/docs/releases/v2.0.2.md",
+            "apps/zdash/docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md",
+            "apps/zdash/docs/runbooks/INSTALLATION.md",
+            "apps/zdash/docs/runbooks/REALTIME_GATEWAY.md",
+            "apps/zdash/frontend/src/tests/useCollaboration.test.ts",
+            "apps/zdash/infra/cloudflare/tunnel-config.example.yml",
+            "apps/zdash/infra/k8s/configmap.yaml",
+            "apps/zdash/infra/k8s/nginx-ingress.yaml",
+            "apps/zdash/infra/scripts/cloudflare-dry-run.sh"
+          ]
+        },
+        "extension_counts": {
+          ".py": 488,
+          ".tsx": 212,
+          ".md": 106,
+          ".sh": 65,
+          ".prompt": 60,
+          ".ts": 54,
+          ".yml": 20,
+          ".tf": 18,
+          ".txt": 11,
+          ".json": 11,
+          ".yaml": 10,
+          ".png": 9,
+          ".toml": 5,
+          ".conf": 3,
+          ".dockerfile": 3,
+          ".ps1": 3,
+          ".example": 2,
+          "Dockerfile": 2,
+          ".db": 2,
+          ".gitkeep": 2
+        }
+      }
+    },
+    {
+      "app_id": "zkbtrader",
+      "path": "apps/zkbtrader",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "node",
+        "npm",
+        "python"
+      ],
+      "stack_files": [
+        "apps/zkbtrader/.vendor/ECC/.opencode/package-lock.json",
+        "apps/zkbtrader/.vendor/ECC/.opencode/package.json",
+        "apps/zkbtrader/.vendor/ECC/.opencode/tsconfig.json",
+        "apps/zkbtrader/.vendor/ECC/package-lock.json",
+        "apps/zkbtrader/.vendor/ECC/package.json",
+        "apps/zkbtrader/.vendor/ECC/pyproject.toml",
+        "apps/zkbtrader/.vendor/ECC/skills/skill-comply/pyproject.toml",
+        "apps/zkbtrader/.vendor/ECC/yarn.lock",
+        "apps/zkbtrader/Makefile",
+        "apps/zkbtrader/docker-compose.yml",
+        "apps/zkbtrader/package-lock.json",
+        "apps/zkbtrader/package.json",
+        "apps/zkbtrader/pyproject.toml"
+      ],
+      "package": {
+        "name": null,
+        "version": null,
+        "scripts": [],
+        "dependencies_count": 1,
+        "dev_dependencies_count": 0
+      },
+      "signals": {
+        "ports": {
+          "443": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/kotlin-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/kotlin-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-TW/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/skills/kotlin-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/security-review/cloud-infrastructure-security.md"
+          ],
+          "3000": [
+            "apps/zkbtrader/.vendor/ECC/.cursor/skills/bun-runtime/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/docker-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/e2e-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/.opencode/prompts/agents/e2e-runner.txt",
+            "apps/zkbtrader/.vendor/ECC/agents/gan-evaluator.md",
+            "apps/zkbtrader/.vendor/ECC/agents/gan-generator.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/agents/e2e-runner.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/commands/e2e.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/saas-nextjs-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/ai-regression-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/e2e-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/gan-style-harness/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/kotlin-ktor-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/ui-demo/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/vite-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/commands/e2e.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/saas-nextjs-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/commands/e2e.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/saas-nextjs-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/commands/e2e.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/docker-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/e2e-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/agents/gan-evaluator.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/agents/gan-generator.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/commands/e2e.md"
+          ],
+          "3306": [
+            "apps/zkbtrader/.vendor/ECC/skills/tinystruct-patterns/references/database.md"
+          ],
+          "4567": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/vite-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/vite-patterns/SKILL.md"
+          ],
+          "5053": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/homelab-pihole-dns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/homelab-pihole-dns/SKILL.md"
+          ],
+          "5432": [
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/docker-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/django-security/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/django-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/flox-environments/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/kotlin-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/perl-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/docker-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/quarkus-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/django-security/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/django-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/docker-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/kotlin-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/perl-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/examples/go-microservice-CLAUDE.md"
+          ],
+          "5555": [
+            "apps/zkbtrader/.vendor/ECC/skills/django-celery/SKILL.md"
+          ],
+          "5672": [
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/quarkus-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/quarkus-patterns/SKILL.md"
+          ],
+          "6379": [
+            "apps/zkbtrader/.vendor/ECC/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/flox-environments/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/redis-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/examples/django-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/skills/django-celery/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/flox-environments/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/redis-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/tinystruct-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/tinystruct-patterns/references/system-usage.md"
+          ],
+          "8000": [
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/django-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/django-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/django-verification/SKILL.md"
+          ],
+          "8004": [
+            "apps/zkbtrader/.env.example",
+            "apps/zkbtrader/README.md",
+            "apps/zkbtrader/docs/prompt/zkbtrader-ecc-next.md"
+          ],
+          "8080": [
+            "apps/zkbtrader/.vendor/ECC/.cursor/rules/golang-patterns.md",
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/.kiro/skills/golang-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/.kiro/steering/golang-patterns.md",
+            "apps/zkbtrader/.vendor/ECC/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/commands/rust-test.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/commands/rust-test.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/rules/golang/patterns.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/kotlin-ktor-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/quarkus-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/rust-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/vite-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/skills/golang-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/rules/golang/patterns.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/deployment-patterns/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/golang-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/quarkus-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/rust-testing/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/agents/opensource-forker.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/commands/rust-test.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/rust-api-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/rules/golang/patterns.md"
+          ],
+          "8123": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/clickhouse-io/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/skills/clickhouse-io/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/clickhouse-io/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-TW/skills/clickhouse-io/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/clickhouse-io/SKILL.md"
+          ],
+          "8200": [
+            "apps/zkbtrader/.vendor/ECC/scripts/ci/scan-supply-chain-iocs.js",
+            "apps/zkbtrader/.vendor/ECC/tests/ci/scan-supply-chain-iocs.test.js"
+          ],
+          "9000": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/quarkus-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/tr/skills/quarkus-verification/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/quarkus-verification/SKILL.md"
+          ],
+          "11434": [
+            "apps/zkbtrader/.vendor/ECC/src/llm/providers/ollama.py"
+          ],
+          "15432": [
+            "apps/zkbtrader/.env.example"
+          ],
+          "16379": [
+            "apps/zkbtrader/.env.example"
+          ],
+          "18801": [
+            "apps/zkbtrader/.vendor/ECC/SECURITY.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/SECURITY.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/commands/devfleet.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/claude-devfleet/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/commands/devfleet.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/claude-devfleet/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/mcp-configs/mcp-servers.json",
+            "apps/zkbtrader/.vendor/ECC/skills/claude-devfleet/SKILL.md"
+          ],
+          "50051": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/pt-BR/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/examples/go-microservice-CLAUDE.md",
+            "apps/zkbtrader/.vendor/ECC/examples/go-microservice-CLAUDE.md"
+          ],
+          "51820": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/homelab-wireguard-vpn/SKILL.md",
+            "apps/zkbtrader/.vendor/ECC/skills/homelab-wireguard-vpn/SKILL.md"
+          ],
+          "65535": [
+            "apps/zkbtrader/.vendor/ECC/docs/ja-JP/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/docs/ko-KR/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-CN/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/docs/zh-TW/skills/security-review/cloud-infrastructure-security.md",
+            "apps/zkbtrader/.vendor/ECC/skills/security-review/cloud-infrastructure-security.md"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".md": 2137,
+          ".js": 309,
+          ".json": 85,
+          ".py": 75,
+          ".sh": 38,
+          ".txt": 36,
+          ".png": 26,
+          ".ts": 17,
+          ".rs": 16,
+          ".yml": 14,
+          ".hook": 10,
+          ".prompt": 9,
+          ".mjs": 9,
+          ".jpeg": 9,
+          ".toml": 5,
+          ".example": 3,
+          ".yaml": 3,
+          ".gitignore": 3,
+          ".ps1": 3,
+          ".tsx": 3
+        }
+      }
+    },
+    {
+      "app_id": "zlms-prod",
+      "path": "apps/zlms-prod",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "node",
+        "npm"
+      ],
+      "stack_files": [
+        "apps/zlms-prod/app/assets/global/plugins/bootstrap-markdown/package.json",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/bootstrap-markdown/package.json",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-markdown/package.json",
+        "apps/zlms-prod/app/phpMyAdmin/package.json",
+        "apps/zlms-prod/app/phpMyAdmin/yarn.lock",
+        "apps/zlms-prod/next.config.ts",
+        "apps/zlms-prod/package-lock.json",
+        "apps/zlms-prod/package.json"
+      ],
+      "package": {
+        "name": "zlms-frontend-runtime-migration",
+        "version": "0.1.0",
+        "scripts": [
+          "audit:frontend-runtime",
+          "codemod:frontend-runtime",
+          "migration:phase-abcd",
+          "typecheck:frontend-runtime"
+        ],
+        "dependencies_count": 0,
+        "dev_dependencies_count": 0
+      },
+      "signals": {
+        "ports": {
+          "131": [
+            "apps/zlms-prod/app/courseware/user_guide/searchindex.js",
+            "apps/zlms-prod/app/examdb/user_guide/searchindex.js"
+          ],
+          "135": [
+            "apps/zlms-prod/app/courseware/user_guide/searchindex.js",
+            "apps/zlms-prod/app/examdb/user_guide/searchindex.js"
+          ],
+          "155": [
+            "apps/zlms-prod/app/courseware/user_guide/searchindex.js",
+            "apps/zlms-prod/app/examdb/user_guide/searchindex.js"
+          ],
+          "443": [
+            "apps/zlms-prod/k8s/runtime-security-fabric.yaml",
+            "apps/zlms-prod/z-runner/kubernetes/runner-networkpolicy.yaml"
+          ],
+          "3000": [
+            "apps/zlms-prod/app/assets/global/plugins/bootstrap-editable/README.md",
+            "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/bootstrap-editable/README.md",
+            "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-editable/README.md",
+            "apps/zlms-prod/git-tools.sh"
+          ],
+          "4318": [
+            "apps/zlms-prod/k8s/runtime-security-fabric.yaml"
+          ],
+          "8000": [
+            "apps/zlms-prod/app/assets/global/plugins/bootstrap-pwstrength/README.md",
+            "apps/zlms-prod/app/assets/global/plugins/bootstrap-select/README.md",
+            "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/bootstrap-pwstrength/README.md",
+            "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/bootstrap-select/README.md",
+            "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-pwstrength/README.md",
+            "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-select/README.md"
+          ],
+          "8080": [
+            "apps/zlms-prod/UBUNTU_24_04_MANUAL.md",
+            "apps/zlms-prod/k8s/runtime-security-fabric.yaml"
+          ],
+          "8888": [
+            "apps/zlms-prod/app/assets/global/plugins/typeahead/README.md",
+            "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/typeahead/README.md",
+            "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/typeahead/README.md"
+          ],
+          "9080": [
+            "apps/zlms-prod/z-runner/telemetry/promtail.yaml"
+          ],
+          "9102": [
+            "apps/zlms-prod/z-runner/kubernetes/runner-deployment.yaml",
+            "apps/zlms-prod/z-runner/telemetry/otel-config.yaml"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".png": 8638,
+          ".js": 8098,
+          ".jpg": 1982,
+          ".svg": 1651,
+          ".gif": 1645,
+          ".html": 1502,
+          ".css": 1445,
+          ".php": 1118,
+          ".ascx": 527,
+          ".dll": 430,
+          ".aspx": 320,
+          ".md": 289,
+          ".eps": 252,
+          ".twig": 229,
+          ".xml": 200,
+          ".cs": 166,
+          ".json": 163,
+          ".txt": 128,
+          ".map": 108,
+          ".xls": 91
+        }
+      }
+    },
+    {
+      "app_id": "zoffice",
+      "path": "apps/zoffice",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "docker"
+      ],
+      "stack_files": [
+        "apps/zoffice/Makefile",
+        "apps/zoffice/app/Dockerfile",
+        "apps/zoffice/docker-compose.yml",
+        "apps/zoffice/website/Dockerfile"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "6901": [
+            "apps/zoffice/docker-compose.yml"
+          ],
+          "8087": [
+            "apps/zoffice/INTEGRATION-SPEC.md",
+            "apps/zoffice/app/vo-config.json",
+            "apps/zoffice/app/whisper-server.py"
+          ],
+          "8090": [
+            "apps/zoffice/INTEGRATION-SPEC.md",
+            "apps/zoffice/README.md",
+            "apps/zoffice/TASK-editor-ui.md",
+            "apps/zoffice/TASK-furniture-editor.md",
+            "apps/zoffice/app/gateway_presence.py",
+            "apps/zoffice/skill/SKILL.md",
+            "apps/zoffice/tests/crud_test_results.md",
+            "apps/zoffice/tests/test_crud_projects.sh",
+            "apps/zoffice/tests/test_workflow_e2e.py"
+          ],
+          "8091": [
+            "apps/zoffice/INTEGRATION-SPEC.md",
+            "apps/zoffice/app/chat.js"
+          ],
+          "9222": [
+            "apps/zoffice/INTEGRATION-SPEC.md",
+            "apps/zoffice/app/vo-config.json",
+            "apps/zoffice/kasm-browser-config/browser-supervisor.sh",
+            "apps/zoffice/kasm-browser-config/start-cdp-proxy.sh"
+          ],
+          "18090": [
+            "apps/zoffice/.env.example",
+            "apps/zoffice/app/Dockerfile"
+          ],
+          "18091": [
+            "apps/zoffice/.env.example",
+            "apps/zoffice/app/Dockerfile"
+          ],
+          "18789": [
+            "apps/zoffice/INTEGRATION-SPEC.md",
+            "apps/zoffice/QA-CODE-QUALITY-SCAN.md",
+            "apps/zoffice/README.md",
+            "apps/zoffice/app/vo-config.json"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".py": 55,
+          ".md": 29,
+          ".js": 11,
+          ".html": 7,
+          ".sh": 7,
+          ".json": 6,
+          ".png": 6,
+          ".css": 3,
+          ".yml": 2,
+          "Dockerfile": 2,
+          ".example": 1,
+          ".gitignore": 1,
+          "Makefile": 1,
+          ".gitattributes": 1,
+          "LICENSE": 1,
+          ".dockerignore": 1,
+          ".svg": 1,
+          "vo": 1,
+          "chromium-browser": 1
+        }
+      }
+    },
+    {
+      "app_id": "zsticker",
+      "path": "apps/zsticker",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "python"
+      ],
+      "stack_files": [
+        "apps/zsticker/Dockerfile",
+        "apps/zsticker/Makefile",
+        "apps/zsticker/docker-compose.yml",
+        "apps/zsticker/requirements.txt"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "3008": [
+            "apps/zsticker/Makefile"
+          ],
+          "8000": [
+            "apps/zsticker/Dockerfile"
+          ],
+          "8007": [
+            "apps/zsticker/Makefile",
+            "apps/zsticker/README.md"
+          ]
+        },
+        "domains": {
+          "zsticker.zeaz.dev": [
+            "apps/zsticker/src/cli/api.py",
+            "apps/zsticker/src/cli/dashboard.py"
+          ]
+        },
+        "extension_counts": {
+          ".py": 28,
+          ".sh": 11,
+          ".md": 9,
+          ".yml": 4,
+          ".png": 4,
+          ".log": 4,
+          ".example": 2,
+          ".zip": 1,
+          ".dockerignore": 1,
+          "Dockerfile": 1,
+          ".gitignore": 1,
+          ".bat": 1,
+          ".env": 1,
+          "Makefile": 1,
+          ".txt": 1,
+          ".html": 1,
+          ".service": 1,
+          ".ttf": 1
+        }
+      }
+    },
+    {
+      "app_id": "zwallet",
+      "path": "apps/zwallet",
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "node",
+        "pnpm",
+        "python"
+      ],
+      "stack_files": [
+        "apps/zwallet/api/Dockerfile",
+        "apps/zwallet/api/pyproject.toml",
+        "apps/zwallet/api/requirements.txt",
+        "apps/zwallet/apps/android/package.json",
+        "apps/zwallet/apps/api/package.json",
+        "apps/zwallet/apps/api/tsconfig.json",
+        "apps/zwallet/apps/world/package.json",
+        "apps/zwallet/backend/package-lock.json",
+        "apps/zwallet/backend/package.json",
+        "apps/zwallet/backend/packages/shared/package.json",
+        "apps/zwallet/backend/packages/shared/tsconfig.json",
+        "apps/zwallet/backend/services/gateway/Dockerfile",
+        "apps/zwallet/backend/services/gateway/package.json",
+        "apps/zwallet/backend/services/gateway/tsconfig.json",
+        "apps/zwallet/backend/services/indexer-service/package.json",
+        "apps/zwallet/backend/services/indexer-service/tsconfig.json",
+        "apps/zwallet/backend/services/notify-service/package.json",
+        "apps/zwallet/backend/services/notify-service/tsconfig.json",
+        "apps/zwallet/backend/services/policy-service/package.json",
+        "apps/zwallet/backend/services/policy-service/tsconfig.json",
+        "apps/zwallet/backend/services/portfolio-service/Dockerfile",
+        "apps/zwallet/backend/services/portfolio-service/package.json",
+        "apps/zwallet/backend/services/portfolio-service/tsconfig.json",
+        "apps/zwallet/backend/services/swap-service/package.json",
+        "apps/zwallet/backend/services/swap-service/tsconfig.json",
+        "apps/zwallet/backend/services/tx-orchestrator/package.json",
+        "apps/zwallet/backend/services/tx-orchestrator/tsconfig.json",
+        "apps/zwallet/backend/services/wallet-service/Dockerfile",
+        "apps/zwallet/backend/services/wallet-service/package.json",
+        "apps/zwallet/backend/services/wallet-service/tsconfig.json",
+        "apps/zwallet/docker-compose.yml",
+        "apps/zwallet/infra/docker/node-service.Dockerfile",
+        "apps/zwallet/infra/redis/docker-compose.yml",
+        "apps/zwallet/mobile/package.json",
+        "apps/zwallet/package.json",
+        "apps/zwallet/packages/chain-adapters/package.json",
+        "apps/zwallet/packages/chain-adapters/tsconfig.json",
+        "apps/zwallet/packages/crypto-core/package.json",
+        "apps/zwallet/packages/crypto-core/tsconfig.json",
+        "apps/zwallet/packages/crypto/package.json",
+        "apps/zwallet/packages/crypto/tsconfig.json",
+        "apps/zwallet/packages/events/package.json",
+        "apps/zwallet/packages/events/tsconfig.json",
+        "apps/zwallet/packages/rpc/package.json",
+        "apps/zwallet/packages/rpc/tsconfig.json",
+        "apps/zwallet/packages/shared-types/package.json",
+        "apps/zwallet/packages/shared-types/tsconfig.json",
+        "apps/zwallet/pnpm-lock.yaml",
+        "apps/zwallet/services/card/package.json",
+        "apps/zwallet/services/card/tsconfig.json",
+        "apps/zwallet/services/compliance/package.json",
+        "apps/zwallet/services/compliance/tsconfig.json",
+        "apps/zwallet/services/event-workers/package.json",
+        "apps/zwallet/services/event-workers/tsconfig.json",
+        "apps/zwallet/services/indexer/package.json",
+        "apps/zwallet/services/indexer/tsconfig.json",
+        "apps/zwallet/services/liquidity/package.json",
+        "apps/zwallet/services/liquidity/tsconfig.json",
+        "apps/zwallet/services/router/package.json",
+        "apps/zwallet/services/router/tsconfig.json",
+        "apps/zwallet/services/swap-engine/package.json",
+        "apps/zwallet/services/swap-engine/tsconfig.json",
+        "apps/zwallet/services/wallet-engine/package.json",
+        "apps/zwallet/services/wallet-engine/tsconfig.json"
+      ],
+      "package": {
+        "name": "zwallet",
+        "version": null,
+        "scripts": [
+          "check:circular",
+          "generate:releases",
+          "lint",
+          "setup:auto",
+          "typecheck"
+        ],
+        "dependencies_count": 0,
+        "dev_dependencies_count": 7
+      },
+      "signals": {
+        "ports": {
+          "3000": [
+            "apps/zwallet/apps/api/src/server.ts",
+            "apps/zwallet/infra/helm/templates/api-deployment.yaml",
+            "apps/zwallet/infra/k8s/api-deployment.yaml",
+            "apps/zwallet/infra/k8s/monitoring.yaml",
+            "apps/zwallet/k8s/monitoring/monitoring-stack.yaml"
+          ],
+          "3002": [
+            "apps/zwallet/deploy-zveo-services.sh"
+          ],
+          "4173": [
+            "apps/zwallet/apps/world/README.md"
+          ],
+          "5432": [
+            "apps/zwallet/infra/k8s/postgres.yaml"
+          ],
+          "5601": [
+            "apps/zwallet/dashboard/README.md",
+            "apps/zwallet/infra/k8s/base/logging-elk.yaml",
+            "apps/zwallet/k8s/logging/elk-stack.yaml"
+          ],
+          "6379": [
+            "apps/zwallet/admin/panel/enterprise/audit_store.py",
+            "apps/zwallet/admin/panel/enterprise/main.py",
+            "apps/zwallet/api/app/middleware/security_advanced.py",
+            "apps/zwallet/api/app/middleware/security_distributed.py",
+            "apps/zwallet/api/app/security/adaptive_rate_limiter.py",
+            "apps/zwallet/api/app/security/anomaly_detector.py",
+            "apps/zwallet/api/app/security/circuit_breaker.py",
+            "apps/zwallet/api/app/security/risk_engine.py",
+            "apps/zwallet/api/app/security/shadow_ban.py",
+            "apps/zwallet/backend/services/gateway/src/app.ts",
+            "apps/zwallet/infra/k8s/redis-cluster.yaml",
+            "apps/zwallet/infra/k8s/redis.yaml"
+          ],
+          "8080": [
+            "apps/zwallet/backend/.env.example",
+            "apps/zwallet/docker-compose.yml",
+            "apps/zwallet/infra/docker/docker-compose.devops.yml",
+            "apps/zwallet/infra/docker/docker-compose.prod.yml",
+            "apps/zwallet/infra/k8s/base/services-apps.yaml",
+            "apps/zwallet/infra/k8s/helm/zwallet/templates/deployment.yaml",
+            "apps/zwallet/infra/k8s/helm/zwallet/values.yaml",
+            "apps/zwallet/k8s/base/gateway-deployment.yaml",
+            "apps/zwallet/k8s/base/gateway-service.yaml",
+            "apps/zwallet/k8s/deployment.yaml",
+            "apps/zwallet/mobile/App.tsx"
+          ],
+          "8090": [
+            "apps/zwallet/deploy-zveo-services.sh",
+            "apps/zwallet/docker-compose.yml"
+          ],
+          "8091": [
+            "apps/zwallet/docker-compose.yml"
+          ],
+          "8092": [
+            "apps/zwallet/docker-compose.yml",
+            "apps/zwallet/infra/docker/docker-compose.prod.yml",
+            "apps/zwallet/infra/k8s/base/services-apps.yaml"
+          ],
+          "8093": [
+            "apps/zwallet/docker-compose.yml",
+            "apps/zwallet/infra/docker/docker-compose.prod.yml"
+          ],
+          "8094": [
+            "apps/zwallet/docker-compose.yml"
+          ],
+          "8095": [
+            "apps/zwallet/docker-compose.yml"
+          ],
+          "8096": [
+            "apps/zwallet/infra/docker/docker-compose.prod.yml"
+          ],
+          "8097": [
+            "apps/zwallet/infra/docker/docker-compose.prod.yml"
+          ],
+          "8098": [
+            "apps/zwallet/infra/docker/docker-compose.prod.yml"
+          ],
+          "8099": [
+            "apps/zwallet/infra/docker/docker-compose.prod.yml"
+          ],
+          "8100": [
+            "apps/zwallet/infra/docker/docker-compose.prod.yml"
+          ],
+          "8200": [
+            "apps/zwallet/infra/k8s/vault.yaml"
+          ],
+          "8332": [
+            "apps/zwallet/services/card/src/index.ts",
+            "apps/zwallet/services/compliance/src/index.ts",
+            "apps/zwallet/services/event-workers/src/index.ts",
+            "apps/zwallet/services/indexer/src/index.ts",
+            "apps/zwallet/services/liquidity/src/index.ts",
+            "apps/zwallet/services/router/src/intentRouter.ts",
+            "apps/zwallet/services/swap-engine/src/index.ts",
+            "apps/zwallet/services/wallet-engine/src/index.ts"
+          ],
+          "8545": [
+            "apps/zwallet/api/tests/conftest.py",
+            "apps/zwallet/services/card/src/index.ts",
+            "apps/zwallet/services/compliance/src/index.ts",
+            "apps/zwallet/services/event-workers/src/index.ts",
+            "apps/zwallet/services/indexer/src/index.ts",
+            "apps/zwallet/services/liquidity/src/index.ts",
+            "apps/zwallet/services/router/src/intentRouter.ts",
+            "apps/zwallet/services/swap-engine/src/index.ts",
+            "apps/zwallet/services/wallet-engine/src/index.ts"
+          ],
+          "8546": [
+            "apps/zwallet/services/card/src/index.ts",
+            "apps/zwallet/services/compliance/src/index.ts",
+            "apps/zwallet/services/event-workers/src/index.ts",
+            "apps/zwallet/services/indexer/src/index.ts",
+            "apps/zwallet/services/liquidity/src/index.ts",
+            "apps/zwallet/services/router/src/intentRouter.ts",
+            "apps/zwallet/services/swap-engine/src/index.ts",
+            "apps/zwallet/services/wallet-engine/src/index.ts"
+          ],
+          "8899": [
+            "apps/zwallet/services/card/src/index.ts",
+            "apps/zwallet/services/compliance/src/index.ts",
+            "apps/zwallet/services/event-workers/src/index.ts",
+            "apps/zwallet/services/indexer/src/index.ts",
+            "apps/zwallet/services/liquidity/src/index.ts",
+            "apps/zwallet/services/router/src/intentRouter.ts",
+            "apps/zwallet/services/swap-engine/src/index.ts",
+            "apps/zwallet/services/wallet-engine/src/index.ts"
+          ],
+          "9090": [
+            "apps/zwallet/infra/k8s/base/monitoring.yaml",
+            "apps/zwallet/infra/k8s/monitoring.yaml"
+          ],
+          "9092": [
+            "apps/zwallet/api/src/infrastructure/kafka.producer.ts",
+            "apps/zwallet/infra/k8s/kafka-cluster.yaml",
+            "apps/zwallet/infra/k8s/kafka.yaml"
+          ],
+          "9200": [
+            "apps/zwallet/dashboard/README.md",
+            "apps/zwallet/infra/k8s/base/logging-elk.yaml",
+            "apps/zwallet/k8s/logging/elk-stack.yaml"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".ts": 118,
+          ".md": 61,
+          ".json": 60,
+          ".yaml": 56,
+          ".py": 44,
+          ".kt": 22,
+          ".yml": 18,
+          ".sql": 12,
+          ".sh": 10,
+          ".tf": 7,
+          ".mjs": 6,
+          "Dockerfile": 4,
+          ".tla": 4,
+          ".js": 3,
+          ".conf": 3,
+          ".kts": 3,
+          ".go": 2,
+          ".xml": 2,
+          "CNAME": 1,
+          ".gitkeep": 1
+        }
+      }
+    }
+  ]
+}
