@@ -232,21 +232,29 @@ def _mark_run_inactive(agent_id, run_id):
                 
 def _agent_has_active_run(agent_id):
     with _state_lock:
-                runs = _active_runs_by_agent.get(agent_id)
-                if not runs:
-                return False
-                now = time.time()
-                stale = {run_id for run_id in runs if now - _active_run_last_seen.get(run_id, 0) > ACTIVE_RUN_STALE_SEC}
-                if stale:
-                runs.difference_update(stale)
-                for run_id in stale:
+        runs = _active_runs_by_agent.get(agent_id)
+        if not runs:
+            return False
+
+        now = time.time()
+        stale = {
+            run_id
+            for run_id in runs
+            if now - _active_run_last_seen.get(run_id, 0) > ACTIVE_RUN_STALE_SEC
+        }
+
+        if stale:
+            runs.difference_update(stale)
+            for run_id in stale:
                 _active_run_last_seen.pop(run_id, None)
-                if not runs:
-                _active_runs_by_agent.pop(agent_id, None)
-                return False
-                return True
-                
-                
+
+        if not runs:
+            _active_runs_by_agent.pop(agent_id, None)
+            return False
+
+        return True
+
+
 def _mark_tool_active(agent_id, tool_id):
     with _state_lock:
                 if not agent_id or not tool_id:
