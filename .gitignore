@@ -55,16 +55,16 @@ package-lock.json
 .codebuddy/
 .joycode/
 .zed/
-apps/ABTPi18n/
-apps/zAcademy/
-apps/zcino/
-apps/zcino-modern/
-apps/zdash/
-apps/zkbtrader/
-apps/zlms-prod/
-apps/zoffice/
-apps/zsticker/
-apps/zwallet/
+apps/ABTPi18n/*
+apps/zAcademy/*
+apps/zcino/*
+apps/zcino-modern/*
+apps/zdash/*
+apps/zkbtrader/*
+apps/zlms-prod/*
+apps/zoffice/*
+apps/zsticker/*
+apps/zwallet/*
 # Backups and generated repair artifacts
 .backup/
 .backup-refactor-*
@@ -230,3 +230,8 @@ override.tf.json
 
 # Keep generated local tfvars out of git
 terraform/cloudflare-apps/apps.auto.tfvars.json
+
+# Keep generated reports ignored, but allow CVSZ merge planning reports
+!reports/cvsz-apps-merge/
+!reports/cvsz-apps-merge/*.json
+!reports/cvsz-apps-merge/*.md
