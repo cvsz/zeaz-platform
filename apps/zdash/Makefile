@@ -36,7 +36,7 @@ FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|
 .PHONY: help
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Master Makefile\n\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-34s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-	@printf "\nCommon flows:\n  make install-local\n  make install-local-start\n  make server-start\n  make server-status\n  make server-logs SERVICE=backend\n  make server-stop\n  make validate-fast\n  make validate\n  make install-prod ZDASH_DOMAIN=zdash.zeaz.dev\n  make prod-health\n  make prod-logs SERVICE=backend\n  make git-safe-add ARGS=\"Makefile backend/app/risk/high_risk_policy.py\"\n  make git-safe-commit MESSAGE=\"Fix validation scan\"\n  make git-safe-push\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
+	@printf "\nCommon flows:\n  make install-local\n  make install-local-start\n  make server-start\n  make server-status\n  make server-logs SERVICE=backend\n  make server-stop\n  make validate-fast\n  make validate\n  make install-prod ZDASH_DOMAIN=zzdash.zeaz.dev\n  make prod-health\n  make prod-logs SERVICE=backend\n  make git-safe-add ARGS=\"Makefile backend/app/risk/high_risk_policy.py\"\n  make git-safe-commit MESSAGE=\"Fix validation scan\"\n  make git-safe-push\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
 
 .PHONY: info
 info: ## Print local project/runtime info

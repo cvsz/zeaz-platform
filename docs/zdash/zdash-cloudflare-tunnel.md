@@ -1,9 +1,9 @@
-# zDash under Cloudflare: `zdash.zeaz.dev`
+# zDash under Cloudflare: `zzdash.zeaz.dev`
 
 Public route:
 
 ```text
-https://zdash.zeaz.dev -> http://127.0.0.1:3006
+https://zzdash.zeaz.dev -> http://127.0.0.1:3006
 ```
 
 Keep port `3006` bound to loopback and let Cloudflare Tunnel publish the hostname.
@@ -34,5 +34,5 @@ ops/bin/zeaz-cloudflare-zdash-route
 
 ```bash
 curl -I http://127.0.0.1:3006
-curl -I https://zdash.zeaz.dev
+curl -I https://zzdash.zeaz.dev
 ```

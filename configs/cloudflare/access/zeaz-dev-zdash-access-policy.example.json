@@ -10,7 +10,7 @@
   },
   "policies": [
     {
-      "hostname": "zdash.zeaz.dev",
+      "hostname": "zzdash.zeaz.dev",
       "decision": "allow",
       "mode": "private-admin-only",
       "include": [
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "hostname": "api-zdash.zeaz.dev",
+      "hostname": "api-zzdash.zeaz.dev",
       "decision": "allow",
       "mode": "backend-protected",
       "include": [

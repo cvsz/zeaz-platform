@@ -1,0 +1,39 @@
+You are working in repo cvsz/zeaz-platform.
+
+Implement Phase 58 · cvsz apps merge/adoption system.
+
+Goal:
+Deep-dive apps/ABTPi18n and apps/zkbtrader, then create safe scripts to adopt all apps/* that correspond to cvsz/* repos into zeaz-platform.
+
+Rules:
+- zeaz-platform remains the operator monorepo.
+- apps/zdash is already integrated and must not be broken.
+- apps/api and apps/web are internal root apps, not cvsz imports by default.
+- apps/ABTPi18n and apps/zkbtrader are P1 deep-dive targets.
+- Remove nested .git only with explicit APPLY=true and CONFIRM_CVSZ_APPS_MERGE=yes.
+- Before removing nested .git, write apps/<app>/IMPORT_SOURCE.md with origin, branch, and HEAD.
+- Do not commit .env, .env.production, .env.cloudflare, tfstate, tfvars, tfplan, node_modules, .venv, build artifacts, caches, token logs, sqlite/db files.
+- Do not run live trading, social posting, external automation, Cloudflare mutation, Terraform apply, token rotation, or deployment.
+- No auto commit. Scripts must stop after preparing files.
+
+Deliverables:
+- configs/repos/cvsz-apps-merge-map.json
+- scripts/apps/deep-dive-critical-apps.sh
+- scripts/apps/plan-cvsz-apps-merge.py
+- scripts/apps/adopt-cvsz-apps-apply.sh
+- scripts/apps/validate-cvsz-apps-merge.sh
+- docs/runbooks/CVSZ_APPS_MERGE_ADOPTION.md
+- Makefile targets:
+  - critical-apps-deep-dive
+  - cvsz-apps-merge-plan
+  - cvsz-apps-merge-apply
+  - cvsz-apps-merge-validate
+  - phase58-validate
+
+Acceptance:
+- make critical-apps-deep-dive works
+- make cvsz-apps-merge-plan works
+- make cvsz-apps-merge-validate clearly reports blockers
+- apply target is guarded
+- no secrets or generated reports are staged
+- git diff --check passes

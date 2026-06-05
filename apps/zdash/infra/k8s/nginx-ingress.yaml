@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: zdash.zeaz.dev
+    - host: zzdash.zeaz.dev
       http:
         paths:
           - path: /
@@ -17,7 +17,7 @@ spec:
                 name: zdash-frontend
                 port:
                   number: 80
-    - host: api.zdash.zeaz.dev
+    - host: api-zzdash.zeaz.dev
       http:
         paths:
           - path: /

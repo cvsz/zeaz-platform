@@ -50,14 +50,14 @@ versions.tf:
 variables.tf:
 - cloudflare_zone_id validation: 32 lowercase hex chars
 - cloudflare_tunnel_id validation: UUID
-- zdash_domain default zdash.zeaz.dev
-- zdash_api_domain default api-zdash.zeaz.dev
+- zdash_domain default zzdash.zeaz.dev
+- zdash_api_domain default api-zzdash.zeaz.dev
 - zdash_release_domain default release.zeaz.dev
 
 main.tf:
 - use cloudflare_dns_record.zdash for:
-  - zdash.zeaz.dev
-  - api-zdash.zeaz.dev
+  - zzdash.zeaz.dev
+  - api-zzdash.zeaz.dev
   - release.zeaz.dev
 - all CNAME to ${cloudflare_tunnel_id}.cfargotunnel.com
 - proxied = true
@@ -118,8 +118,8 @@ Create/update scripts/cloudflare/zdash-cloudflare-preflight.sh:
 - resolve zone id for zeaz.dev through Cloudflare API if TF_VAR_cloudflare_zone_id is missing
 - resolve tunnel UUID from TF_VAR_cloudflare_tunnel_id, or from cloudflared tunnel list if available
 - query DNS record IDs for:
-  - zdash.zeaz.dev
-  - api-zdash.zeaz.dev
+  - zzdash.zeaz.dev
+  - api-zzdash.zeaz.dev
   - release.zeaz.dev
 - write:
   - docs/reports/generated/zdash-cloudflare-api-preflight.md

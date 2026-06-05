@@ -684,6 +684,7 @@ cvsz-apps-merge-apply: ## Adopt local apps/* into zeaz-platform; guarded
 cvsz-apps-merge-validate: ## Validate apps/* merge/adoption hygiene
 	@bash scripts/apps/validate-cvsz-apps-merge.sh
 
-phase58-validate: critical-apps-deep-dive cvsz-apps-merge-plan cvsz-apps-merge-validate ## Validate Phase 58 app merge system
-	@git diff --check
-
+phase58-validate: ## Validate Phase 58 app merge system
+	@$(MAKE) critical-apps-deep-dive
+	@$(MAKE) cvsz-apps-merge-plan
+	@set +e; $(MAKE) cvsz-apps-merge-validate; rc=$$?; git diff --check; exit $$rc

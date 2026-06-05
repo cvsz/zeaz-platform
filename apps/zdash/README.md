@@ -36,7 +36,7 @@ Repository: `cvsz/zdash`
 Public/support domain:
 
 ```text
-https://zdash.zeaz.dev
+https://zzdash.zeaz.dev
 ```
 
 Cloudflare operator source of truth:
@@ -1006,7 +1006,7 @@ Safe defaults:
 
 ```env
 BACKEND_PORT=8005
-CLOUDFLARE_HOSTNAME=zdash.zeaz.dev
+CLOUDFLARE_HOSTNAME=zzdash.zeaz.dev
 CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
 DRY_RUN=true
 LIVE_TRADING_ACK=false

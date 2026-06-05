@@ -120,7 +120,7 @@ frontend/src/tests/RealtimeClient.test.ts
 frontend/src/tests/useCollaboration.test.ts
 - must keep existing default URL expectations:
   ws://localhost:8005/api/collaboration/ws/collaboration/w1
-  wss://zdash.zeaz.dev/api/collaboration/ws/collaboration/w1
+  wss://zzdash.zeaz.dev/api/collaboration/ws/collaboration/w1
 
 frontend/src/tests/ContentPipeline.test.tsx
 - deterministic mock content item

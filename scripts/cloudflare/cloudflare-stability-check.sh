@@ -104,8 +104,8 @@ check_url() {
 
 check_url apex "https://zeaz.dev"
 check_url www "https://www.zeaz.dev"
-check_url zdash "https://zdash.zeaz.dev"
-check_url api "https://api-zdash.zeaz.dev/health"
+check_url zdash "https://zzdash.zeaz.dev"
+check_url api "https://api-zzdash.zeaz.dev/health"
 check_url release "https://release.zeaz.dev"
 
 echo

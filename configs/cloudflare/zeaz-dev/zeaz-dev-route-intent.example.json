@@ -23,7 +23,7 @@
       "ttl": "auto"
     },
     {
-      "name": "zdash.zeaz.dev",
+      "name": "zzdash.zeaz.dev",
       "purpose": "zDash frontend",
       "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
       "type": "CNAME",
@@ -38,7 +38,7 @@
       "ttl": "auto"
     },
     {
-      "name": "api-zdash.zeaz.dev",
+      "name": "api-zzdash.zeaz.dev",
       "purpose": "zDash backend API",
       "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
       "type": "CNAME",

@@ -19,7 +19,7 @@ variable "region" {
 variable "domain" {
   description = "Domain name for the application"
   type        = string
-  default     = "zdash.zeaz.dev"
+  default     = "zzdash.zeaz.dev"
 }
 
 variable "image_tag" {

@@ -21,13 +21,13 @@ variable "cloudflare_tunnel_id" {
 variable "zdash_domain" {
   description = "zDash frontend hostname"
   type        = string
-  default     = "zdash.zeaz.dev"
+  default     = "zzdash.zeaz.dev"
 }
 
 variable "zdash_api_domain" {
   description = "zDash API hostname matching current Cloudflare route"
   type        = string
-  default     = "api-zdash.zeaz.dev"
+  default     = "api-zzdash.zeaz.dev"
 }
 
 variable "zdash_release_domain" {

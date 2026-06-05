@@ -46,13 +46,13 @@ variable "cloudflare_tunnel_id" {
 variable "zdash_domain" {
   description = "zDash frontend hostname"
   type        = string
-  default     = "zdash.zeaz.dev"
+  default     = "zzdash.zeaz.dev"
 }
 
 variable "zdash_api_domain" {
   description = "zDash API hostname matching current Cloudflare route"
   type        = string
-  default     = "api-zdash.zeaz.dev"
+  default     = "api-zzdash.zeaz.dev"
 }
 
 variable "zdash_release_domain" {
@@ -126,8 +126,8 @@ cat > "${TF_DIR}/terraform.tfvars.example" <<'TF'
 cloudflare_zone_id   = "REPLACE_WITH_REAL_ZONE_ID"
 cloudflare_tunnel_id = "REPLACE_WITH_REAL_TUNNEL_UUID"
 
-zdash_domain         = "zdash.zeaz.dev"
-zdash_api_domain     = "api-zdash.zeaz.dev"
+zdash_domain         = "zzdash.zeaz.dev"
+zdash_api_domain     = "api-zzdash.zeaz.dev"
 zdash_release_domain = "release.zeaz.dev"
 TF
 
@@ -138,8 +138,8 @@ Terraform-managed DNS records for integrated zDash under `apps/zdash`.
 
 Managed hostnames:
 
-- `zdash.zeaz.dev`
-- `api-zdash.zeaz.dev`
+- `zzdash.zeaz.dev`
+- `api-zzdash.zeaz.dev`
 - `release.zeaz.dev`
 
 Rules:
@@ -158,8 +158,8 @@ Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 - Terraform path: \`terraform/zdash\`
 - App path: \`apps/zdash\`
-- Frontend hostname: \`zdash.zeaz.dev\`
-- API hostname: \`api-zdash.zeaz.dev\`
+- Frontend hostname: \`zzdash.zeaz.dev\`
+- API hostname: \`api-zzdash.zeaz.dev\`
 - Release hostname: \`release.zeaz.dev\`
 
 No Cloudflare changes were made by this script.

@@ -344,8 +344,8 @@ def analyze_app(root: Path, app_dir: Path) -> dict[str, Any]:
         warnings.append("local env file exists; values were not printed")
     if signals["secret_like_hits"]:
         warnings.append("secret-like text found in non-env tracked/source files")
-    if "zdash-api.zeaz.dev" in signals["domains"]:
-        warnings.append("stale domain found: zdash-api.zeaz.dev; use api-zdash.zeaz.dev")
+    if "api-zzdash.zeaz.dev" in signals["domains"]:
+        warnings.append("stale domain found: api-zzdash.zeaz.dev; use api-zzdash.zeaz.dev")
 
     return {
         "app_id": app_dir.name,

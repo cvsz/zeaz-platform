@@ -11,9 +11,9 @@ data = json.loads(path.read_text())
 fail = 0
 
 canonical_forbidden_domains = {
-    "zdash-api.zeaz.dev": "api-zdash.zeaz.dev",
-    "api.zdash.zeaz.dev": "api-zdash.zeaz.dev",
-    "dash.zeaz.dev": "zdash.zeaz.dev",
+    "api-zzdash.zeaz.dev": "api-zzdash.zeaz.dev",
+    "api-zzdash.zeaz.dev": "api-zzdash.zeaz.dev",
+    "zdash.zeaz.dev": "zzdash.zeaz.dev",
 }
 
 print("Apps inventory validation")

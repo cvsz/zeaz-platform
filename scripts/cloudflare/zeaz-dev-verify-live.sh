@@ -9,8 +9,8 @@ mkdir -p "${ROOT_DIR}/docs/reports/generated"
 urls=(
   "https://zeaz.dev"
   "https://www.zeaz.dev"
-  "https://zdash.zeaz.dev"
-  "https://api-zdash.zeaz.dev"
+  "https://zzdash.zeaz.dev"
+  "https://api-zzdash.zeaz.dev"
   "https://release.zeaz.dev"
 )
 

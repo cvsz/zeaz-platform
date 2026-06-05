@@ -105,3 +105,88 @@ apps/*/.env.production
 apps/*/.env.cloudflare
 apps/*/backend/.env
 apps/*/frontend/.env.local
+
+# Runtime logs and local worker state
+.runtime/
+workers/**/.wrangler/state/
+workers/**/.wrangler/tmp/
+workers/**/.wrangler/cache/
+*.sqlite
+*.db
+*.log
+
+# App local runtime/secrets
+
+# Terraform runtime state
+terraform/**/*.tfstate
+terraform/**/*.tfstate.backup
+terraform/**/*.tfvars
+terraform/**/.terraform.tfstate.lock.info
+terraform/**/.terraform/
+
+# Local backups
+.backups/
+
+# local/runtime/secrets/state
+!.env.example
+!.env.*.example
+
+
+generated/
+docs/reports/generated/
+
+# Terraform local state/secrets/plans
+*.tfstate
+*.tfstate.*
+!*.tfvars.example
+!*.auto.tfvars.example
+
+# Wrangler/Miniflare local state
+**/.wrangler/
+
+# local/runtime/secrets/state
+
+
+
+# Terraform local state/secrets/plans
+
+# Wrangler/Miniflare local state
+
+# local/runtime/secrets/state
+
+
+
+# Terraform local state/secrets/plans
+
+# Wrangler/Miniflare local state
+
+# Python local environments and caches
+**/.venv/
+**/venv/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+**/__pycache__/
+*.pyo
+
+# Node local dependencies and builds
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/coverage/
+
+# Runtime artifacts
+**/.runtime/
+
+# Python local environments and caches
+
+# Node local dependencies and builds
+
+# Runtime artifacts
+
+# Python local environments and caches
+
+# Node local dependencies and builds
+
+# Runtime artifacts

@@ -23,7 +23,7 @@ if [ ${#MISSING[@]} -gt 0 ]; then
 fi
 
 TUNNEL=${CLOUDFLARE_TUNNEL_NAME:-zdash}
-HOSTNAME=${CLOUDFLARE_HOSTNAME:-zdash.zeaz.dev}
+HOSTNAME=${CLOUDFLARE_HOSTNAME:-zzdash.zeaz.dev}
 
 echo "Planned Deployment Summary:"
 echo "- Account ID:    ${CLOUDFLARE_ACCOUNT_ID}"

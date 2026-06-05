@@ -6,8 +6,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 source "${ROOT_DIR}/scripts/cloudflare/cloudflare-api-lib.sh"
 
 ZONE_NAME="${ZONE_NAME:-zeaz.dev}"
-ZDASH_FRONTEND_HOST="${ZDASH_FRONTEND_HOST:-zdash.zeaz.dev}"
-ZDASH_API_HOST="${ZDASH_API_HOST:-api-zdash.zeaz.dev}"
+ZDASH_FRONTEND_HOST="${ZDASH_FRONTEND_HOST:-zzdash.zeaz.dev}"
+ZDASH_API_HOST="${ZDASH_API_HOST:-api-zzdash.zeaz.dev}"
 ZDASH_RELEASE_HOST="${ZDASH_RELEASE_HOST:-release.zeaz.dev}"
 
 REPORT="${ROOT_DIR}/docs/reports/generated/zdash-cloudflare-api-preflight.md"

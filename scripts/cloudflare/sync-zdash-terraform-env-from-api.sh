@@ -9,8 +9,8 @@ API_BASE="${CLOUDFLARE_API_BASE:-https://api.cloudflare.com/client/v4}"
 ZONE_NAME="${ZONE_NAME:-zeaz.dev}"
 TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-${ZDASH_TUNNEL_NAME:-zeaz-platform}}"
 
-ZDASH_FRONTEND_HOST="${ZDASH_FRONTEND_HOST:-zdash.zeaz.dev}"
-ZDASH_API_HOST="${ZDASH_API_HOST:-api-zdash.zeaz.dev}"
+ZDASH_FRONTEND_HOST="${ZDASH_FRONTEND_HOST:-zzdash.zeaz.dev}"
+ZDASH_API_HOST="${ZDASH_API_HOST:-api-zzdash.zeaz.dev}"
 ZDASH_RELEASE_HOST="${ZDASH_RELEASE_HOST:-release.zeaz.dev}"
 
 ENV_CLOUDFLARE="${ENV_CLOUDFLARE:-${ROOT_DIR}/.env.cloudflare}"

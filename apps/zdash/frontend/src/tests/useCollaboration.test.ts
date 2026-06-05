@@ -61,10 +61,10 @@ describe("useCollaboration", () => {
 
   it("derives wss URL from secure API base", () => {
     const url = buildCollaborationWsUrl("w1", {
-      apiBaseUrl: "https://zdash.zeaz.dev/",
+      apiBaseUrl: "https://zzdash.zeaz.dev/",
       wsBaseUrl: "",
     });
-    expect(url).toBe("wss://zdash.zeaz.dev/api/collaboration/ws/collaboration/w1");
+    expect(url).toBe("wss://zzdash.zeaz.dev/api/collaboration/ws/collaboration/w1");
   });
 
   it("prefers explicit ws base URL when provided", () => {

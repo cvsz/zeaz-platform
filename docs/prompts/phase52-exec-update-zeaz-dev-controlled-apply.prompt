@@ -12,8 +12,8 @@ Prepare zeaz.dev production routing for the integrated zDash app using zeaz-plat
 Target domains:
 - www.zeaz.dev              → public landing / main website
 - zeaz.dev                  → public landing / redirect to www.zeaz.dev
-- zdash.zeaz.dev            → zDash frontend
-- api-zdash.zeaz.dev        → zDash backend API
+- zzdash.zeaz.dev            → zDash frontend
+- api-zzdash.zeaz.dev        → zDash backend API
 - release.zeaz.dev          → optional public release evidence page
 - ssh.zeaz.dev              → existing Access SSH route, do not break
 
@@ -45,8 +45,8 @@ Must include:
 - intended hostnames:
   - zeaz.dev
   - www.zeaz.dev
-  - zdash.zeaz.dev
-  - api-zdash.zeaz.dev
+  - zzdash.zeaz.dev
+  - api-zzdash.zeaz.dev
   - release.zeaz.dev
 - DNS record intent:
   - CNAME records where appropriate
@@ -64,8 +64,8 @@ Create/update:
 - configs/cloudflare/zdash/zdash.production.routes.example.json
 
 Ingress must include:
-- zdash.zeaz.dev → frontend origin
-- api-zdash.zeaz.dev → backend origin
+- zzdash.zeaz.dev → frontend origin
+- api-zzdash.zeaz.dev → backend origin
 - health route if needed
 - fallback 404 service
 - local origin defaults:

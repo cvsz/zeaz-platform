@@ -7,7 +7,7 @@ zDash is an AI operations dashboard and agent-runtime blueprint for staged backe
 Production/support domain:
 
 ```text
-https://zdash.zeaz.dev
+https://zzdash.zeaz.dev
 ```
 
 The public support domain is operated through the Cloudflare operator system maintained in:
@@ -38,7 +38,7 @@ In scope:
 - Tenant/workspace isolation flaws
 - Secret exposure in code, logs, bundles, artifacts, prompts, or frontend builds
 - Unsafe defaults for trading, IoT, social posting, update, rollback, support, or remote relay flows
-- Cloudflare route/support-domain misconfiguration affecting `zdash.zeaz.dev`
+- Cloudflare route/support-domain misconfiguration affecting `zzdash.zeaz.dev`
 - CI/CD, Docker, deployment, and dependency security issues
 - XSS, SSRF, command injection, path traversal, deserialization, or unsafe plugin execution
 
@@ -79,7 +79,7 @@ Do not bypass:
 
 ## Cloudflare Operator Boundary
 
-`zdash.zeaz.dev` is the supported public domain for zDash. Cloudflare operational source of truth lives in `CVSz/zeaz-platform`.
+`zzdash.zeaz.dev` is the supported public domain for zDash. Cloudflare operational source of truth lives in `CVSz/zeaz-platform`.
 
 Application repository responsibilities:
 

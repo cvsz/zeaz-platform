@@ -9,8 +9,8 @@
 ## Validation
 
 - Verify `zeaz.dev` redirects to `www.zeaz.dev`.
-- Verify `zdash.zeaz.dev` serves the frontend.
-- Verify `api-zdash.zeaz.dev` reaches the backend.
+- Verify `zzdash.zeaz.dev` serves the frontend.
+- Verify `api-zzdash.zeaz.dev` reaches the backend.
 - Verify the fallback 404 ingress still blocks unmatched hosts.
 
 ## Evidence capture

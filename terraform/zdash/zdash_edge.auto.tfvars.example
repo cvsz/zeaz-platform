@@ -4,6 +4,6 @@
 cloudflare_zone_id   = "REPLACE_WITH_ZEAZ_DEV_ZONE_ID"
 cloudflare_tunnel_id = "REPLACE_WITH_TUNNEL_UUID"
 
-zdash_domain         = "zdash.zeaz.dev"
-zdash_api_domain     = "api-zdash.zeaz.dev"
+zdash_domain         = "zzdash.zeaz.dev"
+zdash_api_domain     = "api-zzdash.zeaz.dev"
 zdash_release_domain = "release.zeaz.dev"

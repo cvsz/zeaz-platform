@@ -25,7 +25,7 @@ vi.mock("../api/endpoints", () => {
         primary_color: "#7c3aed",
         accent_color: "#22c55e",
         support_email: "support@zeaz.dev",
-        custom_domain: "dash.zeaz.dev",
+        custom_domain: "zdash.zeaz.dev",
       },
     })),
     getLicenseStatus: vi.fn(),

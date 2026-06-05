@@ -3,7 +3,7 @@
   "zone": "zeaz.dev",
   "hostnames": [
     {
-      "name": "zdash.zeaz.dev",
+      "name": "zzdash.zeaz.dev",
       "purpose": "zDash public dashboard (frontend)",
       "origin": "http://localhost:5173",
       "tunnel": true,
@@ -11,7 +11,7 @@
       "tls": "strict"
     },
     {
-      "name": "api-zdash.zeaz.dev",
+      "name": "api-zzdash.zeaz.dev",
       "purpose": "zDash API backend",
       "origin": "http://localhost:8005",
       "tunnel": true,

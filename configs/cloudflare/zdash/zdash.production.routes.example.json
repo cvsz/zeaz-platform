@@ -8,19 +8,19 @@
   "backend_origin_env": "ZDASH_BACKEND_ORIGIN",
   "routes": [
     {
-      "hostname": "zdash.zeaz.dev",
+      "hostname": "zzdash.zeaz.dev",
       "origin": "http://localhost:5173",
       "kind": "frontend",
       "proxied": true
     },
     {
-      "hostname": "api-zdash.zeaz.dev",
+      "hostname": "api-zzdash.zeaz.dev",
       "origin": "http://localhost:8005",
       "kind": "backend",
       "proxied": true
     },
     {
-      "hostname": "zdash.zeaz.dev/health",
+      "hostname": "zzdash.zeaz.dev/health",
       "origin": "http://localhost:8005/health",
       "kind": "health",
       "proxied": true

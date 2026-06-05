@@ -4,8 +4,8 @@ Terraform-managed DNS records for integrated zDash under `apps/zdash`.
 
 Managed hostnames:
 
-- `zdash.zeaz.dev`
-- `api-zdash.zeaz.dev`
+- `zzdash.zeaz.dev`
+- `api-zzdash.zeaz.dev`
 - `release.zeaz.dev`
 
 Rules:
