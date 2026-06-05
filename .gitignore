@@ -190,3 +190,17 @@ docs/reports/generated/
 # Node local dependencies and builds
 
 # Runtime artifacts
+terraform/cloudflare-apps/apps.auto.tfvars.json
+
+# Terraform local working dirs
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform/cloudflare-apps/apps.auto.tfvars.json

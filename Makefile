@@ -688,3 +688,50 @@ phase58-validate: ## Validate Phase 58 app merge system
 	@$(MAKE) critical-apps-deep-dive
 	@$(MAKE) cvsz-apps-merge-plan
 	@set +e; $(MAKE) cvsz-apps-merge-validate; rc=$$?; git diff --check; exit $$rc
+
+# =============================================================================
+# Phase 59 — apps routing inventory and Cloudflare Terraform
+# =============================================================================
+
+.PHONY: apps-routing-generate apps-routing-report tf-cloudflare-apps-init tf-cloudflare-apps-fmt tf-cloudflare-apps-validate tf-cloudflare-apps-plan phase59-validate
+apps-routing-generate: ## Generate apps routing report and Terraform app route vars
+	@$(PYTHON) scripts/platform/generate-apps-routing-assets.py
+
+apps-routing-report: apps-routing-generate ## Print apps routing report
+	@sed -n '1,220p' reports/platform/apps-routing.md
+
+phase59-validate: apps-routing-generate tf-cloudflare-apps-fmt tf-cloudflare-apps-validate
+	@git diff --check
+
+# =============================================================================
+# Phase 60 — apps stack deep dive and port refactor
+# =============================================================================
+
+.PHONY: apps-stack-deep-dive apps-port-refactor-generate apps-port-refactor-report apps-port-origin-check tf-cloudflare-apps-init tf-cloudflare-apps-fmt tf-cloudflare-apps-validate tf-cloudflare-apps-plan phase60-validate
+apps-stack-deep-dive: ## Deep-dive all stacks under apps/*
+	@$(PYTHON) scripts/platform/deep-dive-apps-stack.py
+
+apps-port-refactor-generate: ## Generate canonical app port/Terraform/tunnel assets
+	@$(PYTHON) scripts/platform/generate-port-refactor-assets.py
+
+apps-port-refactor-report: apps-stack-deep-dive apps-port-refactor-generate ## Print app stack and port plan
+	@sed -n '1,220p' reports/platform/apps-port-refactor.md
+
+apps-port-origin-check: apps-port-refactor-generate ## Check active local origins
+	@bash scripts/platform/check-port-origins.sh
+
+tf-cloudflare-apps-init: ## Init Cloudflare apps Terraform
+	@cd terraform/cloudflare-apps && terraform init
+
+tf-cloudflare-apps-fmt: ## Format Cloudflare apps Terraform
+	@cd terraform/cloudflare-apps && terraform fmt
+
+tf-cloudflare-apps-validate: apps-port-refactor-generate tf-cloudflare-apps-init ## Validate Cloudflare apps Terraform
+	@cd terraform/cloudflare-apps && terraform validate
+
+tf-cloudflare-apps-plan: apps-port-refactor-generate tf-cloudflare-apps-init ## Plan Cloudflare apps Terraform
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh
+	@cd terraform/cloudflare-apps && terraform plan
+
+phase60-validate: apps-stack-deep-dive apps-port-refactor-generate tf-cloudflare-apps-fmt tf-cloudflare-apps-validate
+	@git diff --check
