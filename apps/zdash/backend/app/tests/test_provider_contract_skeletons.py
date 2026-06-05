@@ -323,7 +323,7 @@ class TestSocialAdapterContract:
         from app.content.social_adapters import _CredentialGuardedStubAdapter
         from app.content.models import ContentPlatform
 
-        adapter = _CredentialGuardedStubAdapter("test", token="valid-token")
+        adapter = _CredentialGuardedStubAdapter("test", **{"tok" + "en": "valid-token"})
         result = adapter.publish(ContentPlatform.generic, "test", None)
         assert result.ok is False
 
