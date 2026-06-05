@@ -68,6 +68,24 @@ def is_git_tracked(path: Path) -> bool:
 def should_skip(path: Path) -> bool:
     if any(part in SKIP_PARTS for part in path.parts):
         return True
+
+    # Imported app-local automation files are source artifacts, not root repo gates.
+    # GitHub Actions only executes workflows under the root .github/workflows.
+    # Copilot/agent files inside imported apps may contain prompt text in *.yml files.
+    if len(path.parts) >= 3 and path.parts[0] == "apps":
+        app_local_skip_dirs = {
+            ".github",
+            ".copilot",
+            ".cursor",
+            ".claude",
+            ".codex",
+            ".gemini",
+            ".agents",
+            ".agent",
+        }
+        if path.parts[2] in app_local_skip_dirs:
+            return True
+
     if any(path == prefix or prefix in path.parents for prefix in SKIP_PREFIXES):
         return True
     # If this is a git checkout, ignore untracked YAML so local tools/caches do
