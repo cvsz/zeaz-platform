@@ -55,6 +55,16 @@ package-lock.json
 .codebuddy/
 .joycode/
 .zed/
+apps/ABTPi18n/
+apps/zAcademy/
+apps/zcino/
+apps/zcino-modern/
+apps/zdash/
+apps/zkbtrader/
+apps/zlms-prod/
+apps/zoffice/
+apps/zsticker/
+apps/zwallet/
 # Backups and generated repair artifacts
 .backup/
 .backup-refactor-*
@@ -76,3 +86,14 @@ cloudflare-platform/.cloudflare-token-audit.log
 !docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md
 
 runtime/
+
+# Supabase
+.supabase/
+supabase/.temp/
+
+# zDash local/prod secrets
+apps/zdash/.env
+apps/zdash/.env.local
+apps/zdash/.env.production
+apps/zdash/backend/.env
+apps/zdash/frontend/.env.local

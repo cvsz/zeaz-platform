@@ -41,6 +41,15 @@
       "exclude": [],
       "require": [],
       "bypass": false
+    },
+    {
+      "hostname": "zcino.zeaz.dev",
+      "decision": "bypass",
+      "mode": "public",
+      "include": [{"everyone": {}}],
+      "exclude": [],
+      "require": [],
+      "bypass": true
     }
   ],
   "notes": [

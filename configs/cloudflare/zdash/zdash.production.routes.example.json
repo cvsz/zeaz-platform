@@ -24,6 +24,12 @@
       "origin": "http://localhost:8005/health",
       "kind": "health",
       "proxied": true
+    },
+    {
+      "hostname": "zcino.zeaz.dev",
+      "origin": "http://localhost:3009",
+      "kind": "frontend",
+      "proxied": true
     }
   ],
   "fallback": {

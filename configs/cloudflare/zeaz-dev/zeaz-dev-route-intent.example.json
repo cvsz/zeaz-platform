@@ -30,6 +30,13 @@
       "proxied": true,
       "ttl": "auto"
     },
+    { "name": "sticker.zeaz.dev",
+      "purpose": "zDash frontend",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
     {
       "name": "api-zdash.zeaz.dev",
       "purpose": "zDash backend API",
@@ -41,6 +48,14 @@
     {
       "name": "release.zeaz.dev",
       "purpose": "optional public release evidence page",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "zcino.zeaz.dev",
+      "purpose": "zCino Casino App",
       "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
       "type": "CNAME",
       "proxied": true,

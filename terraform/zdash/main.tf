@@ -25,6 +25,14 @@ locals {
       proxied = true
       comment = "zDash release evidence via Cloudflare Tunnel"
     }
+
+    zcino_app = {
+      name    = "zcino.zeaz.dev"
+      type    = "CNAME"
+      content = local.tunnel_target
+      proxied = true
+      comment = "zCino Casino App via Cloudflare Tunnel"
+    }
   }
 }
 
