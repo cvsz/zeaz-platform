@@ -206,19 +206,47 @@ def parse_package(app_dir: Path) -> dict[str, Any] | None:
 
 def is_generated_or_legacy_doc_path(path: Path) -> bool:
     s = str(path).replace("\\", "/")
+    lower = s.lower()
+
     generated_markers = [
-        "/bin/Release/",
-        "/obj/Release/",
+        "/bin/release/",
+        "/obj/release/",
         "/documentation/",
         "/user_guide/",
         "/tests/platform/artifacts/",
         "/docs/reports/",
         "/assets/global/plugins/",
         "/app/assets/global/plugins/",
-        "/app/obj/Release/",
-        "/app/bin/Release/",
+        "/app/assets/pages/scripts/",
+        "/app/phpmyadmin/",
+        "/app/obj/release/",
+        "/app/bin/release/",
     ]
-    return any(marker in s for marker in generated_markers)
+
+    third_party_assets = [
+        "/codemirror/",
+        "/amcharts/",
+        "/amstockcharts/",
+        "/ammap/",
+        "/xlsx/",
+        "/typeahead/",
+        "/handlebars",
+        "/phpmyadmin/",
+        "/plugins/",
+    ]
+
+    generated_file_names = [
+        "xlsx.min.js",
+        "handlebars.min.js",
+        "components-dropdowns.min.js",
+        "components-multi-select.min.js",
+    ]
+
+    return (
+        any(marker in lower for marker in generated_markers)
+        or any(marker in lower for marker in third_party_assets)
+        or any(lower.endswith(name) for name in generated_file_names)
+    )
 
 
 def is_test_fixture_path(path: Path) -> bool:
@@ -250,6 +278,26 @@ def is_secret_fixture_line(line: str) -> bool:
     ]
     secret_words = ["password", "token", "api_key", "apikey", "secret"]
     return any(word in lowered for word in secret_words) and any(marker in lowered for marker in fixture_markers)
+
+
+def is_non_literal_secret_reference(line: str) -> bool:
+    lowered = line.lower()
+    secret_words = ["password", "token", "api_key", "apikey", "secret", "client_secret", "private_key"]
+    reference_markers = [
+        "$",
+        "${{",
+        "$env:",
+        "process.env",
+        "os.environ",
+        "getenv(",
+        "secrets.",
+        "env.",
+        "env:",
+        "from_env",
+        "from_environment",
+    ]
+    return any(word in lowered for word in secret_words) and any(marker in lowered for marker in reference_markers)
+
 
 def scan_app(root: Path, app_dir: Path, exclude_dirs: set[str], expected_by_path: dict[str, dict[str, Any]]) -> dict[str, Any]:
     app_rel = rel(app_dir, root)
@@ -364,6 +412,9 @@ def scan_app(root: Path, app_dir: Path, exclude_dirs: set[str], expected_by_path
         if secret_scan_allowed and len(secret_hits) < 50:
             for line_no, line in enumerate(text.splitlines(), 1):
                 if is_test_fixture_path(path) and is_secret_fixture_line(line):
+                    continue
+
+                if is_non_literal_secret_reference(line):
                     continue
 
                 if any(pattern.search(line) for pattern in SECRET_PATTERNS):

@@ -735,3 +735,37 @@ tf-cloudflare-apps-plan: apps-port-refactor-generate tf-cloudflare-apps-init ## 
 
 phase60-validate: apps-stack-deep-dive apps-port-refactor-generate tf-cloudflare-apps-fmt tf-cloudflare-apps-validate
 	@git diff --check
+
+# =============================================================================
+# Phase 61 — build all stacks and go-live gate
+# =============================================================================
+
+.PHONY: build-all-stacks build-all-stacks-full go-live-preflight go-live-report
+build-all-stacks: ## Build/check all apps/* stacks without install or docker build
+	@bash scripts/platform/build-all-stacks.sh
+
+build-all-stacks-full: ## Build/check all apps/* stacks with installs and docker build
+	@RUN_INSTALL=true RUN_DOCKER_BUILD=true bash scripts/platform/build-all-stacks.sh
+
+go-live-preflight: ## Run go-live readiness checks without deploy/apply
+	@bash scripts/platform/go-live-preflight.sh
+
+go-live-report: build-all-stacks go-live-preflight ## Generate full go-live reports
+	@echo "Reports:"
+	@echo "  reports/platform/build-all-stacks.md"
+	@echo "  reports/platform/go-live-preflight.md"
+	@echo "  reports/platform/apps-port-refactor.md"
+
+# =============================================================================
+# Phase 61.0 — deep source review before build/go-live
+# =============================================================================
+
+.PHONY: apps-source-review apps-source-review-strict apps-source-review-report
+apps-source-review: ## Review source-owned files under apps/* before build/go-live
+	@$(PYTHON) scripts/platform/review-apps-source.py
+
+apps-source-review-strict: ## Review apps/* and fail on critical findings
+	@$(PYTHON) scripts/platform/review-apps-source.py --fail-on-critical
+
+apps-source-review-report: apps-source-review ## Print apps source review report
+	@sed -n '1,260p' reports/platform/apps-source-review.md
