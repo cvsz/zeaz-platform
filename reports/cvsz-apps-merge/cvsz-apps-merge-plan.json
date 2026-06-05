@@ -1,0 +1,608 @@
+{
+  "apps": [
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "ABTPi18n",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "deep_dive": true,
+      "exists": true,
+      "forbidden_local_files": [],
+      "generated_dirs": [
+        "apps/ABTPi18n/apps/frontend/node_modules",
+        "apps/ABTPi18n/node_modules"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:23Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/ABTPi18n",
+        "app": "ABTPi18n",
+        "nested_branch_before_adoption": "main",
+        "nested_head_before_adoption": "0bdab88d195ff9ec921fafcb8b7b8fc0ac05e5bd",
+        "nested_origin_before_adoption": "git@github.com:cvsz/ABTPi18n.git",
+        "source_repository": "git@github.com:cvsz/ABTPi18n.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P1",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/ABTPi18n.git",
+      "root_ignore_reason": ".gitignore:58:apps/ABTPi18n/\tapps/ABTPi18n",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "safety_notes": [
+        "Trading platform claims and exchange connectivity require runtime isolation.",
+        "Do not run trading bots, exchange automation, social posting, or deployment as part of adoption."
+      ],
+      "target_path": "apps/ABTPi18n",
+      "warnings": [
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zkbtrader",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "deep_dive": true,
+      "exists": true,
+      "forbidden_local_files": [
+        "apps/zkbtrader/.env"
+      ],
+      "generated_dirs": [
+        "apps/zkbtrader/.agents",
+        "apps/zkbtrader/.claude",
+        "apps/zkbtrader/.codex",
+        "apps/zkbtrader/.mypy_cache",
+        "apps/zkbtrader/.pytest_cache",
+        "apps/zkbtrader/.ruff_cache",
+        "apps/zkbtrader/.vendor/ECC/.agents",
+        "apps/zkbtrader/.vendor/ECC/.claude",
+        "apps/zkbtrader/.vendor/ECC/.codex",
+        "apps/zkbtrader/.vendor/ECC/.gemini",
+        "apps/zkbtrader/.venv",
+        "apps/zkbtrader/node_modules",
+        "apps/zkbtrader/src/zkbtrader/__pycache__",
+        "apps/zkbtrader/src/zkbtrader/adapters/__pycache__",
+        "apps/zkbtrader/tests/__pycache__"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:23Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zkbtrader",
+        "app": "zkbtrader",
+        "nested_branch_before_adoption": "main",
+        "nested_head_before_adoption": "bb01c861ba31bc825653547ef7d5185740dcc7a5",
+        "nested_origin_before_adoption": "git@github.com:cvsz/zkbtrader.git",
+        "source_repository": "git@github.com:cvsz/zkbtrader.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P1",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zkbtrader.git",
+      "root_ignore_reason": ".gitignore:63:apps/zkbtrader/\tapps/zkbtrader",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "safety_notes": [
+        "Paper-only and public-data-only boundaries must remain visible and enforced.",
+        "Do not run live trading, token rotation, deployment, or exchange-authenticated workflows."
+      ],
+      "target_path": "apps/zkbtrader",
+      "warnings": [
+        "local forbidden runtime files are present and must remain ignored",
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [],
+      "app_id": "zdash",
+      "blockers": [],
+      "exists": true,
+      "forbidden_local_files": [
+        "apps/zdash/.env.production",
+        "apps/zdash/.runtime/logs/backend.log",
+        "apps/zdash/.runtime/logs/frontend.log",
+        "apps/zdash/backend/test.db",
+        "apps/zdash/backend/zdash.db"
+      ],
+      "generated_dirs": [
+        "apps/zdash/.codex",
+        "apps/zdash/backend/.pytest_cache",
+        "apps/zdash/backend/.ruff_cache",
+        "apps/zdash/backend/.venv",
+        "apps/zdash/backend/app/__pycache__",
+        "apps/zdash/backend/app/agents/__pycache__",
+        "apps/zdash/backend/app/ai/__pycache__",
+        "apps/zdash/backend/app/ai_trader/__pycache__",
+        "apps/zdash/backend/app/api/__pycache__",
+        "apps/zdash/backend/app/api/routes/__pycache__",
+        "apps/zdash/backend/app/audit/__pycache__",
+        "apps/zdash/backend/app/auth/__pycache__",
+        "apps/zdash/backend/app/backtesting/__pycache__",
+        "apps/zdash/backend/app/backtesting/strategies/__pycache__",
+        "apps/zdash/backend/app/billing/__pycache__",
+        "apps/zdash/backend/app/boardroom/__pycache__",
+        "apps/zdash/backend/app/collaboration/__pycache__",
+        "apps/zdash/backend/app/content/__pycache__",
+        "apps/zdash/backend/app/continuous_planning/__pycache__",
+        "apps/zdash/backend/app/core/__pycache__",
+        "apps/zdash/backend/app/db/__pycache__",
+        "apps/zdash/backend/app/developer/__pycache__",
+        "apps/zdash/backend/app/digital_twin/__pycache__",
+        "apps/zdash/backend/app/enterprise/__pycache__",
+        "apps/zdash/backend/app/enterprise_os/__pycache__",
+        "apps/zdash/backend/app/governance_refinement/__pycache__",
+        "apps/zdash/backend/app/integrations/__pycache__",
+        "apps/zdash/backend/app/iot/__pycache__",
+        "apps/zdash/backend/app/launch/__pycache__",
+        "apps/zdash/backend/app/lessons/__pycache__",
+        "apps/zdash/backend/app/long_horizon/__pycache__",
+        "apps/zdash/backend/app/macro_simulation/__pycache__",
+        "apps/zdash/backend/app/managed/__pycache__",
+        "apps/zdash/backend/app/market_data/__pycache__",
+        "apps/zdash/backend/app/marketplace/__pycache__",
+        "apps/zdash/backend/app/models/__pycache__",
+        "apps/zdash/backend/app/notifications/__pycache__",
+        "apps/zdash/backend/app/observability/__pycache__",
+        "apps/zdash/backend/app/ops/__pycache__",
+        "apps/zdash/backend/app/predictive_sre/__pycache__",
+        "apps/zdash/backend/app/realtime/__pycache__",
+        "apps/zdash/backend/app/repositories/__pycache__",
+        "apps/zdash/backend/app/risk/__pycache__",
+        "apps/zdash/backend/app/scheduler/__pycache__",
+        "apps/zdash/backend/app/self_evolution/__pycache__",
+        "apps/zdash/backend/app/services/__pycache__",
+        "apps/zdash/backend/app/sovereign/__pycache__",
+        "apps/zdash/backend/app/team/__pycache__",
+        "apps/zdash/backend/app/tenancy/__pycache__",
+        "apps/zdash/backend/app/tests/__pycache__",
+        "apps/zdash/backend/app/trading/__pycache__",
+        "apps/zdash/backend/app/workers/__pycache__",
+        "apps/zdash/frontend/dist",
+        "apps/zdash/frontend/node_modules"
+      ],
+      "import_source": {
+        "-_api": "api-zzdash.zeaz.dev",
+        "-_frontend": "zzdash.zeaz.dev",
+        "-_release_evidence": "release.zeaz.dev",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zdash",
+        "adoption_status": "already-integrated before Phase 58",
+        "app": "zdash",
+        "canonical_domains": "",
+        "forbidden_legacy_domains": "",
+        "operator_repository": "cvsz/zeaz-platform",
+        "source_repository": "git@github.com:cvsz/zdash.git"
+      },
+      "import_source_exists": true,
+      "mode": "already-integrated",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P0",
+      "protected": true,
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zdash.git",
+      "root_ignore_reason": ".gitignore:62:apps/zdash/\tapps/zdash",
+      "root_status": [
+        "M apps/zdash/CODE-OF-CONDUCT.md",
+        " M apps/zdash/COMMUNITY.md",
+        " M apps/zdash/CONTRIBUTING.md",
+        " M apps/zdash/Makefile",
+        " M apps/zdash/README.md",
+        " M apps/zdash/SECURITY.md",
+        " M apps/zdash/docs/ops/SIGNED_RELEASE_ATTESTATION.md",
+        " M apps/zdash/docs/prompts/phase37-exec-realtime-gateway-stabilization.prompt",
+        " M apps/zdash/docs/releases/FINAL_RELEASE_NOTES.md",
+        " M apps/zdash/docs/releases/v0.42.0-rc1.md",
+        " M apps/zdash/docs/releases/v2.0.1.md",
+        " M apps/zdash/docs/releases/v2.0.2.md",
+        " M apps/zdash/docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md",
+        " M apps/zdash/docs/runbooks/INSTALLATION.md",
+        " M apps/zdash/docs/runbooks/REALTIME_GATEWAY.md",
+        " M apps/zdash/frontend/src/api/endpoints.ts",
+        " M apps/zdash/frontend/src/tests/Enterprise.test.tsx",
+        " M apps/zdash/frontend/src/tests/mocks/apiMockData.ts",
+        " M apps/zdash/frontend/src/tests/setup.ts",
+        " M apps/zdash/frontend/src/tests/useCollaboration.test.ts",
+        " M apps/zdash/infra/cloudflare/tunnel-config.example.yml",
+        " M apps/zdash/infra/k8s/configmap.yaml",
+        " M apps/zdash/infra/k8s/nginx-ingress.yaml",
+        " M apps/zdash/infra/scripts/cloudflare-dry-run.sh",
+        " M apps/zdash/infra/terraform/variables.tf"
+      ],
+      "root_tracked_file_count": 1120,
+      "safety_notes": [
+        "Already integrated into zeaz-platform.",
+        "Do not alter zDash adoption state as part of the cvsz apps merge."
+      ],
+      "target_path": "apps/zdash",
+      "warnings": [
+        "local forbidden runtime files are present and must remain ignored",
+        "local dependency/cache/build directories are present and must remain ignored",
+        "root git status has changes under app path"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zlms-prod",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [
+        "apps/zlms-prod/app/assets/global/img/social/Thumbs.db",
+        "apps/zlms-prod/app/assets/lms/img/logo/photothumb.db",
+        "apps/zlms-prod/app/assets/lms/img/photothumb.db",
+        "apps/zlms-prod/app/assets/pages/media/blog/Thumbs.db",
+        "apps/zlms-prod/app/assets/pages/media/pages/Thumbs.db",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/global/img/social/Thumbs.db",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/lms/img/logo/photothumb.db",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/lms/img/photothumb.db",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/pages/media/blog/Thumbs.db",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/pages/media/pages/Thumbs.db",
+        "apps/zlms-prod/app/courseware/tests/mocks/database/ci_test.sqlite",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/img/social/Thumbs.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/lms/img/logo/photothumb.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/lms/img/photothumb.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/pages/media/blog/Thumbs.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/pages/media/pages/Thumbs.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/ui__/img/logo/photothumb.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/ui__/img/photothumb.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/web/img/logo/photothumb.db",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/web/img/photothumb.db",
+        "apps/zlms-prod/app/ui__/img/logo/photothumb.db",
+        "apps/zlms-prod/app/ui__/img/photothumb.db",
+        "apps/zlms-prod/app/web/img/logo/photothumb.db",
+        "apps/zlms-prod/app/web/img/photothumb.db"
+      ],
+      "generated_dirs": [
+        "apps/zlms-prod/.agents",
+        "apps/zlms-prod/.claude",
+        "apps/zlms-prod/.codex",
+        "apps/zlms-prod/app/assets/global/plugins/jstree/dist",
+        "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/jstree/dist",
+        "apps/zlms-prod/app/courseware/assets/admin/plugins/summernote/dist",
+        "apps/zlms-prod/app/courseware/assets/plugins/summernote/dist",
+        "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/jstree/dist",
+        "apps/zlms-prod/app/phpMyAdmin/vendor/paragonie/random_compat/dist"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:23Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zlms-prod",
+        "app": "zlms-prod",
+        "nested_branch_before_adoption": "main",
+        "nested_head_before_adoption": "4b84819478426ed918c9b4bd3e2931a99a83c524",
+        "nested_origin_before_adoption": "git@github.com:cvsz/zlms-prod.git",
+        "source_repository": "git@github.com:cvsz/zlms-prod.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P2",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zlms-prod.git",
+      "root_ignore_reason": ".gitignore:64:apps/zlms-prod/\tapps/zlms-prod",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zlms-prod",
+      "warnings": [
+        "local forbidden runtime files are present and must remain ignored",
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zwallet",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [],
+      "generated_dirs": [
+        "apps/zwallet/.codex"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:44Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zwallet",
+        "app": "zwallet",
+        "nested_branch_before_adoption": "hardening/deterministic-core",
+        "nested_head_before_adoption": "8164cb36fd63d8a2e7d8e8eb74cc137b6ee9751c",
+        "nested_origin_before_adoption": "git@github.com:cvsz/zwallet.git",
+        "source_repository": "git@github.com:cvsz/zwallet.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P2",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zwallet.git",
+      "root_ignore_reason": ".gitignore:67:apps/zwallet/\tapps/zwallet",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zwallet",
+      "warnings": [
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zAcademy",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [],
+      "generated_dirs": [
+        "apps/zAcademy/.agent",
+        "apps/zAcademy/.agents",
+        "apps/zAcademy/.claude",
+        "apps/zAcademy/.codex",
+        "apps/zAcademy/.gemini",
+        "apps/zAcademy/node_modules"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:44Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zAcademy",
+        "app": "zAcademy",
+        "nested_branch_before_adoption": "feat/payment-platform",
+        "nested_head_before_adoption": "90f09efc64209d21b6545fb6084da0910e524154",
+        "nested_origin_before_adoption": "git@github.com:cvsz/zAcademy.git",
+        "source_repository": "git@github.com:cvsz/zAcademy.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P3",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zAcademy.git",
+      "root_ignore_reason": ".gitignore:59:apps/zAcademy/\tapps/zAcademy",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zAcademy",
+      "warnings": [
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zcino",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [
+        "apps/zcino/administrator/images/colorPicker/Thumbs.db",
+        "apps/zcino/php-server.log"
+      ],
+      "generated_dirs": [
+        "apps/zcino/frontend/.next"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:44Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zcino",
+        "app": "zcino",
+        "source_repository": "git@github.com:cvsz/zcino.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P3",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zcino.git",
+      "root_ignore_reason": ".gitignore:60:apps/zcino/\tapps/zcino",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zcino",
+      "warnings": [
+        "local forbidden runtime files are present and must remain ignored",
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zcino-modern",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [],
+      "generated_dirs": [
+        "apps/zcino-modern/frontend/.next",
+        "apps/zcino-modern/frontend/node_modules"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:44Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zcino-modern",
+        "app": "zcino-modern",
+        "nested_branch_before_adoption": "main",
+        "nested_head_before_adoption": "d408097f8384ba0321a0d1e5178b80b5e5c7a6c3",
+        "nested_origin_before_adoption": "https://github.com/cvsz/zcino.git",
+        "source_repository": "git@github.com:cvsz/zcino-modern.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P3",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zcino-modern.git",
+      "root_ignore_reason": ".gitignore:61:apps/zcino-modern/\tapps/zcino-modern",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zcino-modern",
+      "warnings": [
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zoffice",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [],
+      "generated_dirs": [
+        "apps/zoffice/.agents",
+        "apps/zoffice/app/__pycache__",
+        "apps/zoffice/app/providers/__pycache__"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:44Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zoffice",
+        "app": "zoffice",
+        "nested_branch_before_adoption": "main",
+        "nested_head_before_adoption": "ed64c361044a4d03c45173699440dd09c8915b9c",
+        "nested_origin_before_adoption": "https://github.com/eliautobot/my-virtual-office.git",
+        "source_repository": "git@github.com:cvsz/zoffice.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P3",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zoffice.git",
+      "root_ignore_reason": ".gitignore:65:apps/zoffice/\tapps/zoffice",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zoffice",
+      "warnings": [
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    },
+    {
+      "actions": [
+        "operator must review and stage safe app files manually after apply"
+      ],
+      "app_id": "zsticker",
+      "blockers": [
+        "root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging"
+      ],
+      "exists": true,
+      "forbidden_local_files": [
+        "apps/zsticker/.env",
+        "apps/zsticker/logs/app.log",
+        "apps/zsticker/logs/error.log",
+        "apps/zsticker/logs/line_api.log",
+        "apps/zsticker/logs/sheets.log"
+      ],
+      "generated_dirs": [
+        "apps/zsticker/.pytest_cache",
+        "apps/zsticker/__pycache__",
+        "apps/zsticker/src/__pycache__",
+        "apps/zsticker/src/core/__pycache__",
+        "apps/zsticker/src/utils/__pycache__",
+        "apps/zsticker/tests/__pycache__",
+        "apps/zsticker/venv"
+      ],
+      "import_source": {
+        "adopted_at": "2026-06-05T07:05:45Z",
+        "adopted_into": "cvsz/zeaz-platform",
+        "adopted_path": "apps/zsticker",
+        "app": "zsticker",
+        "nested_branch_before_adoption": "main",
+        "nested_head_before_adoption": "c40dcbc540bac06e5ebefb089dea35c7108ab37a",
+        "nested_origin_before_adoption": "git@github.com:cvsz/zsticker.git",
+        "source_repository": "git@github.com:cvsz/zsticker.git"
+      },
+      "import_source_exists": true,
+      "mode": "adopt-local",
+      "nested_branch": "",
+      "nested_git": false,
+      "nested_head": "",
+      "nested_origin": "",
+      "nested_status": [],
+      "priority": "P3",
+      "remote_check": "skipped",
+      "repo": "git@github.com:cvsz/zsticker.git",
+      "root_ignore_reason": ".gitignore:66:apps/zsticker/\tapps/zsticker",
+      "root_status": [],
+      "root_tracked_file_count": 0,
+      "target_path": "apps/zsticker",
+      "warnings": [
+        "local forbidden runtime files are present and must remain ignored",
+        "local dependency/cache/build directories are present and must remain ignored"
+      ]
+    }
+  ],
+  "apps_dir": "apps",
+  "blocker_count": 9,
+  "critical_deep_dive_apps": [
+    "ABTPi18n",
+    "zkbtrader"
+  ],
+  "internal_apps": [
+    "api",
+    "web"
+  ],
+  "operator_repo": "cvsz/zeaz-platform",
+  "phase": "58",
+  "plan_blockers": [],
+  "protected_apps": [
+    "zdash"
+  ],
+  "remote_check": "skipped",
+  "unmapped_app_dirs": [],
+  "warning_count": 16
+}
