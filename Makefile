@@ -667,3 +667,23 @@ apps-inventory: apps-deep-dive ## Alias for local apps inventory
 apps-inventory-validate: apps-deep-dive ## Validate generated apps inventory
 	@$(PYTHON) scripts/apps/validate-apps-inventory.py generated/integration/apps-inventory.json
 
+# =============================================================================
+# Phase 58 — cvsz apps merge/adoption
+# =============================================================================
+
+.PHONY: critical-apps-deep-dive cvsz-apps-merge-plan cvsz-apps-merge-apply cvsz-apps-merge-validate phase58-validate
+critical-apps-deep-dive: ## Deep-dive apps/ABTPi18n and apps/zkbtrader
+	@bash scripts/apps/deep-dive-critical-apps.sh
+
+cvsz-apps-merge-plan: ## Plan adoption of apps/* from cvsz/*
+	@$(PYTHON) scripts/apps/plan-cvsz-apps-merge.py
+
+cvsz-apps-merge-apply: ## Adopt local apps/* into zeaz-platform; guarded
+	@bash scripts/apps/adopt-cvsz-apps-apply.sh
+
+cvsz-apps-merge-validate: ## Validate apps/* merge/adoption hygiene
+	@bash scripts/apps/validate-cvsz-apps-merge.sh
+
+phase58-validate: critical-apps-deep-dive cvsz-apps-merge-plan cvsz-apps-merge-validate ## Validate Phase 58 app merge system
+	@git diff --check
+

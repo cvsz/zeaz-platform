@@ -1,0 +1,122 @@
+{
+  "owner": "cvsz",
+  "mode": "local-apps-adoption",
+  "operator_repo": "cvsz/zeaz-platform",
+  "apps_dir": "apps",
+  "internal_apps": [
+    "api",
+    "web"
+  ],
+  "apps": [
+    {
+      "app_id": "ABTPi18n",
+      "repo": "git@github.com:cvsz/ABTPi18n.git",
+      "target_path": "apps/ABTPi18n",
+      "mode": "adopt-local",
+      "priority": "P1",
+      "notes": "Deep-dive first. Candidate i18n/trading capability; verify relation with zkbtrader before runtime coupling."
+    },
+    {
+      "app_id": "zkbtrader",
+      "repo": "git@github.com:cvsz/zkbtrader.git",
+      "target_path": "apps/zkbtrader",
+      "mode": "adopt-local",
+      "priority": "P1",
+      "notes": "Deep-dive first. Trading app; all live trading actions must stay dry-run/approval-gated."
+    },
+    {
+      "app_id": "zdash",
+      "repo": "git@github.com:cvsz/zdash.git",
+      "target_path": "apps/zdash",
+      "mode": "already-integrated",
+      "priority": "P0"
+    },
+    {
+      "app_id": "zlms-prod",
+      "repo": "git@github.com:cvsz/zlms-prod.git",
+      "target_path": "apps/zlms-prod",
+      "mode": "adopt-local",
+      "priority": "P2"
+    },
+    {
+      "app_id": "zwallet",
+      "repo": "git@github.com:cvsz/zwallet.git",
+      "target_path": "apps/zwallet",
+      "mode": "adopt-local",
+      "priority": "P2"
+    },
+    {
+      "app_id": "zAcademy",
+      "repo": "git@github.com:cvsz/zAcademy.git",
+      "target_path": "apps/zAcademy",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zcino",
+      "repo": "git@github.com:cvsz/zcino.git",
+      "target_path": "apps/zcino",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zcino-modern",
+      "repo": "git@github.com:cvsz/zcino-modern.git",
+      "target_path": "apps/zcino-modern",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zoffice",
+      "repo": "git@github.com:cvsz/zoffice.git",
+      "target_path": "apps/zoffice",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zsticker",
+      "repo": "git@github.com:cvsz/zsticker.git",
+      "target_path": "apps/zsticker",
+      "mode": "adopt-local",
+      "priority": "P3"
+    }
+  ],
+  "exclude_dirs": [
+    ".git",
+    "node_modules",
+    ".venv",
+    "venv",
+    "dist",
+    "build",
+    ".next",
+    ".nuxt",
+    "coverage",
+    ".turbo",
+    ".cache",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".terraform",
+    ".agent",
+    ".agents",
+    ".gemini",
+    ".claude",
+    ".codex",
+    ".pnpm-store"
+  ],
+  "exclude_files": [
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.cloudflare",
+    "*.tfstate",
+    "*.tfstate.backup",
+    "*.tfvars",
+    "*.tfplan",
+    ".terraform.tfstate.lock.info",
+    "*.sqlite",
+    "*.db",
+    "*.log"
+  ]
+}
