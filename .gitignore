@@ -13,7 +13,7 @@ secrets/*.env
 *.key
 *.p12
 *.agekey
-../../secrets/
+secrets/
 # Cloudflare generated/local state
 cloudflared/
 tunnels/cloudflared/config.yml
