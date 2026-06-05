@@ -24,7 +24,7 @@ make run-backend
 The frontend connects via the configured `VITE_API_BASE_URL` (or `VITE_WS_BASE_URL` if set). The realtime client in `frontend/src/realtime/client.ts` derives the WebSocket URL from the API base URL:
 
 - `http://localhost:8005` → `ws://localhost:8005`
-- `https://zzdash.zeaz.dev` → `wss://zzdash.zeaz.dev`
+- `https://zdash.zeaz.dev` → `wss://zdash.zeaz.dev`
 
 ## Test Isolation Rules
 

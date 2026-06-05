@@ -84,7 +84,7 @@ Health should reflect onboarding progress and safe readiness, not commercial pre
 
 ## Cloudflare operator handoff
 
-For `zzdash.zeaz.dev`, custom domains, DNS, Tunnel, Access, WAF, rate limiting, TLS, and edge health checks, hand off to:
+For `zdash.zeaz.dev`, custom domains, DNS, Tunnel, Access, WAF, rate limiting, TLS, and edge health checks, hand off to:
 
 ```text
 cvsz/zeaz-platform

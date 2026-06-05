@@ -93,7 +93,7 @@ Services: nginx (80), backend (internal 8005), frontend (internal 80), postgres 
 
 ## Cloudflare/Domain Notes
 
-Public/support domain: `https://zzdash.zeaz.dev`
+Public/support domain: `https://zdash.zeaz.dev`
 
 Cloudflare DNS, Pages/Tunnel routing, Access, WAF, API Shield, edge health checks, and production support-domain rollout are managed in:
 ```text

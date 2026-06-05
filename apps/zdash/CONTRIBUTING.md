@@ -9,7 +9,7 @@ Short description:
 Production/support domain:
 
 ```text
-https://zzdash.zeaz.dev
+https://zdash.zeaz.dev
 ```
 
 Cloudflare operator source of truth:
@@ -168,6 +168,6 @@ A good pull request includes:
 
 ## Cloudflare / Support Domain Contributions
 
-`zzdash.zeaz.dev` is the supported public domain for zDash.
+`zdash.zeaz.dev` is the supported public domain for zDash.
 
 Use this repository for application code and local config defaults. Use `CVSz/zeaz-platform` for Cloudflare DNS, Pages/Tunnel routing, Access policies, WAF/API Shield, edge health checks, and production support-domain rollout.

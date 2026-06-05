@@ -11,11 +11,11 @@ zDash is managed as an integrated app under the zeaz-platform operator monorepo.
 Cloudflare DNS, Tunnel, Access, Terraform, token workflows, and public release routing are owned by zeaz-platform.
 
 Canonical domains:
-- Frontend: zzdash.zeaz.dev
-- API: api-zzdash.zeaz.dev
+- Frontend: zdash.zeaz.dev
+- API: api-zdash.zeaz.dev
 - Release evidence: release.zeaz.dev
 
 Forbidden legacy domains:
-- api-zzdash.zeaz.dev
-- api-zzdash.zeaz.dev
+- api-zdash.zeaz.dev
+- api-zdash.zeaz.dev
 - zdash.zeaz.dev

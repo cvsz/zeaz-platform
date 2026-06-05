@@ -42,7 +42,7 @@ gpg --verify docs/reports/generated/release-attestation.json.sig
 Expected output:
 
 ```
-gpg: Good signature from "zDash Release Signing Key <releases@zzdash.zeaz.dev>"
+gpg: Good signature from "zDash Release Signing Key <releases@zdash.zeaz.dev>"
 ```
 
 ## GPG Signing Flow
@@ -55,13 +55,13 @@ gpg --full-generate-key
 # Key length: 4096
 # Expiration: 2y
 # Real name: zDash Release Signing Key
-# Email: releases@zzdash.zeaz.dev
+# Email: releases@zdash.zeaz.dev
 ```
 
 ### Export Public Key
 
 ```bash
-gpg --armor --export releases@zzdash.zeaz.dev > docs/ops/zdash-release-pubkey.asc
+gpg --armor --export releases@zdash.zeaz.dev > docs/ops/zdash-release-pubkey.asc
 ```
 
 ### Sign Attestation

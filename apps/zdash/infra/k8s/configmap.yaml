@@ -7,7 +7,7 @@ data:
   APP_ENV: "production"
   PROJECT_NAME: "zDash"
   PORT: "8005"
-  CORS_ORIGINS: "[\"http://localhost:3000\", \"https://zzdash.zeaz.dev\"]"
+  CORS_ORIGINS: "[\"http://localhost:3000\", \"https://zdash.zeaz.dev\"]"
   LOG_LEVEL: "INFO"
   DRY_RUN: "true"
   PRODUCTION_SAFETY_LOCK: "true"

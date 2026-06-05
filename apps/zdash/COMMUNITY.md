@@ -5,7 +5,7 @@ zDash is a safety-first AI operations dashboard and agent runtime for staged aut
 Public/support domain:
 
 ```text
-https://zzdash.zeaz.dev
+https://zdash.zeaz.dev
 ```
 
 Cloudflare operator source of truth:
@@ -50,7 +50,7 @@ When opening issues or discussions:
 
 ## Support Domain
 
-`zzdash.zeaz.dev` is the supported public domain for zDash. Cloudflare routing and edge operations for this domain are managed in `CVSz/zeaz-platform`.
+`zdash.zeaz.dev` is the supported public domain for zDash. Cloudflare routing and edge operations for this domain are managed in `CVSz/zeaz-platform`.
 
 Use `cvsz/zdash` for application-level issues, including:
 

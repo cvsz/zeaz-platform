@@ -52,7 +52,7 @@ External or customer-impacting actions must default to dry-run, read-only, mock,
 The zDash support domain is:
 
 ```text
-https://zzdash.zeaz.dev
+https://zdash.zeaz.dev
 ```
 
 Cloudflare operator work for this domain belongs in:
