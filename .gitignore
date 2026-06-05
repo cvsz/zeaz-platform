@@ -204,3 +204,29 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 terraform/cloudflare-apps/apps.auto.tfvars.json
+
+# Terraform local/runtime files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Allow committed generated platform reports
+!reports/
+!reports/platform/
+!reports/platform/*.md
+!reports/platform/*.yml
+!reports/platform/*.yaml
+!reports/platform/*.json
+
+# Allow Terraform provider lock files
+!**/.terraform.lock.hcl
+
+# Keep generated local tfvars out of git
+terraform/cloudflare-apps/apps.auto.tfvars.json
