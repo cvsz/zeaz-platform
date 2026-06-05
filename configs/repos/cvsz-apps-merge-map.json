@@ -113,6 +113,13 @@
       "target_path": "apps/zsticker",
       "mode": "adopt-local",
       "priority": "P3"
+    },
+    {
+      "app_id": "openwork",
+      "repo": "https://github.com/different-ai/openwork.git",
+      "target_path": "apps/openwork",
+      "mode": "adopt-local",
+      "priority": "P3"
     }
   ],
   "exclude_dirs": [

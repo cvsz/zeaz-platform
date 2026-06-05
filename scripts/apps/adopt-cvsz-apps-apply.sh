@@ -198,6 +198,7 @@ def replace_managed_block(existing: str, block: list[str]) -> str:
 def update_root_gitignore(apps: list[dict[str, Any]]) -> list[str]:
     adopt_paths = {f"{app['target_path'].rstrip('/')}/" for app in apps if app.get("mode") == "adopt-local"}
     adopt_paths |= {app["target_path"].rstrip("/") for app in apps if app.get("mode") == "adopt-local"}
+    adopt_paths |= {f"{app['target_path'].rstrip('/')}/*" for app in apps if app.get("mode") == "adopt-local"}
     existing = ROOT_GITIGNORE.read_text(encoding="utf-8") if ROOT_GITIGNORE.exists() else ""
     kept: list[str] = []
     removed: list[str] = []

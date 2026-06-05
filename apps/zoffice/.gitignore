@@ -37,3 +37,35 @@ __pycache__/
 .gemini/
 .claude/
 .codex/
+
+# BEGIN Phase 58 cvsz apps adoption guardrails
+.env
+.env.local
+.env.production
+.env.cloudflare
+*.log
+*.sqlite
+*.db
+node_modules/
+.pnpm-store/
+.venv/
+venv/
+env/
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+.turbo/
+.cache/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfplan
+.terraform.tfstate.lock.info
+# END Phase 58 cvsz apps adoption guardrails

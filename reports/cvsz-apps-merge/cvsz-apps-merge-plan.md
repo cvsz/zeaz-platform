@@ -11,23 +11,24 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Internal root apps excluded by default: `api, web`
 - Protected apps: `zdash`
 - Critical deep-dive apps: `ABTPi18n, zkbtrader`
-- Blockers: `9`
-- Warnings: `16`
+- Blockers: `0`
+- Warnings: `26`
 
 ## App Matrix
 
 | App | Priority | Mode | Exists | Nested Git | Tracked Files | Import Source | Remote | Blockers | Warnings |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
-| ABTPi18n | P1 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local dependency/cache/build directories are present and must remain ignored |
-| zkbtrader | P1 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored |
-| zdash | P0 | already-integrated | True | False | 1120 | True | skipped | - | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
-| zlms-prod | P2 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored |
-| zwallet | P2 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local dependency/cache/build directories are present and must remain ignored |
-| zAcademy | P3 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local dependency/cache/build directories are present and must remain ignored |
-| zcino | P3 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored |
-| zcino-modern | P3 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local dependency/cache/build directories are present and must remain ignored |
-| zoffice | P3 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local dependency/cache/build directories are present and must remain ignored |
-| zsticker | P3 | adopt-local | True | False | 0 | True | skipped | root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored |
+| ABTPi18n | P1 | adopt-local | True | False | 262 | True | skipped | - | local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zkbtrader | P1 | adopt-local | True | False | 77 | True | skipped | - | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zdash | P0 | already-integrated | True | False | 1122 | True | skipped | - | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored |
+| zlms-prod | P2 | adopt-local | True | False | 0 | True | skipped | - | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zwallet | P2 | adopt-local | True | False | 0 | True | skipped | - | local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zAcademy | P3 | adopt-local | True | False | 0 | True | skipped | - | local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zcino | P3 | adopt-local | True | False | 0 | True | skipped | - | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zcino-modern | P3 | adopt-local | True | False | 0 | True | skipped | - | local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zoffice | P3 | adopt-local | True | False | 133 | True | skipped | - | local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| zsticker | P3 | adopt-local | True | False | 68 | True | skipped | - | local forbidden runtime files are present and must remain ignored<br>local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
+| openwork | P3 | adopt-local | True | False | 0 | True | skipped | - | local dependency/cache/build directories are present and must remain ignored<br>root git status has changes under app path |
 
 ## Recommended Order
 
@@ -46,16 +47,44 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:58:apps/ABTPi18n/	apps/ABTPi18n`
-- Actions:
-  - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
+- Root ignore reason: `-`
 - Warnings:
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local generated/dependency/cache dirs detected:
+  - `apps/ABTPi18n/apps/backend/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/api/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/auth/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/backtesting/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/db/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/execution/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/ml/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/risk/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/strategies/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/binance_perp_bot/utils/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/ml/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/ml/reinforcement/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/ml/signal_quality/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/ml/utils/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/ml/volatility/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/plugins/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/security/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/services/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/trading/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/trading/strategies/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/utils/__pycache__`
+  - `apps/ABTPi18n/apps/backend/src/worker/__pycache__`
   - `apps/ABTPi18n/apps/frontend/node_modules`
+  - `apps/ABTPi18n/core/__pycache__`
   - `apps/ABTPi18n/node_modules`
+  - `apps/ABTPi18n/scripts/__pycache__`
+  - `apps/ABTPi18n/strategies/__pycache__`
+  - `apps/ABTPi18n/strategies/external/__pycache__`
+  - `apps/ABTPi18n/tests/__pycache__`
+  - `apps/ABTPi18n/tools/__pycache__`
+  - `apps/ABTPi18n/tools/metaultra/__pycache__`
 
 ### zkbtrader
 
@@ -64,14 +93,11 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:63:apps/zkbtrader/	apps/zkbtrader`
-- Actions:
-  - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
+- Root ignore reason: `-`
 - Warnings:
   - local forbidden runtime files are present and must remain ignored
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local forbidden files detected:
   - `apps/zkbtrader/.env`
 - Local generated/dependency/cache dirs detected:
@@ -85,7 +111,28 @@ This is an offline plan by default. Remote repository checks are skipped unless 
   - `apps/zkbtrader/.vendor/ECC/.claude`
   - `apps/zkbtrader/.vendor/ECC/.codex`
   - `apps/zkbtrader/.vendor/ECC/.gemini`
+  - `apps/zkbtrader/.vendor/ECC/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/scripts/hooks/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/scripts/lib/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/continuous-learning-v2/scripts/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/frontend-slides/scripts/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/manim-video/assets/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/openclaw-persona-forge/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/skill-comply/scripts/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/skill-comply/tests/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/skills/videodb/scripts/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/cli/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/core/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/prompt/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/prompt/templates/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/providers/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/src/llm/tools/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/tests/__pycache__`
+  - `apps/zkbtrader/.vendor/ECC/tests/hooks/__pycache__`
   - `apps/zkbtrader/.venv`
+  - `apps/zkbtrader/alembic/__pycache__`
+  - `apps/zkbtrader/alembic/versions/__pycache__`
   - `apps/zkbtrader/node_modules`
   - `apps/zkbtrader/src/zkbtrader/__pycache__`
   - `apps/zkbtrader/src/zkbtrader/adapters/__pycache__`
@@ -98,11 +145,10 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:62:apps/zdash/	apps/zdash`
+- Root ignore reason: `.gitignore:58:apps/zdash/*	apps/zdash/`
 - Warnings:
   - local forbidden runtime files are present and must remain ignored
   - local dependency/cache/build directories are present and must remain ignored
-  - root git status has changes under app path
 - Local forbidden files detected:
   - `apps/zdash/.env.production`
   - `apps/zdash/.runtime/logs/backend.log`
@@ -111,9 +157,13 @@ This is an offline plan by default. Remote repository checks are skipped unless 
   - `apps/zdash/backend/zdash.db`
 - Local generated/dependency/cache dirs detected:
   - `apps/zdash/.codex`
+  - `apps/zdash/__pycache__`
   - `apps/zdash/backend/.pytest_cache`
   - `apps/zdash/backend/.ruff_cache`
   - `apps/zdash/backend/.venv`
+  - `apps/zdash/backend/__pycache__`
+  - `apps/zdash/backend/alembic/__pycache__`
+  - `apps/zdash/backend/alembic/versions/__pycache__`
   - `apps/zdash/backend/app/__pycache__`
   - `apps/zdash/backend/app/agents/__pycache__`
   - `apps/zdash/backend/app/ai/__pycache__`
@@ -146,11 +196,7 @@ This is an offline plan by default. Remote repository checks are skipped unless 
   - `apps/zdash/backend/app/market_data/__pycache__`
   - `apps/zdash/backend/app/marketplace/__pycache__`
   - `apps/zdash/backend/app/models/__pycache__`
-  - `apps/zdash/backend/app/notifications/__pycache__`
-  - `apps/zdash/backend/app/observability/__pycache__`
-  - `apps/zdash/backend/app/ops/__pycache__`
-  - `apps/zdash/backend/app/predictive_sre/__pycache__`
-  - ... 14 more
+  - ... 21 more
 
 ### zlms-prod
 
@@ -159,14 +205,13 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:64:apps/zlms-prod/	apps/zlms-prod`
+- Root ignore reason: `-`
 - Actions:
   - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
 - Warnings:
   - local forbidden runtime files are present and must remain ignored
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local forbidden files detected:
   - `apps/zlms-prod/app/assets/global/img/social/Thumbs.db`
   - `apps/zlms-prod/app/assets/lms/img/logo/photothumb.db`
@@ -202,6 +247,7 @@ This is an offline plan by default. Remote repository checks are skipped unless 
   - `apps/zlms-prod/app/courseware/assets/plugins/summernote/dist`
   - `apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/jstree/dist`
   - `apps/zlms-prod/app/phpMyAdmin/vendor/paragonie/random_compat/dist`
+  - `apps/zlms-prod/tests/security/__pycache__`
 
 ### zwallet
 
@@ -210,15 +256,30 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:67:apps/zwallet/	apps/zwallet`
+- Root ignore reason: `-`
 - Actions:
   - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
 - Warnings:
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local generated/dependency/cache dirs detected:
   - `apps/zwallet/.codex`
+  - `apps/zwallet/admin/panel/__pycache__`
+  - `apps/zwallet/admin/panel/enterprise/__pycache__`
+  - `apps/zwallet/api/app/__pycache__`
+  - `apps/zwallet/api/app/application/__pycache__`
+  - `apps/zwallet/api/app/core/__pycache__`
+  - `apps/zwallet/api/app/domain/__pycache__`
+  - `apps/zwallet/api/app/events/__pycache__`
+  - `apps/zwallet/api/app/infrastructure/__pycache__`
+  - `apps/zwallet/api/app/interfaces/http/__pycache__`
+  - `apps/zwallet/api/app/middleware/__pycache__`
+  - `apps/zwallet/api/app/observability/__pycache__`
+  - `apps/zwallet/api/app/security/__pycache__`
+  - `apps/zwallet/api/tests/__pycache__`
+  - `apps/zwallet/infra/observability/__pycache__`
+  - `apps/zwallet/infra/observability/alerts/__pycache__`
+  - `apps/zwallet/terraform/aws/lambda/__pycache__`
 
 ### zAcademy
 
@@ -227,13 +288,12 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:59:apps/zAcademy/	apps/zAcademy`
+- Root ignore reason: `-`
 - Actions:
   - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
 - Warnings:
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local generated/dependency/cache dirs detected:
   - `apps/zAcademy/.agent`
   - `apps/zAcademy/.agents`
@@ -241,6 +301,8 @@ This is an offline plan by default. Remote repository checks are skipped unless 
   - `apps/zAcademy/.codex`
   - `apps/zAcademy/.gemini`
   - `apps/zAcademy/node_modules`
+  - `apps/zAcademy/scripts/prompt/__pycache__`
+  - `apps/zAcademy/services/payment-domain/webhook-processor/python/__pycache__`
 
 ### zcino
 
@@ -249,14 +311,13 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:60:apps/zcino/	apps/zcino`
+- Root ignore reason: `-`
 - Actions:
   - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
 - Warnings:
   - local forbidden runtime files are present and must remain ignored
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local forbidden files detected:
   - `apps/zcino/administrator/images/colorPicker/Thumbs.db`
   - `apps/zcino/php-server.log`
@@ -270,13 +331,12 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:61:apps/zcino-modern/	apps/zcino-modern`
+- Root ignore reason: `-`
 - Actions:
   - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
 - Warnings:
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local generated/dependency/cache dirs detected:
   - `apps/zcino-modern/frontend/.next`
   - `apps/zcino-modern/frontend/node_modules`
@@ -288,17 +348,16 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:65:apps/zoffice/	apps/zoffice`
-- Actions:
-  - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
+- Root ignore reason: `-`
 - Warnings:
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local generated/dependency/cache dirs detected:
   - `apps/zoffice/.agents`
+  - `apps/zoffice/__pycache__`
   - `apps/zoffice/app/__pycache__`
   - `apps/zoffice/app/providers/__pycache__`
+  - `apps/zoffice/tests/__pycache__`
 
 ### zsticker
 
@@ -307,14 +366,11 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Nested origin: `-`
 - Nested branch: `-`
 - Nested HEAD: `-`
-- Root ignore reason: `.gitignore:66:apps/zsticker/	apps/zsticker`
-- Actions:
-  - operator must review and stage safe app files manually after apply
-- Blockers:
-  - root gitignore currently ignores app path; guarded apply must remove broad app ignore before manual staging
+- Root ignore reason: `-`
 - Warnings:
   - local forbidden runtime files are present and must remain ignored
   - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
 - Local forbidden files detected:
   - `apps/zsticker/.env`
   - `apps/zsticker/logs/app.log`
@@ -324,8 +380,45 @@ This is an offline plan by default. Remote repository checks are skipped unless 
 - Local generated/dependency/cache dirs detected:
   - `apps/zsticker/.pytest_cache`
   - `apps/zsticker/__pycache__`
+  - `apps/zsticker/legacy/__pycache__`
   - `apps/zsticker/src/__pycache__`
+  - `apps/zsticker/src/cli/__pycache__`
   - `apps/zsticker/src/core/__pycache__`
   - `apps/zsticker/src/utils/__pycache__`
   - `apps/zsticker/tests/__pycache__`
   - `apps/zsticker/venv`
+
+### openwork
+
+- Path: `apps/openwork`
+- Source repo: `https://github.com/different-ai/openwork.git`
+- Nested origin: `-`
+- Nested branch: `-`
+- Nested HEAD: `-`
+- Root ignore reason: `-`
+- Actions:
+  - operator must review and stage safe app files manually after apply
+- Warnings:
+  - local dependency/cache/build directories are present and must remain ignored
+  - root git status has changes under app path
+- Local generated/dependency/cache dirs detected:
+  - `apps/openwork/.opencode/node_modules`
+  - `apps/openwork/apps/app/node_modules`
+  - `apps/openwork/apps/desktop/build`
+  - `apps/openwork/apps/desktop/node_modules`
+  - `apps/openwork/apps/opencode-router/node_modules`
+  - `apps/openwork/apps/orchestrator/node_modules`
+  - `apps/openwork/apps/server/node_modules`
+  - `apps/openwork/apps/ui-demo/node_modules`
+  - `apps/openwork/ee/apps/den-api/node_modules`
+  - `apps/openwork/ee/apps/den-web/node_modules`
+  - `apps/openwork/ee/apps/den-worker-proxy/node_modules`
+  - `apps/openwork/ee/apps/inference/node_modules`
+  - `apps/openwork/ee/apps/landing/node_modules`
+  - `apps/openwork/ee/packages/den-db/node_modules`
+  - `apps/openwork/ee/packages/utils/node_modules`
+  - `apps/openwork/node_modules`
+  - `apps/openwork/packages/email/node_modules`
+  - `apps/openwork/packages/openwork-ui-mcp/node_modules`
+  - `apps/openwork/packages/types/node_modules`
+  - `apps/openwork/packages/ui/node_modules`

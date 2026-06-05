@@ -55,16 +55,7 @@ package-lock.json
 .codebuddy/
 .joycode/
 .zed/
-apps/ABTPi18n/*
-apps/zAcademy/*
-apps/zcino/*
-apps/zcino-modern/*
 apps/zdash/*
-apps/zkbtrader/*
-apps/zlms-prod/*
-apps/zoffice/*
-apps/zsticker/*
-apps/zwallet/*
 # Backups and generated repair artifacts
 .backup/
 .backup-refactor-*
@@ -235,3 +226,37 @@ terraform/cloudflare-apps/apps.auto.tfvars.json
 !reports/cvsz-apps-merge/
 !reports/cvsz-apps-merge/*.json
 !reports/cvsz-apps-merge/*.md
+
+# BEGIN Phase 58 cvsz apps adoption guardrails
+apps/*/.env
+apps/*/.env.local
+apps/*/.env.production
+apps/*/.env.cloudflare
+apps/*/backend/.env
+apps/*/frontend/.env.local
+apps/*/node_modules/
+apps/*/.pnpm-store/
+apps/*/.venv/
+apps/*/venv/
+apps/*/env/
+apps/*/dist/
+apps/*/build/
+apps/*/.next/
+apps/*/.nuxt/
+apps/*/coverage/
+apps/*/.turbo/
+apps/*/.cache/
+apps/*/__pycache__/
+apps/*/.pytest_cache/
+apps/*/.mypy_cache/
+apps/*/.ruff_cache/
+apps/*/.terraform/
+apps/**/*.tfstate
+apps/**/*.tfstate.backup
+apps/**/*.tfvars
+apps/**/*.tfplan
+apps/**/.terraform.tfstate.lock.info
+apps/**/*.sqlite
+apps/**/*.db
+apps/**/*.log
+# END Phase 58 cvsz apps adoption guardrails
