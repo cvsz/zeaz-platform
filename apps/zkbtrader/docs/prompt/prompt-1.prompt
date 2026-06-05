@@ -1,0 +1,24 @@
+AGY, fix all local and CI issues in `cvsz/zkbtrader`.
+
+Tasks:
+1. Inspect current git status, branch, and diff.
+2. Run:
+   - make lint
+   - make typecheck
+   - make test
+3. Fix all Ruff, mypy, pytest, Docker, and import issues.
+4. Ensure Docker Compose uses:
+   - API host/container port: 8004 -> 8004
+   - Postgres host/container port: 15432 -> 5432
+   - Redis host/container port: 16379 -> 6379
+5. Ensure `.env.example`, `Dockerfile.api`, `docker-compose.yml`, and README agree on port 8004.
+6. Do not add secrets.
+7. Do not change live trading safety defaults.
+
+Acceptance:
+- `make lint` passes.
+- `make typecheck` passes.
+- `make test` passes.
+- `docker compose up -d --build` works.
+- `curl http://127.0.0.1:8004/health` returns OK.
+- `curl http://127.0.0.1:8004/ready` returns execution_mode=paper.

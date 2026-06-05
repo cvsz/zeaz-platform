@@ -1,0 +1,52 @@
+# // ZeaZDev [Backend Python Dependencies] //
+# // Project: Auto Bot Trader i18n //
+# // Version: 1.0.1 (Updated Dependencies) //
+# // Author: ZeaZDev Meta-Intelligence (Generated) //
+# // --- DO NOT EDIT HEADER --- //
+fastapi==0.121.1
+uvicorn==0.34.0
+celery==5.4.0
+redis==5.2.1
+ccxt==4.4.48
+cryptography==46.0.7
+pydantic==2.10.6
+pydantic-settings==2.7.1
+python-dotenv==1.2.2
+sqlalchemy==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+psycopg2-binary==2.9.9
+tenacity==8.2.3
+httpx==0.27.0
+numpy==1.26.4
+pandas==2.2.1
+prometheus-client==0.20.0
+prometheus-fastapi-instrumentator==7.0.0
+# Phase 3: OAuth dependencies
+google-auth==2.37.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+# Phase 3: Telegram bot
+python-telegram-bot==21.10
+# Phase 4: PromptPay and QR codes
+qrcode==8.0
+pillow==12.2.0
+# Phase 4: Plugin system
+pluggy==1.6.0
+importlib-metadata==7.1.0
+# Phase 4: Backtesting
+backtrader==1.9.78.123
+# Phase 5: Security scanning
+bandit==1.8.0
+semgrep==1.101.0
+# Phase 5: Audit logging
+python-json-logger==3.2.1
+# Phase 5: Monitoring
+psutil==6.1.1
+# Phase 6: Machine Learning
+scikit-learn==1.6.1
+xgboost==2.1.4
+scipy==1.15.1
+# Google Drive integration and YAML config
+gdown==5.2.2
+pyyaml==6.0.2

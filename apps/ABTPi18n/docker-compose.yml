@@ -1,0 +1,152 @@
+#// ZeaZDev [Infrastructure Orchestration Docker Compose] //
+#// Project: Auto Bot Trader i18n //
+#// Version: 1.0.0 (Omega Scaffolding) //
+#// Author: ZeaZDev Meta-Intelligence (Generated) //
+#// --- DO NOT EDIT HEADER --- //
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: abt_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5433:5432"  # Host access on 5433, container uses 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - abt_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: abt_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    networks:
+      - abt_net
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: abt_backend
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    networks:
+      - abt_net
+
+  worker:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: abt_worker
+    restart: unless-stopped
+    env_file: .env
+    command: ["python", "worker.py"]
+    depends_on:
+      - backend
+      - redis
+      - postgres
+    networks:
+      - abt_net
+
+  binance-perp-bot:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: abt_binance_perp_bot
+    restart: unless-stopped
+    env_file: .env
+    command: ["python", "-m", "binance_perp_bot.main"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "22022:22022"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:22022/health', timeout=5).read()"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - abt_net
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: abt_frontend
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - abt_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: abt_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - abt_net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: abt_grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - abt_net
+
+networks:
+  abt_net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:
+  prometheus_data:
+  grafana_data:

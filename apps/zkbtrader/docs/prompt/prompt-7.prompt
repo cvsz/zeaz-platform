@@ -1,0 +1,32 @@
+AGY, perform a safety gate audit to ensure live trading remains disabled.
+
+Tasks:
+1. Search entire repo for:
+   - live trading enablement
+   - order placement
+   - private exchange auth
+   - withdrawal
+   - transfer
+   - margin
+   - leverage
+   - futures
+2. Confirm these are not implemented.
+3. Add tests proving:
+   - EXECUTION_MODE=live fails startup
+   - LIVE_TRADING_ENABLED=true does not enable any order placement path
+   - RiskEngine kill switch blocks paper execution
+   - Strategies cannot execute orders directly
+4. Add docs section:
+   - “Live Trading Status”
+   - “Forbidden MVP Capabilities”
+   - “How to safely extend later”
+5. Add a CI grep/check script if useful:
+   - scripts/safety-check.sh
+6. Wire into Makefile:
+   - make safety-check
+
+Acceptance:
+- `make safety-check` passes.
+- `make test` passes.
+- README clearly states live trading is disabled.
+- No live exchange order path exists.

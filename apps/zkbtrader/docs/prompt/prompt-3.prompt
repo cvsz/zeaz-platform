@@ -1,0 +1,29 @@
+AGY, add Alembic migrations for the ZKBTrader persistence layer.
+
+Tasks:
+1. Initialize Alembic structure if missing:
+   - alembic.ini
+   - alembic/env.py
+   - alembic/versions/
+2. Wire Alembic metadata to SQLAlchemy models.
+3. Add initial migration creating:
+   - audit_events
+   - paper_orders
+   - paper_portfolio_snapshots
+4. Add indexes:
+   - audit_events.created_at
+   - audit_events.event_type
+   - paper_orders.created_at
+   - paper_orders.symbol
+   - paper_orders.strategy_id
+   - paper_orders.request_id unique if appropriate
+5. Update `scripts/db-migrate.sh` to run:
+   - alembic upgrade head
+6. Update Docker Compose startup if needed, but avoid fragile sleep-only sequencing.
+
+Acceptance:
+- `scripts/db-migrate.sh` works locally.
+- `alembic upgrade head` creates all tables.
+- `alembic downgrade -1` works if implemented.
+- Tests can run with SQLite or isolated test DB.
+- README documents migration command.

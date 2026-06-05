@@ -1,0 +1,10 @@
+# Google Sheets Config
+SHEET_ID=your_sheet_id_here
+CREDENTIALS_PATH=credentials.json # (Optional) ค่าเริ่มต้นคือ credentials.json หรือ ADC
+
+# LINE API Config
+LINE_CHANNEL_ACCESS_TOKEN=your_long_line_channel_access_token_here
+LINE_GROUP_ID=your_line_group_id_here
+
+# Imgur API Config (สำหรับฝากรูปภาพส่งให้ LINE)
+IMGUR_CLIENT_ID=your_imgur_client_id_here
