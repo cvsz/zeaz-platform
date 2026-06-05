@@ -653,3 +653,13 @@ makefile-refactor: ## Re-run safe root Makefile cleanup
 	@$(PYTHON) scripts/make/refactor-root-makefile.py
 	@$(PYTHON) scripts/make/audit-makefile.py Makefile
 
+# =============================================================================
+# Local apps deep-dive
+# =============================================================================
+
+.PHONY: apps-deep-dive apps-inventory
+apps-deep-dive: ## Deep-dive local apps under apps/*
+	@bash scripts/apps/deep-dive-local-apps.sh
+
+apps-inventory: apps-deep-dive ## Alias for local apps inventory
+
