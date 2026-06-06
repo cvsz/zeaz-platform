@@ -2,8 +2,8 @@
 
 import os
 # Pre-set required environment variables before imports
-os.environ["ENCRYPTION_KEY"] = "mock-encryption-key-must-be-32-chars-long"
-os.environ["JWT_SECRET"] = "mock-jwt-secret-key"
+os.environ["ENCRYPTION_KEY"] = "00000000000000000000000000000000"
+os.environ["JWT_SECRET"] = "00000000000000000000000000000000"
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock
