@@ -115,10 +115,24 @@ if __name__ == "__main__":
     ]
     zdash_skill_dest = "/home/zeazdev/zdash/.agents/skills"
     enable_skills(zdash_skill_sources, zdash_skill_dest)
-    
+
     zdash_agent_sources = [
         "/home/zeazdev/zdash/.agent/agents",
         "/home/zeazdev/zdash/.agent/skills"
     ]
     zdash_agent_dest = "/home/zeazdev/zdash/.agents/agents"
     enable_agents(zdash_agent_sources, zdash_agent_dest)
+
+    # 3. Enable skills and agents in zAcademy
+    print("\n--- Enabling zAcademy skills and agents ---")
+    zacademy_skill_sources = [
+        "/home/zeazdev/zeaz-platform/apps/zAcademy/.agent/skills"
+    ]
+    zacademy_skill_dest = "/home/zeazdev/zeaz-platform/apps/zAcademy/.agents/skills"
+    enable_skills(zacademy_skill_sources, zacademy_skill_dest)
+
+    zacademy_agent_sources = [
+        "/home/zeazdev/zeaz-platform/apps/zAcademy/.agent/skills"
+    ]
+    zacademy_agent_dest = "/home/zeazdev/zeaz-platform/apps/zAcademy/.agents/agents"
+    enable_agents(zacademy_agent_sources, zacademy_agent_dest)
