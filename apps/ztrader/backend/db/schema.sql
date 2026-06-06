@@ -50,3 +50,18 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     details JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS tradingview_alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ticker VARCHAR(50) NOT NULL,
+    exchange VARCHAR(100) NOT NULL DEFAULT 'binance.com',
+    action VARCHAR(20) NOT NULL, -- BUY, SELL, CLOSE
+    price DOUBLE PRECISION,
+    strategy VARCHAR(100),
+    interval VARCHAR(20),
+    volume DOUBLE PRECISION,
+    message TEXT,
+    raw_payload TEXT,
+    received_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    processed BOOLEAN NOT NULL DEFAULT FALSE
+);

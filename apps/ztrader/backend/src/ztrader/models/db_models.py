@@ -70,3 +70,19 @@ class AuditLog(Base):
     message: Mapped[str] = mapped_column(Text, nullable=False)
     details: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+
+class TradingViewAlert(Base):
+    __tablename__ = "tradingview_alerts"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    ticker: Mapped[str] = mapped_column(String(50), nullable=False)
+    exchange: Mapped[str] = mapped_column(String(100), default="binance.com", nullable=False)
+    action: Mapped[str] = mapped_column(String(20), nullable=False) # BUY, SELL, CLOSE
+    price: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    strategy: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    interval: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    volume: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    raw_payload: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    processed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

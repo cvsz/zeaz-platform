@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: zWallet API
+  description: API for zWallet Crypto Super App - Wallet, Swaps, and Payments
+  version: 0.1.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+paths:
+  /integrations/github/worldcoin/repositories:
+    get:
+      summary: Fetch Worldcoin repositories from GitHub
+      operationId: getWorldcoinRepos
+      tags:
+        - Integrations
+      responses:
+        '200':
+          description: List of Worldcoin repositories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorldcoinReposResult'
+        '500':
+          description: Internal server error
+
+  /swap/quote:
+    post:
+      summary: Request a swap quote
+      operationId: requestSwapQuote
+      tags:
+        - Swap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwapRequestedPayload'
+      responses:
+        '202':
+          description: Swap request queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueuedResponse'
+        '400':
+          description: Invalid input
+
+  /tx/send:
+    post:
+      summary: Request a transaction broadcast
+      operationId: requestTxSend
+      tags:
+        - Transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TxRequestedPayload'
+      responses:
+        '202':
+          description: Transaction request queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueuedResponse'
+        '400':
+          description: Invalid input
+
+components:
+  schemas:
+    WorldcoinReposResult:
+      type: object
+      properties:
+        organization:
+          type: string
+        total:
+          type: integer
+        repositories:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorldcoinRepo'
+      required:
+        - organization
+        - total
+        - repositories
+
+    WorldcoinRepo:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        full_name:
+          type: string
+        private:
+          type: boolean
+        html_url:
+          type: string
+          format: url
+        description:
+          type: string
+          nullable: true
+        fork:
+          type: boolean
+        archived:
+          type: boolean
+        disabled:
+          type: boolean
+        stargazers_count:
+          type: integer
+        watchers_count:
+          type: integer
+        language:
+          type: string
+          nullable: true
+        default_branch:
+          type: string
+        pushed_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - full_name
+        - private
+        - html_url
+        - fork
+        - archived
+        - disabled
+        - stargazers_count
+        - watchers_count
+        - default_branch
+        - pushed_at
+        - updated_at
+
+    SwapRequestedPayload:
+      type: object
+      properties:
+        fromToken:
+          type: string
+        toToken:
+          type: string
+        amount:
+          type: string
+        slippageBps:
+          type: integer
+          minimum: 1
+          maximum: 500
+        user:
+          type: string
+      required:
+        - fromToken
+        - toToken
+        - amount
+        - slippageBps
+        - user
+
+    TxRequestedPayload:
+      type: object
+      properties:
+        chainId:
+          type: integer
+          minimum: 1
+        from:
+          type: string
+        to:
+          type: string
+        value:
+          type: string
+        nonce:
+          type: integer
+          minimum: 0
+      required:
+        - chainId
+        - from
+        - to
+        - value
+        - nonce
+
+    QueuedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [queued]
+        idempotencyKey:
+          type: string
+      required:
+        - status
+        - idempotencyKey
