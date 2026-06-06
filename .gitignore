@@ -260,3 +260,7 @@ apps/**/*.sqlite
 apps/**/*.db
 apps/**/*.log
 # END Phase 58 cvsz apps adoption guardrails
+
+# Local ECC vendor and merge backups
+apps/*/.vendor/
+reports/cvsz-apps-merge/backups/
