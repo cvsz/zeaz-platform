@@ -13,6 +13,7 @@
 | zveo | ui | `apps/zveo` | `zveo.zeaz.dev` | 3002 | `http://127.0.0.1:3002` | active | `` |
 | zveo-api | api | `apps/zveo` | `api-zveo.zeaz.dev` | 8090 | `http://127.0.0.1:8090` | active | `/v1/zveo` |
 | zkbtrader | api-ui | `apps/zkbtrader` | `zkbtrader.zeaz.dev` | 8004 | `http://127.0.0.1:8004` | active | `/v1/zkbtrader` |
+| ztrader | ui | `apps/ztrader` | `ztrader.zeaz.dev` | 3016 | `http://127.0.0.1:3016` | active | `/v1/ztrader` |
 | zcino | ui | `apps/zcino` | `zcino.zeaz.dev` | 3000 | `http://127.0.0.1:3000` | active | `/v1/zcino` |
 | cctv | ui | `apps/cctv` | `cctv.zeaz.dev` | 9292 | `http://127.0.0.1:9292` | active | `/v1/cctv` |
 | zoffice | api-ui | `apps/zoffice` | `zoffice.zeaz.dev` | 8091 | `http://127.0.0.1:8091` | refactor-from-8090 | `/v1/zoffice` |
@@ -35,6 +36,7 @@
 | 3010 | ABTPi18n |
 | 3013 | zAcademy |
 | 3015 | zcino-modern |
+| 3016 | ztrader |
 | 5172 | release |
 | 5173 | zdash |
 | 8004 | zkbtrader |

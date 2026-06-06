@@ -2,12 +2,43 @@
   "mcpServers": {
     "supabase": {
       "command": "npx",
-      "args": ["-y", "@supabase/mcp-server"],
+      "args": [
+        "-y",
+        "@supabase/mcp-server"
+      ],
       "url": "https://mcp.supabase.com/mcp"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.70"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@2.1.8"
+      ]
+    },
+    "deepwiki": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "deepwiki-mcp@0.0.6"
+      ]
+    },
+    "stripe": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@stripe/mcp",
+        "--api-key=${STRIPE_SECRET_KEY}",
+        "--tools=all"
+      ]
     }
-  }
-}
-{
+  },
   "servers": {
     "cloudflare-rest": {
       "type": "http",
@@ -32,31 +63,6 @@
         "Authorization": "Bearer ${CLOUDFLARE_AUDIT_TOKEN}",
         "Content-Type": "application/json"
       }
-    }
-  }
-}
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@0.0.70"
-      ]
-    },
-    "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@2.1.8"
-      ]
-    },
-    "deepwiki": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "deepwiki-mcp@0.0.6"
-      ]
     }
   }
 }

@@ -33,6 +33,7 @@
     { "app_id": "zveo-api", "role": "api", "path": "apps/zveo", "hostname": "api-zveo.zeaz.dev", "port": 8090, "origin": "http://127.0.0.1:8090", "status": "active", "api_gateway_prefix": "/v1/zveo" },
 
     { "app_id": "zkbtrader", "role": "api-ui", "path": "apps/zkbtrader", "hostname": "zkbtrader.zeaz.dev", "port": 8004, "origin": "http://127.0.0.1:8004", "status": "active", "api_gateway_prefix": "/v1/zkbtrader" },
+    { "app_id": "ztrader", "role": "ui", "path": "apps/ztrader", "hostname": "ztrader.zeaz.dev", "port": 3016, "origin": "http://127.0.0.1:3016", "status": "active", "api_gateway_prefix": "/v1/ztrader" },
     { "app_id": "zcino", "role": "ui", "path": "apps/zcino", "hostname": "zcino.zeaz.dev", "port": 3000, "origin": "http://127.0.0.1:3000", "status": "active", "api_gateway_prefix": "/v1/zcino" },
     { "app_id": "cctv", "role": "ui", "path": "apps/cctv", "hostname": "cctv.zeaz.dev", "port": 9292, "origin": "http://127.0.0.1:9292", "status": "active", "api_gateway_prefix": "/v1/cctv" },
 
