@@ -264,3 +264,9 @@ apps/**/*.log
 # Local ECC vendor and merge backups
 apps/*/.vendor/
 reports/cvsz-apps-merge/backups/
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Local AI tooling env scripts
+claude_code_zai_env.sh
