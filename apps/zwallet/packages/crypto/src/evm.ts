@@ -11,8 +11,10 @@ const SignInput = z.object({
 export function signEvmMessageDeterministic(input: z.infer<typeof SignInput>): Promise<string> {
   const parsed = SignInput.parse(input);
   const wallet = new Wallet(parsed.privateKey);
-  const digest = keccak256(Buffer.from(`${parsed.chainId}:${parsed.nonce}:${parsed.payload}`));
-  return wallet.signMessage(Buffer.from(digest.slice(2), "hex"));
+  // Standard EIP-191 prefixing is handled by wallet.signMessage
+  // We include chainId and nonce in the message body for domain separation
+  const message = `[zwallet] chain:${parsed.chainId} nonce:${parsed.nonce} payload:${parsed.payload}`;
+  return wallet.signMessage(message);
 }
 
 export function signEip712TypedData(

@@ -33,8 +33,8 @@ This plan converts `docs/00_AGENT_CONTRACT.md` through `docs/11_FINAL_EXECUTION.
 - [x] Detect/remove circular dependency chains.
 
 ### 1.3 CI foundation
-- [ ] Add/verify GitHub Actions for lint/test/build matrix.
-- [ ] Ensure caching and deterministic lockfile usage.
+- [x] Add/verify GitHub Actions for lint/test/build matrix.
+- [x] Ensure caching and deterministic lockfile usage.
 
 ---
 
@@ -42,12 +42,12 @@ This plan converts `docs/00_AGENT_CONTRACT.md` through `docs/11_FINAL_EXECUTION.
 **Goal:** single-source contracts across API, events, and persistence.
 
 ### 2.1 API contracts
-- [ ] Author/refresh OpenAPI spec for wallet, swap, tx, and auth endpoints.
-- [ ] Ensure request/response schemas are versioned.
+- [x] Author/refresh OpenAPI spec for wallet, swap, tx, and auth endpoints.
+- [x] Ensure request/response schemas are versioned.
 
 ### 2.2 Shared validation/types
-- [ ] Define Zod schemas for all external boundaries.
-- [ ] Export schema-derived TS types into shared packages.
+- [x] Define Zod schemas for all external boundaries.
+- [x] Export schema-derived TS types into shared packages.
 - [ ] Remove `any`/implicit type paths in contract consumers.
 
 ### 2.3 Data/event contracts

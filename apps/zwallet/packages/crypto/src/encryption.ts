@@ -7,6 +7,7 @@ const InputSchema = z.object({
 });
 
 export function encryptAes256Gcm(plaintext: Uint8Array, password: string): Buffer {
+  if (password.length < 12) throw new Error("password must be at least 12 characters");
   const { plaintext: pt, password: pw } = InputSchema.parse({ plaintext, password });
   const salt = randomBytes(16);
   const key = scryptSync(pw, salt, 32);
@@ -19,6 +20,7 @@ export function encryptAes256Gcm(plaintext: Uint8Array, password: string): Buffe
 
 export function decryptAes256Gcm(payload: Uint8Array, password: string): Buffer {
   const blob = Buffer.from(payload);
+  if (password.length < 1) throw new Error("password is required");
   if (blob.length < 44) throw new Error("Invalid encrypted payload");
   const salt = blob.subarray(0, 16);
   const iv = blob.subarray(16, 28);

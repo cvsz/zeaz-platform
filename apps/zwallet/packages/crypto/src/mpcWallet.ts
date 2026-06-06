@@ -34,13 +34,18 @@ export class MPCWallet {
     if (!first) throw new Error("Insufficient shares");
     const baseLength = first.length;
 
-    return selected.slice(1).reduce((acc, cur) => {
-      const out = Buffer.alloc(baseLength);
-      for (let i = 0; i < baseLength; i += 1) {
-        out[i] = (acc[i] ?? 0) ^ (cur[i % cur.length] ?? 0);
+    // Use additive secret sharing over GF(256) (which is XOR for addition/subtraction)
+    // but ensure we are handling full entropy shares.
+    const combined = Buffer.alloc(baseLength, 0);
+    for (const share of selected) {
+      if (share.length !== baseLength) {
+        throw new Error("Mismatched share lengths");
       }
-      return out;
-    }, Buffer.from(first));
+      for (let i = 0; i < baseLength; i += 1) {
+        combined[i] ^= share[i];
+      }
+    }
+    return combined;
   }
 
   sign(payload: Buffer): Buffer {

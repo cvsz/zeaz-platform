@@ -65,9 +65,11 @@ This document is the **fully generated execution form** for every checklist item
 
 ### 1.3 CI foundation
 - 1.3.1 Add/verify GitHub Actions lint/test/build matrix.
-  - Status: Not started
+  - Status: Done
 - 1.3.2 Ensure caching + deterministic lockfile usage.
-  - Status: Not started
+  - Status: Done
+
+- 2026-06-06 08:30 UTC — `pnpm install && pnpm typecheck && pnpm lint` — Verified manually in environment; CI workflow `ci.yml` correctly configured for these checks.
 
 ---
 
