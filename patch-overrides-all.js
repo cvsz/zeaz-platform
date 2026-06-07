@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-const apps = ["apps/web", "apps/ztrader/frontend", "apps/ABTPi18n", "apps/openwork"];
-const packages = ["postcss", "follow-redirects", "qs", "uuid"];
+const apps = ["apps/web", "apps/ztrader/frontend", "apps/ABTPi18n", "apps/openwork", "apps/zwallet"];
+const packages = ["file-type", "ip-address", "esbuild", "@tootallnate/once", "ws", "@protobufjs/utf8"];
 
 for (const app of apps) {
   const pkgPath = app + '/package.json';

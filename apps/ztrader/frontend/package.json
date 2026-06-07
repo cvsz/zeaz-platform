@@ -26,12 +26,24 @@
     "postcss": "latest",
     "follow-redirects": "latest",
     "qs": "latest",
-    "uuid": "latest"
+    "uuid": "latest",
+    "file-type": "latest",
+    "ip-address": "latest",
+    "esbuild": "latest",
+    "@tootallnate/once": "latest",
+    "ws": "latest",
+    "@protobufjs/utf8": "latest"
   },
   "overrides": {
     "postcss": "latest",
     "follow-redirects": "latest",
     "qs": "latest",
-    "uuid": "latest"
+    "uuid": "latest",
+    "file-type": "latest",
+    "ip-address": "latest",
+    "esbuild": "latest",
+    "@tootallnate/once": "latest",
+    "ws": "latest",
+    "@protobufjs/utf8": "latest"
   }
 }
