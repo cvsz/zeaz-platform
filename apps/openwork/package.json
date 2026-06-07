@@ -61,27 +61,46 @@
   "pnpm": {
     "approvedBuilds": [
       "msgpackr-extract"
-    ],
-    "overrides": {
-      "protobufjs": "latest",
-      "seroval": "latest",
-      "react-router": "latest",
-      "next": "latest",
-      "fast-uri": "latest",
-      "fast-xml-parser": "latest",
-      "@opentelemetry/sdk-node": "latest",
-      "@opentelemetry/exporter-prometheus": "latest",
-      "defu": "latest",
-      "axios": "latest",
-      "tar": "latest",
-      "xlsx": "latest",
-      "samlify": "latest",
-      "tmp": "latest",
-      "rollup": "latest",
-      "diff": "latest",
-      "yaml": "latest",
-      "ws": "latest",
-      "hickory-proto": "latest"
-    }
+    ]
+  },
+  "resolutions": {
+    "protobufjs": "latest",
+    "seroval": "latest",
+    "react-router": "latest",
+    "next": "latest",
+    "fast-uri": "latest",
+    "fast-xml-parser": "latest",
+    "@opentelemetry/sdk-node": "latest",
+    "@opentelemetry/exporter-prometheus": "latest",
+    "defu": "latest",
+    "axios": "latest",
+    "tar": "latest",
+    "xlsx": "latest",
+    "samlify": "latest",
+    "tmp": "latest",
+    "rollup": "latest",
+    "diff": "latest",
+    "yaml": "latest",
+    "ws": "latest"
+  },
+  "overrides": {
+    "protobufjs": "latest",
+    "seroval": "latest",
+    "react-router": "latest",
+    "next": "latest",
+    "fast-uri": "latest",
+    "fast-xml-parser": "latest",
+    "@opentelemetry/sdk-node": "latest",
+    "@opentelemetry/exporter-prometheus": "latest",
+    "defu": "latest",
+    "axios": "latest",
+    "tar": "latest",
+    "xlsx": "latest",
+    "samlify": "latest",
+    "tmp": "latest",
+    "rollup": "latest",
+    "diff": "latest",
+    "yaml": "latest",
+    "ws": "latest"
   }
 }
