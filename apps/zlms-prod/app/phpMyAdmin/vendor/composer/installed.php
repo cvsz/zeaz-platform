@@ -3,7 +3,7 @@
         'name' => 'phpmyadmin/phpmyadmin',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '4cea3e3f9fb98fd1e95089744c8766051fea195c',
+        'reference' => 'bb4b79c8c89b7edcc9138d23a7cf8707d19c9f1c',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'phpmyadmin/phpmyadmin' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '4cea3e3f9fb98fd1e95089744c8766051fea195c',
+            'reference' => 'bb4b79c8c89b7edcc9138d23a7cf8707d19c9f1c',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
