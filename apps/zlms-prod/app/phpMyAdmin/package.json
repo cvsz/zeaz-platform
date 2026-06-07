@@ -15,6 +15,7 @@
     "jquery-validation": "1.21.0",
     "jquery.event.drag": "2.2.2",
     "js-cookie": "3.0.7",
+    "tmp": "^0.2.4",
     "tracekit": "0.4.5",
     "updated-jqplot": "1.0.9",
     "zxcvbn": "4.4.2"
