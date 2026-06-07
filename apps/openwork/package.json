@@ -81,7 +81,11 @@
     "rollup": "latest",
     "diff": "latest",
     "yaml": "latest",
-    "ws": "latest"
+    "ws": "latest",
+    "postcss": "latest",
+    "follow-redirects": "latest",
+    "qs": "latest",
+    "uuid": "latest"
   },
   "overrides": {
     "protobufjs": "latest",
@@ -101,6 +105,10 @@
     "rollup": "latest",
     "diff": "latest",
     "yaml": "latest",
-    "ws": "latest"
+    "ws": "latest",
+    "postcss": "latest",
+    "follow-redirects": "latest",
+    "qs": "latest",
+    "uuid": "latest"
   }
 }
