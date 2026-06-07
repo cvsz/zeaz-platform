@@ -4,6 +4,10 @@ required_env:
   - PRIMARY_DOMAIN
   - ORIGIN_HOSTS
 ingress:
+  - hostname: ${PRIMARY_DOMAIN}
+    service_from_origin_hosts: web
+  - hostname: www.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: web
   - hostname: auth.${PRIMARY_DOMAIN}
     service_from_origin_hosts: auth
   - hostname: zveo.${PRIMARY_DOMAIN}

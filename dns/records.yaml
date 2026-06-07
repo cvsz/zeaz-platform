@@ -3,6 +3,20 @@ primary_domain: zeaz.dev
 required_env:
   - PRIMARY_DOMAIN
 records:
+  - id: root
+    name: "@"
+    fqdn: ${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
+  - id: www
+    name: www
+    fqdn: www.${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
   - id: auth
     name: auth
     fqdn: auth.${PRIMARY_DOMAIN}

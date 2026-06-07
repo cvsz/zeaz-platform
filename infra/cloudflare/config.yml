@@ -1,6 +1,10 @@
 tunnel: $${CLOUDFLARE_TUNNEL_ID}
 credentials-file: /etc/cloudflared/creds.json
 ingress:
+  - hostname: zeaz.dev
+    service: http://traefik:80
+  - hostname: www.zeaz.dev
+    service: http://traefik:80
   - hostname: app.zeaz.dev
     service: http://traefik:80
   - hostname: api.zeaz.dev
