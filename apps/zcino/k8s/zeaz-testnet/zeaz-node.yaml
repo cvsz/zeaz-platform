@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zeaz-node
+  labels:
+    app.kubernetes.io/name: zeaz-testnet
+spec:
+  serviceName: zeaz-node
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zeaz-testnet
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zeaz-testnet
+    spec:
+      containers:
+        - name: zeaz-node
+          image: zcino/zeaznode:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8090
+          env:
+            - name: ZEAZ_HTTP_ADDRESS
+              value: :8090
+            - name: ZEAZ_NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: ZEAZ_ORG_ID
+              value: org-bootstrap
+            - name: ZEAZ_PUBLIC_ADDR
+              value: http://$(ZEAZ_NODE_ID).zeaz-node:8090
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          volumeMounts:
+            - name: genesis
+              mountPath: /etc/zeaz
+              readOnly: true
+      volumes:
+        - name: genesis
+          configMap:
+            name: zeaz-genesis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zeaz-node
+  labels:
+    app.kubernetes.io/name: zeaz-testnet
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: zeaz-testnet
+  ports:
+    - name: http
+      port: 8090
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zeaz-node-public
+  labels:
+    app.kubernetes.io/name: zeaz-testnet
+spec:
+  selector:
+    app.kubernetes.io/name: zeaz-testnet
+  ports:
+    - name: http
+      port: 8090
+      targetPort: http

@@ -1,0 +1,27 @@
+services:
+  zeaz-node-0:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.zeaznode
+    environment:
+      ZEAZ_NODE_ID: node-0
+      ZEAZ_ORG_ID: org-bootstrap
+      ZEAZ_HTTP_ADDRESS: :8090
+      ZEAZ_PUBLIC_ADDR: http://zeaz-node-0:8090
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./genesis.json:/etc/zeaz/genesis.json:ro
+  zeaz-node-1:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.zeaznode
+    environment:
+      ZEAZ_NODE_ID: node-1
+      ZEAZ_ORG_ID: org-validator
+      ZEAZ_HTTP_ADDRESS: :8090
+      ZEAZ_PUBLIC_ADDR: http://zeaz-node-1:8090
+    ports:
+      - "8091:8090"
+    volumes:
+      - ./genesis.json:/etc/zeaz/genesis.json:ro

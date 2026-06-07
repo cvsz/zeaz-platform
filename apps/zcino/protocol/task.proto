@@ -1,0 +1,194 @@
+syntax = "proto3";
+
+package zeaz.v1;
+
+option go_package = "game-catalog-service/protocol;protocol";
+
+service TaskMarket {
+  rpc SubmitEnvelope(Envelope) returns (Ack);
+  rpc SubmitTask(SignedTask) returns (Ack);
+  rpc SubmitBid(SignedBid) returns (Ack);
+  rpc CompleteTask(SignedCompletion) returns (Ack);
+  rpc SubmitResult(SignedResult) returns (Ack);
+  rpc AnnouncePeer(SignedPeer) returns (PeerList);
+  rpc GetLedgerHead(LedgerHeadRequest) returns (LedgerHead);
+  rpc NegotiateVersion(VersionNegotiationRequest) returns (VersionNegotiationResult);
+  rpc SubmitGovernanceProposal(SignedGovernanceProposal) returns (Ack);
+  rpc CastGovernanceVote(SignedGovernanceVote) returns (Ack);
+  rpc GetGovernanceTally(GovernanceTallyRequest) returns (GovernanceTally);
+}
+
+message Version {
+  uint32 major = 1;
+  uint32 minor = 2;
+  uint32 patch = 3;
+}
+
+message Ack {
+  bool accepted = 1;
+  string reason = 2;
+  string ledger_hash = 3;
+  uint64 ledger_height = 4;
+}
+
+message Signature {
+  string algorithm = 1; // ed25519 in v1.
+  string key_id = 2;    // organization id in v1.
+  bytes signature = 3;  // signature over canonical envelope bytes.
+}
+
+message Envelope {
+  string id = 1;
+  string kind = 2;
+  Version version = 3;
+  string issuer = 4;
+  int64 issued_at_unix = 5;
+  int64 expires_at_unix = 6;
+  string nonce = 7;
+  bytes payload = 8; // canonical JSON for v1 app messages.
+  Signature signature = 9;
+}
+
+message SignedTask {
+  Task task = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message SignedBid {
+  Bid bid = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message SignedCompletion {
+  TaskCompletion completion = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message SignedResult {
+  Result result = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message SignedPeer {
+  Peer peer = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message SignedGovernanceProposal {
+  GovernanceProposal proposal = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message SignedGovernanceVote {
+  GovernanceVote vote = 1;
+  Signature signature = 2;
+  Version version = 3;
+  string nonce = 4;
+}
+
+message Task {
+  string id = 1;
+  string requester_org_id = 2;
+  string type = 3;
+  double budget = 4;
+  double max_risk = 5;
+  map<string, string> metadata = 6;
+}
+
+message Bid {
+  string id = 1;
+  string task_id = 2;
+  string bidder_org_id = 3;
+  double cost = 4;
+  double score = 5;
+  double risk = 6;
+  map<string, string> metadata = 7;
+}
+
+message TaskCompletion {
+  string task_id = 1;
+  string bidder_org_id = 2;
+  bool success = 3;
+  double quality_score = 4;
+  string result_ref = 5;
+}
+
+message Result {
+  string task_id = 1;
+  string verifier_org_id = 2;
+  double score = 3;
+  bool valid = 4;
+}
+
+message Peer {
+  string node_id = 1;
+  string org_id = 2;
+  string address = 3;
+  bytes public_key = 4;
+  int64 seen_at_unix = 5;
+}
+
+message PeerList { repeated Peer peers = 1; }
+message LedgerHeadRequest {}
+message LedgerHead {
+  uint64 height = 1;
+  string hash = 2;
+}
+
+message EconomicRule {
+  string unit_of_account = 1;
+  double min_stake = 2;
+  double fee_rate = 3;
+  string settlement = 4;
+}
+
+message GovernanceProposal {
+  string id = 1;
+  string title = 2;
+  string kind = 3;
+  Version target_version = 4;
+  repeated string changes = 5;
+  string created_by = 6;
+  int64 closes_at_unix = 7;
+}
+
+message GovernanceVote {
+  string proposal_id = 1;
+  string node_id = 2;
+  double weight = 3;
+  bool approve = 4;
+}
+
+message GovernanceTallyRequest { string proposal_id = 1; }
+message GovernanceTally {
+  string proposal_id = 1;
+  double yes_weight = 2;
+  double no_weight = 3;
+  double quorum_weight = 4;
+  bool passed = 5;
+  string status = 6;
+}
+
+message VersionNegotiationRequest {
+  Version requested = 1;
+  repeated string features = 2;
+}
+
+message VersionNegotiationResult {
+  bool accepted = 1;
+  Version version = 2;
+  string reason = 3;
+  repeated string features = 4;
+}
