@@ -11,7 +11,7 @@ This repository now has a dedicated final-release verification path for completi
 The final release is considered complete only after the local server runs:
 
 ```bash
-make final-go-live-complete
+bash scripts/platform/final-go-live-complete.sh
 ```
 
 and `reports/platform/final-go-live-complete.md` ends with:
@@ -51,14 +51,24 @@ Run these commands from the production repository root:
 cd /home/zeazdev/zeaz-platform
 git pull --ff-only origin main
 chmod +x scripts/platform/final-go-live-complete.sh
-make final-go-live-complete
+bash scripts/platform/final-go-live-complete.sh
 ```
 
 For a full rebuild including dependency install and Docker image checks:
 
 ```bash
 RUN_INSTALL=true RUN_DOCKER_BUILD=true make build-all-stacks-full
-make final-go-live-complete
+bash scripts/platform/final-go-live-complete.sh
+```
+
+## Optional Makefile shortcut
+
+The direct script command above is canonical. If you want a Makefile shortcut locally, add this target:
+
+```make
+.PHONY: final-go-live-complete
+final-go-live-complete: ## Run final read-only go-live completion verifier
+	@bash scripts/platform/final-go-live-complete.sh
 ```
 
 ## Required pass criteria
@@ -77,7 +87,7 @@ make final-go-live-complete
 ## Production go-live order
 
 1. Pull latest `main` on the production server.
-2. Run `make final-go-live-complete`.
+2. Run `bash scripts/platform/final-go-live-complete.sh`.
 3. Open `reports/platform/final-go-live-complete.md`.
 4. Fix any required failures.
 5. Re-run the verifier until it reports `GO-LIVE GATES PASSED`.
@@ -130,7 +140,7 @@ The final verifier intentionally does not do any of these actions:
 
 Final release is complete when all are true:
 
-- `make final-go-live-complete` exits `0`.
+- `bash scripts/platform/final-go-live-complete.sh` exits `0`.
 - `reports/platform/final-go-live-complete.md` says `Status: GO-LIVE GATES PASSED`.
 - No required gate reports a failure.
 - Any warnings are reviewed and accepted by the release owner.
@@ -145,4 +155,4 @@ If any production route fails after cutover:
 2. Preserve logs and generated reports.
 3. Revert DNS/tunnel route to the last known working origin.
 4. Restart the affected service only after confirming local health.
-5. Re-run `make final-go-live-complete` and route-specific curl checks.
+5. Re-run `bash scripts/platform/final-go-live-complete.sh` and route-specific curl checks.
