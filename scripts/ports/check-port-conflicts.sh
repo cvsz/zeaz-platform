@@ -10,7 +10,10 @@ USAGE
 }
 listeners=0
 while [ "$#" -gt 0 ]; do case "$1" in --check-listeners) listeners=1; shift;; --help|-h) usage; exit 0;; *) echo "ERROR: unknown argument $1" >&2; exit 2;; esac; done
-mapfile -t ports < <(scripts/ports/list-all-ports.sh --plain | awk -F'|' '{print $3}')
+ports=()
+while IFS= read -r port; do
+  [ -n "$port" ] && ports+=("$port")
+done < <(scripts/ports/list-all-ports.sh --plain | awk -F'|' '{print $3}')
 dups="$(printf '%s\n' "${ports[@]}" | sort | uniq -d)"
 if [ -n "$dups" ]; then echo "ERROR: duplicate canonical ports: $dups" >&2; exit 1; fi
 echo "Canonical port map has no duplicates (${#ports[@]} ports)."
