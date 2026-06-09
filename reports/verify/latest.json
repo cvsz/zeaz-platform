@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-06-09T16:07:30.520657+00:00",
+  "summary": {
+    "pass": 8,
+    "warn": 15,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "status": "pass",
+      "name": "node",
+      "detail": "v24.15.0"
+    },
+    {
+      "status": "pass",
+      "name": "pnpm",
+      "detail": "10.28.1"
+    },
+    {
+      "status": "warn",
+      "name": "docker",
+      "detail": "missing"
+    },
+    {
+      "status": "warn",
+      "name": "docker_compose",
+      "detail": "missing"
+    },
+    {
+      "status": "pass",
+      "name": "postgres_env",
+      "detail": "valid"
+    },
+    {
+      "status": "pass",
+      "name": "ports",
+      "detail": "canonical"
+    },
+    {
+      "status": "pass",
+      "name": "cloudflare_config",
+      "detail": "valid"
+    },
+    {
+      "status": "pass",
+      "name": "nginx_config",
+      "detail": "valid"
+    },
+    {
+      "status": "pass",
+      "name": "env_example",
+      "detail": "present"
+    },
+    {
+      "status": "pass",
+      "name": "placeholder_scan",
+      "detail": "clean"
+    },
+    {
+      "status": "warn",
+      "name": "local_openwork",
+      "detail": "not listening on 4101"
+    },
+    {
+      "status": "warn",
+      "name": "local_api",
+      "detail": "not listening on 4102"
+    },
+    {
+      "status": "warn",
+      "name": "local_web",
+      "detail": "not listening on 4103"
+    },
+    {
+      "status": "warn",
+      "name": "local_zoffice",
+      "detail": "not listening on 4104"
+    },
+    {
+      "status": "warn",
+      "name": "local_zwallet",
+      "detail": "not listening on 4105"
+    },
+    {
+      "status": "warn",
+      "name": "local_ztrader",
+      "detail": "not listening on 4106"
+    },
+    {
+      "status": "warn",
+      "name": "local_zdash",
+      "detail": "not listening on 4107"
+    },
+    {
+      "status": "warn",
+      "name": "local_zsp-aitool",
+      "detail": "not listening on 4108"
+    },
+    {
+      "status": "warn",
+      "name": "local_zveo",
+      "detail": "not listening on 4109"
+    },
+    {
+      "status": "warn",
+      "name": "local_zsticker",
+      "detail": "not listening on 4110"
+    },
+    {
+      "status": "warn",
+      "name": "local_zcino",
+      "detail": "not listening on 4111"
+    },
+    {
+      "status": "warn",
+      "name": "local_zlms-prod",
+      "detail": "not listening on 4112"
+    },
+    {
+      "status": "warn",
+      "name": "local_zLinebot",
+      "detail": "not listening on 4113"
+    }
+  ]
+}
