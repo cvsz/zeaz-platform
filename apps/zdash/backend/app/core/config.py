@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     app_env: str = Field(default="development", alias="APP_ENV")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
-    backend_host: str = Field(default="0.0.0.0", alias="BACKEND_HOST")
+    backend_host: str = Field(default="127.0.0.1", alias="BACKEND_HOST")
     backend_port: int = Field(default=8005, alias="BACKEND_PORT")
 
     database_url: str = Field(default="sqlite:///./zdash.db", alias="DATABASE_URL")
@@ -331,7 +331,7 @@ class Settings(BaseSettings):
     )
 
     frontend_origin: str = Field(
-        default="http://localhost:5173", alias="FRONTEND_ORIGIN"
+        default="http://127.0.0.1:5173", alias="FRONTEND_ORIGIN"
     )
 
     mobile_api_enabled: bool = Field(default=True, alias="MOBILE_API_ENABLED")
@@ -361,7 +361,7 @@ class Settings(BaseSettings):
     )
 
     cors_allow_origins: str = Field(
-        default="http://localhost:5173,http://127.0.0.1:5173",
+        default="http://localhost:5173,http://127.0.0.1:5173,https://zdash.zeaz.dev",
         alias="CORS_ALLOW_ORIGINS",
     )
     cors_allow_credentials: bool = Field(default=False, alias="CORS_ALLOW_CREDENTIALS")
@@ -469,7 +469,7 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> list[str]:
         origins = [origin.strip() for origin in self.cors_allow_origins.split(",")]
         cleaned = [origin for origin in origins if origin]
-        return cleaned or ["http://localhost:5173"]
+        return cleaned or ["http://127.0.0.1:5173"]
 
 
 @lru_cache
