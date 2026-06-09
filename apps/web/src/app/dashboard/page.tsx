@@ -1,187 +1,214 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, Server, Users, ShieldAlert, Cpu, Network, Zap } from "lucide-react";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { motion } from "framer-motion";
+import { Activity, Cloud, Globe, Network, RefreshCcw, Route, Server, ShieldCheck, Terminal } from "lucide-react";
 
-const data = [
-  { time: "00:00", reqs: 4000, cpu: 24 },
-  { time: "04:00", reqs: 3000, cpu: 13 },
-  { time: "08:00", reqs: 2000, cpu: 98 },
-  { time: "12:00", reqs: 2780, cpu: 39 },
-  { time: "16:00", reqs: 1890, cpu: 48 },
-  { time: "20:00", reqs: 2390, cpu: 38 },
-  { time: "24:00", reqs: 3490, cpu: 43 },
-];
+type ControlSummary = {
+  title?: string;
+  ui_hostname?: string;
+  api_hostname?: string;
+  mode?: string;
+  routes?: Array<Record<string, unknown>>;
+  health?: Record<string, unknown>;
+  next_local_commands?: string[];
+};
+
+type ReportPayload = {
+  port_report?: { exists?: boolean; path?: string; tail?: string };
+  go_live_report?: { exists?: boolean; path?: string; tail?: string };
+  audit_report?: { exists?: boolean; path?: string; tail?: string };
+};
+
+const CONTROL_API_HOST = "api-zcfdash.zeaz.dev";
+const CONTROL_UI_HOST = "zcfdash.zeaz.dev";
+
+function controlApiBase() {
+  if (typeof window === "undefined") return "/api/runtime/cloudflare";
+  if (window.location.hostname === CONTROL_UI_HOST) {
+    return `https://${CONTROL_API_HOST}/api/runtime/cloudflare`;
+  }
+  return "/api/runtime/cloudflare";
+}
+
+async function getJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${controlApiBase()}${path}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json();
+}
 
 export default function Dashboard() {
+  const [summary, setSummary] = useState<ControlSummary | null>(null);
+  const [reports, setReports] = useState<ReportPayload | null>(null);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+
+  const routes = useMemo(() => summary?.routes ?? [], [summary]);
+  const health = summary?.health ?? {};
+
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const [summaryPayload, reportPayload] = await Promise.all([
+        getJson<ControlSummary>("/summary"),
+        getJson<ReportPayload>("/reports"),
+      ]);
+      setSummary(summaryPayload);
+      setReports(reportPayload);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
   return (
-    <div className="p-8 space-y-8 pb-20">
-      <div className="flex items-center justify-between">
+    <div className="p-8 space-y-8 pb-20 text-white">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-            <Activity className="w-8 h-8 text-primary" />
-            GLOBAL COMMAND CENTER
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <Cloud className="w-8 h-8 text-primary" />
+            ZeaZ Cloudflare Control Panel
           </h1>
-          <p className="text-muted-foreground font-mono mt-1">SYS_STATUS: OPTIMAL | ALL SYSTEMS NOMINAL</p>
+          <p className="text-muted-foreground font-mono mt-1">
+            UI: {CONTROL_UI_HOST} | API: {CONTROL_API_HOST} | Mode: read-only evidence/control
+          </p>
         </div>
-        <div className="flex gap-4">
-          <div className="px-4 py-2 rounded-full border border-primary/30 bg-primary/10 text-primary font-mono text-sm flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            LIVE
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={load}
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-mono text-primary hover:bg-primary/20"
+        >
+          <RefreshCcw className="h-4 w-4" />
+          Refresh
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-              <Zap className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">128.4M</div>
-              <p className="text-xs text-muted-foreground">+20.1% from last hour</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Agents</CardTitle>
-              <Cpu className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">3,492</div>
-              <p className="text-xs text-muted-foreground">42 spawning...</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Network I/O</CardTitle>
-              <Network className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">1.2 TB/s</div>
-              <p className="text-xs text-muted-foreground">Stable</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="border-destructive/50 bg-destructive/5">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-destructive">Security Events</CardTitle>
-              <ShieldAlert className="h-4 w-4 text-destructive" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-destructive">7</div>
-              <p className="text-xs text-destructive/80">3 blocked, 4 investigating</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
-        <Card className="col-span-4">
+      {error ? (
+        <Card className="border-destructive/50 bg-destructive/10">
           <CardHeader>
-            <CardTitle>System Load Trajectory</CardTitle>
+            <CardTitle>Control API unavailable</CardTitle>
           </CardHeader>
-          <CardContent className="pl-0">
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorReqs" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="time" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                  <Area type="monotone" dataKey="reqs" stroke="var(--primary)" fillOpacity={1} fill="url(#colorReqs)" />
-                </AreaChart>
-              </ResponsiveContainer>
+          <CardContent>
+            <p className="font-mono text-sm text-destructive">{error}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Start apps/api on the api-zcfdash origin and regenerate route assets before public cutover.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <MetricCard title="Control API" value={loading ? "loading" : String(health.status ?? "unknown")} icon={<Activity className="h-4 w-4" />} />
+        <MetricCard title="Routes" value={String(routes.length)} icon={<Route className="h-4 w-4" />} />
+        <MetricCard title="Mode" value={summary?.mode ?? "read-only"} icon={<ShieldCheck className="h-4 w-4" />} />
+        <MetricCard title="Origin policy" value="127.0.0.1" icon={<Network className="h-4 w-4" />} />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <Card className="xl:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              zcfdash Cloudflare Routes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-left text-muted-foreground">
+                  <tr>
+                    <th className="py-2 pr-4">App</th>
+                    <th className="py-2 pr-4">Hostname</th>
+                    <th className="py-2 pr-4">Origin</th>
+                    <th className="py-2 pr-4">Path</th>
+                    <th className="py-2 pr-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {routes.map((route, index) => (
+                    <tr key={`${String(route.hostname)}-${index}`} className="border-t border-border/50">
+                      <td className="py-3 pr-4 font-mono">{String(route.app_id ?? "-")}</td>
+                      <td className="py-3 pr-4 font-mono">{String(route.hostname ?? "-")}</td>
+                      <td className="py-3 pr-4 font-mono">{String(route.origin ?? "-")}</td>
+                      <td className="py-3 pr-4 font-mono">{String(route.path ?? "-")}</td>
+                      <td className="py-3 pr-4 font-mono">{String(route.status ?? "-")}</td>
+                    </tr>
+                  ))}
+                  {!routes.length ? (
+                    <tr>
+                      <td className="py-6 text-muted-foreground" colSpan={5}>No zcfdash routes loaded yet.</td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card>
           <CardHeader>
-            <CardTitle>Live Topology</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Terminal className="h-5 w-5" />
+              Local commands
+            </CardTitle>
           </CardHeader>
           <CardContent>
-             <div className="h-[300px] flex items-center justify-center border border-border/50 rounded-lg bg-black/50 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
-                <div className="relative w-full h-full p-4">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-primary/20 border border-primary flex items-center justify-center animate-pulse">
-                    <Server className="w-6 h-6 text-primary" />
-                  </div>
-                  
-                  {/* Nodes */}
-                  <motion.div 
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 w-48 h-48 -translate-x-1/2 -translate-y-1/2"
-                  >
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-500/20 border border-blue-500 rounded-full flex items-center justify-center"><Database className="w-3 h-3 text-blue-500" /></div>
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-green-500/20 border border-green-500 rounded-full flex items-center justify-center"><Globe className="w-3 h-3 text-green-500" /></div>
-                    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-8 h-8 bg-yellow-500/20 border border-yellow-500 rounded-full flex items-center justify-center"><ShieldAlert className="w-3 h-3 text-yellow-500" /></div>
-                    <div className="absolute top-1/2 right-0 -translate-y-1/2 w-8 h-8 bg-purple-500/20 border border-purple-500 rounded-full flex items-center justify-center"><Cpu className="w-3 h-3 text-purple-500" /></div>
-                  </motion.div>
-                </div>
-             </div>
+            <pre className="overflow-auto rounded-lg bg-black/60 p-4 text-xs text-muted-foreground">
+{(summary?.next_local_commands ?? [
+  "python3 scripts/platform/generate-port-refactor-assets.py",
+  "make -f Makefile -f Makefile.app-servers apps-server-status",
+  "bash scripts/platform/final-go-live-complete.sh",
+]).join("\n")}
+            </pre>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <ReportCard title="Port / tunnel assets" report={reports?.port_report} />
+        <ReportCard title="Final go-live" report={reports?.go_live_report} />
+        <ReportCard title="Full repo audit" report={reports?.audit_report} />
       </div>
     </div>
   );
 }
 
-function Database(props: any) {
+function MetricCard({ title, value, icon }: { title: string; value: string; icon: React.ReactNode }) {
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <ellipse cx="12" cy="5" rx="9" ry="3" />
-      <path d="M3 5V19A9 3 0 0 9 3" />
-      <path d="M3 12A9 3 0 0 9 3" />
-    </svg>
-  )
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <span className="text-muted-foreground">{icon}</span>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold break-words">{value}</div>
+      </CardContent>
+    </Card>
+  );
 }
-function Globe(props: any) {
+
+function ReportCard({ title, report }: { title: string; report?: { exists?: boolean; path?: string; tail?: string } }) {
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a15.3 15.3 0 1 4 10 4 10-4 10-4 10" />
-      <path d="M2 12h20" />
-    </svg>
-  )
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Server className="h-4 w-4" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="text-xs font-mono text-muted-foreground">{report?.path ?? "not loaded"}</div>
+        <div className="text-sm">Status: {report?.exists ? "present" : "missing"}</div>
+        <pre className="max-h-72 overflow-auto rounded-lg bg-black/60 p-3 text-xs text-muted-foreground">
+{report?.tail || "No report content available."}
+        </pre>
+      </CardContent>
+    </Card>
+  );
 }
