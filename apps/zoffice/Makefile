@@ -24,6 +24,7 @@ VO_GATEWAY_HTTP ?= http://127.0.0.1:18789
 .PHONY: server-start server-stop server-restart server-status server-report server-logs health-check smoke-test
 .PHONY: start-whisper stop-whisper start-metrics stop-metrics feature-env feature-unlock-local feature-status validate-local clean
 .PHONY: license-status license-activate license-deactivate license-agent-limit license-feature license-audit dev-internal-start
+.PHONY: branding-scan branding-rename-zoffice
 
 help: ## Show targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nzOffice Makefile\n\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -183,6 +184,12 @@ license-audit: ## Audit commonly locked features
 	@echo "License status:"; bash scripts/license-tool.sh status
 	@for feature in browserPanel smsPanel cronManager whisper apiUsage; do echo; bash scripts/license-tool.sh feature "$$feature"; done
 	@echo; bash scripts/license-tool.sh agent-limit
+
+branding-scan: ## Scan legacy office branding strings inside apps/zoffice
+	@DRY_RUN=true bash scripts/rename-branding-zoffice.sh
+
+branding-rename-zoffice: ## Rename legacy office branding strings to zOffice inside apps/zoffice
+	@bash scripts/rename-branding-zoffice.sh
 
 validate-local: ## Run basic local validation
 	@python3 -m py_compile app/server.py app/gateway_presence.py app/discovery.py app/license.py
