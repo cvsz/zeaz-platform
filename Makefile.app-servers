@@ -1,0 +1,40 @@
+# ZeaZ Platform app server controls
+# Usage:
+#   make -f Makefile -f Makefile.app-servers apps-server-status
+#   make -f Makefile -f Makefile.app-servers apps-server-start
+#   make -f Makefile -f Makefile.app-servers apps-server-stop
+#   make -f Makefile -f Makefile.app-servers zcfdash-server-start
+
+.PHONY: apps-server-start apps-server-stop apps-server-restart apps-server-status apps-server-report
+.PHONY: zcfdash-server-start zcfdash-server-stop zcfdash-server-restart zcfdash-server-status zcfdash-open
+
+apps-server-start: ## Start all app servers from configs/platform/apps-port-plan.json
+	@bash scripts/platform/apps-server-control.sh start
+
+apps-server-stop: ## Stop all app servers managed by the app server controller
+	@bash scripts/platform/apps-server-control.sh stop
+
+apps-server-restart: ## Restart all app servers managed by the app server controller
+	@bash scripts/platform/apps-server-control.sh restart
+
+apps-server-status: ## Show all app server status from configs/platform/apps-port-plan.json
+	@bash scripts/platform/apps-server-control.sh status
+
+apps-server-report: ## Write app server status report
+	@bash scripts/platform/apps-server-control.sh report
+
+zcfdash-server-start: ## Start zcfdash.zeaz.dev dashboard origin using apps/zdash
+	@bash scripts/platform/zcfdash-server.sh start
+
+zcfdash-server-stop: ## Stop zcfdash.zeaz.dev dashboard origin using apps/zdash
+	@bash scripts/platform/zcfdash-server.sh stop
+
+zcfdash-server-restart: ## Restart zcfdash.zeaz.dev dashboard origin using apps/zdash
+	@bash scripts/platform/zcfdash-server.sh restart
+
+zcfdash-server-status: ## Show zcfdash.zeaz.dev dashboard origin status
+	@bash scripts/platform/zcfdash-server.sh status
+
+zcfdash-open: ## Print zcfdash local and public URLs
+	@echo "Local origin:  http://127.0.0.1:5173"
+	@echo "Public route:  https://zcfdash.zeaz.dev"
