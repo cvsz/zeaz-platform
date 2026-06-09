@@ -270,3 +270,7 @@ reports/cvsz-apps-merge/backups/
 
 # Local AI tooling env scripts
 claude_code_zai_env.sh
+
+# Allow verification summary output
+!reports/verify/
+!reports/verify/latest.json

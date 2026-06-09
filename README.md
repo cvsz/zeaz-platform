@@ -442,3 +442,92 @@ To report a security issue or leaked credential, see [`.github/SECURITY.md`](.gi
 ---
 
 Built for ZeazDev. Licensed under MIT.
+
+---
+
+## ZEAZ canonical app runtime map
+
+This repository now includes an operator-reviewable runtime normalization layer for local PostgreSQL, Redis, Cloudflare Tunnel routing, reverse proxy mapping, and per-app verification. These artifacts are safe by default: they do not commit secrets, do not prune Docker volumes, and do not call Cloudflare APIs unless an operator explicitly runs documented commands with local credentials.
+
+| App | Path | Domain | Port |
+|---|---|---|---:|
+| openwork | `apps/openwork` | `zow.zeaz.dev` | 4101 |
+| api | `apps/api` | `api-zcfdash.zeaz.dev` | 4102 |
+| web | `apps/web` | `zcfdash.zeaz.dev` | 4103 |
+| zoffice | `apps/zoffice` | `zoffice.zeaz.dev` | 4104 |
+| zwallet | `apps/zwallet` | `app.zeaz.dev` | 4105 |
+| ztrader | `apps/ztrader` | `ztrader.zeaz.dev` | 4106 |
+| zdash | `apps/zdash` | `dash.zeaz.dev` | 4107 |
+| zsp-aitool | `apps/zsp-aitool` | `zaiz.zeaz.dev` | 4108 |
+| zveo | `apps/zveo` | `zveo.zeaz.dev` | 4109 |
+| zsticker | `apps/zsticker` | `zsticker.zeaz.dev` | 4110 |
+| zcino | `apps/zcino` | `zcino.zeaz.dev` | 4111 |
+| zlms-prod | `apps/zlms-prod` | `zlms.zeaz.dev` | 4112 |
+| zLinebot | `apps/zLinebot` | internal bot service | 4113 |
+
+### Local environment and database
+
+Create a local gitignored `.env` without printing secrets:
+
+```bash
+./scripts/env/generate-local-env.sh
+```
+
+The generated local file includes a cryptographically random `POSTGRES_PASSWORD`, canonical `DATABASE_URL`, and app port variables. Existing `.env` values are preserved and missing keys are appended only.
+
+Start only infrastructure services when needed:
+
+```bash
+docker compose up -d postgres redis
+./scripts/db/check-postgres.sh
+```
+
+### Cloudflare tunnel and reverse proxy
+
+Validate the canonical local tunnel map offline:
+
+```bash
+./scripts/cloudflare/check-cloudflare-config.sh
+```
+
+Review the tunnel config in `infrastructure/cloudflare/config.yml` and the nginx reference config in `infrastructure/nginx/zeaz-platform.conf`. The setup helper is offline by default and prints manual operator commands rather than mutating Cloudflare state:
+
+```bash
+./scripts/cloudflare/setup-cloudflare-tunnel.sh
+```
+
+### Startup and verification
+
+List and check canonical ports:
+
+```bash
+./scripts/ports/list-all-ports.sh
+./scripts/ports/check-port-conflicts.sh
+```
+
+Start/stop helpers are intentionally conservative. They currently start the normalized `zLinebot` scaffold and leave large imported apps to their app-specific dependency/build procedures:
+
+```bash
+./scripts/start/start-all-apps.sh --dry-run
+./scripts/start/check-all-apps.sh
+./scripts/start/stop-all-apps.sh
+```
+
+Run the integrated verification suite:
+
+```bash
+./scripts/verify/verify-all.sh --skip-domain-checks
+```
+
+Use full domain checks only after the Cloudflare tunnel and DNS routes are configured:
+
+```bash
+./scripts/verify/verify-all.sh
+```
+
+### Troubleshooting
+
+- If `docker` is not installed, Docker Compose validation and Postgres container checks will report warnings; install Docker or run checks on the target host.
+- If local apps are not running, app URL checks will report warnings. Start each app on its canonical `PORT` after installing its dependencies.
+- If Cloudflare checks fail, verify `infrastructure/cloudflare/config.yml` still has one hostname per canonical app and ends with `http_status:404`.
+- Do not commit `.env`, tunnel credentials, token files, database dumps, or generated backup folders.
