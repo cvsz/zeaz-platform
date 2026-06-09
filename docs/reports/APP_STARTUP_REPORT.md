@@ -1,13 +1,17 @@
 # App Startup Report
 
-Generated: 2026-06-09 15:57:26Z
+Generated: 2026-06-09 UTC
 
-## Implemented
+## Completed
 
-- Added start, stop, restart, and health-check orchestration scripts.
-- Startup writes PID/log files under `.runtime/apps`, which is gitignored.
-- Scripts export canonical `PORT`, `APP_DOMAIN`, and `APP_BASE_URL` per app.
+- Added lifecycle scripts under `scripts/start/`:
+  - `start-all-apps.sh`
+  - `stop-all-apps.sh`
+  - `restart-all-apps.sh`
+  - `check-all-apps.sh`
+- The startup script is intentionally conservative and starts the newly normalized canonical `zLinebot` service only by default. Large imported apps should be started through app-specific install/build procedures after dependencies are present.
+- The health-check script probes canonical local ports and records unavailable apps without exposing secrets.
 
-## Verification Note
+## Environment Limitations
 
-The scripts are safe and idempotent, but full app startup depends on app dependencies being installed locally.
+Local app dependencies were not installed globally and existing apps are heterogeneous imported projects, so full multi-app startup is documented as an operator follow-up rather than forced in this refactor.
