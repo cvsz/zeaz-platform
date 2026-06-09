@@ -1,29 +1,33 @@
-tunnel: ${CLOUDFLARE_TUNNEL_ID}
-credentials-file: ${CLOUDFLARE_TUNNEL_CREDENTIALS_FILE}
+# ZEAZ Platform canonical Cloudflare Tunnel config.
+# This file is intentionally static: cloudflared does not expand shell env vars in YAML.
+# Override tunnel/credentials locally by generating .runtime/cloudflare/config.yml with
+# scripts/cloudflare/setup-cloudflare-tunnel.sh --render-runtime-config.
+tunnel: zeaz-platform
+credentials-file: ~/.cloudflared/zeaz-platform.json
 
 ingress:
   - hostname: zow.zeaz.dev
-    service: http://localhost:4101
+    service: http://localhost:80
   - hostname: api-zcfdash.zeaz.dev
-    service: http://localhost:4102
+    service: http://localhost:80
   - hostname: zcfdash.zeaz.dev
-    service: http://localhost:4103
+    service: http://localhost:80
   - hostname: zoffice.zeaz.dev
-    service: http://localhost:4104
+    service: http://localhost:80
   - hostname: app.zeaz.dev
-    service: http://localhost:4105
+    service: http://localhost:80
   - hostname: ztrader.zeaz.dev
-    service: http://localhost:4106
+    service: http://localhost:80
   - hostname: dash.zeaz.dev
-    service: http://localhost:4107
+    service: http://localhost:80
   - hostname: zaiz.zeaz.dev
-    service: http://localhost:4108
+    service: http://localhost:80
   - hostname: zveo.zeaz.dev
-    service: http://localhost:4109
+    service: http://localhost:80
   - hostname: zsticker.zeaz.dev
-    service: http://localhost:4110
+    service: http://localhost:80
   - hostname: zcino.zeaz.dev
-    service: http://localhost:4111
+    service: http://localhost:80
   - hostname: zlms.zeaz.dev
-    service: http://localhost:4112
+    service: http://localhost:80
   - service: http_status:404
