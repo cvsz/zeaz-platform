@@ -40,7 +40,7 @@ if grep -q '^POSTGRES_PASSWORD=' "$env_file" && [ "$force" -ne 1 ]; then
 fi
 
 if command -v openssl >/dev/null 2>&1; then
-  password="$(openssl rand -base64 72 | tr -dc 'A-Za-z0-9_@%+=:,.~-' | head -c "$length")"
+  password="$(openssl rand -base64 "$((length * 2))" | tr -dc 'A-Za-z0-9_@%+=:,.~-' | head -c "$length")"
 else
   password="$(LC_ALL=C tr -dc 'A-Za-z0-9_@%+=:,.~-' </dev/urandom | head -c "$length")"
 fi
