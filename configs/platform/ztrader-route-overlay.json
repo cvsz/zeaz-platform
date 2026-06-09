@@ -1,0 +1,16 @@
+{
+  "routes": [
+    {
+      "app_id": "ztrader-api",
+      "role": "api",
+      "path": "apps/ztrader",
+      "hostname": "api-ztrader.zeaz.dev",
+      "port": 8016,
+      "origin": "http://127.0.0.1:8016",
+      "status": "active",
+      "alias_for": "ztrader",
+      "api_gateway_prefix": "/api/v1",
+      "description": "ztrader FastAPI backend served by apps/ztrader backend runtime"
+    }
+  ]
+}
