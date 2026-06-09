@@ -24,3 +24,12 @@ The generated baseline enables GitHub, Context7, Exa, Memory, Playwright, and Se
 - No dedicated workflow command files were generated for this repo.
 
 Use these workflow files as reusable task scaffolds when the detected repository workflows recur.
+
+## Master Meta Cloud Suite
+
+- Suite manifest: `.codex/suite/master-meta-cloud-suite.json`
+- Operator guide: `docs/codex/master-meta-cloud-suite.md`
+- Phase prompt templates: `docs/codex/prompts/`
+- Offline validation: `python3 docs/codex/scripts/validate_codex_suite.py` or `make codex-suite-validate`
+
+Use the suite when a request is broad, meta-level, or asks for Codex Cloud orchestration. Keep work phase-scoped and never convert generated plans into live infrastructure mutation.
