@@ -1,236 +1,177 @@
-# My Virtual Office
+# zOffice
 
-🌐 **[myvirtualoffice.ai](https://myvirtualoffice.ai/)**
+Last updated: 2026-06-10
 
-A self-hosted retro pixel-art AI workspace for [OpenClaw](https://openclaw.ai). Turn invisible agent work into a living, breathing office.
+zOffice is the `apps/zoffice` application inside `cvsz/zeaz-platform`. It is a self-hosted AI office dashboard for OpenClaw/Hermes-style agent workspaces with local runtime controls, optional panels, license-aware feature gating, and platform-aligned server commands.
 
-![My Virtual Office](screenshot.png)
+## Stack
 
-## What Is It?
+| Layer | Stack |
+|---|---|
+| App runtime | Python static/server runtime |
+| UI | Browser HTML/CSS/JavaScript pixel-office dashboard |
+| Agent gateway | OpenClaw gateway + Hermes provider adapters |
+| Local services | Whisper STT server, PC metrics server |
+| Runtime data | `.runtime/data` |
+| Local HTTP | `127.0.0.1:8091` |
+| Local WebSocket | `127.0.0.1:8092` |
+| Public route target | `https://zoffice.zeaz.dev` |
 
-Virtual Office gives your AI agents a physical presence. Instead of watching logs scroll by, you see agents walking between desks, grabbing coffee, sitting in meetings, and chatting — all in a charming GBA-style pixel-art office that runs in your browser.
+## Scope rule
 
-It connects to your OpenClaw gateway and visualizes everything your agents are doing in real time.
+All zOffice runtime automation stays inside:
 
-## Features
+```text
+apps/zoffice
+```
 
-### 🏢 Live Office Canvas
-- Real-time pixel-art office with agents that walk, sit, work, and interact
-- Agents move to their desks when working, wander when idle, visit the kitchen, lounge on the couch
-- Smooth A* pathfinding with collision avoidance
-- Wall occlusion — agents behind walls get naturally shadowed
-- 100 FPS rendering with configurable canvas size
+Do not place zOffice runtime files, generated reports, local env files, pid files, or logs outside this app path unless a future platform task explicitly changes scope.
 
-### 🎨 Full Office Editor
-- Drag-and-drop furniture placement with snap-to-grid
-- 25+ furniture items: desks, boss desk, meeting table, couches, bookshelves, whiteboards, filing cabinets, plants, vending machines, kitchen appliances, ping pong table, dart board, TV, and more
-- Interior wall builder — create rooms, hallways, and departments with doors
-- Wall color picker per section with accent and trim colors
-- Floor tile color customization
-- Rotation support for select furniture (couch)
-- Text labels for naming rooms and areas
+## Latest updates
 
-### 👤 Agent Customization
-- Full character appearance editor: skin tone, hair style/color, eye color, eyebrows
-- Facial hair, glasses, headwear options
-- Costumes (lobster suit, capes, etc.)
-- Held items and desk accessories (coffee mug, envelope, clipboard, plant, etc.)
-- Gender-aware sprite rendering
-- Each agent gets a unique color tag and emoji
+- App-local runtime paths under `.runtime/`.
+- Platform Makefile targets for server start/stop/status/report/logs.
+- Safe full-feature local env generator.
+- License operator helper commands.
+- License receipt integrity hardening.
+- Branding migration tooling from legacy office names to `zOffice`.
+- Default server start is license-aware normal mode.
+- Developer/internal mode is explicit via `make dev-internal-start`.
 
-### 🐾 Office Pet
-- Choose from Cat, Pug, or Lobster
-- Realistic behavior: sleeping, sitting, grooming, wandering, greeting agents, investigating furniture
-- Agents interact with the pet — petting (♥) and playful chasing
-- Full pathfinding and collision avoidance, same as agents
-- Directional walking sprites (front, back, side views) for cat and pug
-- Custom naming — default pet is a lobster named Clawy
-
-### 💬 Chat with Agents
-- Click any agent to open a chat window
-- Full markdown rendering with syntax highlighting
-- Inline image support — send images and see thumbnails in the chat
-- Click images for full-size lightbox view
-- Voice input via Whisper STT (premium)
-- File attachments with drag-and-drop or paste
-- Audio file auto-transcription
-- Streaming responses with live typing indicator
-- Tool activity feed showing what the agent is doing (exec, read, write, search, etc.)
-- Movable/snappable chat window with float mode
-- Agent selector dropdown to switch between agents
-
-### 📊 Dashboard Panel
-- **PC Performance** — live CPU and RAM monitoring
-- **API Usage** — track agent API calls and costs
-- **Branch Management** — organize agents into departments/teams with color-coded borders
-- **Agent Directory** — see all agents with live status (working, idle, meeting, break)
-- **Activity Log** — real-time feed of office events
-
-### 🌦️ Dynamic Environment
-- **Interactive windows** with live weather pulled from your location
-- **Day/night cycle** — ambient lighting shifts throughout the day
-- **Animated furniture** — TV with 5 channels (sports, news, cooking, cartoon, movie) that agents walk over to watch
-- **Clock** showing real time
-
-### 📋 Meeting System
-- 1-on-1 meetings — agents walk to each other's desks
-- Group meetings — agents gather around the meeting table (10 seats, 5 per side)
-- Meetings triggered by agent activity or manual scheduling
-- Meeting status visible in dashboard
-
-### 🏗️ Branch System
-- Create departments (Engineering, Sales, Support, etc.)
-- Color-coded wall sections per branch
-- Agents assigned to branches with visual grouping
-- Branch themes and emoji customization
-
-### 🔧 Additional Tools (Premium)
-- **Agent Browser** — embedded browser with live view, URL bar, and remote control
-- **SMS Panel** — Twilio integration for SMS/phone from the office
-- **Cron Manager** — schedule recurring agent tasks visually
-- **Models Panel** — per-agent model switching from the UI
-- **Whisper STT** — voice-to-text input in chat
-
-## Quick Start
-
-### Docker Compose (recommended)
+## Quick start
 
 ```bash
-git clone https://github.com/eliautobot/my-virtual-office.git
-cd my-virtual-office
-docker compose up -d
+cd /home/zeazdev/zeaz-platform/apps/zoffice
+make info
+make feature-unlock-local
+cp .env.full-local.example .env
+make validate-local
+make server-start
+make server-status
+make health-check
+make smoke-test
 ```
 
-Then open `http://localhost:8090/setup` to run the setup wizard.
+Open locally:
 
-### Docker Image / Platform Support
-
-The published Docker image is available at:
-- `ghcr.io/eliautobot/my-virtual-office:latest`
-
-Multi-arch images are published for:
-- `linux/amd64`
-- `linux/arm64`
-
-That means the same image tag works on standard x86_64 machines and ARM64 devices like a Raspberry Pi 5.
-
-### First Run
-
-1. Open `http://localhost:8090/setup`
-2. Follow the setup wizard to connect your OpenClaw instance
-3. Enter a license key or skip for demo mode
-4. Customize your office, add agents, and watch them come to life
-
-## Remote Access and Security
-
-**Recommended remote access: use [Tailscale](https://tailscale.com/).**
-
-Virtual Office is a control surface for your local OpenClaw instance. If you want to reach it away from home, the safest default is to keep it on your private machine or LAN and access it over a private tailnet such as Tailscale.
-
-### Recommended setup
-- Keep Virtual Office bound to your local machine, LAN, or private tailnet
-- Use Tailscale to reach the host remotely instead of opening router ports
-- Keep your OpenClaw gateway and Virtual Office behind trusted access controls
-- Use strong device/account security on the machines that can reach your tailnet
-
-### Warning
-- **Do not expose Virtual Office directly to the public internet unless you fully understand and accept the security risk**
-- Avoid simple port forwarding for ports `8090`, `8091`, or your OpenClaw gateway
-- If someone can reach your Virtual Office deployment, they may be able to interact with a live control surface for your OpenClaw agents
-
-This project is designed first for self-hosted local/private-network use. You are responsible for securing any remote deployment.
-
-## Modes
-
-### Free Demo
-Works without a license key:
-- Up to 3 agents
-- Branch management
-- Weather and day/night cycle
-- Chat with any agent
-- API usage monitoring
-- Setup wizard
-
-Demo mode shows a watermark and demo banner.
-
-### Full License
-Unlocks everything:
-- Unlimited agents
-- Full office editor and furniture
-- Agent customization and appearance editor
-- Office pet
-- Agent Browser panel
-- SMS / Twilio panel
-- Cron Job Manager
-- Whisper STT voice input
-- No watermark or demo banner
-
-### How to Activate
-Activate during the setup wizard or later from **☰ Menu → Settings**.
-
-License keys are provided after purchase and look like this:
-```
-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```text
+http://127.0.0.1:8091
 ```
 
-Enter your key during setup or in **☰ Menu → Settings**. The key is validated once online with Lemon Squeezy, then works offline forever. Premium features unlock immediately and persist across restarts and updates.
+## Server commands
 
-## Configuration
+```bash
+make server-start
+make server-stop
+make server-restart
+make server-status
+make server-report
+make server-logs
+make health-check
+make smoke-test
+make validate-local
+make clean
+```
 
-All settings live in `vo-config.json`. Environment variables override config values.
+## Optional local services
+
+```bash
+make start-whisper
+make stop-whisper
+make start-metrics
+make stop-metrics
+make stop-all
+```
+
+## Feature environment
+
+```bash
+make feature-env
+make feature-unlock-local
+make feature-status
+```
+
+Generated file:
+
+```text
+.env.full-local.example
+```
+
+This enables local optional panels in config form while provider actions remain configuration-gated.
+
+## License commands
+
+```bash
+make license-status
+make license-activate KEY="<valid-license-key>"
+make license-deactivate
+make license-agent-limit
+make license-feature FEATURE=browserPanel
+make license-audit
+```
+
+License activation requires a valid key accepted by the configured license provider. The repo does not generate, forge, or bypass license keys.
+
+## Normal mode vs developer mode
+
+Normal license-aware operation:
+
+```bash
+make server-start
+```
+
+Explicit owner/developer internal mode:
+
+```bash
+make dev-internal-start
+```
+
+## Branding migration
+
+```bash
+make branding-scan
+make branding-rename-zoffice
+git diff -- apps/zoffice
+make validate-local
+```
+
+The branding script scans text files inside `apps/zoffice`, excludes binary/runtime/vendor files, and replaces legacy office branding with `zOffice`.
+
+## Configuration defaults
 
 | Variable | Default | Description |
-|----------|---------|-------------|
-| `VO_OFFICE_NAME` | Virtual Office | Office display name |
-| `VO_PORT` | 8090 | HTTP server port |
-| `VO_WS_PORT` | 8091 | WebSocket proxy port |
-| `VO_GATEWAY_URL` | ws://127.0.0.1:18789 | OpenClaw gateway WebSocket URL |
-| `VO_GATEWAY_HTTP` | http://127.0.0.1:18789 | OpenClaw gateway HTTP URL |
-| `VO_OPENCLAW_PATH` | ~/.openclaw | Path to OpenClaw home directory |
-| `VO_HERMES_ENABLED` | true | Enable discovery of local Hermes Agent profiles when Hermes is available |
-| `VO_HERMES_HOME` | ~/.hermes | Path to the Hermes home/profile root directory |
-| `VO_HERMES_BIN` | ~/.local/bin/hermes | Hermes CLI binary used for discovery and safe request/response chat calls |
-| `VO_HERMES_TIMEOUT_SEC` | 600 | Timeout for Hermes CLI chat calls |
-| `VO_STATUS_DIR` | /data | Directory for presence/status data inside the container. By default this is backed by the `vo-data` Docker volume. |
-| `VO_WEATHER_LOCATION` | *(none)* | Weather location for window display |
+|---|---|---|
+| `VO_OFFICE_NAME` | `zOffice` | Office display name |
+| `VO_PORT` | `8091` | HTTP server port |
+| `VO_WS_PORT` | `8092` | WebSocket proxy port |
+| `VO_STATUS_DIR` | `.runtime/data` | Local app runtime data |
+| `VO_OPENCLAW_PATH` | `~/.openclaw` | OpenClaw home path |
+| `VO_GATEWAY_URL` | `ws://127.0.0.1:18789` | OpenClaw gateway WebSocket URL |
+| `VO_GATEWAY_HTTP` | `http://127.0.0.1:18789` | OpenClaw gateway HTTP URL |
+| `VO_HERMES_ENABLED` | `true` | Enable Hermes discovery when available |
+| `VO_HERMES_HOME` | `~/.hermes` | Hermes profile root |
+| `VO_HERMES_BIN` | `~/.local/bin/hermes` | Hermes CLI path |
+| `VO_HERMES_TIMEOUT_SEC` | `600` | Hermes CLI timeout |
 
-### Hermes Agent compatibility
+## Main files
 
-Virtual Office can now discover local Hermes Agent profiles as first-class office agents when the Hermes CLI and home directory are available to the app. The adapter is intentionally conservative:
-
-- discovery/status uses safe Hermes CLI surfaces (`profile list`, `profile show`, `status`-style metadata)
-- chat sends one-shot messages through `hermes -z` using the selected Hermes profile
-- replies are captured from stdout
-- local Virtual Office history is stored under `VO_STATUS_DIR`
-- Hermes secrets/config/memories/raw logs are not read or exposed by default
-
-For Docker deployments, mount or otherwise expose the Hermes home and CLI path to the container, then set `VO_HERMES_HOME` and `VO_HERMES_BIN` accordingly.
-
-## Updating
-
-```bash
-docker compose down
-docker compose pull
-docker compose up -d
+```text
+Makefile
+.env.example
+scripts/feature-local-env.sh
+scripts/license-tool.sh
+scripts/rename-branding-zoffice.sh
+fixer.py
+app/server.py
+app/license.py
+app/gateway_presence.py
 ```
 
-Or pull the image directly:
+## Security notes
 
-```bash
-docker pull ghcr.io/eliautobot/my-virtual-office:latest
-```
-
-Your license key, office layout, and all settings persist across updates — they're stored in the `vo-data` volume.
-
-## Roadmap
-
-- More office themes and skins
-- Premium character packs and costumes
-- More pet species and behaviors
-- Agent-to-agent visible interactions
-- Deeper IDE integrations
-- More idle activities and office events
-
-## License
-
-MIT
+- Do not commit real license keys, gateway tokens, provider tokens, SMS credentials, or browser passwords.
+- Keep `.env`, `.runtime/`, generated pid files, logs, and local status data out of git.
+- Use `make server-start` for normal license-aware operation.
+- Use `make dev-internal-start` only for owner/developer testing.
+- Do not expose zOffice publicly without access controls.
+- Prefer Cloudflare Access, private networking, or protected reverse proxy access for remote use.
