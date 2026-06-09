@@ -24,7 +24,7 @@ apps-server-status: ## Show all app server status from configs/platform/apps-por
 apps-server-report: ## Write app server status report
 	@bash scripts/platform/apps-server-control.sh report
 
-zcfdash-control-start: ## Start complete zcfdash Cloudflare control panel: apps/web + apps/api
+zcfdash-control-start: ## Start complete zcfdash Cloudflare control panel: apps/web + apps/api using app route list ports
 	@bash scripts/platform/zcfdash-control-panel.sh start
 
 zcfdash-control-stop: ## Stop complete zcfdash Cloudflare control panel
@@ -47,8 +47,5 @@ zcfdash-server-restart: zcfdash-control-restart ## Backward-compatible alias for
 
 zcfdash-server-status: zcfdash-control-status ## Backward-compatible alias for zcfdash-control-status
 
-zcfdash-open: ## Print zcfdash local and public URLs
-	@echo "UI local origin:   http://127.0.0.1:3003"
-	@echo "UI public route:   https://zcfdash.zeaz.dev"
-	@echo "API local origin:  http://127.0.0.1:8088/api/runtime/cloudflare/health"
-	@echo "API public route:  https://api-zcfdash.zeaz.dev/api/runtime/cloudflare/health"
+zcfdash-open: ## Print zcfdash local and public URLs from app route list ports
+	@bash scripts/platform/zcfdash-control-panel.sh open
