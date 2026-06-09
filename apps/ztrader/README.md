@@ -1,113 +1,72 @@
-# ztrader — Safety-First Multi-Language Algorithmic Trading Platform
+# zTrader
 
-`ztrader` is a unified cryptocurrency trading application merged from `ABTPi18n` and `zkbtrader`. It integrates a beautiful multi-language Next.js frontend, an asynchronous FastAPI backend gateway, relational PostgreSQL SQLAlchemy storage, Celery task queue orchestration, and a fail-closed risk gate.
+Last updated: 2026-06-10
 
----
+`apps/ztrader` is a safety-first multi-language algorithmic trading platform stack. It is separate from `apps/zkbtrader` and `apps/zdash` even when concepts overlap.
 
-## Key Features
+## Stack
 
-1. **Safety-First Mode**:
-   - `EXECUTION_MODE` is set to `paper` by default.
-   - `LIVE_TRADING_ENABLED` is gated to `false` unless explicitly activated.
-   - Immediate manual block via a global **Kill Switch**.
-2. **Fail-Closed Risk Engine**:
-   - Intercepts all trade intents before dispatching to brokers.
-   - Restricts orders to allowed symbols (`BTC/USDT`, `ETH/USDT`) and validates `max_order_notional` limits.
-3. **Multi-Language Support (i18n)**:
-   - English, Thai, Japanese, and Chinese translations included.
-4. **Relational Storage**:
-   - Uses PostgreSQL with SQLAlchemy (asyncpg) to capture users, exchange credentials (AES-encrypted), strategies, orders, and security logs.
-5. **Multi-Exchange Support**:
-   - Out-of-the-box integration mappings for `binance.com`, `binance.th` (Binance Thailand local entity), `okx`, `bybit`, `kucoin`, and `MT5` (MetaTrader 5 via an external execution gateway).
+| Layer | Stack |
+|---|---|
+| Frontend | Next.js / TypeScript |
+| Backend | FastAPI / Python |
+| Workers | Celery-style async orchestration |
+| Data | PostgreSQL-oriented backend storage |
+| Deployment | Docker Compose |
+| App areas | `frontend/`, `backend/` |
 
----
+## Safety mode
 
-## Directory Structure
+Use paper/dry-run workflows by default. Live trading must remain explicitly gated by risk controls, environment flags, and operator review.
 
-```text
-apps/ztrader/
-├── backend/                   # FastAPI backend application
-│   ├── db/                    # DDL schema files
-│   ├── src/
-│   │   └── ztrader/
-│   │       ├── api/           # API router endpoints
-│   │       ├── core/          # Database connection, config, and security helpers
-│   │       ├── engine/        # RiskEngine, PaperBroker, Strategy, Backtest
-│   │       ├── models/        # SQLAlchemy and Pydantic models
-│   │       ├── main.py        # FastAPI server entry point
-│   │       └── worker.py      # Celery task definitions
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/                  # Next.js web application
-│   ├── public/                # Locales translation files
-│   ├── src/
-│   │   ├── app/               # App Router pages and dynamic routing
-│   │   ├── components/        # Glassmorphic UI components
-│   │   └── contexts/          # Theme context provider
-│   ├── Dockerfile
-│   ├── package.json
-│   └── tsconfig.json
-├── docker-compose.yml         # Container orchestrator
-├── Makefile                   # Operation targets helper
-├── .env.example               # Configuration template
-└── README.md                  # This document
-```
+## Scope rule
 
----
+This README documents only `apps/ztrader`. Do not copy `zkbtrader`, `zdash`, or zOffice commands into this app.
 
-## Getting Started
+## Local development
 
-### 1. Environment Setup
-Copy the configuration template and customize details:
 ```bash
-cp .env.example .env
-```
-Ensure you generate 32-byte keys for `ENCRYPTION_KEY` and `JWT_SECRET`.
-
-Set `ADMIN_API_TOKEN` before using admin routes or the kill switch. Admin API calls
-fail closed when this value is unset, and clients must send it as a bearer token.
-For local browser testing, store the token in `localStorage` under
-`ztrader_admin_token`; do not expose production admin tokens through public
-frontend environment variables.
-
-### 2. Local Manual Launch
-Run the backend API:
-```bash
-# Install dependencies
-pip install -r backend/requirements.txt
-
-# Start backend server
-PYTHONPATH=backend/src uvicorn ztrader.main:app --reload --port 8000
+cd /home/zeazdev/zeaz-platform/apps/ztrader
 ```
 
-Run the frontend app:
+Frontend:
+
 ```bash
 cd frontend
-pnpm install
-pnpm run dev
+npm install
+npm run dev
 ```
-Open `http://localhost:3000` to view the platform.
 
-### 3. Docker Compose Launch
-Build and run all services (FastAPI, Next.js, Redis, PostgreSQL, Celery Worker) using a single command:
+Backend:
+
 ```bash
-make run-docker
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
-To stop the services:
+
+## Docker
+
 ```bash
-make stop-docker
+cd /home/zeazdev/zeaz-platform/apps/ztrader
+docker compose up -d --build
 ```
 
-### 4. Running Backend Unit Tests
-Execute the unit tests using pytest:
-```bash
-make test-backend
+## Important files
+
+```text
+frontend/
+backend/
+docker-compose.yml
+Makefile
+LICENSE
+SECURITY.md
 ```
 
----
+## Security notes
 
-## Security Guidelines
-
-- **No Hardcoded Secrets**: Ensure that `ENCRYPTION_KEY` and `JWT_SECRET` are never hardcoded.
-- **Admin Token Required**: `/api/v1/admin/*` and `/api/v1/risk/kill-switch` require `ADMIN_API_TOKEN`.
-- **Fail-Closed Gate**: Always check `RiskEngine` rules and audit logs for execution outcomes.
+- Never commit exchange API keys or wallet secrets.
+- Keep live trading disabled unless explicitly audited.
+- Use paper mode for tests and demos.
+- Require risk gate validation before external exchange actions.
