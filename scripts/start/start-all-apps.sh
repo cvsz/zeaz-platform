@@ -36,7 +36,7 @@ while IFS='|' read -r app domain port dir; do
     case "$cmd" in
       frontend:start) cd frontend; if command -v pnpm >/dev/null 2>&1; then exec pnpm run start; else exec npm run start; fi ;;
       python) exec python3 -m uvicorn main:app --host 0.0.0.0 --port "$PORT" ;;
-      *) if command -v pnpm >/dev/null 2>&1 && [ -f pnpm-lock.yaml ]; then exec pnpm run "$cmd"; else exec npm run "$cmd"; fi ;;
+      *) if command -v pnpm >/dev/null 2>&1 && { [ -f pnpm-lock.yaml ] || [ -f ../../pnpm-lock.yaml ]; }; then exec pnpm run "$cmd"; else exec npm run "$cmd"; fi ;;
     esac
   ) >>"$logfile" 2>&1 &
   echo $! > "$pidfile"
