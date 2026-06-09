@@ -12,7 +12,10 @@ log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 trap 'log "ERROR: migration runner failed at line $LINENO"' ERR
 execute=0
 while [ "$#" -gt 0 ]; do case "$1" in --dry-run) execute=0; shift;; --execute) execute=1; shift;; --help|-h) usage; exit 0;; *) echo "ERROR: unknown argument $1" >&2; exit 2;; esac; done
-mapfile -t pkgs < <(find apps -maxdepth 3 -name package.json -not -path '*/node_modules/*' 2>/dev/null | sort)
+pkgs=()
+while IFS= read -r pkg; do
+  [ -n "$pkg" ] && pkgs+=("$pkg")
+done < <(find apps -maxdepth 3 -name package.json -not -path '*/node_modules/*' 2>/dev/null | sort)
 found=0
 for pkg in "${pkgs[@]}"; do
   dir="$(dirname "$pkg")"
