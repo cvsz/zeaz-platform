@@ -2,26 +2,104 @@
 
 Last updated: 2026-06-10
 
-`apps/ztrader` is a safety-first multi-language algorithmic trading platform stack. It is separate from `apps/zkbtrader` and `apps/zdash` even when concepts overlap.
+`apps/ztrader` is the safety-first multi-language algorithmic trading platform stack and the active merge target for useful source material from:
+
+```text
+apps/ABTPi18n
+apps/zkbtrader
+```
+
+## Merge status
+
+```text
+STATUS: MERGE IMPLEMENTATION STARTED
+SOURCE MATERIAL: retained until validation passes
+TARGET: apps/ztrader
+PLAN: ../../docs/plans/ztrader-merge-abtpi18n-zkbtrader-plan.md
+```
+
+Source apps are retained during migration. They should only be cleaned up after inventory, mapping, validation, and final report gates pass.
 
 ## Stack
 
 | Layer | Stack |
 |---|---|
-| Frontend | Next.js / TypeScript |
+| Frontend | Next.js / TypeScript / i18n dependencies |
 | Backend | FastAPI / Python |
 | Workers | Celery-style async orchestration |
 | Data | PostgreSQL-oriented backend storage |
+| Queue/cache | Redis |
+| Trading adapter | CCXT shell + safe mock fallback |
+| Paper execution | deterministic paper engine |
+| Risk gate | fail-closed risk engine with symbol allowlist, max notional, global kill switch |
 | Deployment | Docker Compose |
-| App areas | `frontend/`, `backend/` |
+| App areas | `frontend/`, `backend/`, `scripts/`, `harness/`, `reports/merge/` |
 
 ## Safety mode
 
 Use paper/dry-run workflows by default. Live trading must remain explicitly gated by risk controls, environment flags, and operator review.
 
-## Scope rule
+Default safety expectation:
 
-This README documents only `apps/ztrader`. Do not copy `zkbtrader`, `zdash`, or zOffice commands into this app.
+```text
+EXECUTION_MODE=paper
+LIVE_TRADING_ENABLED=false
+GLOBAL_KILL_SWITCH=true
+```
+
+## Merge workflow
+
+Preview source mapping:
+
+```bash
+cd /home/zeazdev/zeaz-platform/apps/ztrader
+make merge-dry-run
+```
+
+Apply source mapping into zTrader while retaining original source apps:
+
+```bash
+make merge-apply
+```
+
+Validate after mapping:
+
+```bash
+make merge-validate
+make merge-report
+```
+
+Generated reports live in:
+
+```text
+apps/ztrader/reports/merge/
+```
+
+## Source mapping summary
+
+### ABTPi18n
+
+| Source | Target |
+|---|---|
+| `apps/ABTPi18n/configs/` | `apps/ztrader/config/abtpi18n/` |
+| `apps/ABTPi18n/core/` | `apps/ztrader/backend/src/ztrader/abt/core/` |
+| `apps/ABTPi18n/strategies/` | `apps/ztrader/backend/src/ztrader/strategies/abtpi18n/` |
+| `apps/ABTPi18n/monitoring/` | `apps/ztrader/backend/src/ztrader/monitoring/abtpi18n/` |
+| `apps/ABTPi18n/scripts/` | `apps/ztrader/scripts/abtpi18n/` |
+| `apps/ABTPi18n/tests/` | `apps/ztrader/backend/tests/abtpi18n/` |
+| metadata files | `apps/ztrader/merge-sources/abtpi18n/` |
+
+### zkbtrader
+
+| Source | Target |
+|---|---|
+| `apps/zkbtrader/src/` | `apps/ztrader/backend/src/ztrader/zkb/` |
+| `apps/zkbtrader/harness/` | `apps/ztrader/harness/zkbtrader/` |
+| `apps/zkbtrader/tests/` | `apps/ztrader/backend/tests/zkbtrader/` |
+| `apps/zkbtrader/reports/` | `apps/ztrader/reports/zkbtrader/` |
+| `apps/zkbtrader/scripts/` | `apps/ztrader/scripts/zkbtrader/` |
+| `apps/zkbtrader/alembic/` | `apps/ztrader/backend/alembic/zkbtrader_source/` |
+| metadata/Docker files | `apps/ztrader/merge-sources/zkbtrader/` |
 
 ## Local development
 
@@ -53,20 +131,46 @@ cd /home/zeazdev/zeaz-platform/apps/ztrader
 docker compose up -d --build
 ```
 
+## Operator commands
+
+```bash
+make help
+make validate-local
+make test-backend
+make run-docker
+make stop-docker
+make server-start
+make server-status
+make server-stop
+```
+
 ## Important files
 
 ```text
 frontend/
 backend/
+scripts/merge-abtpi18n-zkbtrader.sh
 docker-compose.yml
 Makefile
-LICENSE
+README.md
 SECURITY.md
+reports/merge/
 ```
+
+## Completion gates before source cleanup
+
+- `make merge-apply` completed locally.
+- `make merge-validate` passes.
+- ABTPi18n source-only features are mapped or intentionally archived.
+- zkbtrader source-only features are mapped or intentionally archived.
+- Final report exists under `apps/ztrader/reports/merge/`.
+- Root README and zTrader README reflect the final state.
+- No imports or operational docs require the old source paths.
 
 ## Security notes
 
-- Never commit exchange API keys or wallet secrets.
+- Never commit exchange API keys, wallet secrets, provider tokens, or database passwords.
 - Keep live trading disabled unless explicitly audited.
 - Use paper mode for tests and demos.
+- Keep the global kill switch enabled by default.
 - Require risk gate validation before external exchange actions.
