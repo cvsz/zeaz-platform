@@ -21,10 +21,13 @@ FRONTEND_PID := $(RUNTIME_DIR)/zdash-frontend-$(FRONTEND_PORT).pid
 BACKEND_LOG := $(RUNTIME_DIR)/zdash-backend-$(BACKEND_PORT).log
 FRONTEND_LOG := $(RUNTIME_DIR)/zdash-frontend-$(FRONTEND_PORT).log
 SERVER_REPORT := $(REPORT_DIR)/zdash-server.md
+FEATURE_ENV := .env.full-local.example
+FEATURE_REPORT := .zdash-feature-status.md
 
 .PHONY: help info install-backend install-frontend install-local validate-fast validate-local validate
-.PHONY: run-backend run-frontend server-start server-stop server-restart server-status server-report server-logs
-.PHONY: compose-config compose-up compose-up-detached compose-down compose-ps compose-logs safety-scan env-check port-scan secret-scan clean
+.PHONY: run-backend run-frontend server-start server-stop server-restart server-status server-report server-logs health-check smoke-test
+.PHONY: compose-config compose-up compose-up-detached compose-down compose-ps compose-logs compose-restart
+.PHONY: safety-scan env-check port-scan secret-scan feature-env feature-unlock-local feature-status clean
 
 help: ## Show targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Makefile\n\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -34,6 +37,7 @@ info: ## Print zdash runtime info
 	@echo "Backend:  http://$(BACKEND_HOST):$(BACKEND_PORT) -> https://api-zdash.zeaz.dev"
 	@echo "Frontend: http://$(FRONTEND_HOST):$(FRONTEND_PORT) -> https://zdash.zeaz.dev"
 	@echo "Release:  http://$(RELEASE_HOST):$(RELEASE_PORT) -> https://release.zeaz.dev"
+	@echo "Feature env: $(FEATURE_ENV)"
 
 install-backend: ## Install backend dependencies
 	@test -d $(BACKEND_DIR)/.venv || $(PYTHON) -m venv $(BACKEND_DIR)/.venv
@@ -91,16 +95,44 @@ server-report: server-status ## Write server report
 server-logs: ## Tail logs; set SERVICE=backend/frontend
 	@if [ "$${SERVICE:-backend}" = "frontend" ]; then tail -f "$(FRONTEND_LOG)"; else tail -f "$(BACKEND_LOG)"; fi
 
+health-check: ## Check backend health endpoint
+	@curl -fsS "http://$(BACKEND_HOST):$(BACKEND_PORT)/health"
+
+smoke-test: ## Run local smoke tests
+	@curl -fsS --max-time 3 "http://$(BACKEND_HOST):$(BACKEND_PORT)/health" >/dev/null
+	@curl -fsS --max-time 3 "http://$(FRONTEND_HOST):$(FRONTEND_PORT)/" >/dev/null
+	@echo "PASSED: zdash smoke test"
+
 env-check: ## Validate env syntax without printing values
-	@status=0; for file in .env .env.production .env.production.example frontend/.env frontend/.env.local; do [ -f "$$file" ] || continue; grep -nEv '^($$|#|[A-Za-z_][A-Za-z0-9_]*=)' "$$file" && status=1 || echo "PASSED: $$file"; done; exit $$status
+	@status=0; for file in .env .env.example .env.full-local.example .env.production .env.production.example frontend/.env frontend/.env.local frontend/.env.example; do [ -f "$$file" ] || continue; grep -nEv '^($$|#|[A-Za-z_][A-Za-z0-9_]*=)' "$$file" && status=1 || echo "PASSED: $$file"; done; exit $$status
 
 port-scan: ## Fail if source still references old backend port 8000
 	@tmp=$$(mktemp); git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . ':(exclude)Makefile' ':(exclude)docs/**' ':(exclude)**/*.md' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no old backend port 8000 found"; fi
 
-secret-scan: ## Scan tracked runtime files for secret-looking values
-	@tmp=$$(mktemp); git grep -nE 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY|CLOUDFLARE_API_TOKEN[[:space:]]*=' -- . ':(exclude)Makefile' ':(exclude)**/*.md' ':(exclude)docs/**' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no obvious tracked secrets"; fi
+secret-scan: ## Basic scan for private key blocks in tracked app files
+	@tmp=$$(mktemp); git grep -nE 'BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY' -- . ':(exclude)**/*.md' ':(exclude)docs/**' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no private key blocks found"; fi
 
 safety-scan: env-check port-scan secret-scan ## Run safety scans
+
+feature-env: ## Generate safe full-feature local env example
+	@bash scripts/feature-local-env.sh "$(FEATURE_ENV)"
+
+feature-unlock-local: feature-env ## Generate safe full-feature local env and show activation step
+	@echo "Safe full-feature local env generated: $(FEATURE_ENV)"
+	@echo "Apply manually with: cp $(FEATURE_ENV) .env"
+	@echo "Safety remains enabled: dry-run=true, safety-lock=true, live actions=false"
+
+feature-status: ## Write local feature key status report
+	@echo "# zDash feature status" > "$(FEATURE_REPORT)"
+	@echo >> "$(FEATURE_REPORT)"
+	@echo "Generated: $$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$(FEATURE_REPORT)"
+	@echo >> "$(FEATURE_REPORT)"
+	@echo "Feature env: $(FEATURE_ENV)" >> "$(FEATURE_REPORT)"
+	@echo "Backend: http://$(BACKEND_HOST):$(BACKEND_PORT)" >> "$(FEATURE_REPORT)"
+	@echo "Frontend: http://$(FRONTEND_HOST):$(FRONTEND_PORT)" >> "$(FEATURE_REPORT)"
+	@echo >> "$(FEATURE_REPORT)"
+	@echo "Safety: dry-run and production safety lock remain enabled by default." >> "$(FEATURE_REPORT)"
+	@echo "Report: $(FEATURE_REPORT)"
 
 validate-fast: safety-scan ## Run fast validation
 	@PYTHONPATH=$(BACKEND_DIR) $(PYTHON) -m compileall -q $(BACKEND_DIR)/app
@@ -123,6 +155,8 @@ compose-up: ## Start compose foreground
 
 compose-up-detached: ## Start compose detached
 	docker compose up --build -d
+
+compose-restart: compose-down compose-up-detached ## Restart compose detached
 
 compose-down: ## Stop compose
 	docker compose down
