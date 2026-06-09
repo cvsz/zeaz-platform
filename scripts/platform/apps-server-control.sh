@@ -7,6 +7,7 @@ cd "$ROOT"
 
 ACTION="${1:-status}"
 PLAN="${APPS_PORT_PLAN:-configs/platform/apps-port-plan.json}"
+OVERLAY_GLOB="${APPS_ROUTE_OVERLAY_GLOB:-configs/platform/*-route-overlay.json}"
 RUNTIME_DIR="${APPS_SERVER_RUNTIME_DIR:-runtime/app-servers}"
 REPORT="reports/platform/apps-server-control.md"
 HOST_BIND="${HOST_BIND:-127.0.0.1}"
@@ -20,17 +21,21 @@ usage() {
 Usage:
   bash scripts/platform/apps-server-control.sh start|stop|restart|status|report
 
+Route sources:
+  APPS_PORT_PLAN=configs/platform/apps-port-plan.json
+  APPS_ROUTE_OVERLAY_GLOB=configs/platform/*-route-overlay.json
+
 Filters:
-  APP=<app_id>                 Limit to one app_id from configs/platform/apps-port-plan.json
-  HOSTNAME=<hostname>          Limit to one hostname from configs/platform/apps-port-plan.json
+  APP=<app_id>                 Limit to one app_id from base plan or overlays
+  HOSTNAME=<hostname>          Limit to one hostname from base plan or overlays
   INCLUDE_RESERVED=false       Skip reserved routes
 
 Examples:
-  make apps-server-status
-  make apps-server-start
-  make apps-server-start APP=zcfdash
-  make apps-server-start HOSTNAME=zcfdash.zeaz.dev
-  make apps-server-stop
+  make -f Makefile -f Makefile.app-servers apps-server-status
+  make -f Makefile -f Makefile.app-servers apps-server-start
+  APP=zcfdash make -f Makefile -f Makefile.app-servers apps-server-start
+  HOSTNAME=zcfdash.zeaz.dev make -f Makefile -f Makefile.app-servers apps-server-start
+  make -f Makefile -f Makefile.app-servers apps-server-stop
 EOF
 }
 
@@ -45,36 +50,53 @@ if ! command -v python3 >/dev/null 2>&1; then
 fi
 
 json_routes() {
-  python3 - "$PLAN" "$ONLY_APP" "$ONLY_HOST" "$INCLUDE_RESERVED" <<'PY'
-import json, sys
+  python3 - "$PLAN" "$OVERLAY_GLOB" "$ONLY_APP" "$ONLY_HOST" "$INCLUDE_RESERVED" <<'PY'
+import glob
+import json
+import sys
 from pathlib import Path
-plan = json.loads(Path(sys.argv[1]).read_text())
-only_app = sys.argv[2]
-only_host = sys.argv[3]
-include_reserved = sys.argv[4].lower() == 'true'
+
+plan_path, overlay_glob, only_app, only_host, include_reserved_raw = sys.argv[1:6]
+include_reserved = include_reserved_raw.lower() == 'true'
+routes = []
+
+base = Path(plan_path)
+if base.exists():
+    routes.extend(json.loads(base.read_text()).get('routes', []))
+
+for overlay_path in sorted(glob.glob(overlay_glob)):
+    overlay = json.loads(Path(overlay_path).read_text())
+    overlay_routes = overlay.get('routes', [])
+    if not isinstance(overlay_routes, list):
+        raise SystemExit(f"ERROR: overlay routes must be a list: {overlay_path}")
+    routes.extend(overlay_routes)
+
 seen = set()
-for r in plan.get('routes', []):
+for r in routes:
     app_id = r.get('app_id') or ''
     hostname = r.get('hostname') or ''
     path = r.get('path') or ''
     role = r.get('role') or ''
     status = r.get('status') or ''
-    port = r.get('port') or ''
+    port = str(r.get('port') or '')
     origin = r.get('origin') or ''
+    alias_for = r.get('alias_for') or ''
+
     if not path or path.startswith('system/') or role == 'tcp':
         continue
-    if only_app and only_app not in {app_id, path.split('/')[-1]}:
+    if only_app and only_app not in {app_id, alias_for, path.split('/')[-1]}:
         continue
     if only_host and hostname != only_host:
         continue
     if not include_reserved and status == 'reserved':
         continue
-    # Multiple hostnames can map to the same app/port; start one local process per path+port.
-    key = (path, str(port))
+
+    # Start one local process per app path + origin port. Multiple hostnames can share it.
+    key = (path, port, origin)
     if key in seen:
         continue
     seen.add(key)
-    print('\t'.join([app_id, hostname, path, str(port), role, status, origin]))
+    print('\t'.join([app_id, hostname, path, port, role, status, origin, alias_for]))
 PY
 }
 
@@ -125,20 +147,20 @@ is_pid_alive() {
 }
 
 route_status() {
-  local app_id="$1" hostname="$2" path="$3" port="$4" role="$5" status="$6" origin="$7"
+  local app_id="$1" hostname="$2" path="$3" port="$4" role="$5" status="$6" origin="$7" alias_for="${8:-}"
   local pid_file
   pid_file="$(pid_file_for "$app_id" "$port")"
   if is_pid_alive "$pid_file"; then
-    echo "RUNNING pid=$(cat "$pid_file") app=$app_id host=$hostname port=$port path=$path"
+    echo "RUNNING pid=$(cat "$pid_file") app=$app_id host=$hostname port=$port path=$path alias=${alias_for:-none}"
   elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://127.0.0.1:${port}/" >/dev/null 2>&1; then
-    echo "RUNNING external app=$app_id host=$hostname port=$port path=$path"
+    echo "RUNNING external app=$app_id host=$hostname port=$port path=$path alias=${alias_for:-none}"
   else
-    echo "STOPPED app=$app_id host=$hostname port=$port path=$path"
+    echo "STOPPED app=$app_id host=$hostname port=$port path=$path alias=${alias_for:-none}"
   fi
 }
 
 start_route() {
-  local app_id="$1" hostname="$2" path="$3" port="$4" role="$5" status="$6" origin="$7"
+  local app_id="$1" hostname="$2" path="$3" port="$4" role="$5" status="$6" origin="$7" alias_for="${8:-}"
   local dir="$ROOT/$path"
   local pid_file log_file pm script cmd
   pid_file="$(pid_file_for "$app_id" "$port")"
@@ -186,7 +208,7 @@ start_route() {
       echo "START: $pm run $script app=$app_id port=$port"
       (cd "$dir" && nohup bash -lc "$cmd" >> "$log_file" 2>&1 & echo $! > "$pid_file")
       sleep 1
-      route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin"
+      route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for"
       return 0
     fi
   fi
@@ -196,7 +218,7 @@ start_route() {
       echo "START: uvicorn main:app app=$app_id port=$port"
       (cd "$dir" && nohup uvicorn main:app --host "$HOST_BIND" --port "$port" >> "$log_file" 2>&1 & echo $! > "$pid_file")
       sleep 1
-      route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin"
+      route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for"
       return 0
     fi
   fi
@@ -205,7 +227,7 @@ start_route() {
 }
 
 stop_route() {
-  local app_id="$1" hostname="$2" path="$3" port="$4" role="$5" status="$6" origin="$7"
+  local app_id="$1" hostname="$2" path="$3" port="$4" role="$5" status="$6" origin="$7" alias_for="${8:-}"
   local dir="$ROOT/$path"
   local pid_file pid
   pid_file="$(pid_file_for "$app_id" "$port")"
@@ -236,27 +258,28 @@ write_report_header() {
 
 Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 Action: \`$ACTION\`
-Plan: \`$PLAN\`
+Base plan: \`$PLAN\`
+Overlay glob: \`$OVERLAY_GLOB\`
 
-| App | Hostname | Path | Port | Role | Status | Result |
-|---|---|---|---:|---|---|---|
+| App | Hostname | Alias | Path | Port | Role | Status | Result |
+|---|---|---|---|---:|---|---|---|
 EOF_REPORT
 }
 
 run_routes() {
   write_report_header
-  while IFS=$'\t' read -r app_id hostname path port role status origin; do
+  while IFS=$'\t' read -r app_id hostname path port role status origin alias_for; do
     [ -n "$app_id" ] || continue
     result=""
     case "$ACTION" in
-      start) result="$(start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" | tail -n 1)" ;;
-      stop) result="$(stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" | tail -n 1 || true)" ;;
-      restart) stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" >/dev/null 2>&1 || true; result="$(start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" | tail -n 1)" ;;
-      status|report) result="$(route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin")" ;;
+      start) result="$(start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" | tail -n 1)" ;;
+      stop) result="$(stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" | tail -n 1 || true)" ;;
+      restart) stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" >/dev/null 2>&1 || true; result="$(start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" | tail -n 1)" ;;
+      status|report) result="$(route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for")" ;;
       *) usage; exit 2 ;;
     esac
     echo "$result"
-    printf '| `%s` | `%s` | `%s` | `%s` | `%s` | `%s` | `%s` |\n' "$app_id" "$hostname" "$path" "$port" "$role" "$status" "${result//|/ }" >> "$REPORT"
+    printf '| `%s` | `%s` | `%s` | `%s` | `%s` | `%s` | `%s` | `%s` |\n' "$app_id" "$hostname" "${alias_for:-}" "$path" "$port" "$role" "$status" "${result//|/ }" >> "$REPORT"
   done < <(json_routes)
   echo "PASS: wrote $REPORT"
 }
