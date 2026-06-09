@@ -18,8 +18,9 @@ umask 077
 cp .env.example "$env_file"
 scripts/db/generate-secure-db-password.sh --env-file "$env_file"
 if ! grep -q '^DATABASE_URL=' "$env_file"; then
-  cat >> "$env_file" <<'ENV'
-DATABASE_URL=postgresql://zeazdev:${POSTGRES_PASSWORD}@postgres:5432/zeaz_platform
+  password=$(grep '^POSTGRES_PASSWORD=' "$env_file" | cut -d= -f2-)
+  cat >> "$env_file" <<ENV
+DATABASE_URL=postgresql://zeazdev:${password}@postgres:5432/zeaz_platform
 ENV
 fi
 log "created $env_file with local-only generated secrets (values not printed)"
