@@ -13,6 +13,7 @@ zOffice license operator tool
 
 Usage:
   bash scripts/license-tool.sh status
+  bash scripts/license-tool.sh doctor
   bash scripts/license-tool.sh activate <valid-license-key>
   bash scripts/license-tool.sh deactivate
   bash scripts/license-tool.sh feature <feature-name>
@@ -21,6 +22,7 @@ Usage:
 Notes:
   - This tool does not generate, forge, or bypass license keys.
   - Activation requires a valid key accepted by the configured license provider.
+  - Local receipts are integrity-checked and bound to this installation.
   - Local developer/internal mode is controlled separately by the app runtime.
 EOF
 }
@@ -32,6 +34,9 @@ cd "$APP_DIR"
 case "$cmd" in
   status)
     VO_STATUS_DIR="$STATUS_DIR" python3 license.py status
+    ;;
+  doctor)
+    VO_STATUS_DIR="$STATUS_DIR" python3 license.py doctor
     ;;
   activate)
     key="${1:-}"
