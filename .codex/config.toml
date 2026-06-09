@@ -46,3 +46,15 @@ config_file = "agents/reviewer.toml"
 [agents.docs_researcher]
 description = "Documentation specialist that verifies APIs, framework behavior, and release notes."
 config_file = "agents/docs-researcher.toml"
+
+[agents.phase_planner]
+description = "Phase-scoped planner for F0-F12 Cloudflare platform delivery."
+config_file = "agents/phase-planner.toml"
+
+[agents.security_guardian]
+description = "Security-first reviewer for secrets, access policies, token separation, and guarded automation."
+config_file = "agents/security-guardian.toml"
+
+[agents.validation_operator]
+description = "Offline validation planner that maps phases to safe checks without mutating infrastructure."
+config_file = "agents/validation-operator.toml"
