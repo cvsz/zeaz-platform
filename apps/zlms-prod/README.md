@@ -1,117 +1,50 @@
-# zLMS-prod 
+# zLMS-prod
 
-Legacy ASP.NET Web Forms learning management system (LMS) for police training workflows.
+Last updated: 2026-06-10
 
-## Ubuntu 24.04 conversion path
+`apps/zlms-prod` is the legacy LMS production stack inside `cvsz/zeaz-platform`. It contains ASP.NET Web Forms legacy assets plus migration, security, and modernization documentation for Ubuntu/server deployment planning.
 
-This repository now includes a Ubuntu 24.04-focused installer and run manual for Mono compatibility mode:
+## Stack
 
-- Automated installer: `./installer.sh --yes`
-- Full operator guide: `UBUNTU_24_04_MANUAL.md`
+| Layer | Stack |
+|---|---|
+| Legacy app | ASP.NET Web Forms / IIS-era assets |
+| Modernization assets | Next/security TypeScript files and middleware assets |
+| Security docs | ATTACK_SURFACE, THREAT_MODEL, INCIDENT_RESPONSE, SECURITY reports |
+| Deployment docs | INSTALLER, UBUNTU_24_04_MANUAL, migrations, k8s |
+| Route intent | `zlms.zeaz.dev` |
 
-If your environment requires DevExpress 16.2 binaries, the installer now seeds missing files from `app/devexpress` first and still supports external import:
+## Scope rule
 
-```bash
-DEVEXPRESS_SOURCE=/path/to/devexpress-folder-or-zip ./installer.sh --yes
+This README documents only `apps/zlms-prod`. Do not mix zOffice, zDash, zWallet, or zTrader commands into this legacy LMS stack.
+
+## Operator notes
+
+Use this app as a migration-controlled production stack. Validate legacy behavior, security patches, deployment scripts, and migration docs before changing runtime behavior.
+
+## Important files
+
+```text
+app/
+frontend/
+db/
+migrations/
+k8s/
+installer.sh
+INSTALLER.md
+UBUNTU_24_04_MANUAL.md
+ATTACK_SURFACE.md
+THREAT_MODEL.md
+INCIDENT_RESPONSE.md
+SECURITY_REPORT.md
+SECURITY_PATCHES.md
+QUALITY_REPORT.md
 ```
 
+## Security notes
 
-## Project deep-dive (quick map)
-
-### Core platform
-- **Framework:** ASP.NET Web Forms on **.NET Framework 4.6.1**.
-- **Main project file:** `app/lms.csproj`.
-- **Language mix:** C# backend (`.cs`), Web Forms pages (`.aspx`), JavaScript, CSS, and SQL Server DB backups.
-
-### Major app areas
-- `app/Admin/` – administration pages.
-- `app/Course/`, `app/Course_user/` – course management and user course views.
-- `app/QA/`, `app/QA_NEW/`, `app/USER_QA/` – question/answer and assessment modules.
-- `app/ebook/` – ebook upload and metadata persistence.
-- `app/knowledge/` – knowledge content modules.
-- `app/Police_service/` – service-oriented pages/endpoints.
-
-### Third-party/vendor content to treat as external
-- `app/phpMyAdmin/` – embedded phpMyAdmin distribution (do not mass-edit spelling here).
-- `app/assets/` and many minified JS/CSS files – vendor/static bundles.
-- `app/obj/`, `app/bin/` – build outputs.
-
-## Spellcheck pass status
-
-A full-repo spellcheck was performed with a conservative approach:
-- Scanned for common misspellings across project files.
-- Ignored binary/build/vendor-heavy paths where corrections would be unsafe or overwritten.
-- Applied only a safe first-party typo correction in LMS source code.
-
-### Corrected typo
-- `app/ebook/add.aspx.cs`
-  - Updated user-facing error text by correcting a misspelling in the upload error message.
-
-
-## Full project update
-
-For a one-command maintenance run across readiness checks, duplicate scanning, and structure verification:
-
-```bash
-./scripts/update_full_project.sh
-```
-
-Optional flags:
-
-- `--apply-duplicates` removes duplicate backup/copy files.
-- `--rebuild-installer` regenerates installer artifacts in `dist/`.
-- Automatically fails early when required DevExpress 16.2 DLLs are unavailable from both `../../lms-library` and `app/devexpress`.
-
-## Live readiness proof checks
-
-Run the repository readiness check script before going live:
-
-```bash
-./scripts/live_readiness_check.sh
-```
-
-It verifies production-safe Web.config debug settings and runs a scoped first-party typo scan.
-
-The readiness status view excludes known generated phpMyAdmin package-manager artifacts (`app/phpMyAdmin/node_modules`, `.yarn`, `.yarnrc.yml`, `yarn.lock`) so only actionable repository drift is surfaced.
-
-For a broader non-mutating project dry run, use:
-
-```bash
-./scripts/dryrun_full_project.sh
-```
-
-This runs live readiness checks and duplicate cleanup scanning in dry-run mode.
-
-
-## Release upgrades applied
-
-- `app/Web.config` now runs with `debug="false"` and `customErrors mode="On"` for production-safe behavior.
-- Added `app/Web.Release.config` to enforce release transform defaults during publish.
-- Extended `scripts/live_readiness_check.sh` to verify release transform presence and `customErrors` release posture.
-
-## Maintenance automation
-
-- `./scripts/clean_duplicate_files.sh` scans for backup/copy/tmp files with identical content and removes redundant duplicates with `--apply`.
-- `./scripts/generate_installer.sh` packages the project into `dist/zlms-payload.tar.gz` and generates `dist/zlms-installer.sh` for repeatable installs.
-
-## DevExpress 16.2 binaries
-
-This project references licensed DevExpress 16.2 assemblies via `../../lms-library` from `app/lms.csproj`.
-
-- Expected absolute path when the repo lives at `/path/to/zlms-prod`: `/path/lms-library`
-- Required examples: `DevExpress.Web.v16.2.dll`, `DevExpress.Data.v16.2.dll`, `DevExpress.XtraReports.v16.2.dll`
-
-You can place binaries manually, or let the installer import them from a folder/zip:
-
-```bash
-DEVEXPRESS_SOURCE=/path/to/devexpress-folder-or-zip ./installer.sh
-```
-
-
-## DevExpress dependency validation
-
-Use this command to verify all DevExpress 16.2 binaries referenced by `app/lms.csproj` are available (from either `../../lms-library` or `app/devexpress`) before building:
-
-```bash
-./scripts/check_devexpress_references.sh
-```
+- Treat this as a high-risk legacy production app.
+- Review attack surface and threat model before deployment.
+- Do not commit production database credentials.
+- Keep security middleware and CSP/trusted-types changes audited.
+- Prefer staged migration and rollback planning before public cutover.
