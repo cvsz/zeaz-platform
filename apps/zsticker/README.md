@@ -1,42 +1,63 @@
-# 🚀 zsticker v1.0.0
+# zSticker
 
-บอทอัตโนมัติสำหรับสร้างและส่ง LINE Sticker ที่สามารถดึงข้อมูลจาก Google Sheets, สร้างภาพ Sticker (พร้อมข้อความ สินค้า, ราคา, โปรโมชั่น), อัปโหลดผ่าน Imgur และส่งเข้า LINE แบบอัตโนมัติ!
+Last updated: 2026-06-10
 
-## ✨ Features
-- **Auto-Resize & Templates**: รองรับเทมเพลตและปรับขนาดฟอนต์อัตโนมัติเพื่อไม่ให้ข้อความล้น (รองรับฟอนต์ไทย 100%)
-- **Google Sheets Sync**: ดึงข้อมูลและอัปเดตสถานะกลับไปที่ Google Sheets ทันทีด้วย Batch Update
-- **Smart Queueing**: ระบบคิวส่งข้อความ LINE แบบ Asynchronous เพื่อป้องกันการโดนแบนจาก Rate Limit (ส่งได้สูงสุด 1000 ข้อความ/นาที)
-- **Comprehensive Logging**: ระบบเก็บ Log (loguru) แบบแยกไฟล์ หมุนเวียนไฟล์อัตโนมัติ และแจ้งเตือน CRITICAL Error ผ่าน LINE Admin
-- **Web Dashboard**: มีหน้า Dashboard (FastAPI) เพื่อเช็คสถานะ, ดู Log, อัปโหลดเทมเพลตใหม่แบบ Real-time และ Manual Trigger
-- **Docker Ready**: มาพร้อม Dockerfile แบบ Multi-stage และ docker-compose สำหรับ Deploy ขึ้น VPS พร้อม GitHub Actions CI/CD
+`apps/zsticker` is a Python automation stack for LINE sticker/image generation and delivery workflows. It is kept as its own app stack inside `cvsz/zeaz-platform`.
 
-## ⚡ Quick Start (รันบนเครื่อง)
-1. ทำการติดตั้ง Dependencies
-   ```bash
-   make install
-   ```
-2. รันหน้า Dashboard (เช็คผ่าน http://localhost:8007)
-   ```bash
-   uvicorn src.cli.dashboard:app --port 8007
-   ```
-3. รันระบบ Automation 
-   ```bash
-   make run
-   ```
+## Stack
 
-## 🏗️ Architecture
-```text
-[ Google Sheets ] <--(Read/Write)--> [ Line Sticker Bot ]
-                                           |   |
-                                           |   |-- (Upload PNG) --> [ Imgur API ]
-                                           |
-                                           v (Send Image URL)
-                                     [ LINE API ] --> [ LINE Admin / Group ]
+| Layer | Stack |
+|---|---|
+| Runtime | Python |
+| Automation | `main.py`, `auto_setup.py`, `auto_cron.sh` |
+| Config | `config/`, `config.example`, `credentials.json` placeholder |
+| Containers | Dockerfile, docker-compose.yml |
+| Templates | `templates/` |
+| Tests | `tests/`, `conftest.py` |
 
-[ Web Dashboard (FastAPI) ] <---(View Logs / Upload Templates / Metrics)
+## Scope rule
+
+This README documents only `apps/zsticker`. Do not mix zOffice, zDash, zTrader, or zWallet commands into this app.
+
+## Local setup
+
+```bash
+cd /home/zeazdev/zeaz-platform/apps/zsticker
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## 🛠️ Troubleshooting
-- **Error 401 Unauthorized**: เช็คว่า `LINE_CHANNEL_ACCESS_TOKEN` ใน `.env` ถูกต้องหรือไม่
-- **Imgur Upload Failed**: หากเกิดข้อผิดพลาด บอทจะพยายามส่งใหม่ (Retry) อัตโนมัติ 3 ครั้ง หากไม่สำเร็จระบบจะแจ้งเตือน
-- **No Thai font found**: ระบบจะพยายามหาฟอนต์ Kanit หรือ Sarabun ในโฟลเดอร์ `fonts/` ก่อน หากไม่พบจะ Fallback ไปใช้ฟอนต์ Default ของระบบ (Thonburi/Tahoma)
+## Run
+
+```bash
+python main.py
+```
+
+## Docker
+
+```bash
+docker compose up -d --build
+```
+
+## Important files
+
+```text
+main.py
+auto_setup.py
+auto_cron.sh
+requirements.txt
+Dockerfile
+docker-compose.yml
+config.example
+templates/
+src/
+tests/
+```
+
+## Security notes
+
+- Do not commit real LINE, Google, Imgur, or sheet credentials.
+- Replace placeholder `credentials.json` with local secret management.
+- Keep generated output and logs out of git.
+- Use dry-run/test channels before sending automated messages publicly.
