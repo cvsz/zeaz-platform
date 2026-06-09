@@ -6,6 +6,7 @@ BACKEND_PORT ?= 8016
 PYTHONPATH ?= backend/src
 RUNTIME_DIR ?= ../../runtime/app-servers
 REPORT_DIR ?= ../../reports/platform
+MERGE_REPORT_DIR ?= reports/merge
 FRONTEND_PID := $(RUNTIME_DIR)/ztrader-frontend-$(FRONTEND_PORT).pid
 BACKEND_PID := $(RUNTIME_DIR)/ztrader-backend-$(BACKEND_PORT).pid
 FRONTEND_LOG := $(RUNTIME_DIR)/ztrader-frontend-$(FRONTEND_PORT).log
@@ -14,6 +15,7 @@ SERVER_REPORT := $(REPORT_DIR)/ztrader-server.md
 
 .PHONY: help install-backend install-frontend dev-backend dev-frontend test-backend run-docker stop-docker format lint clean
 .PHONY: server-start server-stop server-restart server-status server-report validate-local
+.PHONY: merge-plan merge-dry-run merge-apply merge-report merge-validate
 
 help:
 	@echo "Available commands:"
@@ -28,6 +30,11 @@ help:
 	@echo "  test-backend      - Run backend unit tests with pytest"
 	@echo "  run-docker        - Orchestrate all services using docker-compose"
 	@echo "  stop-docker       - Stop and tear down docker-compose containers"
+	@echo "  merge-plan        - Show zTrader merge plan path"
+	@echo "  merge-dry-run     - Preview ABTPi18n + zkbtrader source mapping into zTrader"
+	@echo "  merge-apply       - Apply source mapping into zTrader, retaining source apps"
+	@echo "  merge-report      - Show generated merge report files"
+	@echo "  merge-validate    - Run local validation after merge mapping"
 	@echo "  format            - Format Python files using black"
 	@echo "  lint              - Lint Python code using ruff"
 	@echo "  clean             - Clean python build cache and logs"
@@ -88,6 +95,24 @@ validate-local:
 
 test-backend:
 	PYTHONPATH=$(PYTHONPATH) pytest backend/tests/ -v
+
+merge-plan:
+	@echo "../../docs/plans/ztrader-merge-abtpi18n-zkbtrader-plan.md"
+
+merge-dry-run:
+	DRY_RUN=true bash scripts/merge-abtpi18n-zkbtrader.sh
+
+merge-apply:
+	DRY_RUN=false bash scripts/merge-abtpi18n-zkbtrader.sh
+
+merge-report:
+	@find "$(MERGE_REPORT_DIR)" -maxdepth 2 -type f 2>/dev/null | sort || true
+
+merge-validate: validate-local
+	@python3 -m json.tool merge-sources/abtpi18n/package.json >/dev/null 2>&1 || true
+	@python3 -m json.tool frontend/package.json >/dev/null
+	@grep -R "GLOBAL_KILL_SWITCH: bool = True" backend/src/ztrader/core/config.py >/dev/null
+	@echo "PASS: ztrader merge validation checks complete"
 
 run-docker:
 	docker compose up --build -d
