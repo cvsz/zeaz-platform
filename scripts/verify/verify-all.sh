@@ -60,7 +60,7 @@ rows=[]
 for line in open(sys.argv[1]):
     status,name,detail=line.rstrip('\n').split('\t',2)
     rows.append({'status':status,'name':name,'detail':detail})
-out={'generated_at':datetime.datetime.now(datetime.UTC).isoformat(),'summary':{'pass':int(sys.argv[3]),'warn':int(sys.argv[4]),'fail':int(sys.argv[5])},'checks':rows}
+out={'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'summary':{'pass':int(sys.argv[3]),'warn':int(sys.argv[4]),'fail':int(sys.argv[5])},'checks':rows}
 open(sys.argv[2],'w').write(json.dumps(out,indent=2)+'\n')
 PY
 cat "$json"
