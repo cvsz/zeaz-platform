@@ -1,0 +1,52 @@
+$ cd 'apps/web' && pnpm run build
+$ next build --turbopack
+   ▲ Next.js 15.5.18 (Turbopack)
+
+   Creating an optimized production build ...
+ ✓ Finished writing to disk in 131ms
+ ✓ Compiled successfully in 24.2s
+   Linting and checking validity of types ...
+ ⨯ ESLint: nextVitals is not iterable
+   Collecting page data ...
+   Generating static pages (0/26) ...
+   Generating static pages (6/26) 
+   Generating static pages (12/26) 
+   Generating static pages (19/26) 
+ ✓ Generating static pages (26/26)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                         Size  First Load JS
+┌ ○ /                                0 B         119 kB
+├ ○ /_not-found                      0 B         119 kB
+├ ○ /agents                      1.18 kB         129 kB
+├ ○ /auth                        1.28 kB         129 kB
+├ ○ /autonomous-actions              0 B         119 kB
+├ ○ /dashboard                   8.67 kB         136 kB
+├ ○ /deployments                 1.27 kB         129 kB
+├ ○ /edge                        1.25 kB         129 kB
+├ ○ /healing                     1.13 kB         129 kB
+├ ○ /incidents                       0 B         119 kB
+├ ○ /llm-runtime                 3.11 kB         163 kB
+├ ○ /observability               1.13 kB         129 kB
+├ ○ /releases                        0 B         119 kB
+├ ○ /reports                     2.92 kB         131 kB
+├ ○ /risk-analysis                   0 B         119 kB
+├ ○ /risk-center                     0 B         119 kB
+├ ○ /runtime-memory                  0 B         119 kB
+├ ○ /services                    1.39 kB         129 kB
+├ ○ /swarm-runtime               2.01 kB         162 kB
+├ ○ /system-convergence              0 B         119 kB
+├ ○ /terminal                    1.07 kB         129 kB
+├ ○ /trading-dashboard               0 B         119 kB
+└ ○ /vault                       1.09 kB         129 kB
++ First Load JS shared by all     135 kB
+  ├ chunks/0bd4e51802ab9385.js   59.2 kB
+  ├ chunks/8eaaa6792bc64f87.js   22.1 kB
+  ├ chunks/aa9377c5a298bf59.js   17.2 kB
+  ├ chunks/b11c40c237324b02.css  15.9 kB
+  └ other shared chunks (total)  20.2 kB
+
+
+○  (Static)  prerendered as static content
+

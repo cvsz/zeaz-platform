@@ -1,0 +1,183 @@
+$ cd 'apps/zsp-aitool' && npm run build
+
+> zeaz-platform@0.1.0 build
+> NODE_ENV=production next build
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/zeazdev/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /home/zeazdev/zeaz-platform/apps/zsp-aitool/package-lock.json
+
+   ▲ Next.js 15.5.18
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 20.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/101) ...
+   Generating static pages (25/101) 
+   Generating static pages (50/101) 
+   Generating static pages (75/101) 
+ ✓ Generating static pages (101/101)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                              Size  First Load JS
+┌ ○ /                                                                   230 B         106 kB
+├ ○ /_not-found                                                         369 B         103 kB
+├ ƒ /api/admin/analytics                                                369 B         103 kB
+├ ƒ /api/admin/audit-logs                                               369 B         103 kB
+├ ƒ /api/admin/audit-logs/[id]                                          369 B         103 kB
+├ ƒ /api/admin/backend/status                                           369 B         103 kB
+├ ƒ /api/admin/observability/events                                     369 B         103 kB
+├ ƒ /api/admin/observability/summary                                    369 B         103 kB
+├ ƒ /api/admin/overview                                                 369 B         103 kB
+├ ƒ /api/ai/content-queue                                               369 B         103 kB
+├ ƒ /api/ai/content-queue/[id]                                          369 B         103 kB
+├ ƒ /api/ai/content-queue/[id]/cancel                                   369 B         103 kB
+├ ƒ /api/ai/content-queue/[id]/retry                                    369 B         103 kB
+├ ƒ /api/ai/generate                                                    369 B         103 kB
+├ ƒ /api/ai/generate-batch                                              369 B         103 kB
+├ ƒ /api/auth/login                                                     369 B         103 kB
+├ ƒ /api/auth/logout                                                    369 B         103 kB
+├ ƒ /api/auth/me                                                        369 B         103 kB
+├ ƒ /api/auth/register                                                  369 B         103 kB
+├ ƒ /api/content-history                                                369 B         103 kB
+├ ƒ /api/content-history/[id]                                           369 B         103 kB
+├ ƒ /api/dashboard/overview                                             369 B         103 kB
+├ ƒ /api/export/content.csv                                             369 B         103 kB
+├ ƒ /api/export/content.md                                              369 B         103 kB
+├ ƒ /api/export/content/[id].txt                                        369 B         103 kB
+├ ƒ /api/export/products.csv                                            369 B         103 kB
+├ ƒ /api/export/v2/affiliate-links                                      369 B         103 kB
+├ ƒ /api/export/v2/content-history                                      369 B         103 kB
+├ ƒ /api/export/v2/jobs                                                 369 B         103 kB
+├ ƒ /api/export/v2/jobs/[id]                                            369 B         103 kB
+├ ƒ /api/export/v2/jobs/[id]/download                                   369 B         103 kB
+├ ƒ /api/export/v2/products                                             369 B         103 kB
+├ ƒ /api/export/v2/social-drafts                                        369 B         103 kB
+├ ƒ /api/feedback                                                       369 B         103 kB
+├ ƒ /api/hyperframes                                                    369 B         103 kB
+├ ƒ /api/hyperframes/brand-kit                                          369 B         103 kB
+├ ƒ /api/hyperframes/compose                                            369 B         103 kB
+├ ƒ /api/hyperframes/operator/jobs/[id]/cancel                          369 B         103 kB
+├ ƒ /api/hyperframes/operator/jobs/[id]/recover-stale                   369 B         103 kB
+├ ƒ /api/hyperframes/operator/queue                                     369 B         103 kB
+├ ƒ /api/hyperframes/quota                                              369 B         103 kB
+├ ƒ /api/hyperframes/render                                             369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]                                        369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]/cancel                                 369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]/download                               369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]/download-token                         369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]/retry                                  369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]/share                                  369 B         103 kB
+├ ƒ /api/hyperframes/render/[id]/thumbnail                              369 B         103 kB
+├ ƒ /api/hyperframes/render/batch                                       369 B         103 kB
+├ ƒ /api/hyperframes/render/history                                     369 B         103 kB
+├ ƒ /api/hyperframes/render/limits                                      369 B         103 kB
+├ ƒ /api/hyperframes/render/metrics                                     369 B         103 kB
+├ ƒ /api/hyperframes/render/quota                                       369 B         103 kB
+├ ƒ /api/hyperframes/render/share/[token]                               369 B         103 kB
+├ ƒ /api/hyperframes/render/status                                      369 B         103 kB
+├ ƒ /api/hyperframes/script                                             369 B         103 kB
+├ ƒ /api/hyperframes/script-to-composition                              369 B         103 kB
+├ ƒ /api/hyperframes/share/[token]                                      369 B         103 kB
+├ ƒ /api/hyperframes/social-export                                      369 B         103 kB
+├ ƒ /api/hyperframes/variants                                           369 B         103 kB
+├ ƒ /api/imports/csv-products                                           369 B         103 kB
+├ ƒ /api/imports/csv-products/[id]                                      369 B         103 kB
+├ ƒ /api/imports/csv-products/[id]/cancel                               369 B         103 kB
+├ ƒ /api/imports/csv-products/[id]/retry                                369 B         103 kB
+├ ƒ /api/integrations/marqeta/status                                    369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-csv-preview                      369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-ingestions                       369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-ingestions/[id]/approve          369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-ingestions/[id]/import           369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-ingestions/[id]/reject           369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-ingestions/[id]/social-drafts    369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-ingestions/social-drafts/copy    369 B         103 kB
+├ ƒ /api/integrations/shopee/affiliate-manual-import                    369 B         103 kB
+├ ƒ /api/integrations/shopee/social-drafts                              369 B         103 kB
+├ ƒ /api/integrations/shopee/social-drafts/[id]                         369 B         103 kB
+├ ƒ /api/integrations/shopee/social-drafts/[id]/archive                 369 B         103 kB
+├ ƒ /api/integrations/shopee/social-drafts/[id]/copy                    369 B         103 kB
+├ ƒ /api/integrations/shopee/status                                     369 B         103 kB
+├ ƒ /api/ocr/[id]                                                       369 B         103 kB
+├ ƒ /api/ocr/extract                                                    369 B         103 kB
+├ ƒ /api/products                                                       369 B         103 kB
+├ ƒ /api/products/[id]                                                  369 B         103 kB
+├ ƒ /api/products/[id]/affiliate-link                                   369 B         103 kB
+├ ƒ /api/products/[id]/similar                                          369 B         103 kB
+├ ƒ /api/products/[id]/similar-refresh                                  369 B         103 kB
+├ ƒ /api/products/bulk-generate-content                                 369 B         103 kB
+├ ƒ /api/products/deduplication/groups                                  369 B         103 kB
+├ ƒ /api/products/deduplication/groups/[id]/dismiss                     369 B         103 kB
+├ ƒ /api/products/deduplication/groups/[id]/merge                       369 B         103 kB
+├ ƒ /api/products/deduplication/scan                                    369 B         103 kB
+├ ƒ /api/products/extension-import                                      369 B         103 kB
+├ ƒ /api/products/import-json                                           369 B         103 kB
+├ ƒ /api/products/import-url                                            369 B         103 kB
+├ ƒ /api/settings                                                       369 B         103 kB
+├ ƒ /api/templates                                                      369 B         103 kB
+├ ƒ /api/templates/[id]                                                 369 B         103 kB
+├ ƒ /api/templates/[id]/duplicate                                       369 B         103 kB
+├ ƒ /api/templates/restore-defaults                                     369 B         103 kB
+├ ƒ /api/usage/summary                                                  369 B         103 kB
+├ ○ /contact                                                            230 B         106 kB
+├ ○ /dashboard                                                        5.61 kB         111 kB
+├ ƒ /dashboard/admin                                                    230 B         106 kB
+├ ƒ /dashboard/admin/analytics                                          230 B         106 kB
+├ ƒ /dashboard/admin/audit-logs                                         230 B         106 kB
+├ ƒ /dashboard/admin/backend-monitor                                    230 B         106 kB
+├ ƒ /dashboard/admin/content                                            230 B         106 kB
+├ ƒ /dashboard/admin/observability                                      230 B         106 kB
+├ ƒ /dashboard/admin/products                                           230 B         106 kB
+├ ƒ /dashboard/admin/renders                                            230 B         106 kB
+├ ƒ /dashboard/admin/settings                                           230 B         106 kB
+├ ƒ /dashboard/admin/system                                             230 B         106 kB
+├ ƒ /dashboard/admin/users                                              230 B         106 kB
+├ ○ /dashboard/content-history                                        3.39 kB         106 kB
+├ ○ /dashboard/export-center                                            230 B         106 kB
+├ ○ /dashboard/generator                                              19.6 kB         122 kB
+├ ○ /dashboard/hyperframes                                            5.91 kB         130 kB
+├ ○ /dashboard/hyperframes/batch                                       2.6 kB         108 kB
+├ ○ /dashboard/hyperframes/ops                                        2.49 kB         108 kB
+├ ○ /dashboard/hyperframes/ops/queue                                  2.03 kB         108 kB
+├ ○ /dashboard/hyperframes/renders                                    4.18 kB         112 kB
+├ ○ /dashboard/ocr                                                    1.69 kB         104 kB
+├ ƒ /dashboard/products                                                 175 B         111 kB
+├ ƒ /dashboard/products/[id]                                            230 B         106 kB
+├ ƒ /dashboard/products/[id]/similar                                    369 B         103 kB
+├ ƒ /dashboard/products/deduplication                                   913 B         103 kB
+├ ○ /dashboard/products/new                                           2.78 kB         105 kB
+├ ○ /dashboard/settings                                               3.35 kB         106 kB
+├ ○ /dashboard/settings/billing                                         230 B         106 kB
+├ ○ /dashboard/shopee-affiliate                                       20.6 kB         126 kB
+├ ○ /dashboard/similar                                                2.28 kB         105 kB
+├ ○ /dashboard/templates                                              4.91 kB         120 kB
+├ ○ /docs                                                               230 B         106 kB
+├ ○ /login                                                              777 B         103 kB
+├ ○ /register                                                           818 B         103 kB
+├ ○ /release                                                            230 B         106 kB
+├ ○ /security                                                           230 B         106 kB
+├ ○ /status                                                             230 B         106 kB
+├ ○ /www                                                                230 B         106 kB
+└ ○ /zdash                                                              230 B         106 kB
++ First Load JS shared by all                                          102 kB
+  ├ chunks/1255-b28ea36bf0cdbd65.js                                   46.2 kB
+  ├ chunks/4bd1b696-f785427dddbba9fb.js                               54.2 kB
+  └ other shared chunks (total)                                       1.93 kB
+
+Route (pages)                                                            Size  First Load JS
+─ ○ /404 (1330 ms)                                                      484 B        83.4 kB
++ First Load JS shared by all                                         82.9 kB
+  ├ chunks/framework-f31701c9d93f12a4.js                              44.8 kB
+  ├ chunks/main-6f797f1073f75477.js                                   36.2 kB
+  └ other shared chunks (total)                                        1.9 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
