@@ -270,3 +270,11 @@ reports/cvsz-apps-merge/backups/
 
 # Local AI tooling env scripts
 claude_code_zai_env.sh
+
+# Local ops backups / generated secrets
+.ops/backups/
+.cache/
+**/node_modules/
+**/.venv/
+apps/zsticker/client_secret.json
+apps/zsticker/credentials.json
