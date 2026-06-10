@@ -1,0 +1,6 @@
+rg: apps/ztrader: No such file or directory (os error 2)
+docs/zdash/zdash-integration-plan.md:23:- `cvsz/zkbtrader`, `cvsz/livescan` — trading/live scan candidates.
+docs/zdash/zdash-integration-plan.md:49:| P0 | Trading | `cvsz/zkbtrader`, `cvsz/livescan` | XAU Live Scanner, AutoTrading, Backtesting |
+docs/zdash/zdash-api-contract.md:53:| `trading` | `cvsz/zkbtrader`, `cvsz/livescan` | `api-adapter-first` |
+docs/architecture/dns.md:20:- zkbtrader.zeaz.dev
+docs/architecture/dns.md:23:- `zkbtrader.zeaz.dev` routes through Cloudflare Tunnel to the local ZKBTrader API on port `8004`.
