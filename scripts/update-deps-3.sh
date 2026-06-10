@@ -5,7 +5,7 @@ export CI=true
 cd /home/zeazdev/zeaz-platform
 
 echo "Updating twig/twig in phpMyAdmin..."
-cd apps/zlms-prod/app/phpMyAdmin
+cd apps/zlms/app/phpMyAdmin
 composer update twig/twig || true
 cd ../../../..
 

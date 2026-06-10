@@ -9,9 +9,9 @@ import secrets
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 
-from ztrader.abt.auth.google_provider import GoogleOAuthProvider
-from ztrader.abt.auth.oauth_service import OAuthService
-from ztrader.abt.utils.auth import create_session_response
+from src.auth.google_provider import GoogleOAuthProvider
+from src.auth.oauth_service import OAuthService
+from src.utils.auth import create_session_response
 
 router = APIRouter()
 oauth_service = OAuthService()

@@ -1,5 +1,5 @@
-from ztrader.zkb.zkbtrader.backtest import BacktestEngine
-from ztrader.zkb.zkbtrader.strategy import Candle, MovingAverageCrossoverStrategy
+from zkbtrader.backtest import BacktestEngine
+from zkbtrader.strategy import Candle, MovingAverageCrossoverStrategy
 
 
 def test_backtest_engine_runs_deterministically() -> None:

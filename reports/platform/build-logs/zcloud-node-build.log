@@ -1,6 +1,6 @@
 $ cd 'apps/zcloud' && npm run build
 
-> zcloud@0.1.0 build
+> @zeaz/zcloud@1.0.0 build
 > next build
 
  ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
@@ -13,7 +13,7 @@ $ cd 'apps/zcloud' && npm run build
    ▲ Next.js 15.5.18
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 7.0s
+ ✓ Compiled successfully in 6.3s
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/6) ...

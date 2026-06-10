@@ -9,7 +9,7 @@ from typing import Any, Dict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import NotificationPreference, TelegramLink
+from src.models import NotificationPreference, TelegramLink
 
 from .telegram_service import TelegramService
 

@@ -6,10 +6,10 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 import ccxt.pro as ccxtpro
-from ztrader.abt.binance_perp_bot.config import BotConfig
-from ztrader.abt.binance_perp_bot.data_buffer import MarketDataBuffer
-from ztrader.abt.binance_perp_bot.models import MarketSnapshot, PositionIntent
-from ztrader.abt.binance_perp_bot.runtime import BotRuntimeState
+from binance_perp_bot.config import BotConfig
+from binance_perp_bot.data_buffer import MarketDataBuffer
+from binance_perp_bot.models import MarketSnapshot, PositionIntent
+from binance_perp_bot.runtime import BotRuntimeState
 from prometheus_client import Counter, Gauge
 
 SnapshotHandler = Callable[[MarketSnapshot], Awaitable[None]]

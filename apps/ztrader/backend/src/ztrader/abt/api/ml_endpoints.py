@@ -8,8 +8,8 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from ztrader.abt.utils.dependencies import get_optional_user_id
-from ztrader.abt.utils.exceptions import handle_service_error, raise_bad_request
+from src.utils.dependencies import get_optional_user_id
+from src.utils.exceptions import handle_service_error, raise_bad_request
 
 router = APIRouter(prefix="/ml", tags=["ML"])
 

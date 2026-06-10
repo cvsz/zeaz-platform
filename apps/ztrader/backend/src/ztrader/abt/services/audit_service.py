@@ -13,7 +13,7 @@ from sqlalchemy import select, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ztrader.abt.models import AuditLog
+from src.models import AuditLog
 
 # Sensitive fields to sanitize from logs
 SENSITIVE_FIELDS = os.getenv(

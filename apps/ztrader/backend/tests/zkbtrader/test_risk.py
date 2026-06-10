@@ -1,5 +1,5 @@
-from ztrader.zkb.zkbtrader.models import IntentSide, RiskDecisionStatus, StrategyIntent
-from ztrader.zkb.zkbtrader.risk import RiskEngine, RiskLimits
+from zkbtrader.models import IntentSide, RiskDecisionStatus, StrategyIntent
+from zkbtrader.risk import RiskEngine, RiskLimits
 
 
 def test_kill_switch_denies_intent() -> None:

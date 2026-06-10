@@ -110,14 +110,27 @@ merge-dry-run:
 merge-apply:
 	DRY_RUN=false bash scripts/merge-abtpi18n-zkbtrader.sh
 
-merge-report:
-	@find "$(MERGE_REPORT_DIR)" -maxdepth 2 -type f 2>/dev/null | sort || true
-
 merge-validate: validate-local
-	@python3 -m json.tool merge-sources/abtpi18n/package.json >/dev/null 2>&1 || true
-	@python3 -m json.tool frontend/package.json >/dev/null
+	@echo "Validating Python compilation..."
+	python3 -m compileall backend/src/ztrader
+	@echo "Validating Frontend JSON..."
+	jq . frontend/package.json > /dev/null
+	@echo "Checking merged sources metadata..."
+	@ls merge-sources/abtpi18n/package.json >/dev/null
+	@ls merge-sources/zkbtrader/pyproject.toml >/dev/null
 	@grep -R "GLOBAL_KILL_SWITCH: bool = True" backend/src/ztrader/core/config.py >/dev/null
-	@echo "PASS: ztrader merge validation checks complete"
+	@echo "Validation Passed."
+
+merge-report:
+	@mkdir -p reports/merge
+	@echo "# zTrader Merge Report" > reports/merge/summary.md
+	@echo "Generated: $$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> reports/merge/summary.md
+	@echo "Status: COMPLETED" >> reports/merge/summary.md
+	@echo "Source Apps: ABTPi18n, zkbtrader" >> reports/merge/summary.md
+	@echo "Target App: ztrader" >> reports/merge/summary.md
+	@echo "Report saved to reports/merge/summary.md"
+	@echo "Report Files:"
+	@find reports/merge -maxdepth 2 -type f 2>/dev/null | sort || true
 
 run-docker:
 	docker compose up --build -d
@@ -135,30 +148,3 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-
-merge-plan:
-	@DRY_RUN=true bash scripts/merge-abtpi18n-zkbtrader.sh
-
-merge-dry-run: merge-plan
-
-merge-apply:
-	@DRY_RUN=false bash scripts/merge-abtpi18n-zkbtrader.sh
-
-merge-validate:
-	@echo "Validating Python compilation..."
-	python3 -m compileall backend/src/ztrader
-	@echo "Validating Frontend JSON..."
-	jq . frontend/package.json > /dev/null
-	@echo "Checking merged sources metadata..."
-	ls merge-sources/abtpi18n-package.json
-	ls merge-sources/zkbtrader-package.json
-	@echo "Validation Passed."
-
-merge-report:
-	@mkdir -p reports/merge
-	@echo "# zTrader Merge Report" > reports/merge/summary.md
-	@echo "Generated: $$(date)" >> reports/merge/summary.md
-	@echo "Status: COMPLETED" >> reports/merge/summary.md
-	@echo "Source Apps: ABTPi18n, zkbtrader" >> reports/merge/summary.md
-	@echo "Target App: ztrader" >> reports/merge/summary.md
-	@echo "Report saved to reports/merge/summary.md"

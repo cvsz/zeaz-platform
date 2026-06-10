@@ -13,7 +13,7 @@ import numpy as np
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import BacktestRun, PaperTradingSession
+from src.models import BacktestRun, PaperTradingSession
 
 logger = logging.getLogger(__name__)
 

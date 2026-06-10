@@ -16,7 +16,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ztrader.abt.models import Plugin, UserPlugin
+from src.models import Plugin, UserPlugin
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ from collections.abc import Iterable, Sequence
 from typing import Deque
 
 import numpy as np
-from ztrader.abt.binance_perp_bot.models import Position
+from binance_perp_bot.models import Position
 
 
 class RiskEngine:

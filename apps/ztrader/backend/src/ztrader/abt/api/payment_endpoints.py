@@ -9,9 +9,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Header
 from pydantic import BaseModel
 
-from ztrader.abt.services.promptpay_service import PromptPayService
-from ztrader.abt.utils.dependencies import get_current_user_id
-from ztrader.abt.utils.exceptions import handle_service_error
+from src.services.promptpay_service import PromptPayService
+from src.utils.dependencies import get_current_user_id
+from src.utils.exceptions import handle_service_error
 
 router = APIRouter()
 promptpay_service = PromptPayService()

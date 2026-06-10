@@ -16,7 +16,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ztrader.abt.utils.database import Base
+from src.utils.database import Base
 
 
 class User(Base):
@@ -222,7 +222,7 @@ class Transaction(Base):
     status: Mapped[str] = mapped_column(String, default="PENDING")
     paymentMethod: Mapped[Optional[str]] = mapped_column(String)
     referenceId: Mapped[Optional[str]] = mapped_column(String, unique=True)
-    extra_metadata: Mapped[Optional[str]] = mapped_column(Text)
+    metadata: Mapped[Optional[str]] = mapped_column(Text)
     createdAt: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     completedAt: Mapped[Optional[datetime]] = mapped_column(DateTime)
 
@@ -342,7 +342,7 @@ class AuditLog(Base):
     ipAddress: Mapped[Optional[str]] = mapped_column(String)
     userAgent: Mapped[Optional[str]] = mapped_column(String)
     requestData: Mapped[Optional[str]] = mapped_column(Text)
-    extra_metadata: Mapped[Optional[str]] = mapped_column(Text)
+    metadata: Mapped[Optional[str]] = mapped_column(Text)
     createdAt: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     user: Mapped[Optional["User"]] = relationship(back_populates="auditLogs")
@@ -359,7 +359,7 @@ class SecretRotation(Base):
     previousHash: Mapped[Optional[str]] = mapped_column(String)
     nextRotation: Mapped[datetime] = mapped_column(DateTime)
     status: Mapped[str] = mapped_column(String, default="ACTIVE")
-    extra_metadata: Mapped[Optional[str]] = mapped_column(Text)
+    metadata: Mapped[Optional[str]] = mapped_column(Text)
 
     user: Mapped[Optional["User"]] = relationship(back_populates="secretRotations")
 

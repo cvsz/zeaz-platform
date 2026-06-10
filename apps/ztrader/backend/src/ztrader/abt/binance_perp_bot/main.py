@@ -6,18 +6,18 @@ import logging
 import signal
 from typing import Awaitable, Callable
 
-from ztrader.abt.binance_perp_bot.config import AllocationConfig, BotConfig
-from ztrader.abt.binance_perp_bot.db.timescale import TimescaleJournal
-from ztrader.abt.binance_perp_bot.execution.engine import ExecutionEngine
-from ztrader.abt.binance_perp_bot.execution.exchange import BinancePerpStream
-from ztrader.abt.binance_perp_bot.health import HealthServer
-from ztrader.abt.binance_perp_bot.ml.gate import XGBoostTradeGate
-from ztrader.abt.binance_perp_bot.ml.regime import ADXRegimeDetector
-from ztrader.abt.binance_perp_bot.models import MarketSnapshot
-from ztrader.abt.binance_perp_bot.risk.position_manager import PositionManager
-from ztrader.abt.binance_perp_bot.runtime import BotRuntimeState
-from ztrader.abt.binance_perp_bot.strategies.factory import StrategyFactory
-from ztrader.abt.binance_perp_bot.utils.logging import configure_json_logging
+from binance_perp_bot.config import AllocationConfig, BotConfig
+from binance_perp_bot.db.timescale import TimescaleJournal
+from binance_perp_bot.execution.engine import ExecutionEngine
+from binance_perp_bot.execution.exchange import BinancePerpStream
+from binance_perp_bot.health import HealthServer
+from binance_perp_bot.ml.gate import XGBoostTradeGate
+from binance_perp_bot.ml.regime import ADXRegimeDetector
+from binance_perp_bot.models import MarketSnapshot
+from binance_perp_bot.risk.position_manager import PositionManager
+from binance_perp_bot.runtime import BotRuntimeState
+from binance_perp_bot.strategies.factory import StrategyFactory
+from binance_perp_bot.utils.logging import configure_json_logging
 
 
 class SnapshotDispatcher:

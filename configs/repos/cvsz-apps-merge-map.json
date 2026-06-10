@@ -66,9 +66,9 @@
       ]
     },
     {
-      "app_id": "zlms-prod",
-      "repo": "git@github.com:cvsz/zlms-prod.git",
-      "target_path": "apps/zlms-prod",
+      "app_id": "zlms",
+      "repo": "git@github.com:cvsz/zlms.git",
+      "target_path": "apps/zlms",
       "mode": "adopt-local",
       "priority": "P2"
     },

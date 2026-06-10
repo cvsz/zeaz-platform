@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import psycopg2
-from ztrader.abt.binance_perp_bot.models import MarketSnapshot, TradeSignal
+from binance_perp_bot.models import MarketSnapshot, TradeSignal
 from psycopg2 import errors
 from psycopg2.extras import Json
 

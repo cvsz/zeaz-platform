@@ -19,7 +19,7 @@ The repository hosts several major independent products and services:
     *   `zsp-aitool`: Next.js & Prisma based AI tool management.
     *   `zoffice`: Complex environment management (features Kasm browser integrations and multiple bot scripts).
 *   **Content & LMS**:
-    *   `zlms-prod`: Next.js Learning Management System with strict TypeScript configurations.
+    *   `zlms`: Next.js Learning Management System with strict TypeScript configurations.
     *   `zAcademy`: Monorepo (Turborepo) for academy infrastructure.
 *   **Microservices & Utilities**:
     *   `zcino`: High-performance Go-based API backend (`main.go`, `go.mod`).
@@ -57,7 +57,7 @@ Because reviewing the entire codebase in one pass is impossible to do thoroughly
 1.  **Security & Infrastructure Audit**: 
     *   Review Cloudflare Terraform configurations, WAF rules, and Access Policies.
 2.  **App-Specific Code Review**: 
-    *   Choose a specific app (e.g., `apps/zwallet`, `apps/zcino`, or `apps/zlms-prod`) and I will run specialized code reviewers for its language (Go, Python, TypeScript).
+    *   Choose a specific app (e.g., `apps/zwallet`, `apps/zcino`, or `apps/zlms`) and I will run specialized code reviewers for its language (Go, Python, TypeScript).
 3.  **Run Automated Harness Audit**:
     *   Type `/harness-audit` in the chat to run the deterministic repository harness audit and get a prioritized scorecard.
 4.  **Run Quality Gates**:

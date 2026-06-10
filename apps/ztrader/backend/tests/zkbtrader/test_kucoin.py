@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 import httpx
 import pytest
 
-from ztrader.zkb.zkbtrader.adapters.kucoin import InvalidMarketDataResponse, KucoinReadOnlyAdapter
+from zkbtrader.adapters.kucoin import InvalidMarketDataResponse, KucoinReadOnlyAdapter
 
 
 @contextmanager

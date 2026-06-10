@@ -8,7 +8,7 @@ import numpy as np
 
 
 class FeatureExtractor:
-    """Extract features from ztrader.abt.trading signals for ML models."""
+    """Extract features from trading signals for ML models."""
 
     def extract_signal_features(
         self, signal: Dict[str, Any], market_data: Dict[str, Any] = None

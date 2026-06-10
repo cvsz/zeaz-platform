@@ -12,8 +12,8 @@ import redis
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import func, select, text
 
-from ztrader.abt.models import User
-from ztrader.abt.utils.database import get_db_connection, time_database_operation
+from src.models import User
+from src.utils.database import get_db_connection, time_database_operation
 
 router = APIRouter()
 

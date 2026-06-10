@@ -10,8 +10,8 @@ import ccxt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import ExchangeKey
-from ztrader.abt.security.crypto_service import decrypt_data
+from src.models import ExchangeKey
+from src.security.crypto_service import decrypt_data
 
 
 class ExchangeConnector:

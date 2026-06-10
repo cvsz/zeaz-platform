@@ -190,9 +190,9 @@
       "api_gateway_prefix": "/v1/zwallet"
     },
     {
-      "app_id": "zlms-prod",
+      "app_id": "zlms",
       "role": "app",
-      "path": "apps/zlms-prod",
+      "path": "apps/zlms",
       "hostname": "zlms.zeaz.dev",
       "port": 8012,
       "origin": "http://127.0.0.1:8012",

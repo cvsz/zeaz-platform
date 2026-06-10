@@ -17,7 +17,7 @@ import qrcode
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import Transaction, Wallet
+from src.models import Transaction, Wallet
 
 
 class PromptPayService:

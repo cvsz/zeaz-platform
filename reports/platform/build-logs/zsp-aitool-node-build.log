@@ -14,7 +14,7 @@ $ cd 'apps/zsp-aitool' && npm run build
    - Environments: .env
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 20.0s
+ ✓ Compiled successfully in 19.7s
    Linting and checking validity of types ...
    Collecting page data ...
    Generating static pages (0/101) ...
@@ -172,7 +172,7 @@ Route (app)                                                              Size  F
   └ other shared chunks (total)                                       1.93 kB
 
 Route (pages)                                                            Size  First Load JS
-─ ○ /404 (1330 ms)                                                      484 B        83.4 kB
+─ ○ /404 (947 ms)                                                       484 B        83.4 kB
 + First Load JS shared by all                                         82.9 kB
   ├ chunks/framework-f31701c9d93f12a4.js                              44.8 kB
   ├ chunks/main-6f797f1073f75477.js                                   36.2 kB

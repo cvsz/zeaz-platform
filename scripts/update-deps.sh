@@ -23,7 +23,7 @@ pnpm update --ignore-scripts postcss --latest || true
 cd ../..
 
 echo "Updating phpMyAdmin..."
-cd apps/zlms-prod/app/phpMyAdmin
+cd apps/zlms/app/phpMyAdmin
 composer update twig/twig --no-interaction || true
 cd ../../../..
 

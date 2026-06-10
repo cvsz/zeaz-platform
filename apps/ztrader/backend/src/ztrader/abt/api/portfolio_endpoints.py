@@ -9,9 +9,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from ztrader.abt.services.portfolio_service import PortfolioService
-from ztrader.abt.utils.dependencies import get_current_user_id
-from ztrader.abt.utils.exceptions import handle_service_error
+from src.services.portfolio_service import PortfolioService
+from src.utils.dependencies import get_current_user_id
+from src.utils.exceptions import handle_service_error
 
 router = APIRouter()
 portfolio_service = PortfolioService()

@@ -13,7 +13,7 @@ from google.oauth2 import id_token
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import User, UserPreference, NotificationPreference
+from src.models import User, UserPreference, NotificationPreference
 
 
 class OAuthService:

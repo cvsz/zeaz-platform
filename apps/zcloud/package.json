@@ -1,11 +1,15 @@
 {
-  "name": "zcloud",
+  "name": "@zeaz/zcloud",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.1.0",
+  "description": "Zeaz CloudPanel operations cockpit generated from CloudPanel v2 documentation research.",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3004",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3004",
+    "start:static": "python3 -m http.server 4177 --directory .",
+    "validate": "node scripts/validate-zcloud.mjs",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -22,5 +26,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.18",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
+

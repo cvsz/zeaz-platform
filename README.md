@@ -28,7 +28,7 @@ The repository contains app stacks under `apps/`, shared platform configs under 
 | zdash | `apps/zdash` | FastAPI + React/Vite + Docker | Safety-first AI ops and trading dashboard | Updated app README |
 | zkbtrader | `apps/zkbtrader` | Python + Node harness | Crypto research / paper trading | Updated app README |
 | zLinebot | `apps/zLinebot` | Node/Python/Docker mixed stack | LINE bot automation platform | README generated if missing |
-| zlms-prod | `apps/zlms-prod` | ASP.NET legacy + Next/security modernization assets | LMS production migration stack | Updated app README |
+| zlms | `apps/zlms` | ASP.NET legacy + Next/security modernization assets | LMS production migration stack | Updated app README |
 | zoffice | `apps/zoffice` | Python static server + OpenClaw/Hermes adapters | AI office dashboard | Updated app README |
 | zsp-aitool | `apps/zsp-aitool` | Next.js + Prisma + Vitest | AI tool SaaS / dashboard app | README generated if missing |
 | zsticker | `apps/zsticker` | Python automation | LINE sticker/image automation | Updated app README |
@@ -88,7 +88,7 @@ apps/zcino/README.md
 apps/zdash/README.md
 apps/zkbtrader/README.md
 apps/zLinebot/README.md
-apps/zlms-prod/README.md
+apps/zlms/README.md
 apps/zoffice/README.md
 apps/zsp-aitool/README.md
 apps/zsticker/README.md

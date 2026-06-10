@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import TradeLog
+from src.models import TradeLog
 
 
 class MaxDrawdownTracker:

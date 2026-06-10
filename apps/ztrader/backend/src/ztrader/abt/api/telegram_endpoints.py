@@ -9,9 +9,9 @@ from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ztrader.abt.services.notification_service import NotificationService
-from ztrader.abt.services.telegram_service import TelegramService
-from ztrader.abt.utils.exceptions import raise_bad_request
+from src.services.notification_service import NotificationService
+from src.services.telegram_service import TelegramService
+from src.utils.exceptions import raise_bad_request
 
 router = APIRouter()
 telegram_service = TelegramService()

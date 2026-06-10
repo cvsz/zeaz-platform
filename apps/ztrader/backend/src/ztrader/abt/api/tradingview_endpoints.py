@@ -14,8 +14,8 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from ztrader.abt.models import TradingViewAlert
-from ztrader.abt.utils.database import get_db_connection
+from src.models import TradingViewAlert
+from src.utils.database import get_db_connection
 
 logger = getLogger(__name__)
 

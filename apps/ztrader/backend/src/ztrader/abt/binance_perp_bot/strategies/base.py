@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from ztrader.abt.binance_perp_bot.models import (
+from binance_perp_bot.models import (
     MarketSnapshot,
     RegimeMode,
     StrategyKind,

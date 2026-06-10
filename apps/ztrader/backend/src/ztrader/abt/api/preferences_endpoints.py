@@ -10,8 +10,8 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy import select
 
-from ztrader.abt.models import NotificationPreference, UserPreference
-from ztrader.abt.utils.database import get_db_connection
+from src.models import NotificationPreference, UserPreference
+from src.utils.database import get_db_connection
 
 router = APIRouter()
 

@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ztrader.abt.tools.metaultra.example_module import ExampleStrategy  # noqa: E402
+from tools.metaultra.example_module import ExampleStrategy  # noqa: E402
 
 
 def test_example_strategy_signals():

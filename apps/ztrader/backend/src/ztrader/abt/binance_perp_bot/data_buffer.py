@@ -4,7 +4,7 @@ import asyncio
 from collections import OrderedDict
 from dataclasses import dataclass
 
-from ztrader.abt.binance_perp_bot.models import MarketSnapshot
+from binance_perp_bot.models import MarketSnapshot
 
 
 @dataclass(frozen=True)

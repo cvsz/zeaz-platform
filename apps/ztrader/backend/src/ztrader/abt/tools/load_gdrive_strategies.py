@@ -12,7 +12,7 @@ from pathlib import Path
 # Add backend to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent / "apps" / "backend"))
 
-from ztrader.abt.services.gdrive_loader import (
+from src.services.gdrive_loader import (
     GoogleDriveLoader,
 )
 

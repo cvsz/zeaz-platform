@@ -3,7 +3,7 @@ from __future__ import annotations
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from ztrader.zkb.zkbtrader.models import ExecutionMode
+from zkbtrader.models import ExecutionMode
 
 
 class Settings(BaseSettings):

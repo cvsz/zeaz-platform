@@ -20,9 +20,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
-from ztrader.zkb.zkbtrader.audit import AuditEvent
-from ztrader.zkb.zkbtrader.config import get_settings
-from ztrader.zkb.zkbtrader.models import IntentSide, PaperOrder
+from zkbtrader.audit import AuditEvent
+from zkbtrader.config import get_settings
+from zkbtrader.models import IntentSide, PaperOrder
 
 
 class Base(DeclarativeBase):
