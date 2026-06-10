@@ -713,7 +713,7 @@ phase59-validate: apps-routing-generate tf-cloudflare-apps-fmt tf-cloudflare-app
 # Phase 60 — apps stack deep dive and port refactor
 # =============================================================================
 
-.PHONY: apps-stack-deep-dive apps-port-refactor-generate apps-port-refactor-report apps-port-origin-check tf-cloudflare-apps-init tf-cloudflare-apps-fmt tf-cloudflare-apps-validate tf-cloudflare-apps-plan phase60-validate
+.PHONY: apps-stack-deep-dive apps-port-refactor-generate apps-port-refactor-report apps-port-origin-check tf-cloudflare-apps-init tf-cloudflare-apps-fmt tf-cloudflare-apps-validate tf-cloudflare-apps-plan tf-cloudflare-apps-apply apply-port-plan add-route phase60-validate
 apps-stack-deep-dive: ## Deep-dive all stacks under apps/*
 	@$(PYTHON) scripts/platform/deep-dive-apps-stack.py
 
@@ -726,6 +726,13 @@ apps-port-refactor-report: apps-stack-deep-dive apps-port-refactor-generate ## P
 apps-port-origin-check: apps-port-refactor-generate ## Check active local origins
 	@bash scripts/platform/check-port-origins.sh
 
+add-route: ## Register new domain/subdomain (Usage: make add-route HOSTNAME=test.zeaz.dev PORT=3005 APP_ID=test [ROLE=ui] or run interactive: make add-route)
+	@$(PYTHON) scripts/platform/add-route.py \
+		$(if $(APP_ID),--app-id "$(APP_ID)",) \
+		$(if $(HOSTNAME),--hostname "$(HOSTNAME)",) \
+		$(if $(PORT),--port "$(PORT)",) \
+		$(if $(ROLE),--role "$(ROLE)",)
+
 tf-cloudflare-apps-init: ## Init Cloudflare apps Terraform
 	@cd terraform/cloudflare-apps && terraform init
 
@@ -737,7 +744,15 @@ tf-cloudflare-apps-validate: apps-port-refactor-generate tf-cloudflare-apps-init
 
 tf-cloudflare-apps-plan: apps-port-refactor-generate tf-cloudflare-apps-init ## Plan Cloudflare apps Terraform
 	@bash scripts/cloudflare/zdash-terraform-env-guard.sh
-	@cd terraform/cloudflare-apps && terraform plan
+	@export $$(grep -v '^#' .env.cloudflare | xargs) && cd terraform/cloudflare-apps && terraform plan
+
+tf-cloudflare-apps-apply: apps-port-refactor-generate tf-cloudflare-apps-init ## Apply Cloudflare apps Terraform
+	@test "$${APPLY:-false}" = "true" || (echo "ERROR: APPLY=true required"; exit 1)
+	@test "$${CONFIRM_TERRAFORM_APPLY:-no}" = "yes" || (echo "ERROR: CONFIRM_TERRAFORM_APPLY=yes required"; exit 1)
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh
+	@export $$(grep -v '^#' .env.cloudflare | xargs) && cd terraform/cloudflare-apps && terraform apply -auto-approve
+
+apply-port-plan: tf-cloudflare-apps-apply ## Generate port refactor assets and apply to Cloudflare
 
 phase60-validate: apps-stack-deep-dive apps-port-refactor-generate tf-cloudflare-apps-fmt tf-cloudflare-apps-validate
 	@git diff --check

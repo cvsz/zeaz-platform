@@ -60,6 +60,14 @@
       "type": "CNAME",
       "proxied": true,
       "ttl": "auto"
+    },
+    {
+      "name": "zcloud.zeaz.dev",
+      "purpose": "zCloud automated fallback controller UI",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
     }
   ],
   "rollback": {

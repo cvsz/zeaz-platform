@@ -29,4 +29,14 @@ ingress:
     service: http://127.0.0.1:9292
   - hostname: zoffice.zeaz.dev
     service: http://127.0.0.1:8091
+  - hostname: zcloud.zeaz.dev
+    service: http://127.0.0.1:3004
+  - hostname: ztest.zeaz.dev
+    service: http://127.0.0.1:3008
+  - hostname: zcfdash.zeaz.dev
+    service: http://127.0.0.1:3003
+  - hostname: api-zcfdash.zeaz.dev
+    service: http://127.0.0.1:8088
+  - hostname: api-ztrader.zeaz.dev
+    service: http://127.0.0.1:8016
   - service: http_status:404
