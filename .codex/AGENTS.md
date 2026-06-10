@@ -12,12 +12,17 @@ This supplements the root `AGENTS.md` with a repo-local ECC baseline.
 
 Treat `.codex/config.toml` as the default ECC-safe baseline for work in this repository.
 The generated baseline enables GitHub, Context7, Exa, Memory, Playwright, and Sequential Thinking.
+Use `scripts/sync-ecc-to-codex.sh` to merge the full ECC-managed MCP set, including optional Supabase, into `~/.codex/config.toml` without committing user-specific project refs or credentials.
+Use `scripts/sync-codex-agents-skills.sh --apply` when the user asks to install all repo ECC agents and skills into the user-level Codex surfaces.
 
 ## Multi-Agent Support
 
 - Explorer: read-only evidence gathering
 - Reviewer: correctness, security, and regression review
 - Docs researcher: API and release-note verification
+- Phase planner: phase-scoped Cloudflare platform delivery planning
+- Security guardian: secrets, access policy, and guarded automation review
+- Validation operator: offline validation mapping without infrastructure mutation
 
 ## Workflow Files
 
