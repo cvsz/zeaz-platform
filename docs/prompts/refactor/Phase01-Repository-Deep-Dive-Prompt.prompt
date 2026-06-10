@@ -1,0 +1,46 @@
+Deep dive the ZEAZ Platform repository.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Tasks:
+1. Inspect full tree structure.
+2. Identify all apps under:
+   /home/zeazdev/zeaz-platform/apps
+3. Detect frameworks:
+   - Next.js
+   - Vite
+   - React
+   - Node.js API
+   - Express
+   - Fastify
+   - NestJS
+   - Python/FastAPI
+   - Docker Compose services
+   - Cloudflare workers/pages/tunnels
+4. Read:
+   - package.json files
+   - docker-compose files
+   - .env.example files
+   - Cloudflare configs
+   - nginx configs
+   - start scripts
+   - README files
+   - deployment scripts
+5. Build an inventory table:
+   - app name
+   - path
+   - framework
+   - start command
+   - build command
+   - port
+   - domain
+   - env file
+   - database usage
+   - Docker service name
+   - health endpoint if available
+6. Do not change files yet.
+7. Output a full audit report before modifications.
+
+Expected output:
+  docs/reports/ZEAZ_PLATFORM_DEEP_DIVE_REPORT.md

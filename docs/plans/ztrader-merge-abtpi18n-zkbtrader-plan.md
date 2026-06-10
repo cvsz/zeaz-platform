@@ -147,13 +147,14 @@ Suggested target mapping:
 | Source | Target |
 |---|---|
 | `apps/ABTPi18n/configs/` | `apps/ztrader/config/abtpi18n/` |
-| `apps/ABTPi18n/core/` | `apps/ztrader/backend/ztrader/abt/core/` |
-| `apps/ABTPi18n/strategies/` | `apps/ztrader/backend/ztrader/strategies/abtpi18n/` |
-| `apps/ABTPi18n/monitoring/` | `apps/ztrader/backend/ztrader/monitoring/abtpi18n/` |
+| `apps/ABTPi18n/core/` | `apps/ztrader/backend/src/ztrader/abt/core/` |
+| `apps/ABTPi18n/strategies/` | `apps/ztrader/backend/src/ztrader/strategies/abtpi18n/` |
+| `apps/ABTPi18n/monitoring/` | `apps/ztrader/backend/src/ztrader/monitoring/abtpi18n/` |
 | `apps/ABTPi18n/scripts/` | `apps/ztrader/scripts/abtpi18n/` |
-| `apps/ABTPi18n/tests/` | `apps/ztrader/backend/tests/abtpi18n/` or `apps/ztrader/tests/abtpi18n/` |
+| `apps/ABTPi18n/tests/` | `apps/ztrader/backend/tests/abtpi18n/` |
+| `apps/ABTPi18n/tools/` | `apps/ztrader/backend/src/ztrader/abt/tools/` |
+| `apps/ABTPi18n/apps/backend/src/` | `apps/ztrader/backend/src/ztrader/abt/` |
 | `apps/ABTPi18n/apps/frontend` if present | `apps/ztrader/frontend/` merge manually |
-| `apps/ABTPi18n/apps/backend` if present | `apps/ztrader/backend/` merge manually |
 
 Gate:
 
@@ -170,14 +171,12 @@ Suggested target mapping:
 
 | Source | Target |
 |---|---|
-| `apps/zkbtrader/src/` | `apps/ztrader/backend/ztrader/zkb/` |
+| `apps/zkbtrader/src/` | `apps/ztrader/backend/src/ztrader/zkb/` |
 | `apps/zkbtrader/harness/` | `apps/ztrader/harness/zkbtrader/` |
-| `apps/zkbtrader/tests/` | `apps/ztrader/backend/tests/zkbtrader/` or `apps/ztrader/tests/zkbtrader/` |
-| `apps/zkbtrader/alembic/` | merge into `apps/ztrader/backend/alembic/` after revision review |
+| `apps/zkbtrader/tests/` | `apps/ztrader/backend/tests/zkbtrader/` |
+| `apps/zkbtrader/alembic/` | `apps/ztrader/backend/alembic/zkbtrader_source/` |
 | `apps/zkbtrader/reports/` | `apps/ztrader/reports/zkbtrader/` |
 | `apps/zkbtrader/scripts/` | `apps/ztrader/scripts/zkbtrader/` |
-| `apps/zkbtrader/Dockerfile.api` | compare with `apps/ztrader/backend/Dockerfile`; merge only missing hardening |
-| `apps/zkbtrader/Dockerfile.worker` | compare with zTrader worker image path; merge only missing hardening |
 
 Gate:
 

@@ -1,78 +1,17 @@
 # zeaz-platform repository deep-dive report
 
-Generated: 2026-06-07T02:06:16Z
+Generated: 2026-06-07T03:31:58Z
 
 ## Git
 
 ```text
 ## main...origin/main
+ M Makefile
+ m apps/zsp-aitool
+ m apps/zveo
  M docs/reports/generated/repo-deep-dive-report.md
-?? apps/openwork/.npmrc
-?? apps/web/.npmrc
-?? apps/web/pnpm-lock.yaml
-?? apps/web/pnpm-workspace.yaml
-?? apps/web/public/index.html
-?? apps/web/src/app/loading.tsx
-?? apps/web/src/app/reports/
-?? apps/zcino/.dockerignore
-?? apps/zcino/.github/
-?? apps/zcino/.gitkeep
-?? apps/zcino/Dockerfile
-?? apps/zcino/Dockerfile.zeaznode
-?? apps/zcino/README.infra.md
-?? apps/zcino/README.md
-?? apps/zcino/cmd/
-?? apps/zcino/docs/
-?? apps/zcino/frontend/
-?? apps/zcino/go.mod
-?? apps/zcino/go.sum
-?? apps/zcino/infra/
-?? apps/zcino/internal/
-?? apps/zcino/k8s/
-?? apps/zcino/legacy_api.go
-?? apps/zcino/main.go
-?? apps/zcino/migrations/
-?? apps/zcino/policies/
-?? apps/zcino/protocol/
-?? apps/zcino/release/
-?? apps/zcino/sdk/
-?? apps/zlms-prod/app/phpMyAdmin/composer.phar
-?? apps/zlms-prod/app/phpMyAdmin/vendor/composer/InstalledVersions.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/composer/installed.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/BACKERS.md
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/SECURITY.md
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/Blowfish.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/DES.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/Hash.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/RC2.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/RC4.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/RSA.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/TripleDES.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Crypt/Twofish.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/File/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Math/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/Net/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/phpseclib/phpseclib/phpseclib/System/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/symfony/polyfill-ctype/bootstrap80.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/extensions/.gitignore
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/extensions/doc/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/extensions/test/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/.gitattributes
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/.github/
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/.gitignore
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/.php-cs-fixer.dist.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/src/Node/CheckSecurityCallNode.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/src/Node/CheckToStringNode.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/src/Node/Expression/ArrowFunctionExpression.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/src/Node/Expression/InlinePrint.php
-?? apps/zlms-prod/app/phpMyAdmin/vendor/twig/twig/src/TokenParser/ApplyTokenParser.php
-?? apps/zoffice/fixer.py
-?? apps/zsp-aitool/
-?? apps/ztrader/frontend/.dockerignore
-?? apps/zveo/
-?? ecosystem.config.cjs
-?? project_tree.txt
-?? terraform/.terraform.lock.hcl
+ M scripts/make-help.sh
+?? import.sh
 ```
 
 ## Top-level layout
@@ -120,6 +59,7 @@ Generated: 2026-06-07T02:06:16Z
 ./.cache/cloudflare-permissions
 ./.cache/ecc
 ./.cache/free-claude-code
+./.cache/supabase-ai-tools
 ./.claude
 ./.claude/.agents
 ./.claude/agents
@@ -269,7 +209,7 @@ Generated: 2026-06-07T02:06:16Z
 ```text
 Makefile audit
 - file: Makefile
-- targets: 167
+- targets: 169
 - duplicate targets: 0
 - issues: 0
 - warnings: 0
@@ -503,6 +443,11 @@ PASS: Makefile audit clean
 764:apps-source-review: ## Review source-owned files under apps/* before build/go-live
 767:apps-source-review-strict: ## Review apps/* and fail on critical findings
 770:apps-source-review-report: apps-source-review ## Print apps source review report
+777:.PHONY: app-%
+789:.PHONY: all-apps-install
+790:all-apps-install: ## Run install across all apps
+798:.PHONY: all-apps-build
+799:all-apps-build: ## Run build across all apps
 ```
 
 ## zDash integration
@@ -565,6 +510,8 @@ terraform/cloudflare-apps/apps.auto.tfvars.json
 terraform/cloudflare-apps/main.tf
 terraform/cloudflare-apps/README.md
 terraform/cloudflare-apps/.terraform.lock.hcl
+terraform/cloudflare-apps/terraform.tfstate
+terraform/cloudflare-apps/terraform.tfstate.backup
 terraform/cloudflare-apps/variables.tf
 terraform/cloudflare-apps/versions.tf
 terraform/cloudflare/dns.tf
@@ -778,4 +725,305 @@ apps/zdash/scripts/server/logs-prod.sh:4:if [[ ! -d "/opt/zdash/runtime" ]]; the
 apps/zdash/scripts/server/logs-prod.sh:5:  echo "Production runtime not found at /opt/zdash/runtime"
 apps/zdash/scripts/server/logs-prod.sh:12:if [[ -f "/opt/zdash/runtime/scripts/zdash-logs.sh" ]]; then
 apps/zdash/scripts/server/logs-prod.sh:13:  exec bash "/opt/zdash/runtime/scripts/zdash-logs.sh" "$SERVICE"
-apps/zdash/scripts/server/logs-prod.sh:15:  echo "Production log helper not found at 
+apps/zdash/scripts/server/logs-prod.sh:15:  echo "Production log helper not found at /opt/zdash/runtime/scripts/zdash-logs.sh"
+apps/zdash/scripts/server/start-prod.sh:4:RUNTIME_DIR="/opt/zdash/runtime"
+apps/zdash/scripts/server/status-prod.sh:4:if [[ ! -d "/opt/zdash/runtime" ]]; then
+apps/zdash/scripts/server/status-prod.sh:5:  echo "Production runtime not found at /opt/zdash/runtime"
+apps/zdash/scripts/server/status-prod.sh:16:COMPOSE_DIR="/opt/zdash"
+apps/zdash/scripts/server/status-prod.sh:23:if [[ -f "/opt/zdash/runtime/scripts/zdash-health.sh" ]]; then
+apps/zdash/scripts/server/status-prod.sh:25:  bash "/opt/zdash/runtime/scripts/zdash-health.sh" || true
+apps/zdash/scripts/server/stop-prod.sh:4:if [[ ! -d "/opt/zdash/runtime" ]]; then
+apps/zdash/scripts/server/stop-prod.sh:5:  echo "Production runtime not found at /opt/zdash/runtime"
+apps/zlms-prod/app/assets/global/plugins/bootstrap-pwstrength/README.md:175:And go to [localhost:8000](http://localhost:8000).
+apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/bootstrap-pwstrength/README.md:175:And go to [localhost:8000](http://localhost:8000).
+apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-pwstrength/README.md:175:And go to [localhost:8000](http://localhost:8000).
+apps/zsticker/Dockerfile:29:  CMD curl -f http://localhost:8000/health || exit 1
+apps/ztrader/.env.example:33:NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+apps/ztrader/backend/src/ztrader/main.py:391:        "webhook_url": "http://localhost:8000/api/v1/tradingview/webhook",
+apps/ztrader/docker-compose.yml:83:      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+apps/ztrader/frontend/src/app/[lng]/admin/page.tsx:205:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/app/[lng]/dashboard/page.tsx:78:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/app/[lng]/settings/page.tsx:37:    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/app/[lng]/settings/page.tsx:58:    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/components/auth/GoogleSignIn.tsx:24:      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/components/settings/NotificationPreferences.tsx:33:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/components/settings/TelegramLink.tsx:30:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+apps/ztrader/frontend/src/components/settings/TradingViewConfig.tsx:26:  const [webhookUrl, setWebhookUrl] = useState('http://localhost:8000/api/v1/tradingview/webhook');
+apps/ztrader/frontend/src/components/settings/TradingViewConfig.tsx:29:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+docs/prompts/fix-cloudflare-terraform-zdash-official.prompt:17:   - REPLACE_WITH_ZEAZ_DEV_ZONE_ID
+docs/prompts/fix-cloudflare-terraform-zdash-official.prompt:18:   - REPLACE_WITH_TUNNEL_UUID
+docs/reports/generated/repo-deep-dive-report.md:547:README.md:53:                         │  ├── zdash-api.zeaz.dev    (zDash API)      │
+docs/reports/generated/repo-deep-dive-report.md:548:README.md:343:- `zdash-api.zeaz.dev` for the zDash backend API
+docs/reports/generated/repo-deep-dive-report.md:549:apps/ABTPi18n/.env.example:23:NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:550:apps/ABTPi18n/.env.example:78:API_BASE_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:551:apps/ABTPi18n/Grok.md:1793:  CMD python -c "import requests; requests.get('http://localhost:8000/health')"
+docs/reports/generated/repo-deep-dive-report.md:552:apps/ABTPi18n/Grok.md:1994:  metrics)   curl http://localhost:8000/metrics | grep omega_ ;;
+docs/reports/generated/repo-deep-dive-report.md:553:apps/ABTPi18n/Grok.md:1995:  health)    docker-compose exec omega-bot curl http://localhost:8000/health ;;
+docs/reports/generated/repo-deep-dive-report.md:554:apps/ABTPi18n/README.md:125:   - Backend API: http://localhost:8000/docs
+docs/reports/generated/repo-deep-dive-report.md:555:apps/ABTPi18n/apps/backend/src/api/tradingview_endpoints.py:252:    base_url = os.getenv("API_BASE_URL", "http://localhost:8000")
+docs/reports/generated/repo-deep-dive-report.md:556:apps/ABTPi18n/apps/frontend/src/app/[lng]/dashboard/page.tsx:25:    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/dashboard/pnl`)
+docs/reports/generated/repo-deep-dive-report.md:557:apps/ABTPi18n/apps/frontend/src/app/[lng]/dashboard/page.tsx:53:    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/strategies`)
+docs/reports/generated/repo-deep-dive-report.md:558:apps/ABTPi18n/apps/frontend/src/app/[lng]/dashboard/page.tsx:71:    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/bot/start`, {
+docs/reports/generated/repo-deep-dive-report.md:559:apps/ABTPi18n/apps/frontend/src/app/[lng]/dashboard/page.tsx:80:    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/bot/stop`, {
+docs/reports/generated/repo-deep-dive-report.md:560:apps/ABTPi18n/apps/frontend/src/app/[lng]/settings/page.tsx:27:    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/exchange/keys`, {
+docs/reports/generated/repo-deep-dive-report.md:561:apps/ABTPi18n/apps/frontend/src/components/auth/GoogleSignIn.tsx:26:      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+docs/reports/generated/repo-deep-dive-report.md:562:apps/ABTPi18n/apps/frontend/src/components/settings/NotificationPreferences.tsx:33:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+docs/reports/generated/repo-deep-dive-report.md:563:apps/ABTPi18n/apps/frontend/src/components/settings/TelegramLink.tsx:30:  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+docs/reports/generated/repo-deep-dive-report.md:564:apps/ABTPi18n/docs/TRADINGVIEW_SUMMARY.md:115:  API_BASE_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:565:apps/ABTPi18n/docs/enterprise/API_REFERENCE.en.md:9:Development: http://localhost:8000/v1
+docs/reports/generated/repo-deep-dive-report.md:566:apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md:153:   curl http://localhost:8000/health
+docs/reports/generated/repo-deep-dive-report.md:567:apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md:161:   - Navigate to: http://localhost:8000/docs
+docs/reports/generated/repo-deep-dive-report.md:568:apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md:153:   curl http://localhost:8000/health
+docs/reports/generated/repo-deep-dive-report.md:569:apps/ABTPi18n/docs/enterprise/GETTING_STARTED.th.md:161:   - นำทางไปที่: http://localhost:8000/docs
+docs/reports/generated/repo-deep-dive-report.md:570:apps/ABTPi18n/docs/integrations/TRADINGVIEW_INTEGRATION.md:353:- Review [API documentation](http://localhost:8000/docs)
+docs/reports/generated/repo-deep-dive-report.md:571:apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md:63:Access the API at: http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:572:apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md:64:API Documentation: http://localhost:8000/docs
+docs/reports/generated/repo-deep-dive-report.md:573:apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md:312:- Backend API: http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:574:apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md:313:- API Docs: http://localhost:8000/docs
+docs/reports/generated/repo-deep-dive-report.md:575:apps/ABTPi18n/docs/phases/phase1/PHASE1_GUIDE.md:373:NEXT_PUBLIC_API_URL="http://localhost:8000"
+docs/reports/generated/repo-deep-dive-report.md:576:apps/ABTPi18n/docs/phases/phase1/PHASE1_SUMMARY.md:533:- **Backend API**: [http://localhost:8000](http://localhost:8000)
+docs/reports/generated/repo-deep-dive-report.md:577:apps/ABTPi18n/docs/phases/phase1/PHASE1_SUMMARY.md:534:- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+docs/reports/generated/repo-deep-dive-report.md:578:apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md:974:- **Backend API**: [http://localhost:8000](http://localhost:8000)
+docs/reports/generated/repo-deep-dive-report.md:579:apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md:975:- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+docs/reports/generated/repo-deep-dive-report.md:580:apps/ABTPi18n/docs/phases/phase2/PHASE2_IMPLEMENTATION_SUMMARY.md:976:- **Metrics**: [http://localhost:8000/metrics](http://localhost:8000/metrics)
+docs/reports/generated/repo-deep-dive-report.md:581:apps/ABTPi18n/docs/phases/phase2/PHASE2_SUMMARY.md:218:- **Backend API**: [http://localhost:8000](http://localhost:8000)
+docs/reports/generated/repo-deep-dive-report.md:582:apps/ABTPi18n/docs/phases/phase2/PHASE2_SUMMARY.md:222:- **Metrics Endpoint**: [http://localhost:8000/metrics](http://localhost:8000/metrics)
+docs/reports/generated/repo-deep-dive-report.md:583:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:53:    "http://localhost:8000/payment/promptpay/create",
+docs/reports/generated/repo-deep-dive-report.md:584:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:106:curl -X GET http://localhost:8000/rental/contract \
+docs/reports/generated/repo-deep-dive-report.md:585:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:241:    "http://localhost:8000/plugins/install",
+docs/reports/generated/repo-deep-dive-report.md:586:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:289:    "http://localhost:8000/portfolio/accounts",
+docs/reports/generated/repo-deep-dive-report.md:587:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:328:    "http://localhost:8000/portfolio/summary",
+docs/reports/generated/repo-deep-dive-report.md:588:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:367:    "http://localhost:8000/backtest/run",
+docs/reports/generated/repo-deep-dive-report.md:589:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:393:    f"http://localhost:8000/backtest/runs/{backtest_id}",
+docs/reports/generated/repo-deep-dive-report.md:590:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:449:    "http://localhost:8000/backtest/paper/start",
+docs/reports/generated/repo-deep-dive-report.md:591:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:477:    "http://localhost:8000/backtest/paper/stop",
+docs/reports/generated/repo-deep-dive-report.md:592:apps/ABTPi18n/docs/phases/phase4/PHASE4_GUIDE.md:721:curl -X POST http://localhost:8000/payment/webhook/promptpay \
+docs/reports/generated/repo-deep-dive-report.md:593:apps/ABTPi18n/docs/phases/phase5/PHASE5_GUIDE.md:37:curl -X GET "http://localhost:8000/audit/logs?userId=1&action=CREATE&startDate=2025-11-01T00:00:00Z"
+docs/reports/generated/repo-deep-dive-report.md:594:apps/ABTPi18n/docs/phases/phase5/PHASE5_GUIDE.md:70:curl -X GET "http://localhost:8000/audit/logs/1"
+docs/reports/generated/repo-deep-dive-report.md:595:apps/ABTPi18n/docs/phases/phase5/PHASE5_GUIDE.md:86:curl -X GET "http://localhost:8000/audit/export?format=csv&startDate=2025-11-01T00:00:00Z" -o audit_logs.csv
+docs/reports/generated/repo-deep-dive-report.md:596:apps/ABTPi18n/docs/phases/phase5/PHASE5_IMPLEMENTATION_SUMMARY.md:429:curl http://localhost:8000/health
+docs/reports/generated/repo-deep-dive-report.md:597:apps/ABTPi18n/docs/phases/phase5/PHASE5_IMPLEMENTATION_SUMMARY.md:430:curl http://localhost:8000/health/detailed
+docs/reports/generated/repo-deep-dive-report.md:598:apps/ABTPi18n/docs/phases/phase5/PHASE5_IMPLEMENTATION_SUMMARY.md:433:curl http://localhost:8000/audit/logs
+docs/reports/generated/repo-deep-dive-report.md:599:apps/ABTPi18n/docs/phases/phase5/PHASE5_IMPLEMENTATION_SUMMARY.md:436:curl http://localhost:8000/secrets/rotation/schedule
+docs/reports/generated/repo-deep-dive-report.md:600:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:110:curl http://localhost:8000/health
+docs/reports/generated/repo-deep-dive-report.md:601:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:114:curl http://localhost:8000/health/detailed
+docs/reports/generated/repo-deep-dive-report.md:602:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:118:curl http://localhost:8000/health/database
+docs/reports/generated/repo-deep-dive-report.md:603:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:125:curl http://localhost:8000/strategies
+docs/reports/generated/repo-deep-dive-report.md:604:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:128:curl http://localhost:8000/audit/logs?limit=10
+docs/reports/generated/repo-deep-dive-report.md:605:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:132:curl http://localhost:8000/audit/stats
+docs/reports/generated/repo-deep-dive-report.md:606:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:139:curl http://localhost:8000/secrets/rotation/schedule
+docs/reports/generated/repo-deep-dive-report.md:607:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:143:curl -X POST http://localhost:8000/secrets/rotation/rotate \
+docs/reports/generated/repo-deep-dive-report.md:608:apps/ABTPi18n/docs/phases/phase5/PHASE5_MIGRATION_GUIDE.md:153:curl http://localhost:8000/secrets/rotation/schedule
+docs/reports/generated/repo-deep-dive-report.md:609:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:16:curl http://localhost:8000/health/detailed
+docs/reports/generated/repo-deep-dive-report.md:610:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:22:curl http://localhost:8000/strategies
+docs/reports/generated/repo-deep-dive-report.md:611:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:25:curl http://localhost:8000/audit/logs?limit=5
+docs/reports/generated/repo-deep-dive-report.md:612:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:30:curl http://localhost:8000/secrets/rotation/schedule
+docs/reports/generated/repo-deep-dive-report.md:613:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:69:curl http://localhost:8000/health/detailed | jq
+docs/reports/generated/repo-deep-dive-report.md:614:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:74:curl "http://localhost:8000/audit/export?format=csv&startDate=$(date -d '7 days ago' -I)" -o audit_logs.csv
+docs/reports/generated/repo-deep-dive-report.md:615:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:79:curl http://localhost:8000/secrets/rotation/due?daysAhead=30 | jq
+docs/reports/generated/repo-deep-dive-report.md:616:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:92:curl -X POST http://localhost:8000/secrets/rotation/rotate \
+docs/reports/generated/repo-deep-dive-report.md:617:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:105:curl "http://localhost:8000/audit/logs?userId=1&action=CREATE"
+docs/reports/generated/repo-deep-dive-report.md:618:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:108:curl "http://localhost:8000/audit/logs" | jq '.logs[] | select(.statusCode >= 500)'
+docs/reports/generated/repo-deep-dive-report.md:619:apps/ABTPi18n/docs/phases/phase5/PHASE5_QUICK_START.md:115:  curl -s http://localhost:8000/health | jq
+docs/reports/generated/repo-deep-dive-report.md:620:apps/ABTPi18n/docs/phases/phase6/PHASE6_QUICK_START.md:13:curl -X POST http://localhost:8000/ml/signal/score \
+docs/reports/generated/repo-deep-dive-report.md:621:apps/ABTPi18n/docs/phases/phase6/PHASE6_QUICK_START.md:51:curl -X POST http://localhost:8000/ml/volatility/predict \
+docs/reports/generated/repo-deep-dive-report.md:622:apps/ABTPi18n/docs/phases/phase6/PHASE6_QUICK_START.md:81:curl -X POST http://localhost:8000/ml/tune/start \
+docs/reports/generated/repo-deep-dive-report.md:623:apps/ABTPi18n/docs/phases/phase6/PHASE6_QUICK_START.md:109:curl http://localhost:8000/ml/tune/status/tune_abc123
+docs/reports/generated/repo-deep-dive-report.md:624:apps/ABTPi18n/docs/phases/phase6/PHASE6_QUICK_START.md:114:curl http://localhost:8000/ml/tune/results/tune_abc123
+docs/reports/generated/repo-deep-dive-report.md:625:apps/ABTPi18n/install.sh:57:echo "Backend:  http://localhost:8000/docs"
+docs/reports/generated/repo-deep-dive-report.md:626:apps/ABTPi18n/verify.sh:112:echo "  3. Access Backend API docs: http://localhost:8000/docs"
+docs/reports/generated/repo-deep-dive-report.md:627:apps/web/src/app/swarm-runtime/page.tsx:13:      const res = await fetch('http://localhost:8000/api/runtime/swarm/agents');
+docs/reports/generated/repo-deep-dive-report.md:628:apps/web/src/app/swarm-runtime/page.tsx:18:    const ws = new WebSocket('ws://localhost:8000/api/runtime/swarm/ws/swarm');
+docs/reports/generated/repo-deep-dive-report.md:629:apps/web/src/lib/api.ts:11:  return "http://localhost:8000";
+docs/reports/generated/repo-deep-dive-report.md:630:apps/zdash/.codex/cloud/AGENTS.template.md:25:- Never introduce `localhost:8000`.
+docs/reports/generated/repo-deep-dive-report.md:631:apps/zdash/.codex/cloud/general-custom-instructions.md:31:- never introduce localhost:8000 in repo changes
+docs/reports/generated/repo-deep-dive-report.md:632:apps/zdash/.codex/cloud/maintenance.sh:100:  tracked_source_grep "localhost:8000|BACKEND_PORT=8000"
+docs/reports/generated/repo-deep-dive-report.md:633:apps/zdash/.codex/cloud/maintenance.sh:107:if tracked_source_grep "localhost:8000|BACKEND_PORT=8000" >/tmp/zdash-codex-port8000.txt && [ -s /tmp/zdash-codex-port8000.txt ]; then
+docs/reports/generated/repo-deep-dive-report.md:634:apps/zdash/.codex/cloud/phase-runner.md:27:- never introduce localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:635:apps/zdash/.codex/cloud/phase-runner.md:58:- never use localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:636:apps/zdash/.codex/cloud/phase-runner.md:126:Never use `localhost:8000`; backend port is `8005`.
+docs/reports/generated/repo-deep-dive-report.md:637:apps/zdash/.codex/cloud/setup.sh:110:if grep -RIn "localhost:8000\|BACKEND_PORT=8000" \
+docs/reports/generated/repo-deep-dive-report.md:638:apps/zdash/Makefile:24:ZDASH_PROD_RUNTIME ?= /opt/zdash/runtime
+docs/reports/generated/repo-deep-dive-report.md:639:apps/zdash/Makefile:130:	git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . \
+docs/reports/generated/repo-deep-dive-report.md:640:apps/zdash/docs/prompts/AI_CODING_PROMPTS_INDEX.md:11:- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` in tracked runtime/source files.
+docs/reports/generated/repo-deep-dive-report.md:641:apps/zdash/docs/prompts/AI_CODING_PROMPTS_INDEX.md:116:- runtime/source references to `localhost:8000` or `BACKEND_PORT=8000`
+docs/reports/generated/repo-deep-dive-report.md:642:apps/zdash/docs/prompts/phase02-exec.prompt:550:curl http://localhost:8000/api/trading/status
+docs/reports/generated/repo-deep-dive-report.md:643:apps/zdash/docs/prompts/phase02-exec.prompt:554:curl -X POST http://localhost:8000/api/trading/scan \
+docs/reports/generated/repo-deep-dive-report.md:644:apps/zdash/docs/prompts/phase03-exec.prompt:622:curl -X POST http://localhost:8000/api/risk/check \
+docs/reports/generated/repo-deep-dive-report.md:645:apps/zdash/docs/prompts/phase03-exec.prompt:636:curl -X POST http://localhost:8000/api/risk/halt \
+docs/reports/generated/repo-deep-dive-report.md:646:apps/zdash/docs/prompts/phase03-exec.prompt:642:curl -X POST http://localhost:8000/api/risk/resume \
+docs/reports/generated/repo-deep-dive-report.md:647:apps/zdash/docs/prompts/phase04-exec.prompt:818:curl http://localhost:8000/api/scheduler/status
+docs/reports/generated/repo-deep-dive-report.md:648:apps/zdash/docs/prompts/phase04-exec.prompt:822:curl http://localhost:8000/api/scheduler/jobs
+docs/reports/generated/repo-deep-dive-report.md:649:apps/zdash/docs/prompts/phase04-exec.prompt:826:curl -X POST http://localhost:8000/api/scheduler/jobs \
+docs/reports/generated/repo-deep-dive-report.md:650:apps/zdash/docs/prompts/phase04-exec.prompt:842:curl -X POST http://localhost:8000/api/scheduler/jobs/JOB_ID/run
+docs/reports/generated/repo-deep-dive-report.md:651:apps/zdash/docs/prompts/phase04-exec.prompt:846:curl http://localhost:8000/api/iot/status
+docs/reports/generated/repo-deep-dive-report.md:652:apps/zdash/docs/prompts/phase04-exec.prompt:850:curl -X POST http://localhost:8000/api/iot/power-cycle \
+docs/reports/generated/repo-deep-dive-report.md:653:apps/zdash/docs/prompts/phase05-exec.prompt:1035:curl http://localhost:8000/api/backtesting/strategies
+docs/reports/generated/repo-deep-dive-report.md:654:apps/zdash/docs/prompts/phase05-exec.prompt:1039:curl -X POST http://localhost:8000/api/backtesting/run \
+docs/reports/generated/repo-deep-dive-report.md:655:apps/zdash/docs/prompts/phase05-exec.prompt:1053:curl -X POST http://localhost:8000/api/backtesting/optimize \
+docs/reports/generated/repo-deep-dive-report.md:656:apps/zdash/docs/prompts/phase05-exec.prompt:1073:curl -X POST http://localhost:8000/api/backtesting/results/RESULT_ID/promotion-check
+docs/reports/generated/repo-deep-dive-report.md:657:apps/zdash/docs/prompts/phase05-exec.prompt:1077:curl http://localhost:8000/api/backtesting/results/RESULT_ID/report
+docs/reports/generated/repo-deep-dive-report.md:658:apps/zdash/docs/prompts/phase06-exec.prompt:1144:curl -X POST http://localhost:8000/api/content/create \
+docs/reports/generated/repo-deep-dive-report.md:659:apps/zdash/docs/prompts/phase06-exec.prompt:1160:curl -X POST http://localhost:8000/api/content/generate-graphic \
+docs/reports/generated/repo-deep-dive-report.md:660:apps/zdash/docs/prompts/phase06-exec.prompt:1171:curl -X POST http://localhost:8000/api/content/approve \
+docs/reports/generated/repo-deep-dive-report.md:661:apps/zdash/docs/prompts/phase06-exec.prompt:1181:curl -X POST http://localhost:8000/api/content/post \
+docs/reports/generated/repo-deep-dive-report.md:662:apps/zdash/docs/prompts/phase06-exec.prompt:1191:curl -X POST http://localhost:8000/api/content/pipeline/run \
+docs/reports/generated/repo-deep-dive-report.md:663:apps/zdash/docs/prompts/phase07-exec.prompt:268:VITE_API_BASE_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:664:apps/zdash/docs/prompts/phase08-exec.prompt:268:VITE_API_BASE_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:665:apps/zdash/docs/prompts/phase08-exec.prompt:870:curl -X POST http://localhost:8000/api/auth/bootstrap-admin
+docs/reports/generated/repo-deep-dive-report.md:666:apps/zdash/docs/prompts/phase08-exec.prompt:874:curl -X POST http://localhost:8000/api/auth/login \
+docs/reports/generated/repo-deep-dive-report.md:667:apps/zdash/docs/prompts/phase08-exec.prompt:883:curl http://localhost:8000/api/admin/safety-check \
+docs/reports/generated/repo-deep-dive-report.md:668:apps/zdash/docs/prompts/phase10-exec.prompt:1499:curl http://localhost:8000/api/billing/plans \
+docs/reports/generated/repo-deep-dive-report.md:669:apps/zdash/docs/prompts/phase10-exec.prompt:1504:curl http://localhost:8000/api/billing/status \
+docs/reports/generated/repo-deep-dive-report.md:670:apps/zdash/docs/prompts/phase10-exec.prompt:1509:curl http://localhost:8000/api/billing/usage \
+docs/reports/generated/repo-deep-dive-report.md:671:apps/zdash/docs/prompts/phase10-exec.prompt:1514:curl -X POST http://localhost:8000/api/billing/mock/apply-plan \
+docs/reports/generated/repo-deep-dive-report.md:672:apps/zdash/docs/prompts/phase10-exec.prompt:1521:curl http://localhost:8000/api/marketplace/plugins \
+docs/reports/generated/repo-deep-dive-report.md:673:apps/zdash/docs/prompts/phase10-exec.prompt:1526:curl http://localhost:8000/api/enterprise/status \
+docs/reports/generated/repo-deep-dive-report.md:674:apps/zdash/docs/prompts/phase11-exec.prompt:1744:curl http://localhost:8000/api/aiops/models \
+docs/reports/generated/repo-deep-dive-report.md:675:apps/zdash/docs/prompts/phase11-exec.prompt:1749:curl http://localhost:8000/api/aiops/prompts \
+docs/reports/generated/repo-deep-dive-report.md:676:apps/zdash/docs/prompts/phase11-exec.prompt:1754:curl -X POST http://localhost:8000/api/governance/dlp/scan-text \
+docs/reports/generated/repo-deep-dive-report.md:677:apps/zdash/docs/prompts/phase11-exec.prompt:1761:curl http://localhost:8000/api/governance/approvals \
+docs/reports/generated/repo-deep-dive-report.md:678:apps/zdash/docs/prompts/phase11-exec.prompt:1766:curl -X POST http://localhost:8000/api/compliance/reports/generate \
+docs/reports/generated/repo-deep-dive-report.md:679:apps/zdash/docs/prompts/phase12-exec.prompt:1848:curl -X POST http://localhost:8000/api/ops/evaluate \
+docs/reports/generated/repo-deep-dive-report.md:680:apps/zdash/docs/prompts/phase12-exec.prompt:1853:curl http://localhost:8000/api/ops/incidents \
+docs/reports/generated/repo-deep-dive-report.md:681:apps/zdash/docs/prompts/phase12-exec.prompt:1858:curl -X POST http://localhost:8000/api/managed/support/cases \
+docs/reports/generated/repo-deep-dive-report.md:682:apps/zdash/docs/prompts/phase12-exec.prompt:1869:curl -X POST http://localhost:8000/api/integrations/siem/export \
+docs/reports/generated/repo-deep-dive-report.md:683:apps/zdash/docs/prompts/phase12-exec.prompt:1876:curl -X POST http://localhost:8000/api/ops/dr/backup-validation \
+docs/reports/generated/repo-deep-dive-report.md:684:apps/zdash/docs/prompts/phase13-exec.prompt:469:EXPO_PUBLIC_API_BASE_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:685:apps/zdash/docs/prompts/phase13-exec.prompt:1610:curl -X POST http://localhost:8000/api/developer/api-keys \
+docs/reports/generated/repo-deep-dive-report.md:686:apps/zdash/docs/prompts/phase13-exec.prompt:1621:curl http://localhost:8000/partner/v1/health \
+docs/reports/generated/repo-deep-dive-report.md:687:apps/zdash/docs/prompts/phase13-exec.prompt:1626:curl http://localhost:8000/partner/v1/risk/status \
+docs/reports/generated/repo-deep-dive-report.md:688:apps/zdash/docs/prompts/phase14-exec.prompt:453:VITE_API_BASE_URL=http://localhost:8000
+docs/reports/generated/repo-deep-dive-report.md:689:apps/zdash/docs/prompts/phase23-exec.prompt:929:curl http://localhost:8000/api/governance/status \
+docs/reports/generated/repo-deep-dive-report.md:690:apps/zdash/docs/prompts/phase23-exec.prompt:934:curl -X POST http://localhost:8000/api/governance/simulate \
+docs/reports/generated/repo-deep-dive-report.md:691:apps/zdash/docs/prompts/phase23-exec.prompt:951:curl -X POST http://localhost:8000/api/compliance/collect-evidence \
+docs/reports/generated/repo-deep-dive-report.md:692:apps/zdash/docs/prompts/phase23-exec.prompt:956:curl -X POST http://localhost:8000/api/disaster-recovery/restore-drill \
+docs/reports/generated/repo-deep-dive-report.md:693:apps/zdash/docs/prompts/phase23-exec.prompt:966:curl -X POST http://localhost:8000/api/incidents/runbooks/execute \
+docs/reports/generated/repo-deep-dive-report.md:694:apps/zdash/docs/prompts/phase35-exec-master-meta-final-release.prompt:123:- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` outside archived/local-only prompt artifacts.
+docs/reports/generated/repo-deep-dive-report.md:695:apps/zdash/docs/prompts/phase35.1-backend-release-hardening.prompt:25:- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000`.
+docs/reports/generated/repo-deep-dive-report.md:696:apps/zdash/docs/prompts/phase35.4-docs-runbooks-api-examples.prompt:19:- Do not introduce `localhost:8000` or `BACKEND_PORT=8000`.
+docs/reports/generated/repo-deep-dive-report.md:697:apps/zdash/docs/prompts/phase35.5-makefile-ci-maintenance-validation.prompt:18:- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` in tracked runtime/source files.
+docs/reports/generated/repo-deep-dive-report.md:698:apps/zdash/docs/prompts/phase36-exec-server-command-center.prompt:155:  - /opt/zdash/runtime/scripts/zdash-health.sh
+docs/reports/generated/repo-deep-dive-report.md:699:apps/zdash/docs/prompts/phase36-exec-server-command-center.prompt:156:  - /opt/zdash/runtime/scripts/zdash-logs.sh
+docs/reports/generated/repo-deep-dive-report.md:700:apps/zdash/docs/prompts/phase36-exec-server-command-center.prompt:157:  - /opt/zdash/runtime/scripts/zdash-backup.sh
+docs/reports/generated/repo-deep-dive-report.md:701:apps/zdash/docs/prompts/phase36-exec-server-command-center.prompt:158:  - /opt/zdash/runtime/scripts/zdash-update.sh
+docs/reports/generated/repo-deep-dive-report.md:702:apps/zdash/docs/prompts/phase36-exec-server-command-center.prompt:436:- production wrapper scripts fail safely if /opt/zdash/runtime is absent.
+docs/reports/generated/repo-deep-dive-report.md:703:apps/zdash/docs/prompts/phase39-exec-production-deployment-dryrun-bservability-verification.prompt:41:- If /opt/zdash/runtime is missing, fail clearly with:
+docs/reports/generated/repo-deep-dive-report.md:704:apps/zdash/docs/prompts/phase40-exec-production-install-rehearsal-go-live-evidence-capture.prompt:41:- If /opt/zdash/runtime is absent, fail safely and tell user to run:
+docs/reports/generated/repo-deep-dive-report.md:705:apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt:53:.codex/cloud/maintenance.sh:100:  tracked_source_grep "localhost:8000|BACKEND_PORT=8000"
+docs/reports/generated/repo-deep-dive-report.md:706:apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt:54:.codex/cloud/maintenance.sh:107:if tracked_source_grep "localhost:8000|BACKEND_PORT=8000" >/tmp/zdash-codex-port8000.txt && [ -s /tmp/zdash-codex-port8000.txt ]; then
+docs/reports/generated/repo-deep-dive-report.md:707:apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt:77:.codex/cloud/setup.sh:110:if grep -RIn "localhost:8000\|BACKEND_PORT=8000" \
+docs/reports/generated/repo-deep-dive-report.md:708:apps/zdash/docs/runbooks/GO_LIVE_REHEARSAL.md:17:- Production runtime installed at `/opt/zdash/runtime`.
+docs/reports/generated/repo-deep-dive-report.md:709:apps/zdash/docs/runbooks/INSTALLATION.md:56:sudo nano /opt/zdash/runtime/.env.production
+docs/reports/generated/repo-deep-dive-report.md:710:apps/zdash/docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md:51:| Runtime | `.runtime/` (gitignored) | `/opt/zdash/` (systemd) |
+docs/reports/generated/repo-deep-dive-report.md:711:apps/zdash/docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md:64:- **Production scripts fail safely** — clear error if `/opt/zdash/runtime` is absent
+docs/reports/generated/repo-deep-dive-report.md:712:apps/zdash/docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:26:Checks that the production runtime directory exists at `/opt/zdash/runtime` and contains all required components.
+docs/reports/generated/repo-deep-dive-report.md:713:apps/zdash/docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:44:Production runtime not found at /opt/zdash/runtime
+docs/reports/generated/repo-deep-dive-report.md:714:apps/zdash/docs/runbooks/START_SERVER.md:57:Production runs via systemd + Docker Compose under `/opt/zdash/`.
+docs/reports/generated/repo-deep-dive-report.md:715:apps/zdash/install-zdash-prod.sh:21:INSTALL_ROOT="${INSTALL_ROOT:-/opt/zdash}"
+docs/reports/generated/repo-deep-dive-report.md:716:apps/zdash/install-zdash-prod.sh:158:  # When executed from elsewhere, clone/update /opt/zdash/app.
+docs/reports/generated/repo-deep-dive-report.md:717:apps/zdash/scripts/prod/capture-go-live-evidence.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:718:apps/zdash/scripts/prod/run-go-live-rehearsal.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:719:apps/zdash/scripts/prod/verify-go-live-safety-locks.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:720:apps/zdash/scripts/prod/verify-prod-health.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:721:apps/zdash/scripts/prod/verify-prod-observability.sh:13:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:722:apps/zdash/scripts/prod/verify-prod-rollback-readiness.sh:13:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:723:apps/zdash/scripts/prod/verify-prod-runtime.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+docs/reports/generated/repo-deep-dive-report.md:724:apps/zdash/scripts/server/logs-prod.sh:4:if [[ ! -d "/opt/zdash/runtime" ]]; then
+docs/reports/generated/repo-deep-dive-report.md:725:apps/zdash/scripts/server/logs-prod.sh:5:  echo "Production runtime not found at /opt/zdash/runtime"
+docs/reports/generated/repo-deep-dive-report.md:726:apps/zdash/scripts/server/logs-prod.sh:12:if [[ -f "/opt/zdash/runtime/scripts/zdash-logs.sh" ]]; then
+docs/reports/generated/repo-deep-dive-report.md:727:apps/zdash/scripts/server/logs-prod.sh:13:  exec bash "/opt/zdash/runtime/scripts/zdash-logs.sh" "$SERVICE"
+infra/ai-runtime/compose.yaml:80:      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+scripts/cloudflare/zdash-terraform-env-guard.sh:8:if grep -RIn "REPLACE_WITH_ZEAZ_DEV_ZONE_ID\|REPLACE_WITH_TUNNEL_UUID\|REPLACE_WITH_REAL_ZONE_ID\|REPLACE_WITH_REAL_TUNNEL_UUID" \
+scripts/platform/fix-apps-source-review-critical.sh:65:        new_text = new_text.replace("zdash-api.zeaz.dev", "api-zdash.zeaz.dev")
+scripts/platform/review-apps-source.py:89:    "zdash-api.zeaz.dev": "api-zdash.zeaz.dev",
+scripts/repo/deep-dive-report.sh:62:  git grep -nE 'zdash-api\.zeaz\.dev|/opt/zdash|localhost:8000|REPLACE_WITH_ZEAZ_DEV_ZONE_ID|REPLACE_WITH_TUNNEL_UUID' -- . 2>/dev/null | redact || true
+scripts/validate_cognitive_fabric.sh:16:if curl -s http://localhost:8000/api/runtime/llm/health | grep -q "vertex-ai"; then
+scripts/validate_cognitive_fabric.sh:25:RESPONSE=$(curl -s -X POST http://localhost:8000/api/runtime/llm/completion \
+scripts/validate_cognitive_fabric.sh:38:if curl -s http://localhost:8000/api/runtime/llm/metrics | grep -q "val-test"; then
+scripts/validate_cognitive_fabric.sh:47:if curl -s http://localhost:8000/api/runtime/llm/health | grep -q "\"state\": \"HEALTHY\""; then
+scripts/validate_scheduler.sh:8:if curl -s http://localhost:8000/api/runtime/scheduler/topology/health | grep -q "{}"; then
+scripts/validate_scheduler.sh:17:TASK_RESPONSE=$(curl -s -X POST http://localhost:8000/api/runtime/scheduler/tasks \
+scripts/validate_scheduler.sh:33:LINEAGE=$(curl -s http://localhost:8000/api/runtime/scheduler/tasks/$TASK_ID/lineage)
+scripts/validate_scheduler.sh:44:UPDATE_RESPONSE=$(curl -s -X POST http://localhost:8000/api/runtime/scheduler/topology/snapshot \
+scripts/validate_swarm.sh:8:if curl -s http://localhost:8000/api/runtime/swarm/agents | grep -q "\["; then
+scripts/validate_swarm.sh:17:AGENT_COUNT=$(curl -s http://localhost:8000/api/runtime/swarm/agents | jq '. | length')
+scripts/validate_swarm.sh:27:SUBMIT_RESPONSE=$(curl -s -X POST http://localhost:8000/api/runtime/swarm/marketplace \
+scripts/validation.sh:21:HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health || echo "000")
+scripts/validation.sh:45:TASK_RES=$(curl -s -X POST http://localhost:8000/execute \
+terraform/cloudflare-apps/variables.tf:6:    condition     = length(var.cloudflare_zone_id) == 32 && var.cloudflare_zone_id != "REPLACE_WITH_ZEAZ_DEV_ZONE_ID"
+terraform/cloudflare-apps/variables.tf:16:    condition     = can(regex("^[0-9a-fA-F-]{36}$", var.cloudflare_tunnel_id)) && var.cloudflare_tunnel_id != "REPLACE_WITH_TUNNEL_UUID"
+terraform/zdash/zdash_edge.auto.tfvars.example:4:cloudflare_zone_id   = "REPLACE_WITH_ZEAZ_DEV_ZONE_ID"
+terraform/zdash/zdash_edge.auto.tfvars.example:5:cloudflare_tunnel_id = "REPLACE_WITH_TUNNEL_UUID"
+```
+
+## Forbidden tracked runtime files
+
+```text
+```
+
+## Docker compose inventory
+
+```text
+./apps/ABTPi18n/docker-compose.yml
+./apps/openwork/.devcontainer/docker-compose.yml
+./apps/openwork/packaging/docker/docker-compose.den-dev.yml
+./apps/openwork/packaging/docker/docker-compose.dev.yml
+./apps/openwork/packaging/docker/docker-compose.web-local.yml
+./apps/openwork/packaging/docker/docker-compose.yml
+./apps/zcino/infra/docker-compose.yml
+./apps/zcino/infra/zeaz-testnet/docker-compose.yml
+./apps/zcino-modern/infra/docker-compose.yml
+./apps/zcino-modern/infra/zeaz-testnet/docker-compose.yml
+./apps/zdash/docker-compose.prod.secrets.yml
+./apps/zdash/docker-compose.prod.yml
+./apps/zdash/docker-compose.yml
+./apps/zkbtrader/docker-compose.yml
+./apps/zLinebot/docker-compose.blue.yml
+./apps/zLinebot/docker-compose.green.yml
+./apps/zLinebot/docker-compose.yml
+./apps/zoffice/docker-compose.yml
+./apps/zsp-aitool/docker-compose.yml
+./apps/zsticker/docker-compose.yml
+./apps/ztrader/docker-compose.yml
+./apps/zveo/infra/docker/docker-compose.yml
+./apps/zveo/infra/observability/docker-compose.observability.yml
+./apps/zwallet/docker-compose.yml
+./apps/zwallet/infra/docker/docker-compose.devops.yml
+./apps/zwallet/infra/docker/docker-compose.prod.yml
+./apps/zwallet/infra/observability/docker-compose.siem.yml
+./apps/zwallet/infra/redis/docker-compose.yml
+./docker-compose.yml
+./runtime/authentik/compose.yml
+./tunnels/docker/docker-compose.yml
+```
+
+## Workflow inventory
+
+```text
+.github/workflows/backup-validation.yml
+.github/workflows/ci.yml
+.github/workflows/cloudflared-restart.yml
+.github/workflows/codeql.yml
+.github/workflows/cosign-signing.yml
+.github/workflows/deploy-worker.yml
+.github/workflows/deploy-zdash-pages.yml
+.github/workflows/drift-detect.yml
+.github/workflows/dr-test.yml
+.github/workflows/ecc-integration-check.yml
+.github/workflows/meta-os-ci.yml
+.github/workflows/phase52-zeaz-dev.yml
+.github/workflows/policy-test.yml
+.github/workflows/project-upgrade-report.yml
+.github/workflows/rotate-secrets.yml
+.github/workflows/sbom.yml
+.github/workflows/secret-scanning.yml
+.github/workflows/security-scan.yml
+.github/workflows/terraform-apply.yml
+.github/workflows/terraform-plan.yml
+.github/workflows/terraform-validate.yml
+.github/workflows/tunnel-validation.yml
+.github/workflows/validate.yml
+.github/workflows/waf-validation.yml
+.github/workflows/zdash-monorepo.yml
+```

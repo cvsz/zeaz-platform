@@ -7,42 +7,57 @@ gpg-loopback.sh
 .env.cloudflare
 .cloudflare-token-audit.log
 .secrets/
-secrets/*.env
+secrets/
 *.tfvars
 *.pem
 *.key
 *.p12
 *.agekey
-secrets/
+
 # Cloudflare generated/local state
 cloudflared/
 tunnels/cloudflared/config.yml
 .cloudflare-backups/
 .cache/
-reports/
+
 # Terraform / OpenTofu
 .terraform/
 .terraform.lock.hcl
-terraform.tfstate*
-*.tfstate*
+*.tfstate
+*.tfstate.*
 *.tfplan
 terraform/tfplan
 terraform/tfplan.drift
 terraform/**/*.tfplan
 crash.log
+crash.*.log
 terraform/backend/
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
 # Python
 __pycache__/
 *.pyc
+*.pyo
 .venv/
+venv/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 .coverage
 coverage/
+
 # Node / frontend
 node_modules/
 dist/
 build/
+.next/
+.nuxt/
 package-lock.json
+*.tsbuildinfo
+
 # IDE / local agent harness state
 .vscode/
 .idea/
@@ -56,18 +71,22 @@ package-lock.json
 .joycode/
 .zed/
 apps/zdash/*
+
 # Backups and generated repair artifacts
 .backup/
 .backup-refactor-*
+.backups/
 *.bak
 *.bak.*
 log.txt
 bootstrap-generate-tokens-once.sh
 zdash.sh
+
 # OS
 .DS_Store
 Thumbs.db
 .ecc/
+
 # local Cloudflare / Wrangler secret caches
 .wrangler/
 cloudflare-platform/.cloudflare-token-audit.log
@@ -77,136 +96,15 @@ cloudflare-platform/.cloudflare-token-audit.log
 !docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md
 
 runtime/
+.runtime/
 
 # Supabase
 .supabase/
 supabase/.temp/
 
-# zDash local/prod secrets
-apps/zdash/.env
-apps/zdash/.env.local
-apps/zdash/.env.production
-apps/zdash/backend/.env
-apps/zdash/frontend/.env.local
-
-# Local app secrets
-apps/*/.env
-apps/*/.env.local
-apps/*/.env.production
-apps/*/.env.cloudflare
-apps/*/backend/.env
-apps/*/frontend/.env.local
-
-# Runtime logs and local worker state
-.runtime/
-workers/**/.wrangler/state/
-workers/**/.wrangler/tmp/
-workers/**/.wrangler/cache/
-*.sqlite
-*.db
-*.log
-
-# App local runtime/secrets
-
-# Terraform runtime state
-terraform/**/*.tfstate
-terraform/**/*.tfstate.backup
-terraform/**/*.tfvars
-terraform/**/.terraform.tfstate.lock.info
-terraform/**/.terraform/
-
-# Local backups
-.backups/
-
 # local/runtime/secrets/state
 !.env.example
 !.env.*.example
-
-
-generated/
-docs/reports/generated/
-
-# Terraform local state/secrets/plans
-*.tfstate
-*.tfstate.*
-!*.tfvars.example
-!*.auto.tfvars.example
-
-# Wrangler/Miniflare local state
-**/.wrangler/
-
-# local/runtime/secrets/state
-
-
-
-# Terraform local state/secrets/plans
-
-# Wrangler/Miniflare local state
-
-# local/runtime/secrets/state
-
-
-
-# Terraform local state/secrets/plans
-
-# Wrangler/Miniflare local state
-
-# Python local environments and caches
-**/.venv/
-**/venv/
-**/.pytest_cache/
-**/.ruff_cache/
-**/.mypy_cache/
-**/__pycache__/
-*.pyo
-
-# Node local dependencies and builds
-**/node_modules/
-**/.next/
-**/dist/
-**/build/
-**/coverage/
-
-# Runtime artifacts
-**/.runtime/
-
-# Python local environments and caches
-
-# Node local dependencies and builds
-
-# Runtime artifacts
-
-# Python local environments and caches
-
-# Node local dependencies and builds
-
-# Runtime artifacts
-terraform/cloudflare-apps/apps.auto.tfvars.json
-
-# Terraform local working dirs
-**/.terraform/
-*.tfstate
-*.tfstate.*
-*.tfplan
-crash.log
-crash.*.log
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-terraform/cloudflare-apps/apps.auto.tfvars.json
-
-# Terraform local/runtime files
-**/.terraform/
-*.tfstate
-*.tfstate.*
-*.tfplan
-crash.log
-crash.*.log
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
 
 # Allow committed generated platform reports
 !reports/
@@ -216,11 +114,12 @@ override.tf.json
 !reports/platform/*.yaml
 !reports/platform/*.json
 
+# Allow verification summary output
+!reports/verify/
+!reports/verify/latest.json
+
 # Allow Terraform provider lock files
 !**/.terraform.lock.hcl
-
-# Keep generated local tfvars out of git
-terraform/cloudflare-apps/apps.auto.tfvars.json
 
 # Keep generated reports ignored, but allow CVSZ merge planning reports
 !reports/cvsz-apps-merge/
@@ -265,12 +164,10 @@ apps/**/*.log
 apps/*/.vendor/
 reports/cvsz-apps-merge/backups/
 
-# TypeScript build artifacts
-*.tsbuildinfo
-
 # Local AI tooling env scripts
 claude_code_zai_env.sh
 
-# Allow verification summary output
-!reports/verify/
-!reports/verify/latest.json
+# Local ops backups / generated secrets
+.ops/backups/
+apps/zsticker/client_secret.json
+apps/zsticker/credentials.json

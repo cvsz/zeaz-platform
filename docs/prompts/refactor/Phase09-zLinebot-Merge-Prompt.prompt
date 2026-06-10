@@ -1,0 +1,66 @@
+Deep dive and merge all LINE bot projects into one canonical zLinebot app.
+
+Sources:
+  /home/zeazdev/zeaz-platform/apps/zLinebot-automos
+  /home/zeazdev/zeaz-platform/apps/zlttbots
+  /home/zeazdev/zeaz-platform/apps/zttlbots
+
+Target:
+  /home/zeazdev/zeaz-platform/apps/zLinebot
+
+Port:
+  4113
+
+Tasks:
+1. Inspect all source bot projects.
+2. Identify:
+   - LINE webhook handlers
+   - bot commands
+   - message handlers
+   - auth middleware
+   - token usage
+   - database usage
+   - cron jobs
+   - queue workers
+   - API routes
+   - deployment configs
+3. Create canonical target:
+   /home/zeazdev/zeaz-platform/apps/zLinebot
+4. Create backup before merge:
+   .backups/zlinebot-merge/YYYYMMDD-HHMMSS/
+5. Merge functionality into modular structure:
+   apps/zLinebot/
+     src/
+       bots/
+       handlers/
+       webhooks/
+       services/
+       config/
+       database/
+       routes/
+       workers/
+       utils/
+6. Standardize env variables:
+   LINE_CHANNEL_ACCESS_TOKEN=
+   LINE_CHANNEL_SECRET=
+   LINE_WEBHOOK_SECRET=
+   DATABASE_URL=
+   PORT=4113
+7. Remove duplicate logic.
+8. Preserve unique features from each project.
+9. Add README documenting merged bot capabilities.
+10. Add health endpoint if missing:
+    GET /health
+11. Add webhook endpoint:
+    POST /webhook/line
+12. Update root startup scripts.
+13. Verify install, build, start, and healthcheck.
+
+Generate:
+  docs/reports/ZLINEBOT_MERGE_REPORT.md
+
+Acceptance criteria:
+  - zLinebot is the single canonical LINE bot app.
+  - No unique bot feature is lost without documentation.
+  - All secrets are env-based.
+  - App starts on port 4113.

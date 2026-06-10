@@ -1,0 +1,55 @@
+Create full ZEAZ Platform verification system.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Tasks:
+1. Create:
+   scripts/verify/verify-all.sh
+2. The script must check:
+   - Node version
+   - package manager availability
+   - Docker availability
+   - docker compose availability
+   - PostgreSQL health
+   - Redis health if used
+   - port availability
+   - app local URLs
+   - Cloudflare config presence
+   - env file presence
+   - missing secrets placeholders
+3. Add local health checks:
+   http://localhost:4101
+   http://localhost:4102
+   http://localhost:4103
+   http://localhost:4104
+   http://localhost:4105
+   http://localhost:4106
+   http://localhost:4107
+   http://localhost:4108
+   http://localhost:4109
+   http://localhost:4110
+   http://localhost:4111
+   http://localhost:4112
+   http://localhost:4113
+4. Add domain health checks:
+   https://zow.zeaz.dev
+   https://api-zcfdash.zeaz.dev
+   https://zcfdash.zeaz.dev
+   https://zoffice.zeaz.dev
+   https://app.zeaz.dev
+   https://ztrader.zeaz.dev
+   https://dash.zeaz.dev
+   https://zaiz.zeaz.dev
+   https://zveo.zeaz.dev
+   https://zsticker.zeaz.dev
+   https://zcino.zeaz.dev
+   https://zlms.zeaz.dev
+5. Generate machine-readable output:
+   reports/verify/latest.json
+6. Generate human-readable report:
+   docs/reports/VERIFY_ALL_REPORT.md
+
+Acceptance criteria:
+  - One command verifies the whole platform.
+  - Failures are clear and actionable.

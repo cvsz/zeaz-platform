@@ -4,13 +4,13 @@
 # // Author: ZeaZDev Meta-Intelligence //
 # // --- DO NOT EDIT HEADER --- //
 
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
 # Install dependencies stage
 FROM base AS deps
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json pnpm-lock.yaml* ./
 RUN npm install -g pnpm && pnpm install
 
 # Build stage

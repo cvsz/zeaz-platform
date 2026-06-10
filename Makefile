@@ -144,8 +144,7 @@ shellcheck:
 	@if command -v shellcheck >/dev/null 2>&1; then find scripts ops -type f -name '*.sh' -print0 2>/dev/null | xargs -0 -r shellcheck -S error; else echo "shellcheck missing; skipped"; fi
 
 yaml-validate:
-	@if [ -f scripts/validate-yaml.py ]; then $(PYTHON) scripts/validate-yaml.py; else echo "INFO: scripts/validate-yaml.py not present; skipped"; fi
-
+	@python3 scripts/validate/yaml_validate.py
 tf-init:
 	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init $(TF_ARGS)
 
@@ -475,6 +474,7 @@ zeaz-dev-plan: ## Print the zeaz.dev production route plan
 
 .PHONY: zeaz-dev-apply
 zeaz-dev-apply: ## Run controlled zeaz.dev apply checks
+	@bash scripts/lib/guard-live.sh "bash scripts/cloudflare/zeaz-dev-plan.sh" 5
 	@bash scripts/cloudflare/zeaz-dev-apply.sh
 
 .PHONY: zeaz-dev-rollback-plan
@@ -632,6 +632,7 @@ tf-zdash-apply: ## Guarded zDash Terraform apply
 	@test "$${CONFIRM_TERRAFORM_APPLY:-no}" = "yes" || (echo "ERROR: CONFIRM_TERRAFORM_APPLY=yes required"; exit 1)
 	@test "$${COST_LOCK:-true}" = "true" || (echo "ERROR: COST_LOCK=true required"; exit 1)
 	@test "$${ALLOW_PAID_CLOUDFLARE_FEATURES:-false}" = "false" || (echo "ERROR: paid Cloudflare features must stay disabled"; exit 1)
+	@bash scripts/lib/guard-live.sh "bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)" 10
 	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
 
 .PHONY: cf-zdash-token-diagnose
@@ -683,6 +684,7 @@ cvsz-apps-merge-plan: ## Plan adoption of apps/* from cvsz/*
 	@$(PYTHON) scripts/apps/plan-cvsz-apps-merge.py
 
 cvsz-apps-merge-apply: ## Adopt local apps/* into zeaz-platform; guarded
+	@bash scripts/lib/guard-live.sh "$(PYTHON) scripts/apps/plan-cvsz-apps-merge.py" 5
 	@bash scripts/apps/adopt-cvsz-apps-apply.sh
 
 cvsz-apps-merge-validate: ## Validate apps/* merge/adoption hygiene
@@ -773,3 +775,40 @@ apps-source-review-strict: ## Review apps/* and fail on critical findings
 
 apps-source-review-report: apps-source-review ## Print apps source review report
 	@sed -n '1,260p' reports/platform/apps-source-review.md
+
+# =============================================================================
+# Generic App Wrappers
+# =============================================================================
+
+.PHONY: app-%
+app-%: ## Run a target in a specific app (e.g., make app-openwork-dev)
+	@app_name=$$(echo $* | cut -d'-' -f1); \
+	target=$$(echo $* | cut -d'-' -f2-); \
+	if [ -d "apps/$$app_name" ]; then \
+		echo "Running 'make $$target' in apps/$$app_name..."; \
+		$(MAKE) -C apps/$$app_name $$target; \
+	else \
+		echo "ERROR: App apps/$$app_name does not exist." >&2; \
+		exit 1; \
+	fi
+
+.PHONY: all-apps-install
+all-apps-install: ## Run install across all apps
+	@for app in apps/*; do \
+		if [ -f "$$app/Makefile" ] && grep -q "^install:" "$$app/Makefile"; then \
+			echo "Installing $$app..."; \
+			$(MAKE) -C "$$app" install; \
+		fi; \
+	done
+
+.PHONY: all-apps-build
+all-apps-build: ## Run build across all apps
+	@for app in apps/*; do \
+		if [ -f "$$app/Makefile" ] && grep -q "^build:" "$$app/Makefile"; then \
+			echo "Building $$app..."; \
+			$(MAKE) -C "$$app" build; \
+		fi; \
+	done
+
+# Include Zeaz Cloudflare routing ops Makefile
+-include ops/zeaz-cloudflare/Makefile.zeaz-cloudflare.mk

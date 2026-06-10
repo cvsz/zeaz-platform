@@ -1,0 +1,132 @@
+Deep dive, configure, start, and verify every ZEAZ app.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Apps and domains:
+
+1. openwork
+   Path:
+     /home/zeazdev/zeaz-platform/apps/openwork
+   Domain:
+     zow.zeaz.dev
+   Port:
+     4101
+
+2. api
+   Path:
+     /home/zeazdev/zeaz-platform/apps/api
+   Domain:
+     api-zcfdash.zeaz.dev
+   Port:
+     4102
+
+3. web
+   Path:
+     /home/zeazdev/zeaz-platform/apps/web
+   Domain:
+     zcfdash.zeaz.dev
+   Port:
+     4103
+
+4. zoffice
+   Path:
+     /home/zeazdev/zeaz-platform/apps/zoffice
+   Domain:
+     zoffice.zeaz.dev
+   Port:
+     4104
+
+5. zwallet
+   Path:
+     /home/zeazdev/zeaz-platform/apps/zwallet
+   Domain:
+     app.zeaz.dev
+   Port:
+     4105
+
+6. ztrader
+   Path:
+     /home/zeazdev/zeaz-platform/apps/ztrader
+   Domain:
+     ztrader.zeaz.dev
+   Port:
+     4106
+
+7. zdash
+   Path:
+     /home/zeazdev/zeaz-platform/apps/zdash
+   Domain:
+     dash.zeaz.dev
+   Port:
+     4107
+
+8. zsp-aitool
+   Path:
+     /home/zeazdev/zeaz-platform/apps/zsp-aitool
+   Domain:
+     zaiz.zeaz.dev
+   Port:
+     4108
+
+9. zveo
+   Path:
+     /home/zeazdev/zeaz-platform/apps/zveo
+   Domain:
+     zveo.zeaz.dev
+   Port:
+     4109
+
+10. zsticker
+    Path:
+      /home/zeazdev/zeaz-platform/apps/zsticker
+    Domain:
+      zsticker.zeaz.dev
+    Port:
+      4110
+
+11. zcino
+    Path:
+      /home/zeazdev/zeaz-platform/apps/zcino
+    Domain:
+      zcino.zeaz.dev
+    Port:
+      4111
+
+12. zlms-prod
+    Path:
+      /home/zeazdev/zeaz-platform/apps/zlms-prod
+    Domain:
+      zlms.zeaz.dev
+    Port:
+      4112
+
+Tasks for each app:
+1. Inspect package manager:
+   - npm
+   - pnpm
+   - yarn
+   - bun
+2. Inspect framework.
+3. Detect start command.
+4. Detect build command.
+5. Add or update PORT env.
+6. Check if app depends on API URL.
+7. Set public base URLs where applicable.
+8. Start app locally.
+9. Verify:
+   curl -I http://localhost:PORT
+10. Record result.
+
+Generate:
+  scripts/start/start-all-apps.sh
+  scripts/start/stop-all-apps.sh
+  scripts/start/restart-all-apps.sh
+  scripts/start/check-all-apps.sh
+  docs/reports/APP_STARTUP_REPORT.md
+
+Acceptance criteria:
+  - Every app has a known start command.
+  - Every app has a known port.
+  - Every app can be health-checked or failure is documented.
+  - Startup scripts are idempotent.

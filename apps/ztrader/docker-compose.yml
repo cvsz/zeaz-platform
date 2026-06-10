@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -47,7 +46,7 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "127.0.0.1:${BACKEND_PORT:-8016}:8000"
+      - "127.0.0.1:${BACKEND_PORT:-8004}:8000"
     environment:
       ENVIRONMENT: ${ENVIRONMENT:-production}
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ztrader}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ztrader_db}
@@ -107,7 +106,20 @@ services:
     environment:
       NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-https://api-ztrader.zeaz.dev}
       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-https://api-ztrader.zeaz.dev/api/v1}
+    networks:
+      - default
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.ztrader-frontend.rule=Host(`ztrader.zeaz.dev`)
+      - traefik.http.routers.ztrader-frontend.entrypoints=web
+      - traefik.http.services.ztrader-frontend.loadbalancer.server.port=3000
 
 volumes:
   pgdata:
   redisdata:
+
+networks:
+  proxy:
+    external: true

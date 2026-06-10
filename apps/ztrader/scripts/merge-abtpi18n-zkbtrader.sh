@@ -85,6 +85,8 @@ main() {
   copy_dir "$ABTP/monitoring" "$ZTRADER/backend/src/ztrader/monitoring/abtpi18n"
   copy_dir "$ABTP/scripts" "$ZTRADER/scripts/abtpi18n"
   copy_dir "$ABTP/tests" "$ZTRADER/backend/tests/abtpi18n"
+  copy_dir "$ABTP/tools" "$ZTRADER/backend/src/ztrader/abt/tools"
+  copy_dir "$ABTP/apps/backend/src" "$ZTRADER/backend/src/ztrader/abt"
   copy_file "$ABTP/package.json" "$ZTRADER/merge-sources/abtpi18n/package.json"
   copy_file "$ABTP/pyproject.toml" "$ZTRADER/merge-sources/abtpi18n/pyproject.toml"
   copy_file "$ABTP/verify.sh" "$ZTRADER/scripts/abtpi18n/verify.sh"
@@ -109,9 +111,10 @@ main() {
     python3 - <<'PY'
 from pathlib import Path
 p = Path('apps/ztrader/backend/src/ztrader/core/config.py')
-s = p.read_text()
-s = s.replace('GLOBAL_KILL_SWITCH: bool = False', 'GLOBAL_KILL_SWITCH: bool = True')
-p.write_text(s)
+if p.exists():
+    s = p.read_text()
+    s = s.replace('GLOBAL_KILL_SWITCH: bool = False', 'GLOBAL_KILL_SWITCH: bool = True')
+    p.write_text(s)
 PY
   fi
 
