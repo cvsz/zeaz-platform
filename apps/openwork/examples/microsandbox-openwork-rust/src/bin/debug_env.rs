@@ -1,5 +1,5 @@
 use anyhow::Result;
-use microsandbox::{NetworkPolicy, Sandbox};
+use microsandbox::Sandbox;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -8,7 +8,6 @@ async fn main() -> Result<()> {
         .replace()
         .memory(1024)
         .cpus(1)
-        .network(|n| n.policy(NetworkPolicy::allow_all()))
         .create()
         .await?;
 

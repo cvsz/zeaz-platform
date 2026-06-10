@@ -8,7 +8,7 @@
 namespace PhpMyAdmin\Twig;
 
 use PhpMyAdmin\Twig\I18n\TokenParserTrans;
-use Twig\Extensions\I18nExtension as TwigI18nExtension;
+use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
 /**
@@ -16,7 +16,7 @@ use Twig\TwigFilter;
  *
  * @package PhpMyAdmin\Twig
  */
-class I18nExtension extends TwigI18nExtension
+class I18nExtension extends AbstractExtension
 {
     /**
      * Returns the token parser instances to add to the existing list.
