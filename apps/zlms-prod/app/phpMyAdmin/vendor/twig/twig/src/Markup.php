@@ -14,12 +14,21 @@ namespace Twig;
 /**
  * Marks a content as safe.
  *
+ * Instances of this class (and any subclass) are trusted by the Twig
+ * sandbox: method calls and property accesses on a Markup instance bypass
+ * the SecurityPolicy method/property allowlists. This is by design: Markup
+ * represents content that has already been deemed safe to output.
+ *
+ * As a consequence, when extending this class, you are responsible for
+ * ensuring that every method and property exposed by your subclass is
+ * safe to call from a sandboxed template.
+ *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Markup implements \Countable
+class Markup implements \Countable, \JsonSerializable, \Stringable
 {
-    protected $content;
-    protected $charset;
+    private $content;
+    private ?string $charset;
 
     public function __construct($content, $charset)
     {
@@ -27,18 +36,31 @@ class Markup implements \Countable
         $this->charset = $charset;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->content;
+    }
+
+    public function getCharset(): string
+    {
+        return $this->charset;
     }
 
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
-        return \function_exists('mb_get_info') ? mb_strlen($this->content, $this->charset) : \strlen($this->content);
+        return mb_strlen($this->content, $this->charset);
+    }
+
+    /**
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        return $this->content;
     }
 }
-
-class_alias('Twig\Markup', 'Twig_Markup');

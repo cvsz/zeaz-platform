@@ -8,16 +8,20 @@
 namespace PhpMyAdmin\Twig\I18n;
 
 use Twig\Compiler;
-use Twig\Extensions\Node\TransNode;
-use Twig\Node\Node;
 use Twig\Node\Expression\AbstractExpression;
+use Twig\Node\Expression\ConstantExpression;
+use Twig\Node\Expression\FilterExpression;
+use Twig\Node\Expression\NameExpression;
+use Twig\Node\Expression\TempNameExpression;
+use Twig\Node\Node;
+use Twig\Node\PrintNode;
 
 /**
  * Class NodeTrans
  *
  * @package PhpMyAdmin\Twig\I18n
  */
-class NodeTrans extends TransNode
+class NodeTrans extends Node
 {
     /**
      * Constructor.
@@ -150,6 +154,47 @@ class NodeTrans extends TransNode
 
             $compiler->raw(");\n");
         }
+    }
+
+    /**
+     * @param Node $body Body node
+     *
+     * @return array
+     */
+    protected function compileString(Node $body)
+    {
+        if (
+            $body instanceof NameExpression
+            || $body instanceof ConstantExpression
+            || $body instanceof TempNameExpression
+        ) {
+            return array($body, array());
+        }
+
+        $vars = array();
+        if (count($body)) {
+            $msg = '';
+
+            foreach ($body as $node) {
+                if ($node instanceof PrintNode) {
+                    $n = $node->getNode('expr');
+                    while ($n instanceof FilterExpression) {
+                        $n = $n->getNode('node');
+                    }
+                    $msg .= sprintf('%%%s%%', $n->getAttribute('name'));
+                    $vars[] = new NameExpression($n->getAttribute('name'), $n->getTemplateLine());
+                } else {
+                    $msg .= $node->getAttribute('data');
+                }
+            }
+        } else {
+            $msg = $body->getAttribute('data');
+        }
+
+        return array(
+            new Node(array(new ConstantExpression(trim($msg), $body->getTemplateLine()))),
+            $vars,
+        );
     }
 
     /**

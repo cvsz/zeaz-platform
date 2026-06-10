@@ -12,7 +12,8 @@
                 ) }}
             </a>
         </th>
-        {% for stat_name, stat in column_order if stat_name in first_database|keys %}
+        {% for stat_name, stat in column_order %}
+            {% if stat_name in first_database|keys %}
             {% set url_params = url_params|merge({
                 'sort_by': stat_name,
                 'sort_order': sort_by == stat_name and sort_order == 'desc' ? 'asc' : 'desc'
@@ -27,6 +28,7 @@
                     ) }}
                 </a>
             </th>
+        {% endif %}
         {% endfor %}
         {% if master_replication %}
             <th>{% trans 'Master replication' %}</th>
