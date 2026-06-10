@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     # Trading Defaults
     EXECUTION_MODE: str = "paper" # paper or live
     LIVE_TRADING_ENABLED: bool = False
-    GLOBAL_KILL_SWITCH: bool = False
+    GLOBAL_KILL_SWITCH: bool = True
 
     # Risk Limits
     RISK_MAX_ORDER_NOTIONAL: float = 100.0

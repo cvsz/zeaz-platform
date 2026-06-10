@@ -1,7 +1,5 @@
 version: '3.8'
-
 services:
-  # Relational PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: ztrader-postgres
@@ -11,20 +9,16 @@ services:
       POSTGRES_PASSWORD: secure_db_password
       POSTGRES_DB: ztrader_db
     ports:
-      - "5432:5432"
+    - 5438:5432
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-
-  # Redis for Celery queues and cache
+    - pgdata:/var/lib/postgresql/data
+    - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   redis:
     image: redis:7-alpine
     container_name: ztrader-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
-
-  # FastAPI API Gateway
+    - 6384:6379
   backend-api:
     build:
       context: ./backend
@@ -32,23 +26,21 @@ services:
     container_name: ztrader-backend-api
     restart: unless-stopped
     depends_on:
-      - postgres
-      - redis
+    - postgres
+    - redis
     ports:
-      - "8000:8000"
+    - 8004:8000
     environment:
-      - ENVIRONMENT=production
-      - DATABASE_URL=postgresql+asyncpg://ztrader:secure_db_password@postgres:5432/ztrader_db
-      - REDIS_URL=redis://redis:6379/0
-      - ENCRYPTION_KEY=00000000000000000000000000000000
-      - JWT_SECRET=00000000000000000000000000000000
-      - EXECUTION_MODE=paper
-      - LIVE_TRADING_ENABLED=false
-      - GLOBAL_KILL_SWITCH=false
-      - RISK_MAX_ORDER_NOTIONAL=100.0
-      - RISK_ALLOWED_SYMBOLS=BTC/USDT,ETH/USDT
-
-  # Celery Worker for long-running strategy execution
+    - ENVIRONMENT=production
+    - DATABASE_URL=postgresql+asyncpg://ztrader:secure_db_password@postgres:5432/ztrader_db
+    - REDIS_URL=redis://redis:6379/0
+    - ENCRYPTION_KEY=00000000000000000000000000000000
+    - JWT_SECRET=00000000000000000000000000000000
+    - EXECUTION_MODE=paper
+    - LIVE_TRADING_ENABLED=false
+    - GLOBAL_KILL_SWITCH=false
+    - RISK_MAX_ORDER_NOTIONAL=100.0
+    - RISK_ALLOWED_SYMBOLS=BTC/USDT,ETH/USDT
   celery-worker:
     build:
       context: ./backend
@@ -56,21 +48,20 @@ services:
     container_name: ztrader-celery-worker
     restart: unless-stopped
     depends_on:
-      - redis
-      - postgres
+    - redis
+    - postgres
     environment:
-      - ENVIRONMENT=production
-      - DATABASE_URL=postgresql+asyncpg://ztrader:secure_db_password@postgres:5432/ztrader_db
-      - REDIS_URL=redis://redis:6379/0
-      - ENCRYPTION_KEY=00000000000000000000000000000000
-      - EXECUTION_MODE=paper
-      - LIVE_TRADING_ENABLED=false
-      - GLOBAL_KILL_SWITCH=false
-      - RISK_MAX_ORDER_NOTIONAL=100.0
-      - RISK_ALLOWED_SYMBOLS=BTC/USDT,ETH/USDT
+    - ENVIRONMENT=production
+    - DATABASE_URL=postgresql+asyncpg://ztrader:secure_db_password@postgres:5432/ztrader_db
+    - REDIS_URL=redis://redis:6379/0
+    - ENCRYPTION_KEY=00000000000000000000000000000000
+    - JWT_SECRET=00000000000000000000000000000000
+    - EXECUTION_MODE=paper
+    - LIVE_TRADING_ENABLED=false
+    - GLOBAL_KILL_SWITCH=false
+    - RISK_MAX_ORDER_NOTIONAL=100.0
+    - RISK_ALLOWED_SYMBOLS=BTC/USDT,ETH/USDT
     command: celery -A ztrader.worker worker --loglevel=info
-
-  # Next.js UI Frontend
   frontend:
     build:
       context: ./frontend
@@ -78,11 +69,23 @@ services:
     container_name: ztrader-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+    - 3016:3000
     environment:
-      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+    - NEXT_PUBLIC_BACKEND_URL=http://localhost:8004
     depends_on:
-      - backend-api
+    - backend-api
+    networks:
+    - default
+    - proxy
+    labels:
+    - traefik.enable=true
+    - traefik.docker.network=proxy
+    - traefik.http.routers.frontend.rule=Host(`ztrader.zeaz.dev`)
+    - traefik.http.routers.frontend.entrypoints=web
+    - traefik.http.services.frontend.loadbalancer.server.port=3000
 
 volumes:
   pgdata:
+networks:
+  proxy:
+    external: true
