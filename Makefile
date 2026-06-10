@@ -105,10 +105,10 @@ validate-agent: ci-validate codex-suite-validate
 codex-suite-validate:
 	@$(CODEX_SUITE_PYTHON) docs/codex/scripts/validate_codex_suite.py
 
-ci-validate: test env-format-validate yaml-validate check-no-cf-vars tf-fmt-check
+ci-validate: test env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."
 
-validate: test validate-env env-format-validate yaml-validate check-no-cf-vars tf-fmt-check
+validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
 	@echo "Validation complete."
 
 validate-env:
@@ -145,6 +145,9 @@ shellcheck:
 
 yaml-validate:
 	@python3 scripts/validate/yaml_validate.py
+
+gitlink-validate:
+	@bash scripts/validate-gitlinks.sh
 tf-init:
 	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init $(TF_ARGS)
 
