@@ -1,0 +1,25 @@
+services:
+  zlms:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+    expose:
+      - "3000"
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.zlms.rule=Host(`zlms.zeaz.dev`)"
+      - "traefik.http.routers.zlms.entrypoints=web"
+      - "traefik.http.services.zlms.loadbalancer.server.port=3000"
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true

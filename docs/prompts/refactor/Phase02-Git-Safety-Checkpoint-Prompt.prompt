@@ -1,0 +1,25 @@
+Before modifying the project, create a safe checkpoint.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Tasks:
+1. Check git status.
+2. Create backup folder:
+   .backups/YYYYMMDD-HHMMSS/
+3. Save important files before editing:
+   - docker-compose*.yml
+   - package.json files
+   - .env.example files
+   - Cloudflare configs
+   - nginx configs
+   - start scripts
+4. If this is a git repository:
+   - create branch:
+     refactor/postgresql-cloudflare-port-normalization
+5. Do not commit secrets.
+6. Add .env and generated secret files to .gitignore if missing.
+7. Generate report:
+   docs/reports/ZEAZ_SAFETY_CHECKPOINT.md
+
+Commands must be safe and idempotent.

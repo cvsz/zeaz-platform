@@ -1,0 +1,56 @@
+Refactor database persistence to PostgreSQL.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Goal:
+  Replace unsafe/in-memory/local-only persistence with PostgreSQL-backed storage where needed.
+
+Tasks:
+1. Search for:
+   - sqlite
+   - better-sqlite3
+   - lowdb
+   - localStorage used as backend persistence
+   - in-memory arrays/maps for persistent data
+   - JSON file DB
+   - mock DB
+   - TODO database
+   - Prisma configs
+   - Drizzle configs
+   - TypeORM configs
+   - Sequelize configs
+   - direct pg usage
+2. Identify each app requiring database persistence.
+3. Standardize PostgreSQL environment variables:
+   POSTGRES_HOST=postgres
+   POSTGRES_PORT=5432
+   POSTGRES_DB=zeaz_platform
+   POSTGRES_USER=zeazdev
+   POSTGRES_PASSWORD=${SECURE_DB_PASSWORD}
+   DATABASE_URL=postgresql://zeazdev:${SECURE_DB_PASSWORD}@postgres:5432/zeaz_platform
+4. Auto-generate secure DB password using a safe script:
+   openssl rand -base64 48 | tr -d '\n'
+5. Store generated password only in:
+   .env.local
+   .env.production.local
+   or deployment secret files ignored by git.
+6. Update docker-compose to include PostgreSQL if missing.
+7. Add healthcheck for PostgreSQL.
+8. Add migrations if framework supports it.
+9. Add database connection validation script.
+10. Do not print the password in final logs.
+11. Update .env.example with placeholder only:
+   SECURE_DB_PASSWORD=change_me_with_generated_secret
+12. Generate:
+   scripts/db/generate-secure-db-password.sh
+   scripts/db/check-postgres.sh
+   scripts/db/migrate-all.sh
+   docs/reports/POSTGRESQL_REFACTOR_REPORT.md
+
+Acceptance criteria:
+  - PostgreSQL service exists.
+  - Secure DB password can be generated automatically.
+  - DATABASE_URL uses env variables.
+  - No generated secret is committed.
+  - Apps using persistence can connect to PostgreSQL.

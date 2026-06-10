@@ -1,0 +1,1104 @@
+---
+title: Zeaz Platform Structure
+---
+
+```
+/home/zeazdev/zeaz-platform
+├── agents
+│   └── topology.py
+├── AGENTS.md
+├── apps
+│   ├── ABTPi18n
+│   │   ├── apps
+│   │   ├── CHANGELOG.md
+│   │   ├── configs
+│   │   ├── core
+│   │   ├── docker-compose.yml
+│   │   ├── docs
+│   │   ├── Grok.md
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── install.sh
+│   │   ├── LICENSE
+│   │   ├── monitoring
+│   │   ├── package.json
+│   │   ├── pnpm-lock.yaml
+│   │   ├── pnpm-workspace.yaml
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── release.sh
+│   │   ├── ruff.toml
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── strategies
+│   │   ├── tests
+│   │   ├── tools
+│   │   ├── validate-release.sh
+│   │   └── verify.sh
+│   ├── api
+│   │   ├── main.py
+│   │   ├── requirements.txt
+│   │   ├── requirements.txt.bak
+│   │   └── routers
+│   ├── openwork
+│   │   ├── AGENTS.md
+│   │   ├── app-demo.gif
+│   │   ├── apps
+│   │   ├── changelog
+│   │   ├── CODE_OF_CONDUCT.md
+│   │   ├── constants.json
+│   │   ├── docs
+│   │   ├── ee
+│   │   ├── evals
+│   │   ├── examples
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── LICENSE
+│   │   ├── Makefile
+│   │   ├── openwork-logo-transparent.svg
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── packages
+│   │   ├── packaging
+│   │   ├── patches
+│   │   ├── pnpm-lock.yaml
+│   │   ├── pnpm-workspace.yaml
+│   │   ├── prds
+│   │   ├── README.md
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── skills-lock.json
+│   │   ├── STATS.md
+│   │   ├── STATS_V2.md
+│   │   ├── SUPPORT.md
+│   │   ├── translated_readmes
+│   │   ├── TRANSLATIONS.md
+│   │   └── turbo.json
+│   ├── web
+│   │   ├── eslint.config.mjs
+│   │   ├── next.config.ts
+│   │   ├── next-env.d.ts
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── pnpm-lock.yaml
+│   │   ├── pnpm-workspace.yaml
+│   │   ├── postcss.config.mjs
+│   │   ├── public
+│   │   ├── README.md
+│   │   ├── src
+│   │   └── tsconfig.json
+│   ├── zAcademy
+│   │   ├── apps
+│   │   ├── architecture
+│   │   ├── automation
+│   │   ├── docs
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── infra
+│   │   ├── Makefile
+│   │   ├── manifest
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── packages
+│   │   ├── pnpm-workspace.yaml
+│   │   ├── prompts
+│   │   ├── README.md
+│   │   ├── scripts
+│   │   ├── services
+│   │   ├── templates
+│   │   ├── tests
+│   │   └── turbo.json
+│   ├── zcino
+│   │   ├── cmd
+│   │   ├── Dockerfile
+│   │   ├── Dockerfile.zeaznode
+│   │   ├── docs
+│   │   ├── frontend
+│   │   ├── go.mod
+│   │   ├── go.sum
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── infra
+│   │   ├── internal
+│   │   ├── k8s
+│   │   ├── legacy_api.go
+│   │   ├── main.go
+│   │   ├── migrations
+│   │   ├── policies
+│   │   ├── protocol
+│   │   ├── README.infra.md
+│   │   ├── README.md
+│   │   ├── release
+│   │   └── sdk
+│   ├── zdash
+│   │   ├── AGENTS-ECC.md
+│   │   ├── AGENTS.md
+│   │   ├── backend
+│   │   ├── backups
+│   │   ├── CHANGELOG.md
+│   │   ├── CODE-OF-CONDUCT.md
+│   │   ├── COMMUNITY.md
+│   │   ├── config
+│   │   ├── CONTRIBUTING.md
+│   │   ├── deploy
+│   │   ├── docker-compose.prod.secrets.yml
+│   │   ├── docker-compose.prod.yml
+│   │   ├── docker-compose.yml
+│   │   ├── docs
+│   │   ├── frontend
+│   │   ├── gh-set-env.sh
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── infra
+│   │   ├── install-zdash-fullstack.sh
+│   │   ├── install-zdash-prod.sh
+│   │   ├── LICENSE
+│   │   ├── Makefile
+│   │   ├── README.md
+│   │   ├── release
+│   │   ├── run_test.py
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── tools
+│   │   └── VERSION
+│   ├── zkbtrader
+│   │   ├── AGENTS.md
+│   │   ├── alembic
+│   │   ├── alembic.ini
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile.api
+│   │   ├── Dockerfile.worker
+│   │   ├── docs
+│   │   ├── harness
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── LICENSE
+│   │   ├── Makefile
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── prompts
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── reports
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── src
+│   │   └── tests
+│   ├── zLinebot
+│   │   ├── admin
+│   │   ├── AGENTS.MD
+│   │   ├── app
+│   │   ├── apps
+│   │   ├── architecture.svg
+│   │   ├── bootstrap.sh
+│   │   ├── cloud
+│   │   ├── cloudflare
+│   │   ├── cloudflared
+│   │   ├── CNAME
+│   │   ├── CODE_OF_CONDUCT.md
+│   │   ├── codex_release.log
+│   │   ├── codex.sh
+│   │   ├── contracts
+│   │   ├── CONTRIBUTING.md
+│   │   ├── db
+│   │   ├── deploy-k8s.sh
+│   │   ├── deploy.sh
+│   │   ├── docker
+│   │   ├── docker-compose.blue.yml
+│   │   ├── docker-compose.green.yml
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── docs
+│   │   ├── flink
+│   │   ├── fly.toml
+│   │   ├── index.html
+│   │   ├── infra
+│   │   ├── install_full.sh
+│   │   ├── install-monitoring.sh
+│   │   ├── install-observability.sh
+│   │   ├── install.sh
+│   │   ├── install_ultimate.sh
+│   │   ├── k8s
+│   │   ├── LICENSE
+│   │   ├── ml
+│   │   ├── mobile
+│   │   ├── nginx
+│   │   ├── packages
+│   │   ├── README.md
+│   │   ├── README.md.bak
+│   │   ├── reports
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── tools
+│   │   ├── warehouse
+│   │   ├── watchdog.sh
+│   │   ├── zlinebot-master-orchestrator.sh
+│   │   ├── zlinebot-master-selfheal.sh
+│   │   └── zlinebot-master.sh
+│   ├── zlms-prod
+│   │   ├── AGENTS.md
+│   │   ├── app
+│   │   ├── architecture
+│   │   ├── ARCHITECTURE_REVIEW.md
+│   │   ├── ATTACK_SURFACE.md
+│   │   ├── CHANGELOG.md
+│   │   ├── CNAME
+│   │   ├── codemods
+│   │   ├── csp-middleware.ts
+│   │   ├── db
+│   │   ├── DEVEXPRESS_16_2_FETCH.md
+│   │   ├── docs
+│   │   ├── frontend
+│   │   ├── gh.sh
+│   │   ├── git-release-tool.sh
+│   │   ├── git-tools.sh
+│   │   ├── hydration-integrity.ts
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── INCIDENT_RESPONSE.md
+│   │   ├── INSTALLER.md
+│   │   ├── installer.sh
+│   │   ├── k8s
+│   │   ├── MIGRATION_GUIDE.md
+│   │   ├── migrations
+│   │   ├── next.config.ts
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── QUALITY_REPORT.md
+│   │   ├── README.md
+│   │   ├── scripts
+│   │   ├── security
+│   │   ├── SECURITY_DEEP_DIVE.md
+│   │   ├── SECURITY.md
+│   │   ├── SECURITY_PATCHES.md
+│   │   ├── SECURITY_REPORT.md
+│   │   ├── tests
+│   │   ├── THREAT_MODEL.md
+│   │   ├── trusted-types.ts
+│   │   ├── tsconfig.strict.json
+│   │   ├── UBUNTU_24_04_MANUAL.md
+│   │   ├── VERSION
+│   │   └── z-runner
+│   ├── zoffice
+│   │   ├── ALPHA-CLEANUP.md
+│   │   ├── app
+│   │   ├── DEPLOYMENT-LOG.md
+│   │   ├── docker-compose.yml
+│   │   ├── docs
+│   │   ├── fix_chat_js_v10_final.py
+│   │   ├── fix_chat_js_v11_attempt.py
+│   │   ├── fix_chat_js_v1.py
+│   │   ├── fix_chat_js_v2.py
+│   │   ├── fix_chat_js_v3.py
+│   │   ├── fix_chat_js_v4_final.py
+│   │   ├── fix_chat_js_v4.py
+│   │   ├── fix_chat_js_v5_final_final.py
+│   │   ├── fix_chat_js_v5_final.py
+│   │   ├── fix_chat_js_v6_final.py
+│   │   ├── fix_chat_js_v7_final.py
+│   │   ├── fix_chat_js_v8_final_final.py
+│   │   ├── fix_chat_js_v8_final.py
+│   │   ├── fix_chat_js_v9_final.py
+│   │   ├── fix_game_js.py
+│   │   ├── fix_game_js_v10.py
+│   │   ├── fix_game_js_v2.py
+│   │   ├── fix_game_js_v3.py
+│   │   ├── fix_game_js_v4.py
+│   │   ├── fix_game_js_v5.py
+│   │   ├── fix_game_js_v6.py
+│   │   ├── fix_game_js_v7.py
+│   │   ├── fix_game_js_v8.py
+│   │   ├── fix_game_js_v9.py
+│   │   ├── fix_gateway_presence.py
+│   │   ├── fix_gateway_presence_v10.py
+│   │   ├── fix_gateway_presence_v11.py
+│   │   ├── fix_gateway_presence_v12.py
+│   │   ├── fix_gateway_presence_v13.py
+│   │   ├── fix_gateway_presence_v14.py
+│   │   ├── fix_gateway_presence_v15.py
+│   │   ├── fix_gateway_presence_v2.py
+│   │   ├── fix_gateway_presence_v3.py
+│   │   ├── fix_gateway_presence_v4.py
+│   │   ├── fix_gateway_presence_v5.py
+│   │   ├── fix_gateway_presence_v6.py
+│   │   ├── fix_gateway_presence_v7.py
+│   │   ├── fix_gateway_presence_v8.py
+│   │   ├── fix_gateway_presence_v9.py
+│   │   ├── fix_project_store_sanitization.py
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── INTEGRATION-SPEC.md
+│   │   ├── kasm-browser-config
+│   │   ├── LICENSE
+│   │   ├── Makefile
+│   │   ├── merged_fixes_final_only1.py
+│   │   ├── merged_fixes_final_only.py
+│   │   ├── merged.py
+│   │   ├── m.py
+│   │   ├── plans
+│   │   ├── PROJECTS-FEATURE-SPEC.md
+│   │   ├── QA-CODE-QUALITY-SCAN.md
+│   │   ├── README.md
+│   │   ├── screenshot.png
+│   │   ├── _showBranchAssignMenu.js
+│   │   ├── _showDeskAssignMenu.js
+│   │   ├── skill
+│   │   ├── skills-lock.json
+│   │   ├── TASK-agent-creator.md
+│   │   ├── TASK-editor-ui.md
+│   │   ├── TASK-furniture-editor.md
+│   │   ├── TASK-walls-pathfinding.md
+│   │   ├── TASK-Z-ORDER-FIX.md
+│   │   ├── test_review_parser.py
+│   │   ├── tests
+│   │   ├── thumbnail.png
+│   │   ├── video-thumbnail.png
+│   │   ├── website
+│   │   └── workspace
+│   ├── zsp-aitool
+│   │   ├── AGENTS.md
+│   │   ├── apps
+│   │   ├── CLAUDE.md
+│   │   ├── configs
+│   │   ├── CONTRIBUTING.md
+│   │   ├── deploy
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── docs
+│   │   ├── ECC_REVIEW_REPORT.md
+│   │   ├── extension
+│   │   ├── GEMINI.md
+│   │   ├── generated
+│   │   ├── LICENSE
+│   │   ├── logs
+│   │   ├── Makefile
+│   │   ├── next.config.js
+│   │   ├── next.config.ts
+│   │   ├── next-env.d.ts
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── patch-components.js
+│   │   ├── patch-hyperframes.js
+│   │   ├── patch-hyperframes-subpages.js
+│   │   ├── postcss.config.js
+│   │   ├── prisma
+│   │   ├── public
+│   │   ├── README.md
+│   │   ├── scaffold-pages.js
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── skills-lock.json
+│   │   ├── src
+│   │   ├── start.sh
+│   │   ├── start.sh.bak.20260522-103151
+│   │   ├── tailwind.config.ts
+│   │   ├── tests
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   ├── tsconfig.typecheck.json
+│   │   ├── tsconfig.typecheck.tsbuildinfo
+│   │   ├── typecheck_report.txt
+│   │   ├── update-agy-cli.sh
+│   │   ├── vitest.config.ts
+│   │   ├── zsp-agent-agy-bootstrap-safe.sh
+│   │   ├── zsp-agent-claude-bootstrap-safe.sh
+│   │   ├── zsp-agent-codex-bootstrap-safe.sh
+│   │   ├── zsp-agent-status.sh
+│   │   ├── zsp-all-agent-bootstrap-safe.sh
+│   │   ├── ZSP_DEEP_DIVE_REPORT.md
+│   │   └── zsp-deep-dive.sh
+│   ├── zsticker
+│   │   ├── auto_cron.sh
+│   │   ├── auto_setup.py
+│   │   ├── CHANGELOG.md
+│   │   ├── CODE_OF_CONDUCT.md
+│   │   ├── config
+│   │   ├── config.example
+│   │   ├── conftest.py
+│   │   ├── CONTRIBUTING.md
+│   │   ├── credentials.json
+│   │   ├── deploy
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── dummy.png
+│   │   ├── entrypoint.sh
+│   │   ├── fonts
+│   │   ├── IMPORT_SOURCE.md
+│   │   ├── install.bat
+│   │   ├── install.sh
+│   │   ├── legacy
+│   │   ├── logs
+│   │   ├── main.py
+│   │   ├── Makefile
+│   │   ├── output
+│   │   ├── privacy.html
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   ├── scripts
+│   │   ├── SECURITY.md
+│   │   ├── setup_google_cloud.py
+│   │   ├── src
+│   │   ├── templates
+│   │   ├── terms.html
+│   │   ├── tests
+│   │   ├── venv
+│   │   └── zsticker-v1.0.0.zip
+│   ├── ztrader
+│   │   ├── backend
+│   │   ├── CODE_OF_CONDUCT.md
+│   │   ├── CONTRIBUTING.md
+│   │   ├── docker-compose.yml
+│   │   ├── frontend
+│   │   ├── LICENSE
+│   │   ├── Makefile
+│   │   ├── README.md
+│   │   └── SECURITY.md
+│   ├── zveo
+│   │   ├── AGENTS.MD
+│   │   ├── apps
+│   │   ├── db
+│   │   ├── docs
+│   │   ├── drizzle.config.ts
+│   │   ├── infra
+│   │   ├── legacy
+│   │   ├── package.json
+│   │   ├── packages
+│   │   ├── pnpm-lock.yaml
+│   │   ├── pnpm-workspace.yaml
+│   │   ├── pytest.ini
+│   │   ├── README.md
+│   │   ├── requirements-dev.txt
+│   │   ├── requirements.txt
+│   │   ├── scripts
+│   │   ├── storage
+│   │   └── tests
+│   └── zwallet
+│       ├── admin
+│       ├── AGENTS.md
+│       ├── android-app
+│       ├── api
+│       ├── apps
+│       ├── ARCHITECTURE.md
+│       ├── backend
+│       ├── CNAME
+│       ├── CODEX_TASKS_MASTER_FORM.md
+│       ├── CODEX_TASKS.md
+│       ├── dashboard
+│       ├── db
+│       ├── deploy-zveo-services.sh
+│       ├── docker-compose.yml
+│       ├── docs
+│       ├── eslint.config.mjs
+│       ├── fix-zveo-permissions-install.sh
+│       ├── formal
+│       ├── IMPORT_SOURCE.md
+│       ├── infra
+│       ├── k8s
+│       ├── migrations
+│       ├── mobile
+│       ├── package.json
+│       ├── packages
+│       ├── pnpm-lock.yaml
+│       ├── pnpm-workspace.yaml
+│       ├── README.md
+│       ├── scripts
+│       ├── security
+│       ├── services
+│       ├── terraform
+│       ├── tests
+│       └── tsconfig.base.json
+├── backups
+│   └── README.md
+├── bootstrap
+│   └── README.md
+├── CHANGELOG.md
+├── claude_code_zai_env.sh
+├── compose
+│   ├── core.yaml
+│   ├── edge.yaml
+│   ├── governance.yaml
+│   ├── trading-ai.yaml
+│   ├── trading-core.yaml
+│   ├── trading-risk.yaml
+│   └── trading.yaml
+├── configs
+│   ├── cloudflare
+│   │   ├── access
+│   │   ├── zdash
+│   │   └── zeaz-dev
+│   ├── platform
+│   │   ├── apps-port-plan.json
+│   │   └── apps-routing.json
+│   └── repos
+│       └── cvsz-apps-merge-map.json
+├── controllers
+│   └── runtime_controller.py
+├── dns
+│   └── records.yaml
+├── docker-compose.yml
+├── docs
+│   ├── ai
+│   │   ├── architecture.md
+│   │   └── cloudflare-agent.md
+│   ├── architecture
+│   │   ├── architecture.md
+│   │   ├── configuration.md
+│   │   ├── dns.md
+│   │   ├── ecc-integration.md
+│   │   ├── full-documentation.md
+│   │   ├── gitops.md
+│   │   ├── networking.md
+│   │   ├── observability.md
+│   │   ├── plan-matrix.md
+│   │   ├── state-management.md
+│   │   ├── tunnels.md
+│   │   ├── ZDASH_MONOREPO_INTEGRATION.md
+│   │   ├── zero-trust.md
+│   │   └── ZTRADER_MERGE_DESIGN.md
+│   ├── audit
+│   │   ├── cloudflare-topology-audit.md
+│   │   ├── deep-repo-review-2026-05-28.md
+│   │   ├── final-release-audit-2026-05-12.md
+│   │   ├── full-detail-review-2026-05-11.md
+│   │   ├── project-upgrade-report-2026-05-28.md
+│   │   ├── repo-audit-2026-05-12.md
+│   │   ├── repo-audit-2026-05-28.md
+│   │   └── uploaded-prompt-index.md
+│   ├── cloudflare
+│   │   ├── ai-gateway.md
+│   │   ├── CLOUDFLARE_CONTROL_PANEL_FREE.md
+│   │   ├── CLOUDFLARE_LLM_CONTEXT.md
+│   │   └── ZEAZ_DEV_ACCESS_POLICY.md
+│   ├── cloudflare-docs-update-2026-05-28.md
+│   ├── integrations
+│   │   ├── zveo.md
+│   │   └── zwallet.md
+│   ├── prompt
+│   │   ├── dependency-and-git-finalization-track.md
+│   │   ├── final-release-validation-track.md
+│   │   ├── makefile-final-evolution-track.md
+│   │   ├── meta-os-rebalance-readme.md
+│   │   ├── next-phase-master-evolution-track.md
+│   │   ├── supabase-ai-tools-integration.md
+│   │   └── universal-repo-git-finalization-rule.md
+│   ├── prompts
+│   │   ├── cloudflare-control-panel-free.prompt.md
+│   │   ├── fix-cloudflare-terraform-zdash-official.prompt
+│   │   ├── fix-phase51-52-ci.prompt.md
+│   │   ├── phase51-exec-import-zdash-monorepo.prompt
+│   │   ├── phase52-exec-update-zeaz-dev-controlled-apply.prompt
+│   │   ├── phase58-cvsz-apps-merge
+│   │   ├── phase60-apps-stack-port-refactor
+│   │   ├── prompt
+│   │   ├── update.prompt
+│   │   └── zeaz-platform-follow-up.prompt
+│   ├── releases
+│   │   ├── zdash
+│   │   └── zeaz-dev
+│   ├── reports
+│   │   ├── agents_report.md
+│   │   ├── generated
+│   │   ├── PHASE51_ZDASH_MONOREPO_IMPORT_REPORT.md
+│   │   ├── PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md
+│   │   ├── ZTRADER_INTEGRATION_REPORT.md
+│   │   └── ZTRADER_SECURITY_REPORT.md
+│   ├── runbooks
+│   │   ├── certificate-expiration.md
+│   │   ├── cloudflare-tunnel-online.md
+│   │   ├── CVSZ_APPS_MERGE_ADOPTION.md
+│   │   ├── ddos.md
+│   │   ├── disaster-recovery.md
+│   │   ├── dns-hijacking.md
+│   │   ├── GO_LIVE.md
+│   │   ├── jwt-compromise.md
+│   │   ├── saml-compromise.md
+│   │   ├── scim-failure.md
+│   │   ├── token-leakage.md
+│   │   ├── tunnel-outage.md
+│   │   ├── waf-bypass.md
+│   │   ├── worker-deployment-failure.md
+│   │   ├── ZDASH_MONOREPO_OPERATIONS.md
+│   │   ├── ZEAZ_DEV_POST_DEPLOY_CHECKLIST.md
+│   │   ├── ZEAZ_DEV_PRODUCTION_UPDATE.md
+│   │   ├── ZEAZ_DEV_ROLLBACK.md
+│   │   ├── zveo-real-origin-cutover.md
+│   │   └── zwallet-integration.md
+│   ├── security
+│   │   ├── ai-security.md
+│   │   ├── fintech-security.md
+│   │   ├── identity.md
+│   │   ├── public-ssh.md
+│   │   └── rate-limiting.md
+│   └── zdash
+│       ├── zdash-api-contract.md
+│       ├── zdash-cloudflare-pages.md
+│       ├── zdash-cloudflare-tunnel.md
+│       ├── zdash-integration-plan.md
+│       └── zdash-local-3006.md
+├── ecosystem.config.cjs
+├── gcp.sh
+├── generated
+│   ├── cloudflare
+│   │   ├── zdash-production-tunnel-ingress.yml
+│   │   └── zdash-tunnel-ingress.yml
+│   └── integration
+│       ├── apps-inventory.json
+│       ├── critical-apps-deep-dive.json
+│       └── cvsz-apps-merge-plan.json
+├── gpg-loopback.sh
+├── infra
+│   ├── ai-runtime
+│   │   ├── app
+│   │   ├── compose.yaml
+│   │   └── Dockerfile
+│   ├── authentik
+│   │   ├── certs
+│   │   ├── compose.yaml
+│   │   ├── custom-templates
+│   │   ├── media
+│   │   └── scripts
+│   ├── cloudflare
+│   │   ├── compose.yaml
+│   │   ├── config.yml
+│   │   └── ingress.yml
+│   ├── eventbus
+│   │   └── compose.yaml
+│   ├── observability
+│   │   ├── compose.yaml
+│   │   ├── otel-config.yaml
+│   │   └── prometheus.yml
+│   ├── security
+│   │   └── compose.yaml
+│   ├── shre
+│   │   ├── repair_actions
+│   │   ├── runtime_state.json
+│   │   └── self_healing_runtime.py
+│   └── traefik
+│       ├── compose.yaml
+│       ├── dynamic.yml
+│       └── traefik.yml
+├── LICENSE
+├── make
+│   └── zeaz-platform.mk
+├── Makefile
+├── Makefile.bak.20260605-080811
+├── Makefile.bak.20260605-080820
+├── Makefile.bak.20260605-081226
+├── monitoring
+│   ├── alertmanager
+│   │   └── alertmanager.yml
+│   ├── grafana
+│   │   └── dashboards
+│   ├── grafana-dashboard-tunnel.json
+│   ├── loki
+│   │   └── loki.yml
+│   ├── loki-pipeline.yml
+│   ├── otel
+│   │   └── collector.yml
+│   ├── prometheus
+│   │   └── prometheus.yml
+│   └── prometheus-cloudflared.yml
+├── opentofu
+│   ├── backend
+│   │   ├── dev.backend.hcl
+│   │   ├── local.example.hcl
+│   │   └── s3.example.hcl
+│   ├── environments
+│   │   ├── dev
+│   │   ├── prod
+│   │   └── staging
+│   └── modules
+│       ├── cloudflare-access-app
+│       ├── cloudflare-access-policy
+│       ├── cloudflare-api-shield
+│       ├── cloudflare-d1
+│       ├── cloudflare-dns
+│       ├── cloudflare-r2
+│       ├── cloudflare-saml-provider
+│       ├── cloudflare-tunnel
+│       ├── cloudflare-waf
+│       └── cloudflare-workers
+├── ops
+│   ├── bin
+│   │   ├── zeaz-cloudflare-ssh-route
+│   │   ├── zeaz-cloudflare-zdash-route
+│   │   ├── zeaz-health
+│   │   ├── zeaz-ssh-origin-health
+│   │   ├── zeaz-ssh-origin-setup
+│   │   ├── zeaz-ssh-public-health
+│   │   ├── zveo-health
+│   │   └── zwallet-health
+│   └── scripts
+│       ├── backup-platform.sh
+│       └── import-existing-tunnel-dns.sh
+├── policies
+│   ├── ai-platform.yaml
+│   ├── fintech-access.yaml
+│   ├── fintech-jwt.yaml
+│   ├── llm_gateway.yaml
+│   ├── network.yaml
+│   ├── self_healing.yml
+│   └── zero-trust.rego
+├── project_tree.txt
+├── python
+│   └── cfstack_validate_env.py
+├── README.md
+├── reports
+│   ├── cvsz-apps-merge
+│   │   ├── backups
+│   │   ├── critical-apps-deep-dive.json
+│   │   ├── critical-apps-deep-dive.md
+│   │   ├── cvsz-apps-merge-plan.json
+│   │   └── cvsz-apps-merge-plan.md
+│   ├── platform
+│   │   ├── apps-port-origin-check.md
+│   │   ├── apps-port-refactor.md
+│   │   ├── apps-routing.md
+│   │   ├── apps-source-review.json
+│   │   ├── apps-source-review.md
+│   │   ├── apps-stack-inventory.json
+│   │   ├── apps-stack-inventory.md
+│   │   ├── build-all-stacks.md
+│   │   ├── build-logs
+│   │   ├── cloudflare-tunnel-ingress.generated.yml
+│   │   ├── cloudflare-tunnel-ingress.md
+│   │   └── go-live-preflight.md
+│   └── project-upgrade-report.md
+├── requirements-dev.txt
+├── runtime
+│   ├── action_coordinator.py
+│   ├── authentik
+│   │   ├── certs
+│   │   ├── compose.yml
+│   │   ├── custom-templates
+│   │   └── data
+│   ├── convergence_engine.py
+│   ├── correlation_engine.py
+│   ├── event_bus.py
+│   ├── governance
+│   │   ├── action_journal.py
+│   │   ├── mutation_sandbox.py
+│   │   └── replay_engine.py
+│   ├── llm
+│   │   ├── base.py
+│   │   ├── langgraph_integration.py
+│   │   ├── provider_registry.py
+│   │   ├── providers
+│   │   ├── provider_state_machine.py
+│   │   ├── router
+│   │   └── token_budget_engine.py
+│   ├── ops_ai.py
+│   ├── platform_memory
+│   │   ├── __init__.py
+│   │   └── memory_engine.py
+│   ├── policy_engine.py
+│   ├── predictive_failure_engine.py
+│   ├── queue_supervisor.py
+│   ├── release_governor.py
+│   ├── risk_engine.py
+│   ├── rollback_engine.py
+│   ├── runtime_reconciler.py
+│   ├── scheduler
+│   │   ├── affinity_engine.py
+│   │   ├── backpressure_manager.py
+│   │   ├── execution_journal.py
+│   │   ├── lease_manager.py
+│   │   ├── models.py
+│   │   ├── scheduler_engine.py
+│   │   └── workload_balancer.py
+│   ├── security_middleware.py
+│   ├── self_healing_runtime.py
+│   ├── state_graph.py
+│   ├── streaming
+│   │   ├── delta_encoder.py
+│   │   └── stream_backpressure.py
+│   ├── swarm
+│   │   ├── agent_base.py
+│   │   ├── agents
+│   │   ├── consensus_engine.py
+│   │   ├── marketplace.py
+│   │   ├── memory.py
+│   │   └── orchestrator.py
+│   ├── telemetry
+│   │   ├── cardinality_guard.py
+│   │   └── otel_integration.py
+│   ├── trading
+│   │   ├── accounting_engine.py
+│   │   ├── ai_sandbox.py
+│   │   ├── capital_preservation.py
+│   │   ├── chaos_finance.py
+│   │   ├── config.example.env
+│   │   ├── exchanges
+│   │   ├── execution_engine.py
+│   │   ├── execution_ledger.py
+│   │   ├── healing
+│   │   ├── market_data
+│   │   ├── market_regime_engine.py
+│   │   ├── portfolio_engine.py
+│   │   ├── reconciliation_engine.py
+│   │   ├── risk_engine.py
+│   │   ├── security
+│   │   ├── strategies
+│   │   ├── trade_consensus_engine.py
+│   │   ├── tradingview
+│   │   ├── tradingview_router.py
+│   │   └── trust_score.py
+│   └── verification_engine.py
+├── scripts
+│   ├── add-final-input-vars.sh
+│   ├── add-missing-vars.sh
+│   ├── ai
+│   │   ├── bootstrap-agent.sh
+│   │   ├── bootstrap-agents.sh
+│   │   ├── install-ecc.sh
+│   │   ├── render-mcp-config.sh
+│   │   └── validate-agent-env.sh
+│   ├── apply-phase51-52-web-ci-fix.sh
+│   ├── apps
+│   │   ├── adopt-cvsz-apps-apply.sh
+│   │   ├── deep-dive-critical-apps.sh
+│   │   ├── deep-dive-local-apps.py
+│   │   ├── deep-dive-local-apps.sh
+│   │   ├── plan-cvsz-apps-merge.py
+│   │   ├── validate-apps-inventory.py
+│   │   └── validate-cvsz-apps-merge.sh
+│   ├── backup.sh
+│   ├── bootstrap-system.sh
+│   ├── check-no-cf-vars.sh
+│   ├── ci
+│   │   └── install-web-deps-safe.sh
+│   ├── cloudflare
+│   │   ├── apply-account-token-endpoint-patch.sh
+│   │   ├── apply-zero-global-key-patch.sh
+│   │   ├── clean-and-regenerate-tokens.sh
+│   │   ├── clean-env-empty-values.sh
+│   │   ├── cloudflare-api-lib.sh
+│   │   ├── cloudflare-stability-check.sh
+│   │   ├── discover-permission-groups.sh
+│   │   ├── export-tf-vars.sh
+│   │   ├── fetch-cloudflare-llms-context.sh
+│   │   ├── generate-tokens.sh
+│   │   ├── gen-token.sh
+│   │   ├── install-zeaz-loading-local.sh
+│   │   ├── install-zero-key-system.sh
+│   │   ├── lib
+│   │   ├── list-permission-groups.sh
+│   │   ├── load-env.sh
+│   │   ├── master-gen-tokens.sh
+│   │   ├── permissions.sh
+│   │   ├── repair-cloudflared-service.sh
+│   │   ├── rotate-tokens.sh
+│   │   ├── rotate-tokens-with-permission-preflight.sh
+│   │   ├── run-token-rotation.sh
+│   │   ├── select-zone.sh
+│   │   ├── sync-cloudflare-env-files.sh
+│   │   ├── sync-zdash-terraform-env-from-api.sh
+│   │   ├── validate-tokens.sh
+│   │   ├── verify-token-env.sh
+│   │   ├── write-env.sh
+│   │   ├── zdash-cloudflare-preflight.sh
+│   │   ├── zdash-cloudflare-token-diagnose.sh
+│   │   ├── zdash-terraform-env-guard.sh
+│   │   ├── zdash-terraform-import-existing.sh
+│   │   ├── zdash-terraform-integrate.sh
+│   │   ├── zeaz-dev-apply.sh
+│   │   ├── zeaz-dev-plan.sh
+│   │   ├── zeaz-dev-rollback-plan.sh
+│   │   └── zeaz-dev-verify-live.sh
+│   ├── common.sh
+│   ├── disable-all-modules.sh
+│   ├── drift-detect.sh
+│   ├── enable_skills.py
+│   ├── environments
+│   │   ├── custominstructions.md
+│   │   ├── generate-env-all.sh
+│   │   ├── maintenance.sh
+│   │   ├── setup-free.sh
+│   │   └── setup.sh
+│   ├── env-report-check.sh
+│   ├── final-clean-cloudflare-refactor.sh
+│   ├── fix-agent-config.sh
+│   ├── fix-broken-variables.sh
+│   ├── fix-error-message.sh
+│   ├── fixers
+│   │   └── fix-google-genai-websockets.sh
+│   ├── fix-final-ci-pass.sh
+│   ├── fix-final-terraform-structure.sh
+│   ├── fix-invalid-validation.sh
+│   ├── fix-next-server-chunks.sh
+│   ├── fix-phase51-52-ci.sh
+│   ├── fix-root-validation.sh
+│   ├── fix-terraform-vars.sh
+│   ├── full_validation.sh
+│   ├── generate-sbom.sh
+│   ├── git-finalize.sh
+│   ├── git-sync-push.sh
+│   ├── health-zsp-aitool.sh
+│   ├── install.sh
+│   ├── install-workers-routes-github-actions.sh
+│   ├── lib
+│   │   ├── cloudflare.sh
+│   │   ├── env.sh
+│   │   └── logging.sh
+│   ├── make
+│   │   ├── audit-makefile.py
+│   │   └── refactor-root-makefile.py
+│   ├── make-help.sh
+│   ├── make-lint.sh
+│   ├── meta_os_deploy.sh
+│   ├── platform
+│   │   ├── build-all-stacks.sh
+│   │   ├── check-port-origins.sh
+│   │   ├── deep-dive-apps-stack.py
+│   │   ├── fix-apps-source-review-critical.sh
+│   │   ├── generate-apps-routing-assets.py
+│   │   ├── generate-port-refactor-assets.py
+│   │   ├── go-live-preflight.sh
+│   │   ├── review-apps-source.py
+│   │   └── safe-stage-selected-apps.sh
+│   ├── project-upgrade-report.sh
+│   ├── refactor-cloudflare-vars.sh
+│   ├── regenerate-clean-cloudflare-system.sh
+│   ├── release
+│   │   └── build-zeaz-dev-public-evidence.sh
+│   ├── repair.sh
+│   ├── repo
+│   │   └── deep-dive-report.sh
+│   ├── restore.sh
+│   ├── rotate-secrets.sh
+│   ├── secret-scan-tracked.sh
+│   ├── security-scan.sh
+│   ├── shellcheck-tracked.sh
+│   ├── sign-artifacts.sh
+│   ├── supabase
+│   │   ├── fetch-ai-docs-context.sh
+│   │   ├── mcp-check.sh
+│   │   └── write-mcp-config.sh
+│   ├── terraform
+│   │   └── export-tf-vars.sh
+│   ├── test_vertex.py
+│   ├── trading_validation.sh
+│   ├── tunnel-validate.sh
+│   ├── uninstall.sh
+│   ├── update.sh
+│   ├── validate-ai-gateway.sh
+│   ├── validate_cognitive_fabric.sh
+│   ├── validate-env-files.py
+│   ├── validate_scheduler.sh
+│   ├── validate.sh
+│   ├── validate_swarm.sh
+│   ├── validate-yaml.py
+│   ├── validation.sh
+│   ├── workflow-policy.sh
+│   ├── zdash
+│   │   ├── capture-zdash-monorepo-evidence.sh
+│   │   ├── import-zdash-subtree.sh
+│   │   ├── run-zdash-validation.sh
+│   │   ├── sync-zdash-subtree.sh
+│   │   └── verify-zdash-monorepo.sh
+│   ├── zveo
+│   │   └── deploy-zveo-origin.sh
+│   └── zwallet
+│       └── deploy-zwallet-origin.sh
+├── secrets
+│   └── bootstrap.env.example
+├── security
+│   ├── cosign.md
+│   ├── gitleaks.toml
+│   ├── sbom.md
+│   ├── semgrep.yml
+│   └── trivy.yml
+├── SECURITY.md
+├── src
+│   ├── health-api.ts
+│   └── worker.js
+├── terraform
+│   ├── cloudflare
+│   │   ├── dns.tf
+│   │   ├── main.tf
+│   │   └── terraform.tfstate
+│   ├── cloudflare-apps
+│   │   ├── apps.auto.tfvars.json
+│   │   ├── main.tf
+│   │   ├── README.md
+│   │   ├── variables.tf
+│   │   └── versions.tf
+│   ├── environments
+│   │   ├── dev
+│   │   ├── prod
+│   │   └── staging
+│   ├── main.tf
+│   ├── providers.tf
+│   ├── terraform.tfstate
+│   ├── tfplan.drift
+│   ├── variables.tf
+│   ├── versions.tf
+│   ├── zdash
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   ├── README.md
+│   │   ├── terraform.tfstate
+│   │   ├── terraform.tfstate.backup
+│   │   ├── terraform.tfvars.example
+│   │   ├── variables.tf
+│   │   ├── versions.tf
+│   │   ├── zdash-cloudflare.tfplan
+│   │   └── zdash_edge.auto.tfvars.example
+│   └── zeaz.tfplan
+├── tests
+│   ├── conftest.py
+│   ├── test_ai_policy.py
+│   ├── test_dns_records.py
+│   ├── test_env_normalization.py
+│   ├── test_env_validation.py
+│   ├── test_fintech_policy.py
+│   ├── test_identity_policy.py
+│   ├── test_public_ssh_scripts.py
+│   ├── test_runbooks.py
+│   ├── test_tunnel_config.py
+│   └── workers
+│       └── rate-limit.test.ts
+├── tunnels
+│   ├── cloudflared
+│   │   ├── config.yml
+│   │   ├── config.yml.example
+│   │   ├── zcf-control-free.template.yml
+│   │   └── zeaz-platform.yml
+│   ├── config
+│   │   └── config.yml
+│   ├── config.yaml
+│   ├── docker
+│   │   └── docker-compose.yml
+│   ├── k8s
+│   │   └── cloudflared-deployment.yaml
+│   └── systemd
+│       └── cloudflared.service
+├── ui
+│   └── design-system
+│       ├── base.css
+│       └── tokens.css
+├── waf
+│   └── ai-abuse.yaml
+├── workers
+│   ├── edge-gateway
+│   │   ├── src
+│   │   └── wrangler.toml.example
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── pnpm-lock.yaml
+│   ├── shared
+│   │   ├── durable-rate-limit.ts
+│   │   ├── jwt.ts
+│   │   ├── kv-rate-limit.ts
+│   │   ├── rate-limit.ts
+│   │   └── security-headers.ts
+│   ├── src
+│   │   └── index.js
+│   ├── tsconfig.json
+│   └── zeaz-loading
+│       ├── README.md
+│       ├── src
+│       └── wrangler.toml
+├── workers-ai
+│   ├── ai-gateway.yaml
+│   └── quota-policy.yaml
+├── wrangler.toml
+└── zero-trust
+    ├── apps.yaml
+    ├── identity-providers.yaml
+    └── policies.yaml
+
+335 directories, 761 files
+```

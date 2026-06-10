@@ -1,0 +1,45 @@
+Standardize environment files across ZEAZ Platform.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Tasks:
+1. Find all .env, .env.example, .env.local, config files.
+2. Do not print secret values.
+3. Create root template:
+   .env.example
+4. Create app-specific templates where needed:
+   apps/<app>/.env.example
+5. Standardize variables:
+   NODE_ENV=
+   PORT=
+   APP_NAME=
+   APP_DOMAIN=
+   APP_BASE_URL=
+   API_BASE_URL=
+   DATABASE_URL=
+   POSTGRES_HOST=
+   POSTGRES_PORT=
+   POSTGRES_DB=
+   POSTGRES_USER=
+   POSTGRES_PASSWORD=
+   REDIS_URL=
+   CLOUDFLARE_API_TOKEN=
+   CLOUDFLARE_ACCOUNT_ID=
+   CLOUDFLARE_ZONE_ID=
+   CLOUDFLARE_TUNNEL_ID=
+6. Create generator:
+   scripts/env/generate-local-env.sh
+7. The generator must:
+   - create missing .env.local files
+   - generate secure DB password if missing
+   - preserve existing secrets
+   - never overwrite secrets silently
+8. Generate:
+   docs/reports/ENV_STANDARDIZATION_REPORT.md
+
+Acceptance criteria:
+  - env templates exist.
+  - secrets are ignored by git.
+  - generated passwords are strong.
+  - existing secrets are not overwritten.

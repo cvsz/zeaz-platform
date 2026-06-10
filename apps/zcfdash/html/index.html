@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeazCF Dashboard — Cloudflare Control Panel</title>
+  <meta name="description" content="Cloudflare platform control panel for zeaz.dev — tunnel, DNS, routing, and app status." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cf-orange: #F6821F;
+      --cf-orange-dim: rgba(246,130,31,0.15);
+      --cf-orange-glow: rgba(246,130,31,0.35);
+      --blue: #60A5FA;
+      --blue-dim: rgba(96,165,250,0.12);
+      --green: #34D399;
+      --green-dim: rgba(52,211,153,0.12);
+      --red: #F87171;
+      --red-dim: rgba(248,113,113,0.12);
+      --yellow: #FBBF24;
+      --yellow-dim: rgba(251,191,36,0.12);
+      --purple: #A78BFA;
+      --purple-dim: rgba(167,139,250,0.12);
+      --bg: #0A0B0F;
+      --bg2: #0F1117;
+      --bg3: #151822;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.15);
+      --text: #F0F0F5;
+      --muted: #6B7280;
+      --glass: rgba(15,17,23,0.85);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Animated BG ─── */
+    .bg-orbs {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.18;
+      animation: drift 20s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 600px; height: 600px; background: var(--cf-orange); top: -200px; left: -150px; animation-duration: 22s; }
+    .orb-2 { width: 500px; height: 500px; background: #3B82F6; bottom: -150px; right: -100px; animation-duration: 28s; animation-delay: -8s; }
+    .orb-3 { width: 350px; height: 350px; background: var(--purple); top: 40%; left: 40%; animation-duration: 18s; animation-delay: -4s; }
+    @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px, 40px) scale(1.1); } }
+
+    /* ─── Layout ─── */
+    .wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; width: 240px; z-index: 100;
+      background: var(--glass); border-right: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      display: flex; flex-direction: column; padding: 0;
+      transition: transform 0.3s;
+    }
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-mark {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--cf-orange) 0%, #F97316 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: #fff;
+      box-shadow: 0 0 20px var(--cf-orange-glow);
+    }
+    .logo-text { line-height: 1.2; }
+    .logo-text .main { font-size: 16px; font-weight: 700; color: var(--text); }
+    .logo-text .sub { font-size: 11px; color: var(--muted); font-weight: 400; letter-spacing: 0.5px; }
+
+    .nav { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .nav-section-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;
+      color: var(--muted); padding: 12px 12px 6px; margin-top: 8px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 14px; font-weight: 500; color: var(--muted);
+      transition: all 0.2s; text-decoration: none;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); border-color: var(--border); }
+    .nav-item.active {
+      background: var(--cf-orange-dim); color: var(--cf-orange);
+      border-color: rgba(246,130,31,0.3);
+    }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px; border-top: 1px solid var(--border);
+    }
+    .tunnel-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; border-radius: 8px;
+      background: var(--green-dim); border: 1px solid rgba(52,211,153,0.2);
+      font-size: 12px; color: var(--green);
+    }
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(52,211,153,0.6); } 50% { box-shadow: 0 0 0 6px rgba(52,211,153,0); } }
+
+    /* ─── Main content ─── */
+    .main {
+      margin-left: 240px; min-height: 100vh;
+    }
+
+    /* ─── Topbar ─── */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--glass); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; }
+    .page-title { font-size: 18px; font-weight: 700; }
+    .page-sub { font-size: 13px; color: var(--muted); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; border: none; font-family: 'Outfit', sans-serif;
+    }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.06); color: var(--text); border-color: var(--border-hover); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cf-orange) 0%, #F97316 100%);
+      color: #fff; box-shadow: 0 0 20px var(--cf-orange-glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 24px var(--cf-orange-glow); }
+
+    /* ─── Content ─── */
+    .content { padding: 32px; display: flex; flex-direction: column; gap: 28px; }
+
+    /* ─── Stat Cards ─── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    }
+    .stat-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 22px;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s;
+      background: radial-gradient(circle at 20% 50%, rgba(246,130,31,0.08) 0%, transparent 70%);
+    }
+    .stat-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+    .stat-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .stat-badge {
+      font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px;
+    }
+    .badge-green { background: var(--green-dim); color: var(--green); }
+    .badge-orange { background: var(--cf-orange-dim); color: var(--cf-orange); }
+    .badge-blue { background: var(--blue-dim); color: var(--blue); }
+    .badge-yellow { background: var(--yellow-dim); color: var(--yellow); }
+    .stat-value { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 13px; color: var(--muted); }
+
+    /* ─── Section title ─── */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+    }
+    .section-title { font-size: 16px; font-weight: 700; }
+    .section-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ─── Tunnel Card ─── */
+    .tunnel-card {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden;
+    }
+    .tunnel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, rgba(246,130,31,0.05) 0%, transparent 60%);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .tunnel-id-block { display: flex; flex-direction: column; gap: 4px; }
+    .tunnel-id { font-size: 13px; font-family: 'Courier New', monospace; color: var(--cf-orange); letter-spacing: 0.5px; }
+    .tunnel-connections { display: flex; gap: 8px; }
+    .conn-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+      background: var(--green-dim); color: var(--green);
+      border: 1px solid rgba(52,211,153,0.2);
+    }
+    .conn-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+    .pop-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    }
+    .pop-item {
+      padding: 16px 20px; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .pop-item:last-child { border-right: none; }
+    .pop-location { font-size: 12px; color: var(--muted); }
+    .pop-label { font-size: 14px; font-weight: 600; }
+    .pop-proto {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+      background: var(--blue-dim); color: var(--blue);
+      width: fit-content;
+    }
+
+    /* ─── DNS Table ─── */
+    .dns-card {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden;
+    }
+    .dns-table { width: 100%; border-collapse: collapse; }
+    .dns-table thead { background: rgba(255,255,255,0.03); }
+    .dns-table th {
+      padding: 12px 20px; text-align: left;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .dns-table td {
+      padding: 13px 20px; font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    .dns-table tr:last-child td { border-bottom: none; }
+    .dns-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+
+    .app-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .app-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .hostname-pill {
+      font-family: 'Courier New', monospace; font-size: 12px;
+      padding: 3px 10px; border-radius: 6px;
+      background: rgba(255,255,255,0.06); color: var(--blue);
+      display: inline-block;
+    }
+    .status-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    }
+    .chip-green { background: var(--green-dim); color: var(--green); }
+    .chip-orange { background: var(--cf-orange-dim); color: var(--cf-orange); }
+    .chip-yellow { background: var(--yellow-dim); color: var(--yellow); }
+    .chip-blue { background: var(--blue-dim); color: var(--blue); }
+    .chip-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .proxied-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      background: var(--cf-orange-dim); color: var(--cf-orange);
+      border: 1px solid rgba(246,130,31,0.2);
+    }
+    .proxied-icon { font-size: 10px; }
+
+    .ttl-label { font-size: 12px; color: var(--muted); font-family: 'Courier New', monospace; }
+
+    /* ─── App Grid ─── */
+    .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .app-card {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; transition: all 0.2s; cursor: default;
+      position: relative; overflow: hidden;
+    }
+    .app-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+    .app-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .app-card-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .app-card-host { font-size: 11px; color: var(--blue); font-family: monospace; }
+    .app-card-status { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+    .app-card-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .app-card-meta { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .app-link {
+      font-size: 11px; font-weight: 600; color: var(--cf-orange); text-decoration: none;
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 6px;
+      border: 1px solid rgba(246,130,31,0.3);
+      transition: all 0.2s;
+    }
+    .app-link:hover { background: var(--cf-orange-dim); }
+
+    /* ─── Timeline ─── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .timeline-item {
+      display: flex; gap: 16px; padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-icon {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      margin-top: 2px;
+    }
+    .timeline-body { flex: 1; }
+    .timeline-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .timeline-desc { font-size: 12px; color: var(--muted); }
+    .timeline-time { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    /* ─── 2-col layout ─── */
+    .two-col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+    /* ─── Section card ─── */
+    .section-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .section-card-header { padding: 18px 22px; border-bottom: 1px solid var(--border); }
+    .section-card-body { padding: 20px 22px; }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    /* ─── Divider ─── */
+    .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* ─── Tag ─── */
+    .tag { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); }
+
+    /* ─── Progress bar ─── */
+    .prog-bar { height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+    .prog-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .apps-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      .pop-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">Z</div>
+      <div class="logo-text">
+        <div class="main">ZeazCF</div>
+        <div class="sub">Cloudflare Dashboard</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <span class="nav-section-label">Platform</span>
+    <a href="#overview" class="nav-item active" id="nav-overview">
+      <span class="icon">⬡</span> Overview
+    </a>
+    <a href="#tunnel" class="nav-item" id="nav-tunnel">
+      <span class="icon">⟳</span> Tunnel
+    </a>
+    <a href="#dns" class="nav-item" id="nav-dns">
+      <span class="icon">◈</span> DNS Records
+    </a>
+    <a href="#apps" class="nav-item" id="nav-apps">
+      <span class="icon">❖</span> Applications
+    </a>
+
+    <span class="nav-section-label">Security</span>
+    <a href="#routing" class="nav-item" id="nav-routing">
+      <span class="icon">⇄</span> Routing Rules
+    </a>
+    <a href="#activity" class="nav-item" id="nav-activity">
+      <span class="icon">◎</span> Activity Log
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="tunnel-pill">
+      <div class="pulse-dot"></div>
+      <span>Tunnel Active — 4 Connections</span>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="page-title">Platform Overview</div>
+        <div class="page-sub">zeaz.dev — Cloudflare Tunnel → Traefik</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="refreshAll()">↻ Refresh</button>
+      <button class="btn btn-primary">⚡ Quick Actions</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div id="overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon" style="background:var(--green-dim);">🛰</div>
+            <span class="stat-badge badge-green">● LIVE</span>
+          </div>
+          <div class="stat-value" style="color:var(--green)">4</div>
+          <div class="stat-label">Tunnel Connections</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon" style="background:var(--blue-dim);">🌐</div>
+            <span class="stat-badge badge-blue">16 Active</span>
+          </div>
+          <div class="stat-value" style="color:var(--blue)">16</div>
+          <div class="stat-label">DNS Records (CNAME)</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:100%;background:var(--blue)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon" style="background:var(--cf-orange-dim);">⚡</div>
+            <span class="stat-badge badge-orange">Proxied</span>
+          </div>
+          <div class="stat-value" style="color:var(--cf-orange)">13</div>
+          <div class="stat-label">Applications Routed</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:87%;background:var(--cf-orange)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon" style="background:var(--purple-dim);">🛡</div>
+            <span class="stat-badge" style="background:var(--purple-dim);color:var(--purple);">Free Tier</span>
+          </div>
+          <div class="stat-value" style="color:var(--purple)">Free</div>
+          <div class="stat-label">Cloudflare Plan</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:40%;background:var(--purple)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUNNEL STATUS -->
+    <div id="tunnel">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Cloudflare Tunnel</div>
+          <div class="section-sub">4 active connections — QUIC protocol</div>
+        </div>
+        <span class="status-chip chip-green"><span class="chip-dot"></span> Healthy</span>
+      </div>
+      <div class="tunnel-card">
+        <div class="tunnel-header">
+          <div class="tunnel-id-block">
+            <div style="font-size:14px;font-weight:700;margin-bottom:6px;">zeaz-platform</div>
+            <div class="tunnel-id">eebf6c99-b37e-450b-851b-0bc8e427280d</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">→ http://traefik:80 (proxy network)</div>
+          </div>
+          <div class="tunnel-connections">
+            <div class="conn-badge"><div class="dot"></div> QUIC</div>
+            <div class="conn-badge"><div class="dot"></div> 4/4 Up</div>
+          </div>
+        </div>
+        <div class="pop-grid">
+          <div class="pop-item">
+            <div class="pop-location">Connection 0</div>
+            <div class="pop-label">🇸🇬 Singapore</div>
+            <div class="pop-proto">⚡ QUIC</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">198.41.200.113</div>
+          </div>
+          <div class="pop-item">
+            <div class="pop-location">Connection 1</div>
+            <div class="pop-label">🇹🇭 Bangkok</div>
+            <div class="pop-proto">⚡ QUIC</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">198.41.192.27 — bkk03</div>
+          </div>
+          <div class="pop-item">
+            <div class="pop-location">Connection 2</div>
+            <div class="pop-label">🇹🇭 Bangkok</div>
+            <div class="pop-proto">⚡ QUIC</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">198.41.192.37 — bkk03</div>
+          </div>
+          <div class="pop-item">
+            <div class="pop-location">Connection 3</div>
+            <div class="pop-label">🇸🇬 Singapore</div>
+            <div class="pop-proto">⚡ QUIC</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">198.41.200.73 — sin13</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DNS RECORDS -->
+    <div id="dns">
+      <div class="section-head">
+        <div>
+          <div class="section-title">DNS Records</div>
+          <div class="section-sub">All CNAME records — proxied via Cloudflare CDN</div>
+        </div>
+        <span class="tag">zeaz.dev</span>
+      </div>
+      <div class="dns-card">
+        <table class="dns-table">
+          <thead>
+            <tr>
+              <th>Application</th>
+              <th>Hostname</th>
+              <th>Type</th>
+              <th>Target Tunnel</th>
+              <th>Proxied</th>
+              <th>TTL</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="dns-tbody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- APPS -->
+    <div id="apps">
+      <div class="section-head">
+        <div>
+          <div class="section-title">Applications</div>
+          <div class="section-sub">Docker containers routed through Traefik</div>
+        </div>
+      </div>
+      <div class="apps-grid" id="apps-grid"></div>
+    </div>
+
+    <!-- ROUTING + ACTIVITY -->
+    <div id="routing" class="two-col">
+      <div>
+        <div class="section-head">
+          <div class="section-title">Ingress Routing Rules</div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-body">
+            <div style="font-family:'Courier New',monospace;font-size:12px;line-height:1.9;color:var(--muted);">
+              <div style="color:var(--cf-orange);font-weight:700;margin-bottom:8px;"># cloudflared config.yml — ingress</div>
+              <div id="ingress-rules"></div>
+              <div style="margin-top:8px;"><span style="color:var(--red);">- service:</span> <span style="color:var(--yellow);">http_status:404</span> <span style="color:var(--muted);"># catch-all</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="activity">
+        <div class="section-head">
+          <div class="section-title">Activity Log</div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-body" style="padding:0;">
+            <div class="timeline" id="activity-log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  // ─── Data ───
+  const TUNNEL_ID = 'eebf6c99-b37e-450b-851b-0bc8e427280d';
+  const ZONE = 'zeaz.dev';
+
+  const apps = [
+    { name: 'ZCFDash',   host: 'zcfdash.zeaz.dev',   color: '#F6821F', path: '/apps/zcfdash',    status: 'online',  stack: 'nginx',    emoji: '⚡' },
+    { name: 'ZDash',     host: 'zdash.zeaz.dev',      color: '#60A5FA', path: '/apps/zdash',      status: 'online',  stack: 'Next.js',  emoji: '📊' },
+    { name: 'ZDash API', host: 'api-zdash.zeaz.dev',  color: '#60A5FA', path: '/apps/zdash',      status: 'online',  stack: 'Node.js',  emoji: '🔌' },
+    { name: 'ZWallet',   host: 'app.zeaz.dev',        color: '#34D399', path: '/apps/zwallet',    status: 'online',  stack: 'Node.js',  emoji: '💳' },
+    { name: 'ZVeo',      host: 'zveo.zeaz.dev',       color: '#A78BFA', path: '/apps/zveo',       status: 'online',  stack: 'React',    emoji: '🤖' },
+    { name: 'ZTrader',   host: 'ztrader.zeaz.dev',    color: '#FBBF24', path: '/apps/ztrader',    status: 'online',  stack: 'Python',   emoji: '📈' },
+    { name: 'ZLMS',      host: 'zlms.zeaz.dev',       color: '#F87171', path: '/apps/zlms-prod',  status: 'online',  stack: 'Node.js',  emoji: '🎓' },
+    { name: 'ZOffice',   host: 'zoffice.zeaz.dev',    color: '#67E8F9', path: '/apps/zoffice',    status: 'online',  stack: 'Docker',   emoji: '🏢' },
+    { name: 'ZCino',     host: 'zcino.zeaz.dev',      color: '#FB923C', path: '/apps/zcino',      status: 'online',  stack: 'PHP',      emoji: '🎬' },
+    { name: 'ZSticker',  host: 'zsticker.zeaz.dev',   color: '#4ADE80', path: '/apps/zsticker',   status: 'online',  stack: 'Node.js',  emoji: '🎨' },
+    { name: 'ZAIZ',      host: 'zaiz.zeaz.dev',       color: '#818CF8', path: '/apps/zsp-aitool', status: 'online',  stack: 'Python',   emoji: '🧠' },
+    { name: 'OpenWork',  host: 'openwork.zeaz.dev',   color: '#34D399', path: '/apps/openwork',   status: 'online',  stack: 'Next.js',  emoji: '💼' },
+    { name: 'Web',       host: 'www.zeaz.dev',        color: '#60A5FA', path: '/apps/web',        status: 'online',  stack: 'Next.js',  emoji: '🌐' },
+  ];
+
+  const dnsRecords = [
+    { app: 'ZCFDash',   emoji: '⚡', host: 'zcfdash.zeaz.dev',   color: '#F6821F', status: 'active', ttl: 'Auto' },
+    { app: 'ZDash',     emoji: '📊', host: 'zdash.zeaz.dev',      color: '#60A5FA', status: 'active', ttl: 'Auto' },
+    { app: 'ZDash API', emoji: '🔌', host: 'api-zdash.zeaz.dev',  color: '#60A5FA', status: 'active', ttl: 'Auto' },
+    { app: 'ZWallet',   emoji: '💳', host: 'app.zeaz.dev',        color: '#34D399', status: 'active', ttl: 'Auto' },
+    { app: 'ZVeo',      emoji: '🤖', host: 'zveo.zeaz.dev',       color: '#A78BFA', status: 'active', ttl: 'Auto' },
+    { app: 'ZTrader',   emoji: '📈', host: 'ztrader.zeaz.dev',    color: '#FBBF24', status: 'active', ttl: 'Auto' },
+    { app: 'ZLMS',      emoji: '🎓', host: 'zlms.zeaz.dev',       color: '#F87171', status: 'active', ttl: 'Auto' },
+    { app: 'ZOffice',   emoji: '🏢', host: 'zoffice.zeaz.dev',    color: '#67E8F9', status: 'active', ttl: 'Auto' },
+    { app: 'ZCino',     emoji: '🎬', host: 'zcino.zeaz.dev',      color: '#FB923C', status: 'active', ttl: 'Auto' },
+    { app: 'ZSticker',  emoji: '🎨', host: 'zsticker.zeaz.dev',   color: '#4ADE80', status: 'active', ttl: 'Auto' },
+    { app: 'ZAIZ',      emoji: '🧠', host: 'zaiz.zeaz.dev',       color: '#818CF8', status: 'active', ttl: 'Auto' },
+    { app: 'API ZVEO',  emoji: '🔗', host: 'api-zveo.zeaz.dev',   color: '#A78BFA', status: 'active', ttl: 'Auto' },
+    { app: 'OpenWork',  emoji: '💼', host: 'openwork.zeaz.dev',   color: '#34D399', status: 'active', ttl: 'Auto' },
+    { app: 'Web',       emoji: '🌐', host: 'www.zeaz.dev',        color: '#60A5FA', status: 'active', ttl: 'Auto' },
+    { app: 'Root',      emoji: '🏠', host: 'zeaz.dev',            color: '#F6821F', status: 'active', ttl: 'Auto' },
+    { app: 'API',       emoji: '⚙️', host: 'api.zeaz.dev',        color: '#60A5FA', status: 'active', ttl: 'Auto' },
+  ];
+
+  const activityEvents = [
+    { icon: '✅', bg: 'var(--green-dim)', title: 'DNS Apply Completed', desc: '16 CNAME records upserted via API', time: '06:00 UTC' },
+    { icon: '🔄', bg: 'var(--blue-dim)',  title: 'Cloudflared Restarted', desc: 'Loaded updated ingress config', time: '06:05 UTC' },
+    { icon: '🛰', bg: 'var(--cf-orange-dim)', title: 'Tunnel Reconnected', desc: '4 connections — sin12, bkk03, sin13', time: '06:05 UTC' },
+    { icon: '⚙️', bg: 'var(--purple-dim)', title: 'Config Deployed', desc: 'infra/cloudflare/config.yml updated', time: '05:55 UTC' },
+    { icon: '📦', bg: 'var(--yellow-dim)', title: 'Prompt Pack Installed', desc: 'zeaz-cloudflare-ai-prompt-pack merged', time: '05:53 UTC' },
+    { icon: '🐳', bg: 'var(--blue-dim)',  title: 'ZDash Restarted', desc: 'All 5 containers healthy', time: '05:31 UTC' },
+    { icon: '🐳', bg: 'var(--green-dim)', title: 'ZTrader Started', desc: 'Port remapping applied — 5438/6384', time: '05:31 UTC' },
+  ];
+
+  // ─── Render DNS table ───
+  const tbody = document.getElementById('dns-tbody');
+  dnsRecords.forEach(r => {
+    const shortTunnel = TUNNEL_ID.substring(0, 8) + '…cfargotunnel.com';
+    tbody.innerHTML += `
+      <tr>
+        <td class="app-name">
+          <div class="app-dot" style="background:${r.color}"></div>
+          ${r.emoji} ${r.app}
+        </td>
+        <td><span class="hostname-pill">${r.host}</span></td>
+        <td><span class="tag">CNAME</span></td>
+        <td style="font-family:monospace;font-size:11px;color:var(--muted);">${shortTunnel}</td>
+        <td><span class="proxied-badge"><span class="proxied-icon">🟠</span> Proxied</span></td>
+        <td><span class="ttl-label">${r.ttl}</span></td>
+        <td><span class="status-chip chip-green"><span class="chip-dot"></span> Active</span></td>
+      </tr>`;
+  });
+
+  // ─── Render Apps Grid ───
+  const grid = document.getElementById('apps-grid');
+  apps.forEach(a => {
+    grid.innerHTML += `
+      <div class="app-card">
+        <div class="app-card-header">
+          <div>
+            <div class="app-card-name">${a.emoji} ${a.name}</div>
+            <div class="app-card-host">${a.host}</div>
+          </div>
+          <div class="app-card-status" style="color:var(--green)">
+            <div class="app-dot" style="background:var(--green);animation:pulse 2s infinite"></div>
+            Online
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);display:flex;gap:6px;align-items:center;">
+          <span class="tag">${a.stack}</span>
+          <span style="color:var(--border-hover)">→</span>
+          <span>Traefik</span>
+          <span style="color:var(--border-hover)">→</span>
+          <span>Tunnel</span>
+        </div>
+        <div class="app-card-footer">
+          <div class="app-card-meta">
+            <div class="app-dot" style="background:${a.color}"></div>
+            ${a.path}
+          </div>
+          <a href="https://${a.host}" target="_blank" class="app-link">Open ↗</a>
+        </div>
+      </div>`;
+  });
+
+  // ─── Render Ingress Rules ───
+  const ingressEl = document.getElementById('ingress-rules');
+  const allHosts = dnsRecords.map(r => r.host);
+  ingressEl.innerHTML = allHosts.map(h =>
+    `<div><span style="color:var(--blue);">- hostname:</span> <span style="color:var(--text);">${h}</span><br>
+     &nbsp;&nbsp;<span style="color:var(--green);">service:</span> <span style="color:var(--yellow);">http://traefik:80</span></div>`
+  ).join('');
+
+  // ─── Render Activity ───
+  const logEl = document.getElementById('activity-log');
+  activityEvents.forEach(e => {
+    logEl.innerHTML += `
+      <div class="timeline-item" style="padding:14px 20px;">
+        <div class="timeline-icon" style="background:${e.bg}">${e.icon}</div>
+        <div class="timeline-body">
+          <div class="timeline-title">${e.title}</div>
+          <div class="timeline-desc">${e.desc}</div>
+        </div>
+        <div class="timeline-time">${e.time}</div>
+      </div>`;
+  });
+
+  // ─── Nav active state ───
+  const navLinks = document.querySelectorAll('.nav-item');
+  const sections = ['overview','tunnel','dns','apps','routing','activity'];
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) cur = id;
+    });
+    navLinks.forEach(l => {
+      l.classList.toggle('active', l.id === `nav-${cur}`);
+    });
+  }, { passive: true });
+
+  function refreshAll() {
+    const btn = document.querySelector('.btn-ghost');
+    btn.textContent = '↻ Refreshing…';
+    setTimeout(() => { btn.textContent = '↻ Refresh'; }, 1500);
+  }
+</script>
+</body>
+</html>

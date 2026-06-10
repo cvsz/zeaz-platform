@@ -1,0 +1,41 @@
+Create or update local reverse proxy configuration.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Goal:
+  Provide a clean internal reverse proxy mapping for all ZEAZ apps.
+
+Tasks:
+1. Inspect existing nginx/caddy/traefik configs.
+2. Prefer existing project standard.
+3. If no standard exists, generate nginx config:
+   infrastructure/nginx/zeaz-platform.conf
+4. Map domains:
+   zow.zeaz.dev          -> localhost:4101
+   api-zcfdash.zeaz.dev  -> localhost:4102
+   zcfdash.zeaz.dev      -> localhost:4103
+   zoffice.zeaz.dev      -> localhost:4104
+   app.zeaz.dev          -> localhost:4105
+   ztrader.zeaz.dev      -> localhost:4106
+   dash.zeaz.dev         -> localhost:4107
+   zaiz.zeaz.dev         -> localhost:4108
+   zveo.zeaz.dev         -> localhost:4109
+   zsticker.zeaz.dev     -> localhost:4110
+   zcino.zeaz.dev        -> localhost:4111
+   zlms.zeaz.dev         -> localhost:4112
+5. Add websocket proxy support.
+6. Add upload/body size defaults.
+7. Add proxy headers:
+   X-Forwarded-For
+   X-Forwarded-Proto
+   X-Real-IP
+   Host
+8. Generate validation script:
+   scripts/proxy/check-nginx-config.sh
+9. Generate:
+   docs/reports/REVERSE_PROXY_REPORT.md
+
+Acceptance criteria:
+  - config validates with nginx -t if nginx is installed.
+  - every domain maps to correct port.
