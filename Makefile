@@ -7,6 +7,7 @@ ENVIRONMENT ?= prod
 TF_BIN ?= terraform
 TOFU_BIN ?= tofu
 PYTHON ?= python3
+CODEX_SUITE_PYTHON ?= python3
 VENV_DIR ?= .venv
 TF_PLAN_FILE ?= tfplan
 TF_ARGS ?=
@@ -34,7 +35,7 @@ export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 # Root phony targets
 .PHONY: help bootstrap cloudflare-stability-check setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars
 .PHONY: refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check
-.PHONY: supabase-mcp-config upgrade-report validate validate-agent ci ci-validate validate-env validate-env-strict
+.PHONY: supabase-mcp-config upgrade-report validate validate-agent codex-suite-validate ci ci-validate validate-env validate-env-strict
 .PHONY: env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint
 .PHONY: shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history
 .PHONY: tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan
@@ -99,7 +100,10 @@ load-env:
 
 ci: validate
 
-validate-agent: ci-validate
+validate-agent: ci-validate codex-suite-validate
+
+codex-suite-validate:
+	@$(CODEX_SUITE_PYTHON) docs/codex/scripts/validate_codex_suite.py
 
 ci-validate: test env-format-validate yaml-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."

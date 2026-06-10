@@ -1,24 +1,30 @@
-tunnel: $${CLOUDFLARE_TUNNEL_ID}
-credentials-file: /etc/cloudflared/creds.json
+tunnel: ${CLOUDFLARE_TUNNEL_ID}
+credentials-file: /etc/cloudflared/${CLOUDFLARE_TUNNEL_ID}.json
+metrics: 127.0.0.1:2000
+no-autoupdate: true
 ingress:
-  - hostname: zeaz.dev
-    service: http://traefik:80
-  - hostname: www.zeaz.dev
-    service: http://traefik:80
+  - hostname: zow.zeaz.dev
+    service: http://localhost:4101
+  - hostname: api-zcfdash.zeaz.dev
+    service: http://localhost:4102
+  - hostname: zcfdash.zeaz.dev
+    service: http://localhost:4103
+  - hostname: zoffice.zeaz.dev
+    service: http://localhost:4104
   - hostname: app.zeaz.dev
-    service: http://traefik:80
-  - hostname: api.zeaz.dev
-    service: http://traefik:80
-  - hostname: auth.zeaz.dev
-    service: http://traefik:80
-  - hostname: s3.zeaz.dev
-    service: http://traefik:80
-  - hostname: s3-console.zeaz.dev
-    service: http://traefik:80
-  - hostname: grafana.zeaz.dev
-    service: http://traefik:80
-  - hostname: prom.zeaz.dev
-    service: http://traefik:80
-  - hostname: ai.zeaz.dev
-    service: http://traefik:80
+    service: http://localhost:4105
+  - hostname: ztrader.zeaz.dev
+    service: http://localhost:4106
+  - hostname: dash.zeaz.dev
+    service: http://localhost:4107
+  - hostname: zaiz.zeaz.dev
+    service: http://localhost:4108
+  - hostname: zveo.zeaz.dev
+    service: http://localhost:4109
+  - hostname: zsticker.zeaz.dev
+    service: http://localhost:4110
+  - hostname: zcino.zeaz.dev
+    service: http://localhost:4111
+  - hostname: zlms.zeaz.dev
+    service: http://localhost:4112
   - service: http_status:404

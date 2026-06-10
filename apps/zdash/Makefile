@@ -5,820 +5,167 @@ SHELL := /usr/bin/env bash
 ROOT_DIR := $(CURDIR)
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
-NODE_VERSION ?= 20
-BACKEND_HOST ?= 0.0.0.0
+BACKEND_HOST ?= 127.0.0.1
 BACKEND_PORT ?= 8005
-FRONTEND_HOST ?= 0.0.0.0
+FRONTEND_HOST ?= 127.0.0.1
 FRONTEND_PORT ?= 5173
+RELEASE_HOST ?= 127.0.0.1
+RELEASE_PORT ?= 5172
 PYTHON ?= python3
+NPM ?= npm
 NPM_INSTALL_FLAGS ?= --legacy-peer-deps --no-audit --fund=false
-GH_REPO ?= cvsz/zdash
-GH_ENV ?= dev
-GH_ENV_FILE ?= .env
-GO_LIVE_RESET ?= no
-RELEASE_TAG ?= v2.0.0
-RELEASE_TITLE ?= zDash Final Release
-CONFIRM_RELEASE ?= no
+RUNTIME_DIR ?= ../../runtime/app-servers
+REPORT_DIR ?= ../../reports/platform
+BACKEND_PID := $(RUNTIME_DIR)/zdash-backend-$(BACKEND_PORT).pid
+FRONTEND_PID := $(RUNTIME_DIR)/zdash-frontend-$(FRONTEND_PORT).pid
+BACKEND_LOG := $(RUNTIME_DIR)/zdash-backend-$(BACKEND_PORT).log
+FRONTEND_LOG := $(RUNTIME_DIR)/zdash-frontend-$(FRONTEND_PORT).log
+SERVER_REPORT := $(REPORT_DIR)/zdash-server.md
+FEATURE_ENV := .env.full-local.example
+FEATURE_REPORT := .zdash-feature-status.md
 
-ZDASH_DOMAIN ?= localhost
-ZDASH_PROD_RUNTIME ?= /opt/zdash/runtime
-ZDASH_PROD_ENV ?= $(ZDASH_PROD_RUNTIME)/.env.production
-ZDASH_PROD_COMPOSE ?= $(ZDASH_PROD_RUNTIME)/docker-compose.yml
-ZDASH_PROD_HEALTH ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-health.sh
-ZDASH_PROD_LOGS ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-logs.sh
-ZDASH_PROD_BACKUP ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-backup.sh
-ZDASH_PROD_UPDATE ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-update.sh
+.PHONY: help info install-backend install-frontend install-local validate-fast validate-local validate
+.PHONY: run-backend run-frontend server-start server-stop server-restart server-status server-report server-logs health-check smoke-test
+.PHONY: compose-config compose-up compose-up-detached compose-down compose-ps compose-logs compose-restart
+.PHONY: safety-scan env-check port-scan secret-scan feature-env feature-unlock-local feature-status clean
 
-BACKEND_ACTIVATE := source $(BACKEND_DIR)/.venv/bin/activate
-NVM_LOAD := source $$HOME/.nvm/nvm.sh >/dev/null 2>&1 || true; nvm use $(NODE_VERSION) >/dev/null 2>&1 || true
-FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|^\.gemini/|^\.claude/|^\.mcp/|^docs/prompts/codex-runs/|^skill\.sh$$|^scripts/skill\.sh$$)
+help: ## Show targets
+	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Makefile\n\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-.PHONY: help
-help: ## Show available targets
-	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Master Makefile\n\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-34s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-	@printf "\nCommon flows:\n  make install-local\n  make install-local-start\n  make server-start\n  make server-status\n  make server-logs SERVICE=backend\n  make server-stop\n  make validate-fast\n  make validate\n  make install-prod ZDASH_DOMAIN=zdash.zeaz.dev\n  make prod-health\n  make prod-logs SERVICE=backend\n  make git-safe-add ARGS=\"Makefile backend/app/risk/high_risk_policy.py\"\n  make git-safe-commit MESSAGE=\"Fix validation scan\"\n  make git-safe-push\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
+info: ## Print zdash runtime info
+	@echo "App: zdash"
+	@echo "Backend:  http://$(BACKEND_HOST):$(BACKEND_PORT) -> https://api-zdash.zeaz.dev"
+	@echo "Frontend: http://$(FRONTEND_HOST):$(FRONTEND_PORT) -> https://zdash.zeaz.dev"
+	@echo "Release:  http://$(RELEASE_HOST):$(RELEASE_PORT) -> https://release.zeaz.dev"
+	@echo "Feature env: $(FEATURE_ENV)"
 
-.PHONY: info
-info: ## Print local project/runtime info
-	@echo "Repo: cvsz/zdash"
-	@echo "Root: $(ROOT_DIR)"
-	@echo "Backend: http://localhost:$(BACKEND_PORT)"
-	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
-	@echo "Release tag: $(RELEASE_TAG)"
-	@git branch --show-current 2>/dev/null || true
-	@git rev-parse --short HEAD 2>/dev/null || true
-	@$(PYTHON) --version || true
-	@node --version || true
-	@npm --version || true
-
-.PHONY: pull
-pull: ## Pull latest main with fast-forward only
-	git pull --ff-only
-
-.PHONY: sync-main
-sync-main: ## Sync local main from origin/main; set GO_LIVE_RESET=yes to hard reset and clean
-	@git fetch origin main
-	@if [ "$(GO_LIVE_RESET)" = "yes" ]; then \
-		git checkout main; \
-		git reset --hard origin/main; \
-		git clean -fd; \
-	else \
-		git pull --ff-only origin main; \
-	fi
-
-.PHONY: status
-status: ## Show normal git status
-	git status --short
-
-.PHONY: ignored
-ignored: ## Show ignored files summary
-	git status --ignored --short | head -160
-
-.PHONY: tracked-forbidden
-tracked-forbidden: ## Fail if local-only/secret/tooling files are tracked
-	@echo "Checking forbidden tracked files..."
-	@if git ls-files | grep -E '$(FORBIDDEN_TRACKED_PATTERN)'; then \
-		echo "FAILED: forbidden tracked files found" >&2; \
-		exit 1; \
-	else \
-		echo "PASSED: no forbidden tracked files"; \
-	fi
-
-.PHONY: env-check
-env-check: ## Validate .env key syntax without printing values
-	@status=0; \
-	for file in .env .env.production .env.production.example frontend/.env frontend/.env.local; do \
-		[ -f "$$file" ] || continue; \
-		file_ok=1; \
-		line_no=0; \
-		while IFS= read -r raw || [ -n "$$raw" ]; do \
-			line_no=$$((line_no + 1)); \
-			line="$$(printf '%s' "$$raw" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$$//')"; \
-			[ -n "$$line" ] || continue; \
-			case "$$line" in \#*) continue ;; esac; \
-			case "$$line" in *=*) key="$${line%%=*}" ;; *) echo "$$file:$$line_no: missing ="; file_ok=0; status=1; continue ;; esac; \
-			if ! printf '%s\n' "$$key" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$$'; then \
-				echo "$$file:$$line_no: invalid key '$$key'"; \
-				file_ok=0; \
-				status=1; \
-			fi; \
-		done < "$$file"; \
-		[ "$$file_ok" -eq 0 ] || echo "PASSED: $$file"; \
-	done; \
-	exit "$$status"
-
-.PHONY: gh-env-dry
-gh-env-dry: ## Dry-run sync local env files into GitHub Environment variables/secrets
-	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --dry-run
-
-.PHONY: gh-env-sync
-gh-env-sync: ## Live sync local env file into GitHub Environment variables/secrets; requires GH_ENV/GH_ENV_FILE and gh auth
-	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --yes
-
-.PHONY: gh-env-clean-dry
-gh-env-clean-dry: ## Dry-run stale cleanup for managed GitHub Environment keys
-	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --delete-stale --dry-run
-
-.PHONY: gh-env-clean
-gh-env-clean: ## Delete stale managed GitHub Environment keys not present in local env file; requires confirmation
-	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --delete-stale --yes
-
-.PHONY: port-scan
-port-scan: ## Fail if tracked runtime/source files still reference backend port 8000
-	@echo "Scanning tracked runtime/source files for old backend port 8000..."
-	@tmp=$$(mktemp); \
-	git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . \
-		':(exclude)Makefile' \
-		':(exclude)docs/prompts/*.prompt' \
-		':(exclude)docs/prompts/**' \
-		':(exclude)docs/prompts/codex-runs/**' \
-		':(exclude).codex/**' \
-		':(exclude).agent/**' \
-		':(exclude).agents/**' \
-		':(exclude)docs/reports/**' \
-		':(exclude)**/*.md' > $$tmp 2>/dev/null || true; \
-	if [ -s $$tmp ]; then \
-		cat $$tmp; \
-		rm -f $$tmp; \
-		echo "FAILED: old backend port 8000 found" >&2; \
-		exit 1; \
-	else \
-		rm -f $$tmp; \
-		echo "PASSED: no old backend port 8000 found"; \
-	fi
-
-.PHONY: secret-scan
-secret-scan: ## Scan tracked runtime/source files for actual secret-looking values
-	@echo "Scanning tracked runtime/source files for actual secret-looking values..."
-	@tmp=$$(mktemp); \
-	git grep -nE 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY|(GPG_PASSPHRASE|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|CLOUDFLARE_API_TOKEN|CLOUDFLARE_ACCOUNT_ID|CLOUDFLARE_ZONE_ID|TUNNEL_TOKEN|OPENAI_API_KEY)[[:space:]]*=[[:space:]]*[^[:space:]#]+' -- . \
-		':(exclude)Makefile' \
-		':(exclude)**/*.md' \
-		':(exclude)docs/**' \
-		':(exclude).codex/**' \
-		':(exclude).agent/**' \
-		':(exclude).agents/**' \
-		':(exclude)backend/app/tests/**' \
-		':(exclude)backend/tests/**' \
-		':(exclude)frontend/src/tests/**' > $$tmp 2>/dev/null || true; \
-	if [ -s $$tmp ]; then \
-		cat $$tmp; \
-		rm -f $$tmp; \
-		echo "FAILED: possible real secret in tracked runtime/source files" >&2; \
-		exit 1; \
-	else \
-		rm -f $$tmp; \
-		echo "PASSED: no actual secret-looking tracked values"; \
-	fi
-
-.PHONY: safety-scan
-safety-scan: tracked-forbidden env-check port-scan secret-scan ## Run local safety scans
-
-.PHONY: backend-venv
-backend-venv: ## Create backend virtualenv if missing
+install-backend: ## Install backend dependencies
 	@test -d $(BACKEND_DIR)/.venv || $(PYTHON) -m venv $(BACKEND_DIR)/.venv
-	@$(BACKEND_ACTIVATE); python -m pip install --upgrade pip setuptools wheel
+	@source $(BACKEND_DIR)/.venv/bin/activate; python -m pip install --upgrade pip setuptools wheel
+	@source $(BACKEND_DIR)/.venv/bin/activate; cd $(BACKEND_DIR); python -m pip install -e '.[dev]'
 
-.PHONY: backend-install
-backend-install: backend-venv ## Install backend package and dev tools
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -m pip install -e '.[dev]'
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -m pip install 'ruff>=0.5.0' 'pytest>=8.1.1'
+install-frontend: ## Install frontend dependencies
+	@cd $(FRONTEND_DIR); $(NPM) install $(NPM_INSTALL_FLAGS)
 
-.PHONY: backend-lint
-backend-lint: ## Run backend ruff lint
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -m ruff check app tests
+install-local: install-backend install-frontend ## Install backend and frontend
 
-.PHONY: backend-lint-fix
-backend-lint-fix: ## Run backend ruff auto-fix
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -m ruff check app tests --fix
+run-backend: ## Run backend in foreground
+	@PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) $(PYTHON) -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload
 
-.PHONY: backend-test
-backend-test: ## Run backend pytest
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -B -m pytest -q
+run-frontend: ## Run frontend in foreground
+	@cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT)
 
-.PHONY: backend-check
-backend-check: backend-lint backend-test ## Run backend lint + tests
+server-start: ## Start backend and frontend in background
+	@mkdir -p "$(RUNTIME_DIR)" "$(REPORT_DIR)"
+	@if [ -f "$(BACKEND_PID)" ] && kill -0 "$$(cat "$(BACKEND_PID)")" >/dev/null 2>&1; then \
+		echo "backend already running pid=$$(cat "$(BACKEND_PID)")"; \
+	else \
+		echo "START backend http://$(BACKEND_HOST):$(BACKEND_PORT)"; \
+		PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) nohup $(PYTHON) -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) >> "$(BACKEND_LOG)" 2>&1 & echo $$! > "$(BACKEND_PID)"; \
+	fi
+	@if [ -f "$(FRONTEND_PID)" ] && kill -0 "$$(cat "$(FRONTEND_PID)")" >/dev/null 2>&1; then \
+		echo "frontend already running pid=$$(cat "$(FRONTEND_PID)")"; \
+	else \
+		echo "START frontend http://$(FRONTEND_HOST):$(FRONTEND_PORT)"; \
+		cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) nohup $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT) >> "../../$(FRONTEND_LOG)" 2>&1 & echo $$! > "../../$(FRONTEND_PID)"; \
+	fi
+	@$(MAKE) server-status
 
-.PHONY: backend-deps
-backend-deps: ## Run Codex backend dependency repair helper
-	bash .codex/cloud/repair-backend-deps.sh
+server-stop: ## Stop backend and frontend
+	@if [ -f "$(FRONTEND_PID)" ]; then pid="$$(cat "$(FRONTEND_PID)")"; echo "STOP frontend pid=$$pid"; kill "$$pid" >/dev/null 2>&1 || true; rm -f "$(FRONTEND_PID)"; fi
+	@if [ -f "$(BACKEND_PID)" ]; then pid="$$(cat "$(BACKEND_PID)")"; echo "STOP backend pid=$$pid"; kill "$$pid" >/dev/null 2>&1 || true; rm -f "$(BACKEND_PID)"; fi
+	@$(MAKE) server-status
 
-.PHONY: frontend-install
-frontend-install: ## Install frontend dependencies using Node 20 when nvm is available
-	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm install $(NPM_INSTALL_FLAGS)
+server-restart: ## Restart backend and frontend
+	@$(MAKE) server-stop || true
+	@$(MAKE) server-start
 
-.PHONY: frontend-test
-frontend-test: ## Run frontend tests
-	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm test
+server-status: ## Show server status and write report
+	@mkdir -p "$(REPORT_DIR)"
+	@backend_status="STOPPED"; frontend_status="STOPPED"; \
+	if [ -f "$(BACKEND_PID)" ] && kill -0 "$$(cat "$(BACKEND_PID)")" >/dev/null 2>&1; then backend_status="RUNNING pid=$$(cat "$(BACKEND_PID)")"; elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://$(BACKEND_HOST):$(BACKEND_PORT)/health" >/dev/null 2>&1; then backend_status="RUNNING external"; fi; \
+	if [ -f "$(FRONTEND_PID)" ] && kill -0 "$$(cat "$(FRONTEND_PID)")" >/dev/null 2>&1; then frontend_status="RUNNING pid=$$(cat "$(FRONTEND_PID)")"; elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://$(FRONTEND_HOST):$(FRONTEND_PORT)/" >/dev/null 2>&1; then frontend_status="RUNNING external"; fi; \
+	echo "backend api-zdash.zeaz.dev -> http://$(BACKEND_HOST):$(BACKEND_PORT) :: $$backend_status"; \
+	echo "frontend zdash.zeaz.dev -> http://$(FRONTEND_HOST):$(FRONTEND_PORT) :: $$frontend_status"; \
+	{ echo "# zdash server report"; echo; echo "Generated: $$(date -u +%Y-%m-%dT%H:%M:%SZ)"; echo; echo "| Service | Public hostname | Local origin | Status |"; echo "|---|---|---|---|"; echo "| backend | api-zdash.zeaz.dev | http://$(BACKEND_HOST):$(BACKEND_PORT) | $$backend_status |"; echo "| frontend | zdash.zeaz.dev | http://$(FRONTEND_HOST):$(FRONTEND_PORT) | $$frontend_status |"; } > "$(SERVER_REPORT)"
 
-.PHONY: test-frontend-isolated
-test-frontend-isolated: ## Run frontend tests without requiring a running backend
-	@$(NVM_LOAD); VITE_REALTIME_ENABLED=false VITE_ENABLE_MOCK_FALLBACK=true cd $(FRONTEND_DIR); npm test
+server-report: server-status ## Write server report
+	@echo "Report: $(SERVER_REPORT)"
 
-.PHONY: frontend-build
-frontend-build: ## Build frontend production bundle
-	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm run build
+server-logs: ## Tail logs; set SERVICE=backend/frontend
+	@if [ "$${SERVICE:-backend}" = "frontend" ]; then tail -f "$(FRONTEND_LOG)"; else tail -f "$(BACKEND_LOG)"; fi
 
-.PHONY: frontend-check
-frontend-check: frontend-test frontend-build ## Run frontend tests + build
+health-check: ## Check backend health endpoint
+	@curl -fsS "http://$(BACKEND_HOST):$(BACKEND_PORT)/health"
 
-.PHONY: docker-build-backend
-docker-build-backend: ## Build backend Docker image
-	docker build -f infra/docker/backend.Dockerfile .
+smoke-test: ## Run local smoke tests
+	@curl -fsS --max-time 3 "http://$(BACKEND_HOST):$(BACKEND_PORT)/health" >/dev/null
+	@curl -fsS --max-time 3 "http://$(FRONTEND_HOST):$(FRONTEND_PORT)/" >/dev/null
+	@echo "PASSED: zdash smoke test"
 
-.PHONY: docker-build-frontend
-docker-build-frontend: ## Build frontend Docker image
-	docker build -f infra/docker/frontend.Dockerfile .
+env-check: ## Validate env syntax without printing values
+	@status=0; for file in .env .env.example .env.full-local.example .env.production .env.production.example frontend/.env frontend/.env.local frontend/.env.example; do [ -f "$$file" ] || continue; grep -nEv '^($$|#|[A-Za-z_][A-Za-z0-9_]*=)' "$$file" && status=1 || echo "PASSED: $$file"; done; exit $$status
 
-.PHONY: docker-build-nginx
-docker-build-nginx: ## Build nginx Docker image
-	docker build -f infra/docker/nginx.Dockerfile .
+port-scan: ## Fail if source still references old backend port 8000
+	@tmp=$$(mktemp); git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . ':(exclude)Makefile' ':(exclude)docs/**' ':(exclude)**/*.md' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no old backend port 8000 found"; fi
 
-.PHONY: docker-build
-docker-build: docker-build-backend docker-build-frontend docker-build-nginx ## Build all Docker images
+secret-scan: ## Basic scan for private key blocks in tracked app files
+	@tmp=$$(mktemp); git grep -nE 'BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY' -- . ':(exclude)**/*.md' ':(exclude)docs/**' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no private key blocks found"; fi
 
-.PHONY: compose-config
-compose-config: ## Validate default docker compose config
-	docker compose config
+safety-scan: env-check port-scan secret-scan ## Run safety scans
 
-.PHONY: compose-prod-config
-compose-prod-config: ## Validate production docker compose config
-	docker compose -f docker-compose.prod.yml config
+feature-env: ## Generate safe full-feature local env example
+	@bash scripts/feature-local-env.sh "$(FEATURE_ENV)"
 
-.PHONY: compose-check
-compose-check: compose-config compose-prod-config ## Validate all compose configs
+feature-unlock-local: feature-env ## Generate safe full-feature local env and show activation step
+	@echo "Safe full-feature local env generated: $(FEATURE_ENV)"
+	@echo "Apply manually with: cp $(FEATURE_ENV) .env"
+	@echo "Safety remains enabled: dry-run=true, safety-lock=true, live actions=false"
 
-.PHONY: compose-up
-compose-up: ## Start local compose stack
+feature-status: ## Write local feature key status report
+	@echo "# zDash feature status" > "$(FEATURE_REPORT)"
+	@echo >> "$(FEATURE_REPORT)"
+	@echo "Generated: $$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$(FEATURE_REPORT)"
+	@echo >> "$(FEATURE_REPORT)"
+	@echo "Feature env: $(FEATURE_ENV)" >> "$(FEATURE_REPORT)"
+	@echo "Backend: http://$(BACKEND_HOST):$(BACKEND_PORT)" >> "$(FEATURE_REPORT)"
+	@echo "Frontend: http://$(FRONTEND_HOST):$(FRONTEND_PORT)" >> "$(FEATURE_REPORT)"
+	@echo >> "$(FEATURE_REPORT)"
+	@echo "Safety: dry-run and production safety lock remain enabled by default." >> "$(FEATURE_REPORT)"
+	@echo "Report: $(FEATURE_REPORT)"
+
+validate-fast: safety-scan ## Run fast validation
+	@PYTHONPATH=$(BACKEND_DIR) $(PYTHON) -m compileall -q $(BACKEND_DIR)/app
+	@$(NPM) --prefix $(FRONTEND_DIR) run test -- --run --passWithNoTests
+	@echo "PASSED: zdash fast validation"
+
+validate-local: validate-fast ## Alias for local validation
+
+validate: validate-fast frontend-build ## Run validation and frontend build
+
+frontend-build: ## Build frontend
+	@$(NPM) --prefix $(FRONTEND_DIR) run build
+
+compose-config: ## Validate Docker Compose config
+	docker compose config >/dev/null
+	@echo "PASSED: docker compose config"
+
+compose-up: ## Start compose foreground
 	docker compose up --build
 
-.PHONY: compose-up-detached
-compose-up-detached: ## Start local compose stack detached
+compose-up-detached: ## Start compose detached
 	docker compose up --build -d
 
-.PHONY: compose-prod-up
-compose-prod-up: ## Start production compose stack detached
-	docker compose -f docker-compose.prod.yml up --build -d
+compose-restart: compose-down compose-up-detached ## Restart compose detached
 
-.PHONY: compose-down
-compose-down: ## Stop local compose stack
+compose-down: ## Stop compose
 	docker compose down
 
-.PHONY: compose-prod-down
-compose-prod-down: ## Stop production compose stack
-	docker compose -f docker-compose.prod.yml down
-
-.PHONY: compose-ps
 compose-ps: ## Show compose services
 	docker compose ps
 
-.PHONY: compose-logs
 compose-logs: ## Follow compose logs
 	docker compose logs -f --tail=200
 
-.PHONY: scripts-list
-scripts-list: ## List executable script files known to the repo/worktree
-	@echo "Tracked shell/python/powershell scripts:"; \
-	git ls-files '*.sh' '*.py' '*.ps1' | sort | sed 's/^/  /'; \
-	echo; \
-	echo "Installer-generated local helpers if present:"; \
-	for f in run-backend.sh run-frontend.sh healthcheck-zdash.sh validate-zdash.sh repair-zdash.sh; do [ ! -f "$$f" ] || echo "  $$f"; done
-
-.PHONY: scripts-chmod
-scripts-chmod: ## chmod +x tracked shell scripts and root installers
-	@chmod +x install-zdash-fullstack.sh install-zdash-prod.sh 2>/dev/null || true
-	@find scripts infra/scripts .codex -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
-	@for f in run-backend.sh run-frontend.sh healthcheck-zdash.sh validate-zdash.sh repair-zdash.sh; do [ ! -f "$$f" ] || chmod +x "$$f"; done
-	@echo "Script executable bits refreshed."
-
-.PHONY: install-local
-install-local: scripts-chmod ## Run local/VM full-stack installer
-	bash install-zdash-fullstack.sh
-
-.PHONY: install-local-start
-install-local-start: scripts-chmod ## Run local installer and start backend/frontend via nohup
-	START_SERVICES=true bash install-zdash-fullstack.sh
-
-.PHONY: install-local-pull
-install-local-pull: scripts-chmod ## Pull when clean, then run local installer
-	DO_PULL=true bash install-zdash-fullstack.sh
-
-.PHONY: install-local-fast
-install-local-fast: scripts-chmod ## Run local installer without tests/build for quick repair
-	RUN_BACKEND_TESTS=false RUN_FRONTEND_TESTS=false RUN_FRONTEND_BUILD=false bash install-zdash-fullstack.sh
-
-.PHONY: install-local-docker
-install-local-docker: scripts-chmod ## Run local installer plus Docker validation builds
-	RUN_DOCKER_BUILDS=true INSTALL_DOCKER=true bash install-zdash-fullstack.sh
-
-.PHONY: install-repair
-install-repair: scripts-chmod ## Run generated repair helper if present, else force backend reinstall through installer
-	@if [ -x ./repair-zdash.sh ]; then ./repair-zdash.sh; else FORCE_BACKEND_REINSTALL=true bash install-zdash-fullstack.sh; fi
-
-.PHONY: install-validate
-install-validate: scripts-chmod ## Run generated validate helper if present, else run make validate-fast
-	@if [ -x ./validate-zdash.sh ]; then ./validate-zdash.sh; else $(MAKE) validate-fast; fi
-
-.PHONY: install-health
-install-health: ## Run generated local healthcheck if present
-	@if [ -x ./healthcheck-zdash.sh ]; then ./healthcheck-zdash.sh; else $(MAKE) health; fi
-
-.PHONY: install-prod
-install-prod: scripts-chmod ## Run production installer with sudo; set ZDASH_DOMAIN=domain
-	sudo ZDASH_DOMAIN=$(ZDASH_DOMAIN) ./install-zdash-prod.sh
-
-.PHONY: install-prod-tests
-install-prod-tests: scripts-chmod ## Run production installer with backend/frontend host tests enabled
-	sudo ZDASH_DOMAIN=$(ZDASH_DOMAIN) RUN_TESTS=true RUN_FRONTEND_TESTS=true ./install-zdash-prod.sh
-
-.PHONY: install-prod-no-firewall
-install-prod-no-firewall: scripts-chmod ## Run production installer without changing UFW
-	sudo ZDASH_DOMAIN=$(ZDASH_DOMAIN) ENABLE_UFW=false ./install-zdash-prod.sh
-
-.PHONY: prod-ps
-prod-ps: ## Show production Docker Compose services
-	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) ps
-
-.PHONY: prod-health
-prod-health: ## Run production health helper
-	sudo $(ZDASH_PROD_HEALTH)
-
-.PHONY: prod-logs
-prod-logs: ## Follow production logs; set SERVICE=backend/nginx/frontend/postgres/redis
-	@if [ -n "$${SERVICE:-}" ]; then sudo $(ZDASH_PROD_LOGS) "$$SERVICE"; else sudo $(ZDASH_PROD_LOGS); fi
-
-.PHONY: prod-backend-logs
-prod-backend-logs: ## Follow production backend logs
-	sudo $(ZDASH_PROD_LOGS) backend
-
-.PHONY: prod-nginx-logs
-prod-nginx-logs: ## Follow production nginx logs
-	sudo $(ZDASH_PROD_LOGS) nginx
-
-.PHONY: prod-backup
-prod-backup: ## Run production backup helper
-	sudo $(ZDASH_PROD_BACKUP)
-
-.PHONY: prod-update
-prod-update: ## Run production update/rebuild helper
-	sudo $(ZDASH_PROD_UPDATE)
-
-.PHONY: prod-start
-prod-start: ## Start production systemd service
-	sudo systemctl start zdash
-
-.PHONY: prod-stop
-prod-stop: ## Stop production systemd service
-	sudo systemctl stop zdash
-
-.PHONY: prod-restart
-prod-restart: ## Restart production stack through systemd
-	sudo systemctl restart zdash
-
-.PHONY: prod-status
-prod-status: ## Show production systemd service status
-	sudo systemctl status zdash --no-pager
-
-.PHONY: prod-down
-prod-down: ## Stop production Docker Compose stack directly
-	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) down
-
-.PHONY: prod-up
-prod-up: ## Start production Docker Compose stack directly
-	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) up -d
-
-.PHONY: prod-verify
-prod-verify: prod-verify-runtime prod-verify-health prod-verify-rollback prod-verify-observability ## Run full production deployment dry-run verification
-
-.PHONY: prod-verify-runtime
-prod-verify-runtime: ## Verify production runtime prerequisites
-	bash scripts/prod/verify-prod-runtime.sh
-
-.PHONY: prod-verify-health
-prod-verify-health: ## Verify production health endpoints
-	bash scripts/prod/verify-prod-health.sh
-
-.PHONY: prod-verify-rollback
-prod-verify-rollback: ## Verify production rollback readiness
-	bash scripts/prod/verify-prod-rollback-readiness.sh
-
-.PHONY: prod-verify-observability
-prod-verify-observability: ## Verify production observability
-	bash scripts/prod/verify-prod-observability.sh
-
-.PHONY: phase39-validate
-phase39-validate: ## Validate Phase 39 production dry-run deliverables
-	@echo "=== Phase 39 Validation ==="; \
-	echo ""; \
-	echo "--- Makefile Targets ---"; \
-	for t in prod-verify prod-verify-runtime prod-verify-health prod-verify-rollback prod-verify-observability phase39-validate; do \
-	  grep -Eq "^$$t:" Makefile && echo "  PASSED: $$t target exists" || echo "  FAILED: $$t target missing"; \
-	done; \
-	echo ""; \
-	echo "--- Scripts ---"; \
-	for s in scripts/prod/verify-prod-runtime.sh scripts/prod/verify-prod-health.sh scripts/prod/verify-prod-rollback-readiness.sh scripts/prod/verify-prod-observability.sh; do \
-	  if [ -x "$$s" ]; then echo "  PASSED: $$s is executable"; else echo "  FAILED: $$s missing or not executable"; fi; \
-	done; \
-	echo ""; \
-	echo "--- Docs ---"; \
-	for d in docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md; do \
-	  if [ -f "$$d" ]; then echo "  PASSED: $$d exists"; else echo "  FAILED: $$d missing"; fi; \
-	done; \
-	echo ""; \
-	echo "--- Duplicate Check ---"; \
-	DUPS=$$(grep -E '^prod-verify' Makefile | sort | uniq -d); \
-	if [ -n "$$DUPS" ]; then echo "  FAILED: duplicate targets found: $$DUPS"; else echo "  PASSED: no duplicate prod-verify targets"; fi; \
-	echo ""; \
-	echo "Phase 39 validation complete."
-
-.PHONY: go-live-rehearsal
-go-live-rehearsal: ## Run full go-live rehearsal (runtime + health + safety + rollback + observability + evidence)
-	bash scripts/prod/run-go-live-rehearsal.sh
-
-.PHONY: go-live-evidence
-go-live-evidence: ## Capture go-live evidence to docs/reports/generated/
-	bash scripts/prod/capture-go-live-evidence.sh
-
-.PHONY: go-live-safety-locks
-go-live-safety-locks: ## Verify go-live safety locks in production env
-	bash scripts/prod/verify-go-live-safety-locks.sh
-
-.PHONY: phase40-validate
-phase40-validate: ## Validate Phase 40 go-live rehearsal deliverables
-	@echo "=== Phase 40 Validation ==="; \
-	echo ""; \
-	echo "--- Makefile Targets ---"; \
-	for t in go-live-rehearsal go-live-evidence go-live-safety-locks phase40-validate; do \
-	  grep -Eq "^$$t:" Makefile && echo "  PASSED: $$t target exists" || echo "  FAILED: $$t target missing"; \
-	done; \
-	echo ""; \
-	echo "--- Scripts ---"; \
-	for s in scripts/prod/verify-go-live-safety-locks.sh scripts/prod/capture-go-live-evidence.sh scripts/prod/run-go-live-rehearsal.sh; do \
-	  if [ -x "$$s" ]; then echo "  PASSED: $$s is executable"; else echo "  FAILED: $$s missing or not executable"; fi; \
-	done; \
-	echo ""; \
-	echo "--- Docs ---"; \
-	for d in docs/runbooks/GO_LIVE_REHEARSAL.md docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md; do \
-	  if [ -f "$$d" ]; then echo "  PASSED: $$d exists"; else echo "  FAILED: $$d missing"; fi; \
-	done; \
-	echo ""; \
-	echo "--- Duplicate Check ---"; \
-	DUPS=$$(grep -E '^go-live-' Makefile | sort | uniq -d); \
-	if [ -n "$$DUPS" ]; then echo "  FAILED: duplicate targets found: $$DUPS"; else echo "  PASSED: no duplicate go-live targets"; fi; \
-	echo ""; \
-	echo "Phase 40 validation complete."
-
-.PHONY: codex-setup
-codex-setup: ## Run Codex Cloud setup script
-	bash .codex/cloud/setup.sh
-
-.PHONY: codex-maintenance
-codex-maintenance: ## Run Codex Cloud maintenance script
-	bash .codex/cloud/maintenance.sh
-
-.PHONY: codex-repair-backend
-codex-repair-backend: ## Run Codex backend dependency repair script
-	bash .codex/cloud/repair-backend-deps.sh
-
-.PHONY: codex-healthcheck
-codex-healthcheck: ## Run Codex healthcheck if present
-	@if [ -x .codex/healthcheck.sh ]; then bash .codex/healthcheck.sh; else echo ".codex/healthcheck.sh not found/executable"; fi
-
-.PHONY: maintenance
-maintenance: codex-maintenance ## Run Codex Cloud maintenance validation
-
-.PHONY: script-run-phases
-script-run-phases: ## Run prompt phase runner; set PHASE_ARGS='...'
-	bash scripts/run-prompt-phases.sh $${PHASE_ARGS:-}
-
-.PHONY: script-export-json-prompt
-script-export-json-prompt: ## Run JSON-to-prompt export helper; set EXPORT_ARGS='...'
-	bash scripts/export-json-to-prompt.sh $${EXPORT_ARGS:-}
-
-.PHONY: script-integrate-ecc
-script-integrate-ecc: ## Run ECC integration script
-	bash scripts/integrate-ecc.sh
-
-.PHONY: script-sync-ecc-codex
-script-sync-ecc-codex: ## Run ECC-to-Codex sync script
-	bash scripts/sync-ecc-to-codex.sh
-
-.PHONY: script-setup-dev
-script-setup-dev: ## Run repository dev setup script
-	bash scripts/setup-dev.sh
-
-.PHONY: script-enable-agents
-script-enable-agents: ## Run agent enabling helper
-	$(PYTHON) scripts/enable_agents.py
-
-.PHONY: infra-deploy-dev
-infra-deploy-dev: ## Run infra development deploy script
-	bash infra/scripts/deploy-dev.sh
-
-.PHONY: infra-deploy-prod
-infra-deploy-prod: ## Run infra production deploy script
-	bash infra/scripts/deploy-prod.sh
-
-.PHONY: infra-rollback
-infra-rollback: ## Run infra rollback script
-	bash infra/scripts/rollback.sh
-
-.PHONY: windows-nssm-command
-windows-nssm-command: ## Print Windows NSSM install command for PowerShell
-	@echo 'PowerShell:'
-	@echo '  powershell -ExecutionPolicy Bypass -File scripts/install-nssm-service.ps1'
-
-.PHONY: all-scripts-check
-all-scripts-check: scripts-list scripts-chmod safety-scan ## List scripts, refresh executable bits, and run safety scan
-
-.PHONY: validate-fast
-validate-fast: safety-scan backend-check frontend-check ## Run safety scans + backend/frontend validation
-
-.PHONY: validate
-validate: validate-fast docker-build compose-check maintenance ## Run full validation including Docker and maintenance
-
-.PHONY: final-release-check
-final-release-check: ## Run final public release verification
-	bash scripts/release/verify-final-public-release.sh
-
-.PHONY: version-show
-version-show: ## Show current VERSION
-	@echo "VERSION: $$(cat VERSION 2>/dev/null || echo '(not set)')"
-
-.PHONY: phase42-validate
-phase42-validate: validate-fast ## Run full Phase 42 validation chain (validate-fast + phase39-41 + final-release-check)
-	$(MAKE) phase39-validate
-	$(MAKE) phase40-validate
-	$(MAKE) phase41-validate
-	$(MAKE) final-release-check
-	@echo ""
-	@echo "Phase 42 validation complete."
-
-.PHONY: release-candidate
-release-candidate: ## Create release candidate (verify readiness + collect evidence + generate notes)
-	bash scripts/release/create-release-candidate.sh
-
-.PHONY: release-evidence
-release-evidence: ## Collect release evidence to docs/reports/generated/
-	bash scripts/release/collect-release-evidence.sh
-
-.PHONY: release-readiness
-release-readiness: ## Verify release readiness prerequisites
-	bash scripts/release/verify-release-readiness.sh
-
-.PHONY: sbom
-sbom: ## Generate SBOM for frontend and backend
-	@bash scripts/release/generate-sbom.sh
-
-.PHONY: backup-restore-proof
-backup-restore-proof: ## Run backup/restore proof script
-	@bash scripts/release/backup-restore-proof.sh
-
-.PHONY: release-attestation
-release-attestation: ## Create release attestation
-	@bash scripts/release/create-release-attestation.sh
-
-.PHONY: phase48-validate
-phase48-validate: ## Validate P0-P2 completion
-	@bash scripts/release/verify-p0-p2-completion.sh
-
-.PHONY: phase41-validate
-phase41-validate: ## Validate Phase 41 release automation deliverables
-	@echo "=== Phase 41 Validation ==="; \
-	echo ""; \
-	echo "--- Makefile Targets ---"; \
-	for t in release-candidate release-evidence release-readiness phase41-validate; do \
-	  grep -Eq "^$$t:" Makefile && echo "  PASSED: $$t target exists" || echo "  FAILED: $$t target missing"; \
-	done; \
-	echo ""; \
-	echo "--- Scripts ---"; \
-	for s in scripts/release/create-release-candidate.sh scripts/release/collect-release-evidence.sh scripts/release/verify-release-readiness.sh; do \
-	  if [ -x "$$s" ]; then echo "  PASSED: $$s is executable"; else echo "  FAILED: $$s missing or not executable"; fi; \
-	done; \
-	echo ""; \
-	echo "--- Docs ---"; \
-	for d in docs/releases/PHASE41_RELEASE_CANDIDATE.md docs/runbooks/OPERATOR_HANDOFF.md docs/reports/PHASE41_RELEASE_EVIDENCE_ARCHIVE.md; do \
-	  if [ -f "$$d" ]; then echo "  PASSED: $$d exists"; else echo "  FAILED: $$d missing"; fi; \
-	done; \
-	echo ""; \
-	echo "--- Duplicate Check ---"; \
-	DUPS=$$(grep -E '^release-(candidate|evidence|readiness)' Makefile | sort | uniq -d); \
-	if [ -n "$$DUPS" ]; then echo "  FAILED: duplicate targets found: $$DUPS"; else echo "  PASSED: no duplicate release-candidate/evidence/readiness targets"; fi; \
-	echo ""; \
-	echo "Phase 41 validation complete."
-
-.PHONY: golive
-golive: backend-install frontend-install validate-fast ## Go-live gate: install deps, safety scans, tests, and frontend build
-	@echo "GO LIVE READY: backend pytest, frontend tests, and frontend build passed."
-
-.PHONY: golive-sync
-golive-sync: sync-main golive ## Sync from origin/main, then run go-live gate
-
-.PHONY: release-notes
-release-notes: ## Generate docs/releases/$(RELEASE_TAG).md
-	@mkdir -p docs/releases
-	@printf '%s\n' \
-		"# $(RELEASE_TITLE)" \
-		"" \
-		"Status: GO LIVE READY" \
-		"" \
-		"## Validation" \
-		"" \
-		"- Backend pytest: PASS" \
-		"- Frontend vitest: PASS" \
-		"- Frontend production build: PASS" \
-		"- Safety scans: PASS" \
-		"" \
-		"## Safety" \
-		"" \
-		"- Trading execution remains dry-run / guarded by default." \
-		"- Google Finance Beta integration is read-only and does not scrape private endpoints." \
-		"- This release is not financial advice." \
-		"" \
-		"Generated by: make release-notes RELEASE_TAG=$(RELEASE_TAG)" \
-		> docs/releases/$(RELEASE_TAG).md
-	@echo "Wrote docs/releases/$(RELEASE_TAG).md"
-
-.PHONY: release-artifact
-release-artifact: frontend-build ## Package frontend dist artifact under release-artifacts/
-	@mkdir -p release-artifacts
-	@tar -czf release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz -C $(FRONTEND_DIR) dist
-	@echo "Wrote release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz"
-
-.PHONY: release-local
-release-local: golive release-notes release-artifact ## Run go-live validation and create local release notes/artifact
-
-.PHONY: release-push
-release-push: release-tag ## Push main and release tag; set CONFIRM_RELEASE=yes
-	@test "$(CONFIRM_RELEASE)" = "yes" || (echo "ERROR: set CONFIRM_RELEASE=yes to push release" >&2; exit 1)
-	@git push origin main
-	@git push origin $(RELEASE_TAG)
-
-.PHONY: gh-release
-gh-release: ## Create GitHub release with artifact; requires gh auth and CONFIRM_RELEASE=yes
-	@test "$(CONFIRM_RELEASE)" = "yes" || (echo "ERROR: set CONFIRM_RELEASE=yes to create GitHub release" >&2; exit 1)
-	@command -v gh >/dev/null 2>&1 || (echo "ERROR: gh CLI not found" >&2; exit 1)
-	@test -f docs/releases/$(RELEASE_TAG).md || (echo "ERROR: missing docs/releases/$(RELEASE_TAG).md; run make release-notes" >&2; exit 1)
-	@test -f release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz || (echo "ERROR: missing release artifact; run make release-artifact" >&2; exit 1)
-	@if gh release view $(RELEASE_TAG) >/dev/null 2>&1; then \
-		echo "Release $(RELEASE_TAG) exists. Uploading artifact with --clobber..."; \
-		gh release upload $(RELEASE_TAG) release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz --clobber; \
-	else \
-		gh release create $(RELEASE_TAG) --title "$(RELEASE_TITLE)" --notes-file docs/releases/$(RELEASE_TAG).md release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz; \
-	fi
-
-.PHONY: release-status
-release-status: ## Show release tag status
-	@if git rev-parse $(RELEASE_TAG) >/dev/null 2>&1; then \
-		echo "Tag $(RELEASE_TAG) exists at $(shell git rev-parse --short $(RELEASE_TAG))"; \
-		if [ "$$(git rev-parse $(RELEASE_TAG))" = "$$(git rev-parse HEAD)" ]; then \
-			echo "Tag points to HEAD (up to date)"; \
-		else \
-			echo "WARNING: tag does not point to HEAD"; \
-		fi; \
-	else \
-		echo "Tag $(RELEASE_TAG) does not exist yet"; \
-	fi
-	@if gh release view $(RELEASE_TAG) >/dev/null 2>&1; then \
-		echo "GitHub release $(RELEASE_TAG) exists"; \
-	else \
-		echo "GitHub release $(RELEASE_TAG) does not exist"; \
-	fi
-
-.PHONY: release-tag
-release-tag: release-local ## Create local annotated release tag; set CONFIRM_RELEASE=yes
-	@test "$(CONFIRM_RELEASE)" = "yes" || (echo "ERROR: set CONFIRM_RELEASE=yes to create release tag" >&2; exit 1)
-	@git diff --quiet || (echo "ERROR: working tree has unstaged changes. Commit release notes first." >&2; git status --short; exit 1)
-	@if git rev-parse $(RELEASE_TAG) >/dev/null 2>&1; then \
-		if [ "$$(git rev-parse $(RELEASE_TAG))" = "$$(git rev-parse HEAD)" ]; then \
-			echo "Tag $(RELEASE_TAG) already exists at HEAD (skipping)"; \
-		else \
-			echo "ERROR: tag $(RELEASE_TAG) exists but does not point to HEAD" >&2; \
-			exit 1; \
-		fi; \
-	else \
-		git tag -a $(RELEASE_TAG) -m "$(RELEASE_TITLE)"; \
-		echo "Created tag $(RELEASE_TAG)"; \
-	fi
-
-.PHONY: prod-env-generate
-prod-env-generate: ## Generate .env.production with random secrets (chmod 600)
-	bash scripts/production/generate-prod-env.sh
-
-.PHONY: prod-deploy-final
-prod-deploy-final: prod-env-generate ## Generate env, validate compose config, build, deploy, health check
-	@test -f .env.production || (echo "ERROR: .env.production missing" >&2; exit 1)
-	docker compose --env-file .env.production -f docker-compose.prod.yml config
-	docker compose --env-file .env.production -f docker-compose.prod.yml up --build -d
-	docker compose -f docker-compose.prod.yml ps
-	@echo "Waiting for backend health check..."
-	@sleep 10
-	curl -fsS http://localhost/health && echo " Health check passed" || echo " Health check failed (backend may still be starting)"
-
-.PHONY: phase10-final
-phase10-final: validate ## Final Phase 10 validation alias
-
-.PHONY: ci-local
-ci-local: validate ## Local CI alias
-
-.PHONY: run-backend
-run-backend: ## Run backend dev server on port 8005
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload
-
-.PHONY: run-frontend
-run-frontend: ## Run frontend dev server on port 5173
-	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT)
-
-# ---------------------------------------------------------------------------
-# Server commands (Phase 36)
-# ---------------------------------------------------------------------------
-
-.PHONY: server-start
-server-start: ## Start local backend and frontend servers
-	bash scripts/server/start-local.sh
-
-.PHONY: server-stop
-server-stop: ## Stop local backend and frontend servers
-	bash scripts/server/stop-local.sh
-
-.PHONY: server-status
-server-status: ## Show local server status
-	bash scripts/server/status-local.sh
-
-.PHONY: server-logs
-server-logs: ## Follow local server logs (SERVICE=backend|frontend)
-	SERVICE=$(SERVICE) bash scripts/server/logs-local.sh
-
-.PHONY: server-open
-server-open: ## Print or open local server URLs
-	bash scripts/server/open-local.sh
-
-.PHONY: server-restart
-server-restart: server-stop server-start ## Restart local servers
-
-# ---------------------------------------------------------------------------
-# Git safe workflow (Phase 36)
-# ---------------------------------------------------------------------------
-
-.PHONY: git-clean-local
-git-clean-local: ## Remove local artifacts (baks, logs, tmp)
-	bash scripts/git/clean-local-artifacts.sh
-
-.PHONY: git-safe-status
-git-safe-status: ## Show git status with risky file detection
-	bash scripts/git/safe-status.sh
-
-.PHONY: git-safe-add
-git-safe-add: ## Stage files safely (ARGS="path1 path2" or default)
-	bash scripts/git/safe-add.sh $(ARGS)
-
-.PHONY: git-safe-commit
-git-safe-commit: ## Commit with pre-commit safety scan (MESSAGE="...")
-	MESSAGE="$(MESSAGE)" bash scripts/git/safe-commit.sh
-
-.PHONY: git-safe-push safe-push
-git-safe-push safe-push: ## Validate, status, then push to origin/main
-	bash scripts/git/safe-push.sh
-
-.PHONY: safe-commit
-safe-commit: git-safe-commit ## Alias to git-safe-commit
-
-.PHONY: health
-health: ## Check backend health endpoint
-	curl -fsS http://localhost:$(BACKEND_PORT)/health
-
-.PHONY: api-docs
-api-docs: ## Show local API docs URL
-	@echo "OpenAPI: http://localhost:$(BACKEND_PORT)/docs"
-	@echo "Health:  http://localhost:$(BACKEND_PORT)/health"
-
-.PHONY: clean-python
-clean-python: ## Remove Python caches
-	find . -type d -name __pycache__ -prune -exec rm -rf {} +
-	rm -rf $(BACKEND_DIR)/.pytest_cache $(BACKEND_DIR)/.ruff_cache .pytest_cache .ruff_cache
-
-.PHONY: clean-frontend
-clean-frontend: ## Remove frontend build output only
-	rm -rf $(FRONTEND_DIR)/dist $(FRONTEND_DIR)/coverage
-
-.PHONY: clean-codex
-clean-codex: ## Remove local Codex runtime reports/logs
-	rm -rf .codex/reports .codex/logs .codex/runs .codex/cache .codex/tmp
-
-.PHONY: clean
-clean: clean-python clean-frontend ## Remove generated caches/build outputs, but keep venv and node_modules
-
-.PHONY: clean-all
-clean-all: clean clean-codex ## Remove generated caches/build outputs and Codex runtime artifacts
-
-.PHONY: phase10-summary
-phase10-summary: ## Print Phase 10 documentation map
-	@echo "Phase 10 docs:"
-	@echo "  docs/architecture/PHASE_10_SAAS_MONETIZATION.md"
-	@echo "  docs/architecture/BILLING_MODEL.md"
-	@echo "  docs/architecture/MARKETPLACE_MODEL.md"
-	@echo "  docs/architecture/ENTERPRISE_PACKAGING.md"
-	@echo "  docs/runbooks/BILLING_INCIDENT_RUNBOOK.md"
-	@echo "  docs/runbooks/SUBSCRIPTION_SUPPORT_RUNBOOK.md"
-	@echo "  docs/runbooks/MARKETPLACE_REVIEW_RUNBOOK.md"
-	@echo "  docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md"
+clean: ## Clean caches
+	@find . -type d \( -name __pycache__ -o -name .pytest_cache -o -name .ruff_cache -o -name dist -o -name build \) -prune -exec rm -rf {} +

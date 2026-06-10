@@ -4,9 +4,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}",
     "build": "next build",
-    "start": "next start"
+    "start": "next start --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}"
   },
   "dependencies": {
     "next": "16.2.6",

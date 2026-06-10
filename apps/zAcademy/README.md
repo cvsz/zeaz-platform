@@ -1,63 +1,62 @@
 # zAcademy
 
-Enterprise Academy SaaS Platform
+Last updated: 2026-06-10
 
-## Vision
+`apps/zAcademy` is the academy / learning SaaS platform stack inside `cvsz/zeaz-platform`.
 
-zAcademy is an enterprise-grade multi-tenant academy platform supporting learning, certification, AI automation, competency management, analytics, and blockchain-enabled credential capabilities.
+## Stack
 
-## Domains
+| Layer | Stack |
+|---|---|
+| Workspace | Node / pnpm monorepo |
+| App areas | `apps/`, `packages/`, `services/` |
+| Automation | `automation/`, `scripts/`, `Makefile` |
+| Architecture docs | `architecture/`, `docs/` |
+| Testing | `tests/` |
 
-- learning-domain
-- assessment-domain
-- certification-domain
-- ai-domain
-- automation-domain
-- blockchain-domain
+## Scope rule
 
-## Platform Stack
+This README documents only `apps/zAcademy`. Keep zAcademy commands and dependencies separate from zOffice, zDash, zWallet, and other app stacks.
 
-### Frontend
+## Local development
 
-- Next.js
-- TypeScript
-- Tailwind
+```bash
+cd /home/zeazdev/zeaz-platform/apps/zAcademy
+pnpm install
+pnpm dev
+```
 
-### Backend
+If npm is used in the current environment:
 
-- Go
-- Python
+```bash
+npm install
+npm run dev
+```
 
-### Infrastructure
+## Build
 
-- Kubernetes
-- Terraform
-- ArgoCD
+```bash
+pnpm build
+```
 
-### Data
-
-- PostgreSQL
-- Redis
-
-## Repository Structure
+## Important files
 
 ```text
+package.json
+pnpm-workspace.yaml
+turbo.json
+Makefile
 apps/
+packages/
 services/
 automation/
-infra/
+architecture/
 docs/
-packages/
+tests/
 ```
 
-## Bootstrap
+## Security notes
 
-```bash
-make bootstrap
-```
-
-## Deployment
-
-```bash
-make deploy-dev
-```
+- Do not commit LMS/customer secrets or `.env` files.
+- Keep academy-specific services isolated inside this app path.
+- Use platform Cloudflare routing only through root-level configs.

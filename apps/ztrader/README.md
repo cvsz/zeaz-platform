@@ -1,113 +1,176 @@
-# ztrader — Safety-First Multi-Language Algorithmic Trading Platform
+# zTrader
 
-`ztrader` is a unified cryptocurrency trading application merged from `ABTPi18n` and `zkbtrader`. It integrates a beautiful multi-language Next.js frontend, an asynchronous FastAPI backend gateway, relational PostgreSQL SQLAlchemy storage, Celery task queue orchestration, and a fail-closed risk gate.
+Last updated: 2026-06-10
 
----
-
-## Key Features
-
-1. **Safety-First Mode**:
-   - `EXECUTION_MODE` is set to `paper` by default.
-   - `LIVE_TRADING_ENABLED` is gated to `false` unless explicitly activated.
-   - Immediate manual block via a global **Kill Switch**.
-2. **Fail-Closed Risk Engine**:
-   - Intercepts all trade intents before dispatching to brokers.
-   - Restricts orders to allowed symbols (`BTC/USDT`, `ETH/USDT`) and validates `max_order_notional` limits.
-3. **Multi-Language Support (i18n)**:
-   - English, Thai, Japanese, and Chinese translations included.
-4. **Relational Storage**:
-   - Uses PostgreSQL with SQLAlchemy (asyncpg) to capture users, exchange credentials (AES-encrypted), strategies, orders, and security logs.
-5. **Multi-Exchange Support**:
-   - Out-of-the-box integration mappings for `binance.com`, `binance.th` (Binance Thailand local entity), `okx`, `bybit`, `kucoin`, and `MT5` (MetaTrader 5 via an external execution gateway).
-
----
-
-## Directory Structure
+`apps/ztrader` is the safety-first multi-language algorithmic trading platform stack and the active merge target for useful source material from:
 
 ```text
-apps/ztrader/
-├── backend/                   # FastAPI backend application
-│   ├── db/                    # DDL schema files
-│   ├── src/
-│   │   └── ztrader/
-│   │       ├── api/           # API router endpoints
-│   │       ├── core/          # Database connection, config, and security helpers
-│   │       ├── engine/        # RiskEngine, PaperBroker, Strategy, Backtest
-│   │       ├── models/        # SQLAlchemy and Pydantic models
-│   │       ├── main.py        # FastAPI server entry point
-│   │       └── worker.py      # Celery task definitions
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/                  # Next.js web application
-│   ├── public/                # Locales translation files
-│   ├── src/
-│   │   ├── app/               # App Router pages and dynamic routing
-│   │   ├── components/        # Glassmorphic UI components
-│   │   └── contexts/          # Theme context provider
-│   ├── Dockerfile
-│   ├── package.json
-│   └── tsconfig.json
-├── docker-compose.yml         # Container orchestrator
-├── Makefile                   # Operation targets helper
-├── .env.example               # Configuration template
-└── README.md                  # This document
+apps/ABTPi18n
+apps/zkbtrader
 ```
 
----
+## Merge status
 
-## Getting Started
+```text
+STATUS: MERGE IMPLEMENTATION STARTED
+SOURCE MATERIAL: retained until validation passes
+TARGET: apps/ztrader
+PLAN: ../../docs/plans/ztrader-merge-abtpi18n-zkbtrader-plan.md
+```
 
-### 1. Environment Setup
-Copy the configuration template and customize details:
+Source apps are retained during migration. They should only be cleaned up after inventory, mapping, validation, and final report gates pass.
+
+## Stack
+
+| Layer | Stack |
+|---|---|
+| Frontend | Next.js / TypeScript / i18n dependencies |
+| Backend | FastAPI / Python |
+| Workers | Celery-style async orchestration |
+| Data | PostgreSQL-oriented backend storage |
+| Queue/cache | Redis |
+| Trading adapter | CCXT shell + safe mock fallback |
+| Paper execution | deterministic paper engine |
+| Risk gate | fail-closed risk engine with symbol allowlist, max notional, global kill switch |
+| Deployment | Docker Compose |
+| App areas | `frontend/`, `backend/`, `scripts/`, `harness/`, `reports/merge/` |
+
+## Safety mode
+
+Use paper/dry-run workflows by default. Live trading must remain explicitly gated by risk controls, environment flags, and operator review.
+
+Default safety expectation:
+
+```text
+EXECUTION_MODE=paper
+LIVE_TRADING_ENABLED=false
+GLOBAL_KILL_SWITCH=true
+```
+
+## Merge workflow
+
+Preview source mapping:
+
 ```bash
-cp .env.example .env
+cd /home/zeazdev/zeaz-platform/apps/ztrader
+make merge-dry-run
 ```
-Ensure you generate 32-byte keys for `ENCRYPTION_KEY` and `JWT_SECRET`.
 
-Set `ADMIN_API_TOKEN` before using admin routes or the kill switch. Admin API calls
-fail closed when this value is unset, and clients must send it as a bearer token.
-For local browser testing, store the token in `localStorage` under
-`ztrader_admin_token`; do not expose production admin tokens through public
-frontend environment variables.
+Apply source mapping into zTrader while retaining original source apps:
 
-### 2. Local Manual Launch
-Run the backend API:
 ```bash
-# Install dependencies
-pip install -r backend/requirements.txt
-
-# Start backend server
-PYTHONPATH=backend/src uvicorn ztrader.main:app --reload --port 8000
+make merge-apply
 ```
 
-Run the frontend app:
+Validate after mapping:
+
+```bash
+make merge-validate
+make merge-report
+```
+
+Generated reports live in:
+
+```text
+apps/ztrader/reports/merge/
+```
+
+## Source mapping summary
+
+### ABTPi18n
+
+| Source | Target |
+|---|---|
+| `apps/ABTPi18n/configs/` | `apps/ztrader/config/abtpi18n/` |
+| `apps/ABTPi18n/core/` | `apps/ztrader/backend/src/ztrader/abt/core/` |
+| `apps/ABTPi18n/strategies/` | `apps/ztrader/backend/src/ztrader/strategies/abtpi18n/` |
+| `apps/ABTPi18n/monitoring/` | `apps/ztrader/backend/src/ztrader/monitoring/abtpi18n/` |
+| `apps/ABTPi18n/scripts/` | `apps/ztrader/scripts/abtpi18n/` |
+| `apps/ABTPi18n/tests/` | `apps/ztrader/backend/tests/abtpi18n/` |
+| metadata files | `apps/ztrader/merge-sources/abtpi18n/` |
+
+### zkbtrader
+
+| Source | Target |
+|---|---|
+| `apps/zkbtrader/src/` | `apps/ztrader/backend/src/ztrader/zkb/` |
+| `apps/zkbtrader/harness/` | `apps/ztrader/harness/zkbtrader/` |
+| `apps/zkbtrader/tests/` | `apps/ztrader/backend/tests/zkbtrader/` |
+| `apps/zkbtrader/reports/` | `apps/ztrader/reports/zkbtrader/` |
+| `apps/zkbtrader/scripts/` | `apps/ztrader/scripts/zkbtrader/` |
+| `apps/zkbtrader/alembic/` | `apps/ztrader/backend/alembic/zkbtrader_source/` |
+| metadata/Docker files | `apps/ztrader/merge-sources/zkbtrader/` |
+
+## Local development
+
+```bash
+cd /home/zeazdev/zeaz-platform/apps/ztrader
+```
+
+Frontend:
+
 ```bash
 cd frontend
-pnpm install
-pnpm run dev
-```
-Open `http://localhost:3000` to view the platform.
-
-### 3. Docker Compose Launch
-Build and run all services (FastAPI, Next.js, Redis, PostgreSQL, Celery Worker) using a single command:
-```bash
-make run-docker
-```
-To stop the services:
-```bash
-make stop-docker
+npm install
+npm run dev
 ```
 
-### 4. Running Backend Unit Tests
-Execute the unit tests using pytest:
+Backend:
+
 ```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Docker
+
+```bash
+cd /home/zeazdev/zeaz-platform/apps/ztrader
+docker compose up -d --build
+```
+
+## Operator commands
+
+```bash
+make help
+make validate-local
 make test-backend
+make run-docker
+make stop-docker
+make server-start
+make server-status
+make server-stop
 ```
 
----
+## Important files
 
-## Security Guidelines
+```text
+frontend/
+backend/
+scripts/merge-abtpi18n-zkbtrader.sh
+docker-compose.yml
+Makefile
+README.md
+SECURITY.md
+reports/merge/
+```
 
-- **No Hardcoded Secrets**: Ensure that `ENCRYPTION_KEY` and `JWT_SECRET` are never hardcoded.
-- **Admin Token Required**: `/api/v1/admin/*` and `/api/v1/risk/kill-switch` require `ADMIN_API_TOKEN`.
-- **Fail-Closed Gate**: Always check `RiskEngine` rules and audit logs for execution outcomes.
+## Completion gates before source cleanup
+
+- `make merge-apply` completed locally.
+- `make merge-validate` passes.
+- ABTPi18n source-only features are mapped or intentionally archived.
+- zkbtrader source-only features are mapped or intentionally archived.
+- Final report exists under `apps/ztrader/reports/merge/`.
+- Root README and zTrader README reflect the final state.
+- No imports or operational docs require the old source paths.
+
+## Security notes
+
+- Never commit exchange API keys, wallet secrets, provider tokens, or database passwords.
+- Keep live trading disabled unless explicitly audited.
+- Use paper mode for tests and demos.
+- Keep the global kill switch enabled by default.
+- Require risk gate validation before external exchange actions.

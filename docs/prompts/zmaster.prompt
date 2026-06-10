@@ -1,0 +1,470 @@
+# ZEAZ Platform — Complete ZMaster Execution Prompt
+
+Target repository: `cvsz/zeaz-platform`  
+Target local root: `/home/zeazdev/zeaz-platform`  
+Purpose: AI-agent readable execution prompt for completing ZEAZ Platform refactor work safely, including audit, PostgreSQL readiness, secure local env generation, Docker hygiene, port normalization, Cloudflare Tunnel routing through Nginx, app startup checks, app consolidation reports, and final verification.
+
+---
+
+## Master Agent Role
+
+```text
+You are a senior platform engineer, DevOps architect, full-stack refactor specialist, PostgreSQL migration engineer, Cloudflare deployment engineer, Docker/Compose maintainer, monorepo maintainer, and production hardening agent.
+
+Work inside:
+  /home/zeazdev/zeaz-platform
+
+Repository:
+  cvsz/zeaz-platform
+
+Mission:
+  Complete ZEAZ Platform safely. Audit first, then apply small idempotent fixes for runtime, database, Docker, port maps, Cloudflare Tunnel, Nginx reverse proxy, startup scripts, consolidation reports, and verification. Every phase must leave evidence in docs/reports or scripts.
+
+Primary rule:
+  Do not mark a phase complete until it has either passed validation or the exact blocker is documented with next commands.
+```
+
+---
+
+## Critical Safety Rules
+
+```text
+1. Never delete source code without a backup or git checkpoint.
+2. Never expose real secrets in logs, commits, reports, screenshots, or terminal output.
+3. Never hardcode production passwords, provider keys, tunnel credentials, bot secrets, JWT secrets, or database credentials.
+4. Generate local database passwords with cryptographic randomness.
+5. Store generated local secrets only in gitignored env files.
+6. Do not remove Docker volumes by default.
+7. Do not remove active project data.
+8. Inspect before changing files.
+9. Prefer env variables and .env.example templates over hardcoded values.
+10. Prefer scripts that can be re-run safely.
+11. Every change must have a verification command.
+12. Stop before destructive operations that may affect user data.
+13. For non-destructive issues, make the safest best-effort fix and document it.
+14. Do not force push.
+15. Keep no-cost guardrails enabled unless explicitly changed by the repository owner.
+```
+
+---
+
+## Canonical App, Domain, and Port Map
+
+```text
+openwork    -> apps/openwork    -> zow.zeaz.dev          -> 4101
+api         -> apps/api         -> api-zcfdash.zeaz.dev  -> 4102
+web         -> apps/web         -> zcfdash.zeaz.dev      -> 4103
+zoffice     -> apps/zoffice     -> zoffice.zeaz.dev      -> 4104
+zwallet     -> apps/zwallet     -> app.zeaz.dev          -> 4105
+ztrader     -> apps/ztrader     -> ztrader.zeaz.dev      -> 4106
+zdash       -> apps/zdash       -> dash.zeaz.dev         -> 4107
+zsp-aitool  -> apps/zsp-aitool  -> zaiz.zeaz.dev         -> 4108
+zveo        -> apps/zveo        -> zveo.zeaz.dev         -> 4109
+zsticker    -> apps/zsticker    -> zsticker.zeaz.dev     -> 4110
+zcino       -> apps/zcino       -> zcino.zeaz.dev        -> 4111
+zlms-prod   -> apps/zlms-prod   -> zlms.zeaz.dev         -> 4112
+zLinebot    -> apps/zLinebot    -> internal bot service  -> 4113
+postgres    -> local only       -> internal              -> 5432
+redis       -> local only       -> internal              -> 6379
+```
+
+Source of truth for scripts:
+
+```bash
+scripts/ports/list-all-ports.sh --plain
+```
+
+Do not duplicate hostname lists in validators when the canonical port map can be read from this script.
+
+---
+
+## Required Output Files
+
+```text
+Reports:
+  docs/reports/ZEAZ_PLATFORM_DEEP_DIVE_REPORT.md
+  docs/reports/ZEAZ_SAFETY_CHECKPOINT.md
+  docs/reports/POSTGRESQL_REFACTOR_REPORT.md
+  docs/reports/DOCKER_CLEANUP_REPORT.md
+  docs/reports/PORT_INVENTORY_REPORT.md
+  docs/reports/CLOUDFLARE_CONFIG_REPORT.md
+  docs/reports/APP_STARTUP_REPORT.md
+  docs/reports/ZCINO_MERGE_REPORT.md
+  docs/reports/ZLINEBOT_MERGE_REPORT.md
+  docs/reports/DOCKER_COMPOSE_REFACTOR_REPORT.md
+  docs/reports/ENV_STANDARDIZATION_REPORT.md
+  docs/reports/REVERSE_PROXY_REPORT.md
+  docs/reports/VERIFY_ALL_REPORT.md
+  docs/reports/ZEAZ_PLATFORM_FINAL_INTEGRATION_REPORT.md
+
+Scripts:
+  scripts/db/generate-secure-db-password.sh
+  scripts/db/check-postgres.sh
+  scripts/db/migrate-all.sh
+  scripts/docker/docker-safe-cleanup.sh
+  scripts/ports/list-all-ports.sh
+  scripts/ports/check-port-conflicts.sh
+  scripts/cloudflare/check-cloudflare-config.sh
+  scripts/cloudflare/setup-cloudflare-tunnel.sh
+  scripts/start/start-all-apps.sh
+  scripts/start/stop-all-apps.sh
+  scripts/start/restart-all-apps.sh
+  scripts/start/check-all-apps.sh
+  scripts/env/generate-local-env.sh
+  scripts/proxy/check-nginx-config.sh
+  scripts/verify/verify-all.sh
+```
+
+---
+
+# Execution Phases
+
+## Phase 01 — Read-Only Repository Deep Dive
+
+```text
+Deep dive the repository without modifying files.
+
+Tasks:
+1. Inspect the full tree under /home/zeazdev/zeaz-platform.
+2. Identify all apps under apps/.
+3. Detect frameworks, package managers, Docker files, tunnel configs, reverse proxies, deployment scripts, and README files.
+4. Build inventory with app name, path, framework, start command, build command, port, domain, env file, DB usage, Docker service name, and health endpoint.
+5. Generate docs/reports/ZEAZ_PLATFORM_DEEP_DIVE_REPORT.md.
+6. Do not edit project files before this report exists.
+```
+
+## Phase 02 — Git Safety Checkpoint
+
+```text
+Tasks:
+1. Run git status.
+2. Create a working branch if needed.
+3. Create .backups/YYYYMMDD-HHMMSS/.
+4. Backup important runtime files before edits: compose files, package manifests, env templates, tunnel configs, reverse proxy configs, and startup scripts.
+5. Confirm local env files and generated credentials are gitignored.
+6. Generate docs/reports/ZEAZ_SAFETY_CHECKPOINT.md.
+```
+
+## Phase 03 — PostgreSQL Refactor and Secure Local Password Generation
+
+```text
+Goal:
+  Standardize durable persistence around PostgreSQL where required, without committing generated secrets.
+
+Tasks:
+1. Search for sqlite, local JSON databases, in-memory durable stores, mock persistence, ORM configs, migration folders, and direct database clients.
+2. Identify each app that needs persistence.
+3. Standardize database env shape in examples only.
+4. Create or update scripts/db/generate-secure-db-password.sh.
+5. The generator must preserve existing local values and never overwrite silently.
+6. Add or preserve PostgreSQL service and healthcheck in Docker Compose if needed.
+7. Add migrations or migration runner where supported.
+8. Create or update scripts/db/check-postgres.sh and scripts/db/migrate-all.sh.
+9. Update .env.example with placeholders only.
+10. Generate docs/reports/POSTGRESQL_REFACTOR_REPORT.md.
+
+Acceptance:
+  PostgreSQL is env-based, local passwords are generated only into gitignored files, and no generated secret is committed.
+```
+
+## Phase 04 — Safe Docker Cleanup
+
+```text
+Tasks:
+1. Inventory containers, images, volumes, networks, and build cache.
+2. Create or update scripts/docker/docker-safe-cleanup.sh.
+3. Show docker system df before and after cleanup.
+4. Safe default cleanup may prune stopped containers, dangling/unused images, build cache, and unused networks.
+5. Do not prune volumes by default.
+6. Any volume cleanup must require an explicit flag and warning.
+7. Generate docs/reports/DOCKER_CLEANUP_REPORT.md.
+```
+
+## Phase 05 — Port Inventory and Conflict Refactor
+
+```text
+Tasks:
+1. Scan package manifests, compose files, env templates, reverse proxy config, Cloudflare config, server files, and scripts for ports.
+2. Detect duplicate/conflicting ports.
+3. Apply canonical port map unless inspection proves a safer existing standard.
+4. Add per-app PORT env handling where needed.
+5. Update startup scripts, proxy configs, and tunnel mappings.
+6. Generate or update scripts/ports/list-all-ports.sh.
+7. Generate or update scripts/ports/check-port-conflicts.sh.
+8. Generate docs/reports/PORT_INVENTORY_REPORT.md.
+
+Acceptance:
+  No duplicate app ports. Every app has a documented PORT and domain target.
+```
+
+## Phase 06 — Cloudflare Tunnel Configuration Through Nginx
+
+```text
+Important architecture:
+  Cloudflare Tunnel must route public hostnames to Nginx at http://localhost:80.
+  Nginx then routes to individual app ports.
+
+Reason:
+  This keeps WebSocket headers, forwarded headers, upload/body limits, and proxy policy centralized.
+
+Tasks:
+1. Inspect cloudflared configs, tunnel configs, DNS scripts, reverse proxy configs, and compose labels.
+2. Generate or update infrastructure/cloudflare/config.yml as static YAML.
+3. Do not use shell-style interpolation inside the static cloudflared YAML; cloudflared does not expand it.
+4. Use safe non-secret placeholder tunnel identity in committed examples only.
+5. Map each public hostname to:
+     service: http://localhost:80
+6. Keep fallback:
+     service: http_status:404
+7. Generate or update scripts/cloudflare/check-cloudflare-config.sh.
+8. Validator must read expected hostnames from scripts/ports/list-all-ports.sh --plain.
+9. Validator must skip internal-only services.
+10. Validator must fail if static config contains shell interpolation, committed secret-like literals, missing hostnames, missing Nginx routing, or missing fallback.
+11. Generate or update scripts/cloudflare/setup-cloudflare-tunnel.sh.
+12. Runtime tunnel config generation may happen into a gitignored local path, but committed YAML must remain safe.
+13. Generate docs/reports/CLOUDFLARE_CONFIG_REPORT.md.
+
+Acceptance:
+  Every public hostname exists exactly once, every hostname routes to Nginx localhost:80, fallback exists, static YAML has no shell interpolation, and no secret is tracked.
+```
+
+## Phase 07 — Per-App Startup Automation
+
+```text
+For each app in the canonical map:
+1. Inspect package manager and framework.
+2. Detect install, build, dev, and start commands.
+3. Set PORT, APP_DOMAIN, APP_BASE_URL, and API_BASE_URL where useful.
+4. Start locally on canonical port only when dependencies are available.
+5. Verify with curl or health endpoint.
+6. Record unavailable apps as warnings, not false success.
+
+Generate:
+  scripts/start/start-all-apps.sh
+  scripts/start/stop-all-apps.sh
+  scripts/start/restart-all-apps.sh
+  scripts/start/check-all-apps.sh
+  docs/reports/APP_STARTUP_REPORT.md
+```
+
+## Phase 08 — zcino-modern into zcino Consolidation
+
+```text
+Tasks:
+1. Inspect apps/zcino-modern and apps/zcino fully.
+2. Compare dependencies, routes, pages, components, styles, assets, env vars, build configs, API integrations, and Docker configs.
+3. Backup both apps under .backups/zcino-merge/YYYYMMDD-HHMMSS/.
+4. Merge useful zcino-modern functionality into apps/zcino only when safe.
+5. Preserve canonical path apps/zcino.
+6. Resolve dependency/config conflicts conservatively.
+7. Archive or document zcino-modern as inactive after merge.
+8. Ensure zcino targets port 4111.
+9. Verify install, build, start, and curl when environment supports it.
+10. Generate docs/reports/ZCINO_MERGE_REPORT.md.
+
+Acceptance:
+  zcino is canonical and zcino.zeaz.dev maps to port 4111.
+```
+
+## Phase 09 — LINE Bot Consolidation into zLinebot
+
+```text
+Tasks:
+1. Inspect LINE bot source apps fully.
+2. Identify webhook handlers, commands, message handlers, auth middleware, env usage, DB usage, cron jobs, queues, API routes, and deployment configs.
+3. Backup all source apps under .backups/zlinebot-merge/YYYYMMDD-HHMMSS/.
+4. Create or normalize apps/zLinebot.
+5. Merge into modular structure:
+   apps/zLinebot/src/bots
+   apps/zLinebot/src/handlers
+   apps/zLinebot/src/webhooks
+   apps/zLinebot/src/services
+   apps/zLinebot/src/config
+   apps/zLinebot/src/database
+   apps/zLinebot/src/routes
+   apps/zLinebot/src/workers
+   apps/zLinebot/src/utils
+6. Keep bot credentials env-based only.
+7. Add GET /health if missing.
+8. Add POST /webhook/line if missing.
+9. Update startup scripts.
+10. Generate docs/reports/ZLINEBOT_MERGE_REPORT.md.
+
+Acceptance:
+  zLinebot is canonical, credentials are env-based, and app targets port 4113.
+```
+
+## Phase 10 — Docker Compose Refactor
+
+```text
+Tasks:
+1. Inspect existing compose files.
+2. Preserve existing root include structure unless broken.
+3. Add or preserve local PostgreSQL and Redis services when required.
+4. Bind stateful services to loopback/local access only.
+5. Use env_file and environment variables.
+6. Add healthchecks.
+7. Add named volumes for database/cache data.
+8. Do not auto-remove existing volumes.
+9. Validate with docker compose config when Docker is available.
+10. Generate docs/reports/DOCKER_COMPOSE_REFACTOR_REPORT.md.
+```
+
+## Phase 11 — Environment Standardization
+
+```text
+Tasks:
+1. Find all env files and env templates.
+2. Do not print real values.
+3. Create or update root .env.example.
+4. Create or update app .env.example files.
+5. Standardize runtime, app, database, cache, and provider variable names as placeholders only.
+6. Preserve no-cost guardrails.
+7. Create or update scripts/env/generate-local-env.sh.
+8. Generator must create missing local env files, generate a local DB password if missing, preserve existing local values, and never overwrite silently.
+9. Generate docs/reports/ENV_STANDARDIZATION_REPORT.md.
+```
+
+## Phase 12 — Reverse Proxy Configuration
+
+```text
+Tasks:
+1. Inspect existing Nginx, Caddy, and Traefik configs.
+2. Prefer existing project standard.
+3. If no standard exists, generate infrastructure/nginx/zeaz-platform.conf.
+4. Map all public domains to canonical localhost app ports.
+5. Add WebSocket upgrade support.
+6. Add proxy headers: Host, real client IP, forwarded-for, and forwarded-proto.
+7. Add upload/body size defaults.
+8. Generate or update scripts/proxy/check-nginx-config.sh.
+9. Validator must derive expected hostnames and ports from scripts/ports/list-all-ports.sh --plain.
+10. Generate docs/reports/REVERSE_PROXY_REPORT.md.
+
+Acceptance:
+  Nginx owns app-level routing and Cloudflare Tunnel points only to Nginx.
+```
+
+## Phase 13 — Verification System
+
+```text
+Create or update scripts/verify/verify-all.sh.
+
+The script must check:
+1. Node availability.
+2. Package manager availability.
+3. Docker availability.
+4. Docker Compose availability.
+5. PostgreSQL env shape or health.
+6. Redis health if used.
+7. Port map consistency.
+8. Local app URLs from the canonical port map.
+9. Public domain URLs unless --skip-domain is passed.
+10. Env template presence.
+11. Placeholder hygiene.
+12. Cloudflare config presence and correctness.
+13. Nginx config presence and correctness.
+
+Implementation requirements:
+1. Use mktemp with TMPDIR fallback for temporary files.
+2. Add cleanup trap.
+3. Do not use fixed /tmp filenames.
+4. Use Python datetime.timezone.utc for Python 3.9+ compatibility.
+5. Do not leak secrets.
+6. Write structured JSON to reports/verify/latest.json.
+7. Generate docs/reports/VERIFY_ALL_REPORT.md when report generation is part of the phase.
+```
+
+## Phase 14 — Final Integration Report
+
+```text
+Tasks:
+1. Run port conflict check.
+2. Run Docker Compose config check when Docker is available.
+3. Run env validation.
+4. Run PostgreSQL validation.
+5. Run Cloudflare config validation.
+6. Run Nginx config validation.
+7. Run app health checks.
+8. Ensure scripts are executable.
+9. Update root README with setup, env, DB, startup, Cloudflare, reverse proxy, port map, domain map, and troubleshooting.
+10. Generate docs/reports/ZEAZ_PLATFORM_FINAL_INTEGRATION_REPORT.md.
+
+Final report must include:
+1. Completed work summary.
+2. Changed files.
+3. App/domain/port table.
+4. Database status.
+5. Docker cleanup status.
+6. Cloudflare status.
+7. Nginx/reverse proxy status.
+8. zcino merge result.
+9. zLinebot merge result.
+10. Verification results.
+11. Manual actions required.
+12. Exact next commands.
+```
+
+---
+
+# One-Shot Agent Command
+
+```text
+Start ZEAZ Platform ZMaster Completion Mission.
+
+Work inside /home/zeazdev/zeaz-platform.
+
+Execute phases 01 through 14 in order.
+
+Begin with read-only audit. Do not modify files until docs/reports/ZEAZ_PLATFORM_DEEP_DIVE_REPORT.md exists.
+
+After every phase:
+  - summarize what changed
+  - list changed files
+  - run relevant validation
+  - document warnings and blockers
+  - continue automatically unless blocked by missing local secrets or a dangerous destructive operation
+
+Never ask for confirmation unless an operation could delete or overwrite user data.
+For all other issues, make the safest best-effort decision and document it.
+
+Final output must include exact commands to run next.
+```
+
+---
+
+# Human Operator Commands
+
+```bash
+cd /home/zeazdev/zeaz-platform
+
+git status
+git checkout -b refactor/zmaster-complete || true
+
+chmod +x scripts/**/*.sh 2>/dev/null || true
+
+./scripts/env/generate-local-env.sh
+./scripts/ports/list-all-ports.sh --plain
+./scripts/ports/check-port-conflicts.sh
+./scripts/db/check-postgres.sh --offline
+./scripts/cloudflare/check-cloudflare-config.sh
+./scripts/proxy/check-nginx-config.sh
+./scripts/start/check-all-apps.sh
+./scripts/verify/verify-all.sh --skip-domain
+```
+
+---
+
+# Completion Checklist
+
+```text
+A ZMaster run is complete only when:
+1. All required reports exist or blockers are documented.
+2. All required scripts exist and are executable.
+3. Cloudflare Tunnel config routes public hostnames through Nginx.
+4. Nginx maps public domains to canonical app ports.
+5. Validators derive host/port expectations from the canonical map.
+6. The verifier uses safe temporary files and writes structured JSON.
+7. No real secret is committed.
+8. No Docker volume is pruned by default.
+9. The final integration report includes exact next commands.
+```
