@@ -49,8 +49,10 @@ Options:
   --json        Output results in JSON format
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
-  --terraform-ownership Also run Terraform ownership scanning (Phase 8)
-  --access-ownership    Also run Access ownership scanning (Phase 8)
+  --terraform   Also run terraform ownership scanning (Phase 8)
+  --runtime-governance  Also run runtime governance scanning (Phase 7)
+  --worker-bindings     Also run worker bindings scanning (Phase 7)
+  --no-mutation         Also run no-mutation guard scanning (Phase 7)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -67,8 +69,10 @@ VERBOSE=false
 CHECK=false
 CHECK_SECRETS=false
 CHECK_WORKERS=false
-CHECK_TF_OWNERSHIP=false
-CHECK_ACCESS_OWNERSHIP=false
+CHECK_TERRAFORM=false
+CHECK_RUNTIME_GOVERNANCE=false
+CHECK_WORKER_BINDINGS=false
+CHECK_NO_MUTATION=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -79,8 +83,10 @@ while [[ $# -gt 0 ]]; do
     --json)    MODE="json" ;;
     --secrets) CHECK_SECRETS=true ;;
     --workers) CHECK_WORKERS=true ;;
-    --terraform-ownership) CHECK_TF_OWNERSHIP=true ;;
-    --access-ownership) CHECK_ACCESS_OWNERSHIP=true ;;
+    --terraform) CHECK_TERRAFORM=true ;;
+    --runtime-governance) CHECK_RUNTIME_GOVERNANCE=true ;;
+    --worker-bindings) CHECK_WORKER_BINDINGS=true ;;
+    --no-mutation) CHECK_NO_MUTATION=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -460,33 +466,28 @@ if [[ "$CHECK_WORKERS" == true ]]; then
   total_errors=$((total_errors + example_issues))
 fi
 
-# Phase 8: Terraform and Access Ownership validation
-if [[ "$CHECK_TF_OWNERSHIP" == true ]]; then
-  log_info "Running Phase 8 Terraform ownership validation..."
-  tf_scanner="${SCRIPTS_DIR}/scan-terraform-cloudflare-ownership.sh"
-  if [[ -x "$tf_scanner" ]]; then
-    if "$tf_scanner" --strict > /dev/null 2>&1; then
-      log_ok "Terraform ownership scanner passed"
-    else
-      log_warn "Terraform ownership scanner found issues (run manually to inspect)"
-      # Not adding to errors for now as it exits 1 on high risk
-    fi
-  else
-    log_warn "scan-terraform-cloudflare-ownership.sh not found or not executable"
+# Phase 7: Governance validation
+if [[ "$CHECK_NO_MUTATION" == true ]]; then
+  log_info "Running Phase 7 no-mutation guard..."
+  if ! "$SCRIPTS_DIR/check-cloudflare-no-mutation.sh" --strict >/dev/null 2>&1; then
+    errors+=("No-mutation guard failed.")
+    total_errors=$((total_errors + 1))
   fi
 fi
 
-if [[ "$CHECK_ACCESS_OWNERSHIP" == true ]]; then
-  log_info "Running Phase 8 Access ownership validation..."
-  access_scanner="${SCRIPTS_DIR}/scan-cloudflare-access-ownership.sh"
-  if [[ -x "$access_scanner" ]]; then
-    if "$access_scanner" --strict > /dev/null 2>&1; then
-      log_ok "Access ownership scanner passed"
-    else
-      log_warn "Access ownership scanner found issues (run manually to inspect)"
-    fi
-  else
-    log_warn "scan-cloudflare-access-ownership.sh not found or not executable"
+if [[ "$CHECK_RUNTIME_GOVERNANCE" == true ]]; then
+  log_info "Running Phase 7 runtime governance scanner..."
+  if ! "$SCRIPTS_DIR/scan-runtime-governance.sh" --strict >/dev/null 2>&1; then
+    errors+=("Runtime governance scanner failed.")
+    total_errors=$((total_errors + 1))
+  fi
+fi
+
+if [[ "$CHECK_WORKER_BINDINGS" == true ]]; then
+  log_info "Running Phase 7 worker bindings scanner..."
+  if ! "$SCRIPTS_DIR/scan-worker-bindings.sh" --strict >/dev/null 2>&1; then
+    errors+=("Worker bindings scanner failed.")
+    total_errors=$((total_errors + 1))
   fi
 fi
 

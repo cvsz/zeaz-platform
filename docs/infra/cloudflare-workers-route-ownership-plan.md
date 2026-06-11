@@ -156,8 +156,13 @@ infra/cloudflare/scripts/compare-dns.sh --live
 
 No `wrangler deploy`, `terraform apply`, or `tofu apply` may run unless all five gates pass or failures are explicitly documented and approved.
 
-## Phase 8 Cross-Reference
-- Worker route ownership is compared against Terraform DNS ownership.
-- `www.zeaz.dev` remains a manual review item.
-- Future migration must choose either Wrangler-owned route or Terraform-managed Worker route, not both.
+## Phase 7 Validation Additions
 
+No Worker route change is allowed until:
+- no-mutation guard passes
+- secret scanner passes
+- Worker route scanner passes or conflicts are approved
+- DNS ownership scanner passes or conflicts are approved
+- runtime governance report is reviewed
+- Worker binding inventory is reviewed
+- Terraform route resources are mapped to intended owner

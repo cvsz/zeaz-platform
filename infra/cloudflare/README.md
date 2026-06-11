@@ -173,12 +173,24 @@ Before any Worker route deployment:
 - Phase 4: Added scanner, inventory, drift report, consolidation plan
 - Phase 5: Secret containment plan, DNS ownership matrix, secret leak detection, enhanced validator
 - Phase 6: Worker route ownership model, scanner scripts, example checker, inventory, ownership plan
-- Phase 8: Terraform ownership inventory, Access ownership inventory, Reconciliation plan
+- Phase 7: Runtime governance, worker binding audits, no-mutation guard
+- Phase 8: Terraform and live runtime reconciliation, ownership matrix, scanner script
 
-## Phase 8: Terraform and Access Ownership Reconciliation
+## Phase 7 Usage (Runtime Governance & Binding Audits)
 
-**Commands:**
-- `infra/cloudflare/scripts/scan-terraform-cloudflare-ownership.sh --markdown`
-- `infra/cloudflare/scripts/scan-cloudflare-access-ownership.sh --markdown`
-- `infra/cloudflare/scripts/generate-terraform-ownership-report.sh`
-- `infra/cloudflare/scripts/validate-cloudflare-config.sh --terraform-ownership --access-ownership`
+```bash
+# Safely inspect runtime cloudflared environments
+infra/cloudflare/scripts/scan-runtime-governance.sh --markdown
+
+# Audit Worker bindings for safety and proper redaction
+infra/cloudflare/scripts/scan-worker-bindings.sh --markdown
+
+# Guard against unsafe mutation commands (Terraform/Wrangler)
+infra/cloudflare/scripts/check-cloudflare-no-mutation.sh --strict
+
+# Compile comprehensive governance markdown reports
+infra/cloudflare/scripts/generate-runtime-governance-report.sh
+
+# Run comprehensive offline validation containing all Phase 7 checks
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers --runtime-governance --worker-bindings --no-mutation
+```
