@@ -1,0 +1,37 @@
+# monitoring/prometheus/rules/certificate-expiration.yml
+#
+# NOTE: Requires certificate_expiry_days gauge metric providing the number of
+# days until TLS certificate expiration. This can come from the Cloudflare
+# exporter (cloudflare_certificate_expiry_days), a cert-manager exporter, or
+# a custom blackbox-exporter probe. Adjust label selectors (e.g., hostname,
+# issuer) to match your certificate inventory.
+groups:
+  - name: certificate-expiration
+    interval: 30s
+    rules:
+      - alert: CertificateExpiringSoon
+        expr: certificate_expiry_days < 30
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "TLS certificate expiring soon"
+          description: "Certificate for {{ $labels.hostname }} expires in {{ $value }} days. Renewal should be scheduled."
+
+      - alert: CertificateExpiringImminently
+        expr: certificate_expiry_days < 7
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "TLS certificate expiring imminently"
+          description: "Certificate for {{ $labels.hostname }} expires in {{ $value }} days. Immediate renewal required to avoid downtime."
+
+      - alert: CertificateExpired
+        expr: certificate_expiry_days < 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "TLS certificate has expired"
+          description: "Certificate for {{ $labels.hostname }} expired {{ $value | humanize }} days ago. Services may be unreachable."

@@ -44,8 +44,8 @@ variable "cloudflare_config" {
   description = "Cloudflare configuration"
   type        = map(string)
   default = {
-    account_id = ""
-    zone_id    = ""
-    tunnel_name= "zdash"
+    account_id  = ""
+    zone_id     = ""
+    tunnel_name = "zdash"
   }
 }

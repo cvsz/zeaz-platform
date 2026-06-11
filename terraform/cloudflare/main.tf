@@ -1,18 +1,16 @@
-terraform {
-  required_version = ">= 1.5.0, < 2.0.0"
-
-  required_providers {
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
-    }
-  }
+locals {
+  subdomains = [
+    "panel", "api", "auth", "grafana", "loki", "prometheus",
+    "trader", "ws.trader", "risk", "memory", "agents", "fcc",
+    "office"
+  ]
 }
 
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
+resource "cloudflare_record" "ingress_records" {
+  for_each = toset(local.subdomains)
+  zone_id  = var.zone_id
+  name     = each.key
+  value    = var.tunnel_cname
+  type     = "CNAME"
+  proxied  = true
 }
-
-variable "cloudflare_api_token" { type = string }
-variable "zone_id" { type = string }
-variable "tunnel_cname" { type = string }

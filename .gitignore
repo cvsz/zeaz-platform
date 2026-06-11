@@ -9,10 +9,13 @@ gpg-loopback.sh
 .secrets/
 secrets/
 *.tfvars
+!*.tfvars.example
 *.pem
 *.key
 *.p12
 *.agekey
+infra/cloudflare/.env
+infra/cloudflare/.env.*
 
 # Cloudflare generated/local state
 cloudflared/
@@ -174,3 +177,8 @@ claude_code_zai_env.sh
 **/.venv/
 apps/zsticker/client_secret.json
 apps/zsticker/credentials.json
+
+# Backup archives
+backups/snapshots/*.tar.gz
+backups/snapshots/*.sha256
+!backups/snapshots/.gitkeep

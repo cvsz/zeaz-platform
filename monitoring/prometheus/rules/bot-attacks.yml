@@ -1,0 +1,18 @@
+# monitoring/prometheus/rules/bot-attacks.yml
+#
+# NOTE: Requires a bot-detection counter metric such as cf_bot_requests_total
+# from the Cloudflare bot management exporter or a reverse proxy that classifies
+# bot traffic. Adjust the metric name and label selectors to match your exporter's
+# schema (e.g., cloudflare_worker_requests with cf-bot-score <= 30).
+groups:
+  - name: bot-attacks
+    interval: 30s
+    rules:
+      - alert: HighBotTraffic
+        expr: rate(cf_bot_requests_total[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High bot traffic detected"
+          description: "More than 100 bot-classified requests per 5 minutes (current: {{ $value }}/5m). Verify bot mitigation rules are active."

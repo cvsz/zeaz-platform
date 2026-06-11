@@ -1,0 +1,17 @@
+# monitoring/prometheus/rules/auth-failures.yml
+#
+# NOTE: Requires auth_failures_total metric from the auth service or reverse proxy
+# (e.g., Cloudflare Access, Traefik, NGINX, or a custom auth middleware exporter).
+# The expected metric is a counter incremented on each failed authentication attempt.
+groups:
+  - name: auth-failures
+    interval: 30s
+    rules:
+      - alert: HighAuthFailureRate
+        expr: rate(auth_failures_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Auth failures are exceeding 10 per 5 minutes (current: {{ $value }}/5m). Possible brute-force or credential-stuffing attack."
