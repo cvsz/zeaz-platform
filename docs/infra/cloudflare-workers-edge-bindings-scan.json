@@ -1,0 +1,57 @@
+{
+  "scan_timestamp": 1781205414,
+  "scan_duration_seconds": 4,
+  "wrangler_files": 6,
+  "live_wrangler_files": 3,
+  "example_wrangler_files": 3,
+  "worker_routes": 2,
+  "custom_domains": 0,
+  "bindings": 2,
+  "ai_gateway_references": 7,
+  "placeholder_values": 5,
+  "dns_overlaps": [
+    "www.zeaz.dev (worker: zeaz-loading, files: workers/zeaz-loading/wrangler.toml)"
+  ],
+  "tunnel_overlaps": [
+    "www.zeaz.dev (worker: zeaz-loading, files: workers/zeaz-loading/wrangler.toml)"
+  ],
+  "missing_examples": [
+  ],
+  "exact_copy_examples": [
+  ],
+  "unsafe_examples": [
+  ],
+  "governance_issues": [
+    "www.zeaz.dev has Worker route and local Terraform/OpenTofu DNS ownership evidence",
+    "www.zeaz.dev has Worker route and local tunnel ownership evidence",
+    "No Terraform/OpenTofu cloudflare_worker_route resources found for current Worker routes"
+  ],
+  "workers": [
+    "wrangler.toml|zeaz-platform|workers/src/index.js|2025-01-01|true|false",
+    "workers/zeaz-loading/wrangler.toml|zeaz-loading|src/index.js|2026-05-24|false|false",
+    "workers/zeaz-loading/wrangler.toml.example|zeaz-loading-example|src/index.js|2026-06-01|false|true",
+    "workers/edge-gateway/wrangler.toml|edge-gateway|src/index.ts|2026-05-12|true|false",
+    "workers/edge-gateway/wrangler.toml.example|edge-gateway-example|src/index.ts|2026-06-01|true|true",
+    "wrangler.toml.example|zeaz-platform-example|workers/src/index.js|2026-06-01|true|true"
+  ],
+  "routes": [
+    "workers/zeaz-loading/wrangler.toml|zeaz-loading|www.zeaz.dev/*|www.zeaz.dev|false",
+    "workers/zeaz-loading/wrangler.toml.example|zeaz-loading-example|<WORKER_ROUTE_PATTERN>|<WORKER_ROUTE_PATTERN>|true"
+  ],
+  "bindings_detail": [
+    "workers/edge-gateway/wrangler.toml|KV|EDGE_RATE_LIMIT_KV|<missing-id>|false",
+    "workers/edge-gateway/wrangler.toml.example|KV|EDGE_RATE_LIMIT_KV|<KV_NAMESPACE_ID>|true"
+  ],
+  "ai_gateway_detail": [
+    "workers/edge-gateway/wrangler.toml|wrangler|CLOUDFLARE_AI_GATEWAY_SLUG = \"zeaz-platform-ai-gateway\"",
+    "workers/edge-gateway/wrangler.toml.example|wrangler|CLOUDFLARE_AI_GATEWAY_SLUG = \"<AI_GATEWAY_NAME>\"",
+    "/home/zeazdev/zeaz-platform/workers-ai/ai-gateway.yaml:2:gateway:",
+    "/home/zeazdev/zeaz-platform/workers-ai/ai-gateway.yaml:3:  slug_var: CLOUDFLARE_AI_GATEWAY_SLUG",
+    "/home/zeazdev/zeaz-platform/workers-ai/ai-gateway.yaml:4:  recommended_slug: zeaz-platform-ai-gateway",
+    "/home/zeazdev/zeaz-platform/workers/edge-gateway/wrangler.toml:17:CLOUDFLARE_AI_GATEWAY_SLUG = \"zeaz-platform-ai-gateway\"",
+    "/home/zeazdev/zeaz-platform/workers/edge-gateway/wrangler.toml.example:33:CLOUDFLARE_AI_GATEWAY_SLUG = \"<AI_GATEWAY_NAME>\""
+  ],
+  "terraform_worker_route_refs": [
+  ],
+  "issue_count": 5
+}

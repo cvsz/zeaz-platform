@@ -25,6 +25,7 @@ This directory contains configuration, scripts, and documentation for Cloudflare
 | `validate-cloudflare-config.sh` | Phase 5+6 | Combined offline validator |
 | `scan-workers-routes.sh` | Phase 6 | Worker route ownership scanner (--markdown/--json/--strict) |
 | `check-wrangler-examples.sh` | Phase 6 | Wrangler example file hygiene checker |
+| `scan-workers-edge-bindings.sh` | Phase 7 | Edge bindings and AI Gateway governance scanner |
 | `compare-tunnel.sh` | Phase 3 | Live tunnel comparison (requires tokens) |
 | `compare-dns.sh` | Phase 3 | Live DNS comparison (requires tokens) |
 

@@ -5,7 +5,7 @@ workers_dev = true
 
 [[kv_namespaces]]
 binding = "EDGE_RATE_LIMIT_KV"
-id = "00000000000000000000000000000000"
+# id = "WAITING_FOR_REAL_KV_ID"
 
 # Optional: enable Durable Object limiter for strong consistency on high-risk endpoints.
 # [durable_objects]

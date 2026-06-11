@@ -445,13 +445,25 @@ for file in "${TARGET_FILES[@]}"; do
   total_warnings=$((total_warnings + ph_issues))
 done
 
-# Phase 6: Worker route validation
+# Phase 6 & 7: Worker route and Edge Bindings validation
 if [[ "$CHECK_WORKERS" == true ]]; then
   log_info "Running Phase 6 worker route validation..."
   worker_issues=$(validate_worker_routes)
   total_errors=$((total_errors + worker_issues))
   example_issues=$(validate_wrangler_examples)
   total_errors=$((total_errors + example_issues))
+
+  log_info "Running Phase 7 worker edge bindings validation..."
+  scanner_v7="${SCRIPTS_DIR}/scan-workers-edge-bindings.sh"
+  if [[ -x "$scanner_v7" ]]; then
+    if ! "$scanner_v7" --strict; then
+      errors+=("scan-workers-edge-bindings.sh found governance issues")
+      total_errors=$((total_errors + 1))
+    fi
+  else
+    warnings+=("Phase 7 scanner not found or not executable: $scanner_v7")
+    total_warnings=$((total_warnings + 1))
+  fi
 fi
 
 # ---------- Output ----------
