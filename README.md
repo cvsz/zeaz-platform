@@ -1,5 +1,12 @@
 # ZeaZ Platform
 
+[![CI](https://github.com/cvsz/zeaz-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/cvsz/zeaz-platform/actions/workflows/ci.yml)
+[![Validate](https://github.com/cvsz/zeaz-platform/actions/workflows/validate.yml/badge.svg)](https://github.com/cvsz/zeaz-platform/actions/workflows/validate.yml)
+[![CodeQL](https://github.com/cvsz/zeaz-platform/actions/workflows/codeql.yml/badge.svg)](https://github.com/cvsz/zeaz-platform/actions/workflows/codeql.yml)
+[![Secret Scanning](https://github.com/cvsz/zeaz-platform/actions/workflows/secret-scanning.yml/badge.svg)](https://github.com/cvsz/zeaz-platform/actions/workflows/secret-scanning.yml)
+[![OSS Readiness](https://github.com/cvsz/zeaz-platform/actions/workflows/oss-readiness.yml/badge.svg)](https://github.com/cvsz/zeaz-platform/actions/workflows/oss-readiness.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ZeaZ Platform is a multi-application, Cloudflare-first monorepo designed for infrastructure automation, developer tools, edge deployments, and algorithmic trading systems. It hosts several integrated application stacks, deployment configuration scripts, and centralized operational tools.
 
 ## What the Platform Includes

@@ -23,3 +23,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Phase 51 and Phase 52 validation reports.
 - Added CI-safe `apps/web` dependency install helper.
 - Stabilized Tailwind oxide dependency install for GitHub Actions.
+
+## [v2.1.0] - 2026-06-02
+
+### Added
+- Latest major release with new features and improvements.
+
+## [v1.0.6-zveo-zwallet-online] - 2026-05-13
+
+### Added
+- zveo and zwallet online deployment.
+
+## [v1.0.5-zveo-zwallet-online] - 2026-05-13
+
+### Added
+- zveo and zwallet online deployment updates.
+
+## [v1.0.4-zwallet-integrated] - 2026-05-13
+
+### Added
+- zwallet integration into the platform.
+
+## [v1.0.3-tunnel-online] - 2026-05-13
+
+### Added
+- Cloudflare tunnel online configuration and deployment.
+
+## [v1.0.2-platform-stable] - 2026-05-13
+
+### Changed
+- Platform stability improvements.
+
+## [v1.0.1-platform-stable] - 2026-05-13
+
+### Changed
+- Platform stability improvements.
+
+## [v1.0.0-platform-stable] - 2026-05-13
+
+### Added
+- Initial stable platform release.
