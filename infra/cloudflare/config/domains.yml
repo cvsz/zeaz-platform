@@ -1,0 +1,96 @@
+# Canonical Domain Inventory
+# This file tracks all known zeaz.dev hostnames across all environments.
+# It serves as the single source of truth for what exists.
+
+domains:
+  # Landing & Root
+  - hostname: zeaz.dev
+    purpose: root landing
+  - hostname: www.zeaz.dev
+    purpose: landing (worker)
+
+  # UI Apps
+  - hostname: app.zeaz.dev
+    purpose: web ui
+  - hostname: studio.zeaz.dev
+    purpose: studio ui
+  - hostname: zdash.zeaz.dev
+    purpose: zdash ui
+  - hostname: zcino.zeaz.dev
+    purpose: zcino ui
+  - hostname: cctv.zeaz.dev
+    purpose: cctv ui
+  - hostname: zcloud.zeaz.dev
+    purpose: zcloud ui
+  - hostname: zveo.zeaz.dev
+    purpose: zveo ui
+  - hostname: ztrader.zeaz.dev
+    purpose: ztrader ui
+  - hostname: ztest.zeaz.dev
+    purpose: aitool test ui
+  - hostname: admin-wallet.zeaz.dev
+    purpose: admin wallet ui
+
+  # APIs
+  - hostname: api.zeaz.dev
+    purpose: main api gateway
+  - hostname: api-zdash.zeaz.dev
+    purpose: zdash api
+  - hostname: api-zveo.zeaz.dev
+    purpose: zveo api
+  - hostname: api-ztrader.zeaz.dev
+    purpose: ztrader api
+  - hostname: zkbtrader.zeaz.dev
+    purpose: zkbtrader api
+
+  # Internal / Infrastructure
+  - hostname: auth.zeaz.dev
+    purpose: authentik
+  - hostname: grafana.zeaz.dev
+    purpose: grafana metrics
+  - hostname: loki.zeaz.dev
+    purpose: loki logs
+  - hostname: prometheus.zeaz.dev
+    purpose: prometheus metrics
+  - hostname: ssh.zeaz.dev
+    purpose: ssh tunnel
+  - hostname: release.zeaz.dev
+    purpose: release evidence
+  - hostname: zoffice.zeaz.dev
+    purpose: office access
+
+  # Abstract Services
+  - hostname: panel.zeaz.dev
+    purpose: internal panel
+  - hostname: trader.zeaz.dev
+    purpose: internal trader
+  - hostname: ws.trader.zeaz.dev
+    purpose: internal trader ws
+  - hostname: risk.zeaz.dev
+    purpose: internal risk engine
+  - hostname: memory.zeaz.dev
+    purpose: internal memory engine
+  - hostname: agents.zeaz.dev
+    purpose: internal ai agents
+  - hostname: fcc.zeaz.dev
+    purpose: internal fcc
+
+  # Legacy / Pending Removal
+  - hostname: zzdash.zeaz.dev
+    purpose: legacy zdash (pending cleanup)
+  - hostname: api-zzdash.zeaz.dev
+    purpose: legacy zdash api (pending cleanup)
+  - hostname: zow.zeaz.dev
+    purpose: pending legacy mapping
+  - hostname: zaiz.zeaz.dev
+    purpose: pending legacy mapping
+  - hostname: zsticker.zeaz.dev
+    purpose: pending legacy mapping
+  - hostname: zlms.zeaz.dev
+    purpose: pending legacy mapping
+  - hostname: dash.zeaz.dev
+    purpose: pending legacy mapping
+  - hostname: zcfdash.zeaz.dev
+    purpose: pending legacy mapping
+  - hostname: api-zcfdash.zeaz.dev
+    purpose: pending legacy mapping

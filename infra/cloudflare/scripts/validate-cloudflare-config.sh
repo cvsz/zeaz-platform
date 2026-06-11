@@ -67,6 +67,9 @@ CHECK=false
 CHECK_SECRETS=false
 CHECK_WORKERS=false
 CHECK_TERRAFORM=false
+CHECK_RUNTIME_GOVERNANCE=false
+CHECK_WORKER_BINDINGS=false
+CHECK_NO_MUTATION=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -78,6 +81,9 @@ while [[ $# -gt 0 ]]; do
     --secrets) CHECK_SECRETS=true ;;
     --workers) CHECK_WORKERS=true ;;
     --terraform) CHECK_TERRAFORM=true ;;
+    --runtime-governance) CHECK_RUNTIME_GOVERNANCE=true ;;
+    --worker-bindings) CHECK_WORKER_BINDINGS=true ;;
+    --no-mutation) CHECK_NO_MUTATION=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -457,28 +463,28 @@ if [[ "$CHECK_WORKERS" == true ]]; then
   total_errors=$((total_errors + example_issues))
 fi
 
-# Phase 8: Terraform ownership validation
-if [[ "$CHECK_TERRAFORM" == true ]]; then
-  log_info "Running Phase 8 terraform ownership conflict scan..."
-  tf_scanner="${SCRIPTS_DIR}/scan-terraform-cloudflare-ownership.sh"
-  
-  if [[ ! -f "$tf_scanner" ]] || [[ ! -x "$tf_scanner" ]]; then
-    errors+=("scan-terraform-cloudflare-ownership.sh: not found or not executable")
+# Phase 7: Governance validation
+if [[ "$CHECK_NO_MUTATION" == true ]]; then
+  log_info "Running Phase 7 no-mutation guard..."
+  if ! "$SCRIPTS_DIR/check-cloudflare-no-mutation.sh" --strict >/dev/null 2>&1; then
+    errors+=("No-mutation guard failed.")
     total_errors=$((total_errors + 1))
-  else
-    if [[ "$CHECK" == true ]]; then
-      # Run in strict mode; any conflicts cause a failure
-      if ! "$tf_scanner" --strict >/dev/null 2>&1; then
-        errors+=("Terraform ownership conflicts detected in strict mode.")
-        total_errors=$((total_errors + 1))
-      fi
-    else
-      # Run in default mode; emit warnings if conflicts exist
-      tf_output=$("$tf_scanner" 2>&1 || true)
-      if echo "$tf_output" | grep -q '\[CONFLICT\]'; then
-        warnings+=("Terraform ownership conflicts detected.")
-      fi
-    fi
+  fi
+fi
+
+if [[ "$CHECK_RUNTIME_GOVERNANCE" == true ]]; then
+  log_info "Running Phase 7 runtime governance scanner..."
+  if ! "$SCRIPTS_DIR/scan-runtime-governance.sh" --strict >/dev/null 2>&1; then
+    errors+=("Runtime governance scanner failed.")
+    total_errors=$((total_errors + 1))
+  fi
+fi
+
+if [[ "$CHECK_WORKER_BINDINGS" == true ]]; then
+  log_info "Running Phase 7 worker bindings scanner..."
+  if ! "$SCRIPTS_DIR/scan-worker-bindings.sh" --strict >/dev/null 2>&1; then
+    errors+=("Worker bindings scanner failed.")
+    total_errors=$((total_errors + 1))
   fi
 fi
 
