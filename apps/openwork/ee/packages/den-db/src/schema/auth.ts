@@ -1,9 +1,8 @@
 import * as crypto from "node:crypto"
-import { sql } from "drizzle-orm"
-import { bigint, boolean, index, int, json, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core"
+import { bigint, boolean, index, integer, json, pgTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 import { denTypeIdColumn, encryptedTextColumn } from "../columns"
 
-export const AuthUserTable = mysqlTable(
+export const AuthUserTable = pgTable(
   "user",
   {
     id: denTypeIdColumn("user", "id").notNull().primaryKey(),
@@ -11,15 +10,13 @@ export const AuthUserTable = mysqlTable(
     email: varchar("email", { length: 255 }).notNull(),
     emailVerified: boolean("email_verified").notNull().default(false),
     image: text("image"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("user_email").on(table.email)],
 )
 
-export const AuthSessionTable = mysqlTable(
+export const AuthSessionTable = pgTable(
   "session",
   {
     id: denTypeIdColumn("session", "id").notNull().primaryKey(),
@@ -27,18 +24,16 @@ export const AuthSessionTable = mysqlTable(
     activeOrganizationId: denTypeIdColumn("organization", "active_organization_id"),
     activeTeamId: denTypeIdColumn("team", "active_team_id"),
     token: varchar("token", { length: 255 }).notNull(),
-    expiresAt: timestamp("expires_at", { fsp: 3 }).notNull(),
+    expiresAt: timestamp("expires_at", { precision: 3 }).notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("session_token").on(table.token), index("session_user_id").on(table.userId)],
 )
 
-export const AuthAccountTable = mysqlTable(
+export const AuthAccountTable = pgTable(
   "account",
   {
     id: denTypeIdColumn("account", "id").notNull().primaryKey(),
@@ -47,35 +42,31 @@ export const AuthAccountTable = mysqlTable(
     providerId: text("provider_id").notNull(),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
-    accessTokenExpiresAt: timestamp("access_token_expires_at", { fsp: 3 }),
-    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { fsp: 3 }),
+    accessTokenExpiresAt: timestamp("access_token_expires_at", { precision: 3 }),
+    refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { precision: 3 }),
     scope: text("scope"),
     idToken: text("id_token"),
     password: text("password"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [index("account_user_id").on(table.userId)],
 )
 
-export const AuthVerificationTable = mysqlTable(
+export const AuthVerificationTable = pgTable(
   "verification",
   {
     id: denTypeIdColumn("verification", "id").notNull().primaryKey(),
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: text("value").notNull(),
-    expiresAt: timestamp("expires_at", { fsp: 3 }).notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    expiresAt: timestamp("expires_at", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [index("verification_identifier").on(table.identifier)],
 )
 
-export const AuthApiKeyTable = mysqlTable(
+export const AuthApiKeyTable = pgTable(
   "apikey",
   {
     id: varchar("id", { length: 64 }).notNull().primaryKey(),
@@ -86,20 +77,18 @@ export const AuthApiKeyTable = mysqlTable(
     key: varchar("key", { length: 255 }).notNull(),
     referenceId: varchar("reference_id", { length: 64 }).notNull(),
     refillInterval: bigint("refill_interval", { mode: "number" }),
-    refillAmount: int("refill_amount"),
-    lastRefillAt: timestamp("last_refill_at", { fsp: 3 }),
+    refillAmount: integer("refill_amount"),
+    lastRefillAt: timestamp("last_refill_at", { precision: 3 }),
     enabled: boolean("enabled").notNull().default(true),
     rateLimitEnabled: boolean("rate_limit_enabled").notNull().default(true),
     rateLimitTimeWindow: bigint("rate_limit_time_window", { mode: "number" }),
-    rateLimitMax: int("rate_limit_max"),
-    requestCount: int("request_count").default(0),
-    remaining: int("remaining"),
-    lastRequest: timestamp("last_request", { fsp: 3 }),
-    expiresAt: timestamp("expires_at", { fsp: 3 }),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    rateLimitMax: integer("rate_limit_max"),
+    requestCount: integer("request_count").default(0),
+    remaining: integer("remaining"),
+    lastRequest: timestamp("last_request", { precision: 3 }),
+    expiresAt: timestamp("expires_at", { precision: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
     permissions: text("permissions"),
     metadata: text("metadata"),
   },
@@ -110,20 +99,20 @@ export const AuthApiKeyTable = mysqlTable(
   ],
 )
 
-export const AuthJwksTable = mysqlTable("jwks", {
+export const AuthJwksTable = pgTable("jwks", {
   id: varchar("id", { length: 64 })
     .notNull()
     .$defaultFn(() => crypto.randomUUID())
     .primaryKey(),
   publicKey: text("public_key").notNull(),
   privateKey: text("private_key").notNull(),
-  createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-  expiresAt: timestamp("expires_at", { fsp: 3 }),
+  createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", { precision: 3 }),
   alg: varchar("alg", { length: 32 }),
   crv: varchar("crv", { length: 32 }),
 })
 
-export const OAuthClientTable = mysqlTable(
+export const OAuthClientTable = pgTable(
   "oauthClient",
   {
     id: denTypeIdColumn("oauthClient", "id").notNull().primaryKey(),
@@ -135,10 +124,8 @@ export const OAuthClientTable = mysqlTable(
     subjectType: varchar("subject_type", { length: 64 }),
     scopes: text("scopes"),
     userId: denTypeIdColumn("user", "user_id"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
     name: varchar("name", { length: 255 }),
     uri: text("uri"),
     icon: text("icon"),
@@ -166,7 +153,7 @@ export const OAuthClientTable = mysqlTable(
   ],
 )
 
-export const OAuthRefreshTokenTable = mysqlTable(
+export const OAuthRefreshTokenTable = pgTable(
   "oauthRefreshToken",
   {
     id: denTypeIdColumn("oauthRefreshToken", "id").notNull().primaryKey(),
@@ -175,10 +162,10 @@ export const OAuthRefreshTokenTable = mysqlTable(
     sessionId: denTypeIdColumn("session", "session_id"),
     userId: denTypeIdColumn("user", "user_id").notNull(),
     referenceId: varchar("reference_id", { length: 64 }),
-    expiresAt: timestamp("expires_at", { fsp: 3 }).notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    revoked: timestamp("revoked", { fsp: 3 }),
-    authTime: timestamp("auth_time", { fsp: 3 }),
+    expiresAt: timestamp("expires_at", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    revoked: timestamp("revoked", { precision: 3 }),
+    authTime: timestamp("auth_time", { precision: 3 }),
     scopes: text("scopes").notNull(),
   },
   (table) => [
@@ -189,7 +176,7 @@ export const OAuthRefreshTokenTable = mysqlTable(
   ],
 )
 
-export const OAuthAccessTokenTable = mysqlTable(
+export const OAuthAccessTokenTable = pgTable(
   "oauthAccessToken",
   {
     id: denTypeIdColumn("oauthAccessToken", "id").notNull().primaryKey(),
@@ -199,8 +186,8 @@ export const OAuthAccessTokenTable = mysqlTable(
     userId: denTypeIdColumn("user", "user_id"),
     referenceId: varchar("reference_id", { length: 64 }),
     refreshId: denTypeIdColumn("oauthRefreshToken", "refresh_id"),
-    expiresAt: timestamp("expires_at", { fsp: 3 }).notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
     scopes: text("scopes").notNull(),
   },
   (table) => [
@@ -212,7 +199,7 @@ export const OAuthAccessTokenTable = mysqlTable(
   ],
 )
 
-export const OAuthConsentTable = mysqlTable(
+export const OAuthConsentTable = pgTable(
   "oauthConsent",
   {
     id: denTypeIdColumn("oauthConsent", "id").notNull().primaryKey(),
@@ -220,10 +207,8 @@ export const OAuthConsentTable = mysqlTable(
     userId: denTypeIdColumn("user", "user_id"),
     referenceId: varchar("reference_id", { length: 64 }),
     scopes: text("scopes").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("oauth_consent_client_id").on(table.clientId),
@@ -232,17 +217,15 @@ export const OAuthConsentTable = mysqlTable(
   ],
 )
 
-export const ScimProviderTable = mysqlTable(
+export const ScimProviderTable = pgTable(
   "scim_provider",
   {
     id: denTypeIdColumn("scimProvider", "id").notNull().primaryKey(),
     providerId: varchar("provider_id", { length: 255 }).notNull(),
     scimToken: encryptedTextColumn("scim_token").notNull(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("scim_provider_provider_id").on(table.providerId),
@@ -250,7 +233,7 @@ export const ScimProviderTable = mysqlTable(
   ],
 )
 
-export const SsoProviderTable = mysqlTable(
+export const SsoProviderTable = pgTable(
   "sso_provider",
   {
     id: denTypeIdColumn("ssoProvider", "id").notNull().primaryKey(),
@@ -262,10 +245,8 @@ export const SsoProviderTable = mysqlTable(
     providerId: varchar("provider_id", { length: 255 }).notNull(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     domainVerified: boolean("domain_verified").notNull().default(false),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("sso_provider_provider_id").on(table.providerId),
@@ -275,7 +256,7 @@ export const SsoProviderTable = mysqlTable(
   ],
 )
 
-export const SsoConnectionTable = mysqlTable(
+export const SsoConnectionTable = pgTable(
   "sso_connection",
   {
     id: denTypeIdColumn("ssoConnection", "id").notNull().primaryKey(),
@@ -286,12 +267,10 @@ export const SsoConnectionTable = mysqlTable(
     domain: varchar("domain", { length: 255 }).notNull(),
     status: varchar("status", { length: 32 }).notNull().default("enabled"),
     signInPath: varchar("sign_in_path", { length: 2048 }).notNull(),
-    lastTestedAt: timestamp("last_tested_at", { fsp: 3 }),
+    lastTestedAt: timestamp("last_tested_at", { precision: 3 }),
     lastError: text("last_error"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("sso_connection_organization_id").on(table.organizationId),
@@ -300,7 +279,7 @@ export const SsoConnectionTable = mysqlTable(
   ],
 )
 
-export const ExternalIdentityTable = mysqlTable(
+export const ExternalIdentityTable = pgTable(
   "external_identity",
   {
     id: denTypeIdColumn("externalIdentity", "id").notNull().primaryKey(),
@@ -318,12 +297,10 @@ export const ExternalIdentityTable = mysqlTable(
     emailsJson: json("emails_json").$type<unknown[] | null>(),
     attributesJson: json("attributes_json").$type<Record<string, unknown> | null>(),
     active: boolean("active").notNull().default(true),
-    lastScimSyncAt: timestamp("last_scim_sync_at", { fsp: 3 }),
-    lastSsoLoginAt: timestamp("last_sso_login_at", { fsp: 3 }),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    lastScimSyncAt: timestamp("last_scim_sync_at", { precision: 3 }),
+    lastSsoLoginAt: timestamp("last_sso_login_at", { precision: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("external_identity_org_user").on(table.organizationId, table.userId),

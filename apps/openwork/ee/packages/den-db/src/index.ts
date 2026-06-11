@@ -1,4 +1,4 @@
 export * from "./client"
 export * from "./columns"
-export * from "./mysql-config"
+export * from "./pg-config"
 export * from "./schema"

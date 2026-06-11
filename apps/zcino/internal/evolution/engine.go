@@ -25,8 +25,14 @@ type Engine struct {
 	PatchValidator  PatchValidator
 	Simulator       Simulator
 	Canary          CanaryDeployer
+	Rego            *RegoEvaluator
 	MinScore        float64
 	RequireApproval bool
+}
+
+func (e Engine) WithRego(re *RegoEvaluator) Engine {
+	e.Rego = re
+	return e
 }
 
 func NewEngine(policy Policy, budget Budget, generator PatchGenerator, simulator Simulator, canary CanaryDeployer) Engine {
@@ -58,6 +64,12 @@ func (e Engine) Process(ctx context.Context, p Proposal) Result {
 	}
 	if evaluation := e.Economics.Evaluate(p); !evaluation.Allowed {
 		return finish(StatusRejected, false, 0, evaluation.Reason)
+	}
+	if e.Rego != nil {
+		regoInput := RegoInputFromProposal(p)
+		if ev := e.Rego.Evaluate(ctx, regoInput); !ev.Allowed {
+			return finish(StatusRejected, false, 0, ev.Reason)
+		}
 	}
 	if e.RequireApproval {
 		return finish(StatusValidated, true, 0, "proposal requires human approval before mutation")

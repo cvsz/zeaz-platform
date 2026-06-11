@@ -1,11 +1,16 @@
-import { index, json, mysqlEnum, mysqlTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core"
+import { index, json, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { pgEnum } from "drizzle-orm/pg-core"
 import { denTypeIdColumn, timestamps } from "../columns"
 
 export const WorkerDestination = ["local", "cloud"] as const
 export const WorkerStatus = ["provisioning", "healthy", "failed", "stopped"] as const
 export const TokenScope = ["client", "host", "activity"] as const
 
-export const WorkerTable = mysqlTable(
+export const workerDestinationEnum = pgEnum("worker_destination", WorkerDestination)
+export const workerStatusEnum = pgEnum("worker_status", WorkerStatus)
+export const tokenScopeEnum = pgEnum("token_scope", TokenScope)
+
+export const WorkerTable = pgTable(
   "worker",
   {
     id: denTypeIdColumn("worker", "id").notNull().primaryKey(),
@@ -13,13 +18,13 @@ export const WorkerTable = mysqlTable(
     created_by_user_id: denTypeIdColumn("user", "created_by_user_id"),
     name: varchar("name", { length: 255 }).notNull(),
     description: varchar("description", { length: 1024 }),
-    destination: mysqlEnum("destination", WorkerDestination).notNull(),
-    status: mysqlEnum("status", WorkerStatus).notNull(),
+    destination: workerDestinationEnum("destination").notNull(),
+    status: workerStatusEnum("status").notNull(),
     image_version: varchar("image_version", { length: 128 }),
     workspace_path: varchar("workspace_path", { length: 1024 }),
     sandbox_backend: varchar("sandbox_backend", { length: 64 }),
-    last_heartbeat_at: timestamp("last_heartbeat_at", { fsp: 3 }),
-    last_active_at: timestamp("last_active_at", { fsp: 3 }),
+    last_heartbeat_at: timestamp("last_heartbeat_at", { precision: 3 }),
+    last_active_at: timestamp("last_active_at", { precision: 3 }),
     ...timestamps,
   },
   (table) => [
@@ -31,7 +36,7 @@ export const WorkerTable = mysqlTable(
   ],
 )
 
-export const WorkerInstanceTable = mysqlTable(
+export const WorkerInstanceTable = pgTable(
   "worker_instance",
   {
     id: denTypeIdColumn("workerInstance", "id").notNull().primaryKey(),
@@ -39,13 +44,13 @@ export const WorkerInstanceTable = mysqlTable(
     provider: varchar("provider", { length: 64 }).notNull(),
     region: varchar("region", { length: 64 }),
     url: varchar("url", { length: 2048 }).notNull(),
-    status: mysqlEnum("status", WorkerStatus).notNull(),
+    status: workerStatusEnum("status").notNull(),
     ...timestamps,
   },
   (table) => [index("worker_instance_worker_id").on(table.worker_id)],
 )
 
-export const DaytonaSandboxTable = mysqlTable(
+export const DaytonaSandboxTable = pgTable(
   "daytona_sandbox",
   {
     id: denTypeIdColumn("daytonaSandbox", "id").notNull().primaryKey(),
@@ -54,7 +59,7 @@ export const DaytonaSandboxTable = mysqlTable(
     workspace_volume_id: varchar("workspace_volume_id", { length: 128 }).notNull(),
     data_volume_id: varchar("data_volume_id", { length: 128 }).notNull(),
     signed_preview_url: varchar("signed_preview_url", { length: 2048 }).notNull(),
-    signed_preview_url_expires_at: timestamp("signed_preview_url_expires_at", { fsp: 3 }).notNull(),
+    signed_preview_url_expires_at: timestamp("signed_preview_url_expires_at", { precision: 3 }).notNull(),
     region: varchar("region", { length: 64 }),
     ...timestamps,
   },
@@ -64,20 +69,20 @@ export const DaytonaSandboxTable = mysqlTable(
   ],
 )
 
-export const WorkerTokenTable = mysqlTable(
+export const WorkerTokenTable = pgTable(
   "worker_token",
   {
     id: denTypeIdColumn("workerToken", "id").notNull().primaryKey(),
     worker_id: denTypeIdColumn("worker", "worker_id").notNull(),
-    scope: mysqlEnum("scope", TokenScope).notNull(),
+    scope: tokenScopeEnum("scope").notNull(),
     token: varchar("token", { length: 128 }).notNull(),
     created_at: timestamps.created_at,
-    revoked_at: timestamp("revoked_at", { fsp: 3 }),
+    revoked_at: timestamp("revoked_at", { precision: 3 }),
   },
   (table) => [index("worker_token_worker_id").on(table.worker_id), uniqueIndex("worker_token_token").on(table.token)],
 )
 
-export const WorkerBundleTable = mysqlTable(
+export const WorkerBundleTable = pgTable(
   "worker_bundle",
   {
     id: denTypeIdColumn("workerBundle", "id").notNull().primaryKey(),
@@ -89,7 +94,7 @@ export const WorkerBundleTable = mysqlTable(
   (table) => [index("worker_bundle_worker_id").on(table.worker_id)],
 )
 
-export const AuditEventTable = mysqlTable(
+export const AuditEventTable = pgTable(
   "audit_event",
   {
     id: denTypeIdColumn("auditEvent", "id").notNull().primaryKey(),

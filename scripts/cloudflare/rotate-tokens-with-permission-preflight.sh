@@ -49,20 +49,20 @@ pick_permission(){
     def has($re): (txt | test($re));
     def score($k):
       if $k == "dns" then
-        if has("(?i)^zone dns write$") then 0
-        elif has("(?i)zone.*dns.*(write|edit)") then 1
-        elif (has("(?i)dns.*(write|edit)|(write|edit).*dns") and (has("(?i)settings") | not) and (has("(?i)account dns") | not)) then 10
+        if has("(?i)^dns write$") then 0
+        elif has("(?i)dns.*(write|edit)") and (has("(?i)settings") | not) and (has("(?i)(dns firewall|account)") | not) then 1
+        elif has("(?i)zone.*dns.*(write|edit)") then 10
         else 999 end
       elif $k == "waf" then
         if has("(?i)^zone.*(waf|rulesets).*write$") then 0
         elif has("(?i)zone.*(waf|web application firewall|rulesets?|firewall rules?).*(write|edit)") then 1
         elif has("(?i)(waf|web application firewall|rulesets?|firewall rules?).*(write|edit)|(write|edit).*(waf|web application firewall|rulesets?|firewall rules?)") then 10
         else 999 end
-      elif $k == "zt" then if has("(?i)(zero[ -]?trust|access).*(write|edit)|(write|edit).*(zero[ -]?trust|access)") then 0 else 999 end
-      elif $k == "workers" then if has("(?i)(workers?|workers scripts?).*(write|edit)|(write|edit).*(workers?|workers scripts?)") then 0 else 999 end
-      elif $k == "pages" then if has("(?i)pages.*(write|edit)|(write|edit).*pages") then 0 else 999 end
+      elif $k == "zt" then if has("(?i)\bZero Trust\b.*(write|edit)") and (has("(?i)(Report|Read|PII|Resilience|Seats)") | not) then 0 else 999 end
+      elif $k == "workers" then if has("(?i)(\bWorkers Scripts?\b).*Write") and (has("(?i)(AI|CI|KV|Containers|Observability|Routes|Tail|Websearch|R2)") | not) then 0 else 999 end
+      elif $k == "pages" then if has("(?i)^Pages Write$") then 0 else 999 end
       elif $k == "tunnel" then if has("(?i)(cloudflare tunnel|cloudflared|tunnel).*(write|edit)|(write|edit).*(cloudflare tunnel|cloudflared|tunnel)") then 0 else 999 end
-      elif $k == "r2" then if has("(?i)(r2|r2 storage|workers r2).*(write|edit)|(write|edit).*(r2|r2 storage|workers r2)") then 0 else 999 end
+      elif $k == "r2" then if has("(?i)\bR2 Storage\b.*Write") and (has("(?i)(Data Catalog|Bucket|Metadata|SQL|Read)") | not) then 0 else 999 end
       elif $k == "d1" then if has("(?i)(d1|workers d1).*(write|edit)|(write|edit).*(d1|workers d1)") then 0 else 999 end
       else 999 end;
     (.result // [])

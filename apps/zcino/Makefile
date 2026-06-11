@@ -1,58 +1,47 @@
-# zCino Makefile
+# zcino Go Backend Makefile
 
-PORT ?= 8000
-HOST ?= 0.0.0.0
-PID_FILE = .php-server.pid
-
-.PHONY: install start stop restart status help
+.PHONY: build test lint clean docker-up docker-down help
 
 help:
 	@echo "Available commands:"
-	@echo "  make install - Set up database or necessary files"
-	@echo "  make start   - Start the local PHP development server"
-	@echo "  make stop    - Stop the local PHP development server"
-	@echo "  make restart - Restart the local PHP development server"
-	@echo "  make status  - Check if the server is running"
+	@echo "  make build       - Build all Go binaries"
+	@echo "  make test        - Run unit tests"
+	@echo "  make test-int    - Run integration tests (requires Docker)"
+	@echo "  make lint        - Run golangci-lint"
+	@echo "  make clean       - Clean build artifacts"
+	@echo "  docker-up        - Start infra (Postgres, Redis, etc.)"
+	@echo "  docker-build     - Build Docker images"
+	@echo "  docker-down      - Stop infra"
+	@echo ""
+	@echo "Legacy PHP dev server: cd legacy/php && php -S 0.0.0.0:8000"
 
-install:
-	@echo "Installing/setting up zCino..."
-	@if [ -f "setup_currencies.php" ]; then \
-		echo "Setting up global currencies..."; \
-		php setup_currencies.php; \
-	fi
-	@echo "Setting up permissions..."
-	@chmod -R 775 images/ || true
-	@echo "Installation complete."
+build:
+	go build -trimpath -ldflags="-s -w" -o /tmp/zcino-api-gateway .
+	go build -trimpath -ldflags="-s -w" -o /tmp/zcino-compliance ./cmd/compliance
+	go build -trimpath -ldflags="-s -w" -o /tmp/zcino-analytics ./cmd/analytics
+	go build -trimpath -ldflags="-s -w" -o /tmp/zcino-zeaznode ./cmd/zeaznode
+	@echo "All binaries built to /tmp/zcino-*"
 
-start:
-	@echo "Starting PHP development server on http://$(HOST):$(PORT)..."
-	@if [ -f $(PID_FILE) ]; then \
-		echo "Server is already running with PID $$(cat $(PID_FILE)). Use 'make restart' instead."; \
-	else \
-		php -S $(HOST):$(PORT) > php-server.log 2>&1 & echo $$! > $(PID_FILE); \
-		echo "Server started successfully (PID: $$(cat $(PID_FILE)))."; \
-	fi
+test:
+	go test -vet=all -count=1 -race -shuffle=on ./...
 
-stop:
-	@echo "Stopping PHP development server..."
-	@if [ -f $(PID_FILE) ]; then \
-		kill -9 $$(cat $(PID_FILE)) 2>/dev/null || true; \
-		rm -f $(PID_FILE); \
-		echo "Server stopped."; \
-	else \
-		echo "Server is not running (no PID file found)."; \
-	fi
+test-int:
+	go test -tags=integration -count=1 -v ./internal/repository/... ./internal/service/... ./internal/transport/... ./internal/handler/...
 
-restart: stop start
+lint:
+	golangci-lint run --timeout=5m ./...
 
-status:
-	@if [ -f $(PID_FILE) ]; then \
-		if ps -p $$(cat $(PID_FILE)) > /dev/null; then \
-			echo "Server is running (PID: $$(cat $(PID_FILE)))"; \
-		else \
-			echo "Server crashed or was stopped externally. Cleaning up PID file."; \
-			rm -f $(PID_FILE); \
-		fi \
-	else \
-		echo "Server is NOT running."; \
-	fi
+clean:
+	rm -f /tmp/zcino-*
+
+docker-up:
+	docker compose -f infra/docker-compose.yml up -d
+
+docker-build:
+	docker build -t zcino-api-gateway --target api-gateway .
+	docker build -t zcino-compliance --target compliance .
+	docker build -t zcino-analytics --target analytics .
+	docker build -t zcino-zeaz-node --target zeaz-node .
+
+docker-down:
+	docker compose -f infra/docker-compose.yml down

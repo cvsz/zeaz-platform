@@ -1,18 +1,20 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
     index,
-    mysqlEnum,
-    mysqlTable,
+    pgTable,
     text,
     timestamp,
     uniqueIndex,
     varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
+import { pgEnum } from "drizzle-orm/pg-core";
 import { denTypeIdColumn } from "../../columns";
 import { MemberTable, OrganizationTable } from "../org";
 import { TeamTable } from "../teams";
 
-export const SkillTable = mysqlTable(
+export const sharedEnum = pgEnum("skill_shared", ["org", "public"]);
+
+export const SkillTable = pgTable(
     "skill",
     {
         id: denTypeIdColumn("skill", "id").notNull().primaryKey(),
@@ -27,11 +29,11 @@ export const SkillTable = mysqlTable(
         title: varchar("title", { length: 255 }).notNull(),
         description: text("description"),
         skillText: text("skill_text").notNull(),
-        shared: mysqlEnum("shared", ["org", "public"]),
-        createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-        updatedAt: timestamp("updated_at", { fsp: 3 })
+        shared: sharedEnum("shared"),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", { precision: 3 })
             .notNull()
-            .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+            .defaultNow(),
     },
     (table) => [
         index("skill_organization_id").on(table.organizationId),
@@ -42,7 +44,7 @@ export const SkillTable = mysqlTable(
     ],
 );
 
-export const SkillHubTable = mysqlTable(
+export const SkillHubTable = pgTable(
     "skill_hub",
     {
         id: denTypeIdColumn("skillHub", "id").notNull().primaryKey(),
@@ -56,10 +58,10 @@ export const SkillHubTable = mysqlTable(
         ).notNull(),
         name: varchar("name", { length: 255 }).notNull(),
         description: text("description"),
-        createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-        updatedAt: timestamp("updated_at", { fsp: 3 })
+        createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+        updatedAt: timestamp("updated_at", { precision: 3 })
             .notNull()
-            .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+            .defaultNow(),
     },
     (table) => [
         index("skill_hub_organization_id").on(table.organizationId),
@@ -69,7 +71,7 @@ export const SkillHubTable = mysqlTable(
     ],
 );
 
-export const SkillHubSkillTable = mysqlTable(
+export const SkillHubSkillTable = pgTable(
     "skill_hub_skill",
     {
         id: denTypeIdColumn("skillHubSkill", "id").notNull().primaryKey(),
@@ -79,7 +81,7 @@ export const SkillHubSkillTable = mysqlTable(
             "member",
             "org_membership_id",
         ).notNull(),
-        createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
     },
     (table) => [
         index("skill_hub_skill_skill_hub_id").on(table.skillHubId),
@@ -91,14 +93,14 @@ export const SkillHubSkillTable = mysqlTable(
     ],
 );
 
-export const SkillHubMemberTable = mysqlTable(
+export const SkillHubMemberTable = pgTable(
     "skill_hub_member",
     {
         id: denTypeIdColumn("skillHubMember", "id").notNull().primaryKey(),
         skillHubId: denTypeIdColumn("skillHub", "skill_hub_id").notNull(),
         orgMembershipId: denTypeIdColumn("member", "org_membership_id"),
         teamId: denTypeIdColumn("team", "team_id"),
-        createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+        createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
     },
     (table) => [
         index("skill_hub_member_skill_hub_id").on(table.skillHubId),

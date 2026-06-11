@@ -1,0 +1,84 @@
+{
+  "description": "zeaz.dev production routing intent — dry-run by default",
+  "zone": "zeaz.dev",
+  "apply_required": "APPLY=true",
+  "cost_lock": true,
+  "plan_tier": "Free",
+  "allow_paid_cloudflare_features": false,
+  "hostnames": [
+    {
+      "name": "zeaz.dev",
+      "purpose": "public landing redirect to www.zeaz.dev",
+      "target": "www.zeaz.dev",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "www.zeaz.dev",
+      "purpose": "public landing / main website",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "zzdash.zeaz.dev",
+      "purpose": "zDash frontend",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    { "name": "sticker.zeaz.dev",
+      "purpose": "zDash frontend",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "api-zzdash.zeaz.dev",
+      "purpose": "zDash backend API",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "release.zeaz.dev",
+      "purpose": "optional public release evidence page",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "zcino.zeaz.dev",
+      "purpose": "zCino Casino App",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "zcloud.zeaz.dev",
+      "purpose": "zCloud automated fallback controller UI",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    }
+  ],
+  "rollback": {
+    "disable_route": true,
+    "restore_previous_dns_target": true,
+    "lock_access_policy": true,
+    "no_destructive_deletes": true
+  },
+  "notes": [
+    "Existing ssh.zeaz.dev route must remain unchanged.",
+    "No Load Balancing, Argo, paid WAF, Bot Management, Logpush, Workers deploy, or R2 writes are enabled.",
+    "Use scoped Cloudflare tokens only; never Global API Key."
+  ]
+}

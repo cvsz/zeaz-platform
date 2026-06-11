@@ -2,12 +2,12 @@ import { relations } from "drizzle-orm"
 import {
   bigint,
   index,
-  mysqlEnum,
-  mysqlTable,
+  pgTable,
   timestamp,
   uniqueIndex,
   varchar,
-} from "drizzle-orm/mysql-core"
+} from "drizzle-orm/pg-core"
+import { pgEnum } from "drizzle-orm/pg-core"
 import { INFERENCE_RESET_STRATEGIES, INFERENCE_WINDOW_TYPES } from "@openwork/types/den/inference"
 import { denTypeIdColumn, encryptedTextColumn, timestamps } from "../columns"
 import { MemberTable, OrganizationTable } from "./org"
@@ -15,7 +15,15 @@ import { MemberTable, OrganizationTable } from "./org"
 export const InferenceKeyStatus = ["active", "revoked"] as const
 export const InferenceOrgUpstreamProviderKeyStatus = ["active", "revoked"] as const
 
-export const InferenceKeyTable = mysqlTable(
+export const inferenceKeyStatusEnum = pgEnum("inference_key_status", InferenceKeyStatus)
+export const inferenceWindowTypeEnum = pgEnum("inference_window_type", INFERENCE_WINDOW_TYPES)
+export const inferenceResetStrategyEnum = pgEnum("inference_reset_strategy", INFERENCE_RESET_STRATEGIES)
+export const inferenceOrgUpstreamProviderKeyStatusEnum = pgEnum(
+  "inference_org_upstream_provider_key_status",
+  InferenceOrgUpstreamProviderKeyStatus,
+)
+
+export const InferenceKeyTable = pgTable(
   "inference_keys",
   {
     id: denTypeIdColumn("inferenceKey", "id").notNull().primaryKey(),
@@ -24,8 +32,8 @@ export const InferenceKeyTable = mysqlTable(
     name: varchar("name", { length: 255 }),
     key_hash: varchar("key_hash", { length: 255 }).notNull(),
     key_prefix: varchar("key_prefix", { length: 32 }),
-    status: mysqlEnum("status", InferenceKeyStatus).notNull().default("active"),
-    revoked_at: timestamp("revoked_at", { fsp: 3 }),
+    status: inferenceKeyStatusEnum("status").notNull().default("active"),
+    revoked_at: timestamp("revoked_at", { precision: 3 }),
     ...timestamps,
   },
   (table) => [
@@ -36,14 +44,14 @@ export const InferenceKeyTable = mysqlTable(
   ],
 )
 
-export const InferenceOrgLimitPolicyTable = mysqlTable(
+export const InferenceOrgLimitPolicyTable = pgTable(
   "inference_org_limit_policies",
   {
     id: denTypeIdColumn("inferenceOrgLimitPolicy", "id").notNull().primaryKey(),
     organization_id: denTypeIdColumn("organization", "organization_id").notNull(),
-    window_type: mysqlEnum("window_type", INFERENCE_WINDOW_TYPES).notNull(),
-    reset_strategy: mysqlEnum("reset_strategy", INFERENCE_RESET_STRATEGIES).notNull(),
-    anchor_at: timestamp("anchor_at", { fsp: 3 }),
+    window_type: inferenceWindowTypeEnum("window_type").notNull(),
+    reset_strategy: inferenceResetStrategyEnum("reset_strategy").notNull(),
+    anchor_at: timestamp("anchor_at", { precision: 3 }),
     current_bucket_id: denTypeIdColumn("inferenceOrgUsageBucket", "current_bucket_id"),
     ...timestamps,
   },
@@ -56,14 +64,14 @@ export const InferenceOrgLimitPolicyTable = mysqlTable(
   ],
 )
 
-export const InferenceOrgUsageBucketTable = mysqlTable(
+export const InferenceOrgUsageBucketTable = pgTable(
   "inference_org_usage_buckets",
   {
     id: denTypeIdColumn("inferenceOrgUsageBucket", "id").notNull().primaryKey(),
     organization_id: denTypeIdColumn("organization", "organization_id").notNull(),
     policy_id: denTypeIdColumn("inferenceOrgLimitPolicy", "policy_id").notNull(),
-    window_start_at: timestamp("window_start_at", { fsp: 3 }).notNull(),
-    window_end_at: timestamp("window_end_at", { fsp: 3 }).notNull(),
+    window_start_at: timestamp("window_start_at", { precision: 3 }).notNull(),
+    window_end_at: timestamp("window_end_at", { precision: 3 }).notNull(),
     limit_amount: bigint("limit_amount", { mode: "number" }).notNull(),
     used_amount: bigint("used_amount", { mode: "number" }).notNull().default(0),
     ...timestamps,
@@ -84,7 +92,7 @@ export const InferenceOrgUsageBucketTable = mysqlTable(
 )
 
 // Stores organization-owned upstream provider credentials used by the inference proxy.
-export const InferenceOrgUpstreamProviderKeyTable = mysqlTable(
+export const InferenceOrgUpstreamProviderKeyTable = pgTable(
   "inference_org_upstream_provider_keys",
   {
     id: denTypeIdColumn("inferenceOrgProviderKey", "id").notNull().primaryKey(),
@@ -94,8 +102,8 @@ export const InferenceOrgUpstreamProviderKeyTable = mysqlTable(
     external_workspace_id: varchar("external_workspace_id", { length: 255 }),
     encrypted_api_key: encryptedTextColumn("encrypted_api_key").notNull(),
     key_prefix: varchar("key_prefix", { length: 32 }),
-    status: mysqlEnum("status", InferenceOrgUpstreamProviderKeyStatus).notNull().default("active"),
-    revoked_at: timestamp("revoked_at", { fsp: 3 }),
+    status: inferenceOrgUpstreamProviderKeyStatusEnum("status").notNull().default("active"),
+    revoked_at: timestamp("revoked_at", { precision: 3 }),
     ...timestamps,
   },
   (table) => [
@@ -109,7 +117,7 @@ export const InferenceOrgUpstreamProviderKeyTable = mysqlTable(
   ],
 )
 
-export const InferenceUsageLedgerEntryTable = mysqlTable(
+export const InferenceUsageLedgerEntryTable = pgTable(
   "inference_usage_ledger_entries",
   {
     id: denTypeIdColumn("inferenceUsageLedgerEntry", "id").notNull().primaryKey(),
@@ -120,7 +128,7 @@ export const InferenceUsageLedgerEntryTable = mysqlTable(
     external_event_id: varchar("external_event_id", { length: 255 }),
     cost_amount: bigint("cost_amount", { mode: "number" }).notNull(),
     event_type: varchar("event_type", { length: 64 }).notNull(),
-    occurred_at: timestamp("occurred_at", { fsp: 3 }).notNull(),
+    occurred_at: timestamp("occurred_at", { precision: 3 }).notNull(),
     created_at: timestamps.created_at,
   },
   (table) => [
@@ -135,7 +143,7 @@ export const InferenceUsageLedgerEntryTable = mysqlTable(
   ],
 )
 
-export const InferenceUsageLedgerBucketChargeTable = mysqlTable(
+export const InferenceUsageLedgerBucketChargeTable = pgTable(
   "inference_usage_ledger_bucket_charges",
   {
     id: denTypeIdColumn("inferenceUsageLedgerBucketCharge", "id").notNull().primaryKey(),

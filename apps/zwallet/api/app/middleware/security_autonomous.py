@@ -1,45 +1,37 @@
-# api/app/middleware/security_autonomous.py
-# Autonomous defense middleware: anomaly + circuit breaker + adaptive rate
-
+import logging
+import re
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
-from app.security.adaptive_rate_limiter import check_rate
-from app.security.bot_detection import is_bot
-from app.security.anomaly_detector import is_anomalous
-from app.security.circuit_breaker import is_blocked, block
+
+logger = logging.getLogger(__name__)
 
 MAX_BODY_SIZE = 5 * 1024 * 1024
+
+_SUSPICIOUS_UA = [
+    re.compile(r"curl", re.IGNORECASE),
+    re.compile(r"wget", re.IGNORECASE),
+    re.compile(r"python-requests", re.IGNORECASE),
+]
+
+
+def _is_bot(request) -> bool:
+    ua = request.headers.get("user-agent", "")
+    return any(p.search(ua) for p in _SUSPICIOUS_UA) or not request.headers.get("accept")
+
 
 class AutonomousSecurityMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         identity = request.headers.get("x-forwarded-for", request.client.host if request.client else "anon")
 
-        # ---- circuit breaker (pre-check) ----
-        if await is_blocked(identity):
-            return Response("Blocked (circuit breaker)", status_code=403)
+        logger.warning("AutonomousSecurityMiddleware: adaptive / anomaly / circuit-breaker backends not connected — basic checks only for %s", identity[:32])
 
-        # ---- bot detection ----
-        if is_bot(request):
-            await block(identity)
+        if _is_bot(request):
             return Response("Bot detected", status_code=403)
 
-        # ---- streaming body guard ----
         size = 0
         async for chunk in request.stream():
             size += len(chunk)
             if size > MAX_BODY_SIZE:
-                await block(identity)
                 return Response("Payload too large", status_code=413)
-
-        # ---- anomaly detection ----
-        if await is_anomalous(identity):
-            await block(identity)
-            return Response("Anomalous behavior detected", status_code=429)
-
-        # ---- adaptive rate limit ----
-        allowed = await check_rate(identity)
-        if not allowed:
-            await block(identity)
-            return Response("Too many requests", status_code=429)
 
         return await call_next(request)

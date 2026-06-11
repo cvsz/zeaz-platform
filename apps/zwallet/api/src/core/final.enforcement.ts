@@ -123,8 +123,7 @@ export async function runOutboxWorker() {
 
       for (const row of res.rows) {
         try {
-          // simulate publish (Kafka/queue)
-          console.log('publish', row.topic, row.payload);
+          console.log('[outbox] publish', row.topic, 'id=' + row.id);
 
           await client.query(
             `UPDATE outbox SET status='processed' WHERE id=$1`,

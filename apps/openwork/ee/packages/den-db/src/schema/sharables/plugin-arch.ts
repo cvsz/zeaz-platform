@@ -1,15 +1,15 @@
-import { relations, sql } from "drizzle-orm"
+import { relations } from "drizzle-orm"
 import {
   boolean,
   index,
   json,
-  mysqlEnum,
-  mysqlTable,
+  pgTable,
   text,
   timestamp,
   uniqueIndex,
   varchar,
-} from "drizzle-orm/mysql-core"
+} from "drizzle-orm/pg-core"
+import { pgEnum } from "drizzle-orm/pg-core"
 import { denTypeIdColumn, encryptedColumn, encryptedTextColumn } from "../../columns"
 import { MemberTable, OrganizationTable } from "../org"
 import { TeamTable } from "../teams"
@@ -30,6 +30,22 @@ export const connectorMappingKindValues = ["path", "api", "custom"] as const
 export const connectorSyncEventTypeValues = ["push", "installation", "installation_repositories", "repository", "manual_resync"] as const
 export const connectorSyncStatusValues = ["pending", "queued", "running", "completed", "failed", "partial", "ignored"] as const
 
+export const configObjectTypeEnum = pgEnum("config_object_type", configObjectTypeValues)
+export const configObjectSourceModeEnum = pgEnum("config_object_source_mode", configObjectSourceModeValues)
+export const configObjectStatusEnum = pgEnum("config_object_status", configObjectStatusValues)
+export const configObjectCreatedViaEnum = pgEnum("config_object_created_via", configObjectCreatedViaValues)
+export const pluginStatusEnum = pgEnum("plugin_status", pluginStatusValues)
+export const marketplaceStatusEnum = pgEnum("marketplace_status", marketplaceStatusValues)
+export const membershipSourceEnum = pgEnum("membership_source", membershipSourceValues)
+export const accessRoleEnum = pgEnum("access_role", accessRoleValues)
+export const connectorTypeEnum = pgEnum("connector_type", connectorTypeValues)
+export const connectorAccountStatusEnum = pgEnum("connector_account_status", connectorAccountStatusValues)
+export const connectorInstanceStatusEnum = pgEnum("connector_instance_status", connectorInstanceStatusValues)
+export const connectorTargetKindEnum = pgEnum("connector_target_kind", connectorTargetKindValues)
+export const connectorMappingKindEnum = pgEnum("connector_mapping_kind", connectorMappingKindValues)
+export const connectorSyncEventTypeEnum = pgEnum("connector_sync_event_type", connectorSyncEventTypeValues)
+export const connectorSyncStatusEnum = pgEnum("connector_sync_status", connectorSyncStatusValues)
+
 function encryptedJsonColumn<TData extends Record<string, unknown> | Array<unknown> | null>(columnName: string) {
   return encryptedColumn<TData>(columnName, {
     deserialize: (value) => JSON.parse(value) as TData,
@@ -37,25 +53,25 @@ function encryptedJsonColumn<TData extends Record<string, unknown> | Array<unkno
   })
 }
 
-export const ConfigObjectTable = mysqlTable(
+export const ConfigObjectTable = pgTable(
   "config_object",
   {
     id: denTypeIdColumn("configObject", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
-    objectType: mysqlEnum("object_type", configObjectTypeValues).notNull(),
-    sourceMode: mysqlEnum("source_mode", configObjectSourceModeValues).notNull(),
+    objectType: configObjectTypeEnum("object_type").notNull(),
+    sourceMode: configObjectSourceModeEnum("source_mode").notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
     searchText: text("search_text"),
     currentFileName: varchar("current_file_name", { length: 255 }),
     currentFileExtension: varchar("current_file_extension", { length: 64 }),
     currentRelativePath: varchar("current_relative_path", { length: 255 }),
-    status: mysqlEnum("status", configObjectStatusValues).notNull().default("active"),
+    status: configObjectStatusEnum("status").notNull().default("active"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
     connectorInstanceId: denTypeIdColumn("connectorInstance", "connector_instance_id"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
-    deletedAt: timestamp("deleted_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { precision: 3 }),
   },
   (table) => [
     index("config_object_organization_id").on(table.organizationId),
@@ -68,7 +84,7 @@ export const ConfigObjectTable = mysqlTable(
   ],
 )
 
-export const ConfigObjectVersionTable = mysqlTable(
+export const ConfigObjectVersionTable = pgTable(
   "config_object_version",
   {
     id: denTypeIdColumn("configObjectVersion", "id").notNull().primaryKey(),
@@ -77,12 +93,12 @@ export const ConfigObjectVersionTable = mysqlTable(
     normalizedPayloadJson: encryptedJsonColumn<Record<string, unknown> | null>("normalized_payload_json"),
     rawSourceText: encryptedTextColumn("raw_source_text"),
     schemaVersion: varchar("schema_version", { length: 100 }),
-    createdVia: mysqlEnum("created_via", configObjectCreatedViaValues).notNull(),
+    createdVia: configObjectCreatedViaEnum("created_via").notNull(),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id"),
     connectorSyncEventId: denTypeIdColumn("connectorSyncEvent", "connector_sync_event_id"),
     sourceRevisionRef: varchar("source_revision_ref", { length: 255 }),
     isDeletedVersion: boolean("is_deleted_version").notNull().default(false),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("config_object_version_organization_id").on(table.organizationId),
@@ -94,18 +110,18 @@ export const ConfigObjectVersionTable = mysqlTable(
   ],
 )
 
-export const PluginTable = mysqlTable(
+export const PluginTable = pgTable(
   "plugin",
   {
     id: denTypeIdColumn("plugin", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
-    status: mysqlEnum("status", pluginStatusValues).notNull().default("active"),
+    status: pluginStatusEnum("status").notNull().default("active"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
-    deletedAt: timestamp("deleted_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { precision: 3 }),
   },
   (table) => [
     index("plugin_organization_id").on(table.organizationId),
@@ -115,18 +131,18 @@ export const PluginTable = mysqlTable(
   ],
 )
 
-export const MarketplaceTable = mysqlTable(
+export const MarketplaceTable = pgTable(
   "marketplace",
   {
     id: denTypeIdColumn("marketplace", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
-    status: mysqlEnum("status", marketplaceStatusValues).notNull().default("active"),
+    status: marketplaceStatusEnum("status").notNull().default("active"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
-    deletedAt: timestamp("deleted_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { precision: 3 }),
   },
   (table) => [
     index("marketplace_organization_id").on(table.organizationId),
@@ -136,17 +152,17 @@ export const MarketplaceTable = mysqlTable(
   ],
 )
 
-export const MarketplacePluginTable = mysqlTable(
+export const MarketplacePluginTable = pgTable(
   "marketplace_plugin",
   {
     id: denTypeIdColumn("marketplacePlugin", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     marketplaceId: denTypeIdColumn("marketplace", "marketplace_id").notNull(),
     pluginId: denTypeIdColumn("plugin", "plugin_id").notNull(),
-    membershipSource: mysqlEnum("membership_source", membershipSourceValues).notNull().default("manual"),
+    membershipSource: membershipSourceEnum("membership_source").notNull().default("manual"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
   },
   (table) => [
     index("marketplace_plugin_organization_id").on(table.organizationId),
@@ -156,7 +172,7 @@ export const MarketplacePluginTable = mysqlTable(
   ],
 )
 
-export const MarketplaceAccessGrantTable = mysqlTable(
+export const MarketplaceAccessGrantTable = pgTable(
   "marketplace_access_grant",
   {
     id: denTypeIdColumn("marketplaceAccessGrant", "id").notNull().primaryKey(),
@@ -165,10 +181,10 @@ export const MarketplaceAccessGrantTable = mysqlTable(
     orgMembershipId: denTypeIdColumn("member", "org_membership_id"),
     teamId: denTypeIdColumn("team", "team_id"),
     orgWide: boolean("org_wide").notNull().default(false),
-    role: mysqlEnum("role", accessRoleValues).notNull(),
+    role: accessRoleEnum("role").notNull(),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
   },
   (table) => [
     index("marketplace_access_grant_organization_id").on(table.organizationId),
@@ -181,18 +197,18 @@ export const MarketplaceAccessGrantTable = mysqlTable(
   ],
 )
 
-export const PluginConfigObjectTable = mysqlTable(
+export const PluginConfigObjectTable = pgTable(
   "plugin_config_object",
   {
     id: denTypeIdColumn("pluginConfigObject", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     pluginId: denTypeIdColumn("plugin", "plugin_id").notNull(),
     configObjectId: denTypeIdColumn("configObject", "config_object_id").notNull(),
-    membershipSource: mysqlEnum("membership_source", membershipSourceValues).notNull().default("manual"),
+    membershipSource: membershipSourceEnum("membership_source").notNull().default("manual"),
     connectorMappingId: denTypeIdColumn("connectorMapping", "connector_mapping_id"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
   },
   (table) => [
     index("plugin_config_object_organization_id").on(table.organizationId),
@@ -203,7 +219,7 @@ export const PluginConfigObjectTable = mysqlTable(
   ],
 )
 
-export const ConfigObjectAccessGrantTable = mysqlTable(
+export const ConfigObjectAccessGrantTable = pgTable(
   "config_object_access_grant",
   {
     id: denTypeIdColumn("configObjectAccessGrant", "id").notNull().primaryKey(),
@@ -212,10 +228,10 @@ export const ConfigObjectAccessGrantTable = mysqlTable(
     orgMembershipId: denTypeIdColumn("member", "org_membership_id"),
     teamId: denTypeIdColumn("team", "team_id"),
     orgWide: boolean("org_wide").notNull().default(false),
-    role: mysqlEnum("role", accessRoleValues).notNull(),
+    role: accessRoleEnum("role").notNull(),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
   },
   (table) => [
     index("config_object_access_grant_organization_id").on(table.organizationId),
@@ -228,7 +244,7 @@ export const ConfigObjectAccessGrantTable = mysqlTable(
   ],
 )
 
-export const PluginAccessGrantTable = mysqlTable(
+export const PluginAccessGrantTable = pgTable(
   "plugin_access_grant",
   {
     id: denTypeIdColumn("pluginAccessGrant", "id").notNull().primaryKey(),
@@ -237,10 +253,10 @@ export const PluginAccessGrantTable = mysqlTable(
     orgMembershipId: denTypeIdColumn("member", "org_membership_id"),
     teamId: denTypeIdColumn("team", "team_id"),
     orgWide: boolean("org_wide").notNull().default(false),
-    role: mysqlEnum("role", accessRoleValues).notNull(),
+    role: accessRoleEnum("role").notNull(),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
   },
   (table) => [
     index("plugin_access_grant_organization_id").on(table.organizationId),
@@ -253,20 +269,20 @@ export const PluginAccessGrantTable = mysqlTable(
   ],
 )
 
-export const ConnectorAccountTable = mysqlTable(
+export const ConnectorAccountTable = pgTable(
   "connector_account",
   {
     id: denTypeIdColumn("connectorAccount", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }).notNull(),
     externalAccountRef: varchar("external_account_ref", { length: 255 }),
     displayName: varchar("display_name", { length: 255 }).notNull(),
-    status: mysqlEnum("status", connectorAccountStatusValues).notNull().default("active"),
+    status: connectorAccountStatusEnum("status").notNull().default("active"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
     metadataJson: json("metadata_json").$type<Record<string, unknown> | null>(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("connector_account_organization_id").on(table.organizationId),
@@ -277,23 +293,23 @@ export const ConnectorAccountTable = mysqlTable(
   ],
 )
 
-export const ConnectorInstanceTable = mysqlTable(
+export const ConnectorInstanceTable = pgTable(
   "connector_instance",
   {
     id: denTypeIdColumn("connectorInstance", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     connectorAccountId: denTypeIdColumn("connectorAccount", "connector_account_id").notNull(),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }),
     name: varchar("name", { length: 255 }).notNull(),
-    status: mysqlEnum("status", connectorInstanceStatusValues).notNull().default("active"),
+    status: connectorInstanceStatusEnum("status").notNull().default("active"),
     instanceConfigJson: json("instance_config_json").$type<Record<string, unknown> | null>(),
-    lastSyncedAt: timestamp("last_synced_at", { fsp: 3 }),
-    lastSyncStatus: mysqlEnum("last_sync_status", connectorSyncStatusValues),
+    lastSyncedAt: timestamp("last_synced_at", { precision: 3 }),
+    lastSyncStatus: connectorSyncStatusEnum("last_sync_status"),
     lastSyncCursor: text("last_sync_cursor"),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("connector_instance_organization_id").on(table.organizationId),
@@ -305,7 +321,7 @@ export const ConnectorInstanceTable = mysqlTable(
   ],
 )
 
-export const ConnectorInstanceAccessGrantTable = mysqlTable(
+export const ConnectorInstanceAccessGrantTable = pgTable(
   "connector_instance_access_grant",
   {
     id: denTypeIdColumn("connectorInstanceAccessGrant", "id").notNull().primaryKey(),
@@ -314,10 +330,10 @@ export const ConnectorInstanceAccessGrantTable = mysqlTable(
     orgMembershipId: denTypeIdColumn("member", "org_membership_id"),
     teamId: denTypeIdColumn("team", "team_id"),
     orgWide: boolean("org_wide").notNull().default(false),
-    role: mysqlEnum("role", accessRoleValues).notNull(),
+    role: accessRoleEnum("role").notNull(),
     createdByOrgMembershipId: denTypeIdColumn("member", "created_by_org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
   },
   (table) => [
     index("connector_instance_access_grant_organization_id").on(table.organizationId),
@@ -330,19 +346,19 @@ export const ConnectorInstanceAccessGrantTable = mysqlTable(
   ],
 )
 
-export const ConnectorTargetTable = mysqlTable(
+export const ConnectorTargetTable = pgTable(
   "connector_target",
   {
     id: denTypeIdColumn("connectorTarget", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     connectorInstanceId: denTypeIdColumn("connectorInstance", "connector_instance_id").notNull(),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }).notNull(),
-    targetKind: mysqlEnum("target_kind", connectorTargetKindValues).notNull(),
+    targetKind: connectorTargetKindEnum("target_kind").notNull(),
     externalTargetRef: varchar("external_target_ref", { length: 255 }),
     targetConfigJson: json("target_config_json").$type<Record<string, unknown>>().notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("connector_target_organization_id").on(table.organizationId),
@@ -353,23 +369,23 @@ export const ConnectorTargetTable = mysqlTable(
   ],
 )
 
-export const ConnectorMappingTable = mysqlTable(
+export const ConnectorMappingTable = pgTable(
   "connector_mapping",
   {
     id: denTypeIdColumn("connectorMapping", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     connectorInstanceId: denTypeIdColumn("connectorInstance", "connector_instance_id").notNull(),
     connectorTargetId: denTypeIdColumn("connectorTarget", "connector_target_id").notNull(),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }),
-    mappingKind: mysqlEnum("mapping_kind", connectorMappingKindValues).notNull(),
+    mappingKind: connectorMappingKindEnum("mapping_kind").notNull(),
     selector: varchar("selector", { length: 255 }).notNull(),
-    objectType: mysqlEnum("object_type", configObjectTypeValues).notNull(),
+    objectType: configObjectTypeEnum("object_type").notNull(),
     pluginId: denTypeIdColumn("plugin", "plugin_id"),
     autoAddToPlugin: boolean("auto_add_to_plugin").notNull().default(false),
     mappingConfigJson: json("mapping_config_json").$type<Record<string, unknown> | null>(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("connector_mapping_organization_id").on(table.organizationId),
@@ -381,22 +397,22 @@ export const ConnectorMappingTable = mysqlTable(
   ],
 )
 
-export const ConnectorSyncEventTable = mysqlTable(
+export const ConnectorSyncEventTable = pgTable(
   "connector_sync_event",
   {
     id: denTypeIdColumn("connectorSyncEvent", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     connectorInstanceId: denTypeIdColumn("connectorInstance", "connector_instance_id").notNull(),
     connectorTargetId: denTypeIdColumn("connectorTarget", "connector_target_id"),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }),
-    eventType: mysqlEnum("event_type", connectorSyncEventTypeValues).notNull(),
+    eventType: connectorSyncEventTypeEnum("event_type").notNull(),
     externalEventRef: varchar("external_event_ref", { length: 255 }),
     sourceRevisionRef: varchar("source_revision_ref", { length: 255 }),
-    status: mysqlEnum("status", connectorSyncStatusValues).notNull().default("pending"),
+    status: connectorSyncStatusEnum("status").notNull().default("pending"),
     summaryJson: json("summary_json").$type<Record<string, unknown> | null>(),
-    startedAt: timestamp("started_at", { fsp: 3 }).notNull().defaultNow(),
-    completedAt: timestamp("completed_at", { fsp: 3 }),
+    startedAt: timestamp("started_at", { precision: 3 }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { precision: 3 }),
   },
   (table) => [
     index("connector_sync_event_organization_id").on(table.organizationId),
@@ -409,7 +425,7 @@ export const ConnectorSyncEventTable = mysqlTable(
   ],
 )
 
-export const ConnectorSourceBindingTable = mysqlTable(
+export const ConnectorSourceBindingTable = pgTable(
   "connector_source_binding",
   {
     id: denTypeIdColumn("connectorSourceBinding", "id").notNull().primaryKey(),
@@ -418,15 +434,15 @@ export const ConnectorSourceBindingTable = mysqlTable(
     connectorInstanceId: denTypeIdColumn("connectorInstance", "connector_instance_id").notNull(),
     connectorTargetId: denTypeIdColumn("connectorTarget", "connector_target_id").notNull(),
     connectorMappingId: denTypeIdColumn("connectorMapping", "connector_mapping_id").notNull(),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }),
     externalLocator: varchar("external_locator", { length: 255 }).notNull(),
     externalStableRef: varchar("external_stable_ref", { length: 255 }),
     lastSeenSourceRevisionRef: varchar("last_seen_source_revision_ref", { length: 255 }),
-    status: mysqlEnum("status", configObjectStatusValues).notNull().default("active"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 }).notNull().default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
-    deletedAt: timestamp("deleted_at", { fsp: 3 }),
+    status: configObjectStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { precision: 3 }),
   },
   (table) => [
     index("connector_source_binding_organization_id").on(table.organizationId),
@@ -439,7 +455,7 @@ export const ConnectorSourceBindingTable = mysqlTable(
   ],
 )
 
-export const ConnectorSourceTombstoneTable = mysqlTable(
+export const ConnectorSourceTombstoneTable = pgTable(
   "connector_source_tombstone",
   {
     id: denTypeIdColumn("connectorSourceTombstone", "id").notNull().primaryKey(),
@@ -447,13 +463,13 @@ export const ConnectorSourceTombstoneTable = mysqlTable(
     connectorInstanceId: denTypeIdColumn("connectorInstance", "connector_instance_id").notNull(),
     connectorTargetId: denTypeIdColumn("connectorTarget", "connector_target_id").notNull(),
     connectorMappingId: denTypeIdColumn("connectorMapping", "connector_mapping_id").notNull(),
-    connectorType: mysqlEnum("connector_type", connectorTypeValues).notNull(),
+    connectorType: connectorTypeEnum("connector_type").notNull(),
     remoteId: varchar("remote_id", { length: 255 }),
     externalLocator: varchar("external_locator", { length: 255 }).notNull(),
     formerConfigObjectId: denTypeIdColumn("configObject", "former_config_object_id").notNull(),
     deletedInSyncEventId: denTypeIdColumn("connectorSyncEvent", "deleted_in_sync_event_id").notNull(),
     deletedSourceRevisionRef: varchar("deleted_source_revision_ref", { length: 255 }),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("connector_source_tombstone_organization_id").on(table.organizationId),

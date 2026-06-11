@@ -1,11 +1,11 @@
 import { relations, sql } from "drizzle-orm"
-import { boolean, index, json, mysqlTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core"
+import { boolean, index, json, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 import type { DesktopPolicyValue } from "@openwork/types/den/desktop-policies"
 import { denTypeIdColumn } from "../columns"
 import { MemberTable, OrganizationTable } from "./org"
 import { TeamTable } from "./teams"
 
-export const DesktopPolicyTable = mysqlTable(
+export const DesktopPolicyTable = pgTable(
   "desktop_policy",
   {
     id: denTypeIdColumn("desktopPolicy", "id").notNull().primaryKey(),
@@ -13,13 +13,11 @@ export const DesktopPolicyTable = mysqlTable(
     policyName: varchar("policy_name", { length: 255 }).notNull(),
     isDefault: boolean("is_default"),
     isEnabled: boolean("is_enabled").notNull().default(true),
-    policy: json("policy").$type<DesktopPolicyValue>().notNull().default(sql`(json_object())`),
+    policy: json("policy").$type<DesktopPolicyValue>().notNull().default(sql`'{}'::json`),
     createdByOrgMemberId: denTypeIdColumn("member", "created_by_org_member_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
-    deletedAt: timestamp("deleted_at", { fsp: 3 }),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { precision: 3 }),
   },
   (table) => [
     index("desktop_policy_organization_id").on(table.organizationId),
@@ -30,7 +28,7 @@ export const DesktopPolicyTable = mysqlTable(
   ],
 )
 
-export const DesktopPolicyMemberTable = mysqlTable(
+export const DesktopPolicyMemberTable = pgTable(
   "desktop_policy_member",
   {
     id: denTypeIdColumn("desktopPolicyMember", "id").notNull().primaryKey(),
@@ -38,7 +36,7 @@ export const DesktopPolicyMemberTable = mysqlTable(
     desktopPolicyId: denTypeIdColumn("desktopPolicy", "desktop_policy_id").notNull(),
     orgMemberId: denTypeIdColumn("member", "org_member_id"),
     teamId: denTypeIdColumn("team", "team_id"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("desktop_policy_member_organization_id").on(table.organizationId),

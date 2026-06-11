@@ -1,0 +1,60 @@
+{
+  "description": "zDash Access policy template — private-admin-only default",
+  "zone": "zeaz.dev",
+  "modes": {
+    "private_admin_only": true,
+    "public_read_frontend_optional": false,
+    "backend_protected_by_default": true,
+    "release_evidence_public_optional": true,
+    "bypass_disabled_by_default": true
+  },
+  "policies": [
+    {
+      "hostname": "zzdash.zeaz.dev",
+      "decision": "allow",
+      "mode": "private-admin-only",
+      "include": [
+        { "email_domain": { "domain": "zeaz.dev" } }
+      ],
+      "exclude": [],
+      "require": [
+        { "mfa": { "enabled": true } }
+      ]
+    },
+    {
+      "hostname": "api-zzdash.zeaz.dev",
+      "decision": "allow",
+      "mode": "backend-protected",
+      "include": [
+        { "email_domain": { "domain": "zeaz.dev" } }
+      ],
+      "exclude": [],
+      "require": [
+        { "mfa": { "enabled": true } }
+      ]
+    },
+    {
+      "hostname": "release.zeaz.dev",
+      "decision": "allow",
+      "mode": "release-evidence-public-optional",
+      "include": [],
+      "exclude": [],
+      "require": [],
+      "bypass": false
+    },
+    {
+      "hostname": "zcino.zeaz.dev",
+      "decision": "bypass",
+      "mode": "public",
+      "include": [{"everyone": {}}],
+      "exclude": [],
+      "require": [],
+      "bypass": true
+    }
+  ],
+  "notes": [
+    "Public read frontend is optional and disabled by default.",
+    "Do not add any allow-all policy.",
+    "Disable bypass unless an operator explicitly enables a narrower exception."
+  ]
+}

@@ -183,14 +183,10 @@ function assertSafeDevTarget() {
   if (!env.devMode) {
     throw new Error("Refusing to seed demo data unless OPENWORK_DEV_MODE=1.")
   }
-  if (env.dbMode !== "mysql") {
-    throw new Error(`Refusing to seed demo data into DB_MODE=${env.dbMode}; use local MySQL dev mode.`)
-  }
-
   const parsed = env.databaseUrl ? new URL(env.databaseUrl) : null
   const host = parsed?.hostname ?? ""
   const allowNonLocal = process.env.DEN_DEMO_SEED_ALLOW_NONLOCAL === "1"
-  const localHosts = new Set(["127.0.0.1", "localhost", "mysql"])
+  const localHosts = new Set(["127.0.0.1", "localhost", "postgres"])
   if (!allowNonLocal && !localHosts.has(host)) {
     throw new Error(`Refusing to seed non-local database host '${host}'. Set DEN_DEMO_SEED_ALLOW_NONLOCAL=1 to override.`)
   }

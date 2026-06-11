@@ -1,18 +1,20 @@
-import { relations, sql } from "drizzle-orm"
+import { relations } from "drizzle-orm"
 import {
   index,
   json,
-  mysqlEnum,
-  mysqlTable,
+  pgTable,
   timestamp,
   uniqueIndex,
   varchar,
-} from "drizzle-orm/mysql-core"
+} from "drizzle-orm/pg-core"
+import { pgEnum } from "drizzle-orm/pg-core"
 import { denTypeIdColumn, encryptedTextColumn } from "../../columns"
 import { MemberTable, OrganizationTable } from "../org"
 import { TeamTable } from "../teams"
 
-export const LlmProviderTable = mysqlTable(
+export const llmProviderSourceEnum = pgEnum("llm_provider_source", ["models_dev", "custom", "openwork"])
+
+export const LlmProviderTable = pgTable(
   "llm_provider",
   {
     id: denTypeIdColumn("llmProvider", "id").notNull().primaryKey(),
@@ -24,17 +26,17 @@ export const LlmProviderTable = mysqlTable(
       "member",
       "created_by_org_membership_id",
     ).notNull(),
-    source: mysqlEnum("source", ["models_dev", "custom", "openwork"]).notNull(),
+    source: llmProviderSourceEnum("source").notNull(),
     providerId: varchar("provider_id", { length: 255 }).notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     providerConfig: json("provider_config")
       .$type<Record<string, unknown>>()
       .notNull(),
     apiKey: encryptedTextColumn("api_key"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 })
       .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+      .defaultNow(),
   },
   (table) => [
     index("llm_provider_organization_id").on(table.organizationId),
@@ -46,7 +48,7 @@ export const LlmProviderTable = mysqlTable(
   ],
 )
 
-export const LlmProviderModelTable = mysqlTable(
+export const LlmProviderModelTable = pgTable(
   "llm_provider_model",
   {
     id: denTypeIdColumn("llmProviderModel", "id").notNull().primaryKey(),
@@ -56,7 +58,7 @@ export const LlmProviderModelTable = mysqlTable(
     modelConfig: json("model_config")
       .$type<Record<string, unknown>>()
       .notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("llm_provider_model_llm_provider_id").on(table.llmProviderId),
@@ -68,14 +70,14 @@ export const LlmProviderModelTable = mysqlTable(
   ],
 )
 
-export const LlmProviderAccessTable = mysqlTable(
+export const LlmProviderAccessTable = pgTable(
   "llm_provider_access",
   {
     id: denTypeIdColumn("llmProviderAccess", "id").notNull().primaryKey(),
     llmProviderId: denTypeIdColumn("llmProvider", "llm_provider_id").notNull(),
     orgMembershipId: denTypeIdColumn("member", "org_membership_id"),
     teamId: denTypeIdColumn("team", "team_id"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("llm_provider_access_llm_provider_id").on(table.llmProviderId),

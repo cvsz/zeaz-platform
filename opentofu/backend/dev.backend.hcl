@@ -1,5 +1,5 @@
-bucket         = "REPLACE_WITH_TERRAFORM_STATE_BUCKET"
+bucket         = "${TERRAFORM_STATE_BUCKET}"
 key            = "opentofu/dev/terraform.tfstate"
 region         = "us-east-1"
-dynamodb_table = "REPLACE_WITH_TERRAFORM_LOCK_TABLE"
+dynamodb_table = "${TERRAFORM_LOCK_TABLE}"
 encrypt        = true

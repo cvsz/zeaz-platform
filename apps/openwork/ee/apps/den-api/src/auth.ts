@@ -125,7 +125,7 @@ export const auth = betterAuth({
   socialProviders:
     Object.keys(socialProviders).length > 0 ? socialProviders : undefined,
   database: drizzleAdapter(db, {
-    provider: "mysql",
+    provider: "pg",
     schema,
   }),
   databaseHooks: {

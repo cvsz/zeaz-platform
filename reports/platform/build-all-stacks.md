@@ -29,3 +29,8 @@ Mode: `safe`
 | zlms | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zoffice | python-compile | `cd 'apps/zoffice' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | zoffice | docker | RUN_DOCKER_BUILD=false | SKIP |
+| zveo | python-compile | `cd 'apps/zveo' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
+| zveo | docker | RUN_DOCKER_BUILD=false | SKIP |
+| zwallet | node | no build script | SKIP |
+| zwallet | python-compile | `cd 'apps/zwallet' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
+| zwallet | docker | RUN_DOCKER_BUILD=false | SKIP |
