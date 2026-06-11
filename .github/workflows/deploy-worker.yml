@@ -1,9 +1,9 @@
-name: deploy-worker
+name: worker-route-validation
 
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
 
 permissions:
   contents: read
@@ -21,15 +21,13 @@ jobs:
       - run: terraform init
       - run: terraform validate
 
-  deploy-worker:
+  validate-worker:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: terraform-validate
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-      - run: npx wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_WORKERS_TOKEN }}
+      - name: Scan Workers Routes
+        run: infra/cloudflare/scripts/scan-workers-routes.sh --strict
+      - name: Check Wrangler Examples
+        run: infra/cloudflare/scripts/check-wrangler-examples.sh --strict

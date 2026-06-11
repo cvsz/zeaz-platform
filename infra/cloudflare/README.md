@@ -175,6 +175,8 @@ Before any Worker route deployment:
 - Phase 6: Worker route ownership model, scanner scripts, example checker, inventory, ownership plan
 - Phase 7: Runtime governance, worker binding audits, no-mutation guard
 - Phase 8: Terraform and live runtime reconciliation, ownership matrix, scanner script
+- Phase 9: Access security governance, rule scanners, zero trust inventory
+- Phase 10: CI Enforcement, PR gates, read-only CI operations
 
 ## Phase 7 Usage (Runtime Governance & Binding Audits)
 
@@ -195,16 +197,25 @@ infra/cloudflare/scripts/generate-runtime-governance-report.sh
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers --runtime-governance --worker-bindings --no-mutation
 ```
 
-## Phase 11 — Release Readiness Gate
+## Phase 10 — CI Enforcement + PR Gates
 
-Phase 11 adds a read-only release readiness gate for Cloudflare runtime governance.
+Cloudflare-sensitive PRs must pass:
 
-Required commands:
+- workflow policy
+- no-mutation scanner
+- secret leak scanner
+- DNS ownership scanner
+- Worker route scanner
+- Wrangler example hygiene scanner
+- Terraform/OpenTofu validate only
+- YAML validation
 
-```bash
-infra/cloudflare/scripts/check-release-readiness.sh --strict --no-live
-infra/cloudflare/scripts/generate-release-evidence.sh --markdown --strict \
-  --output docs/infra/cloudflare-phase11-release-evidence.md
-```
+Forbidden in PR CI:
 
-This phase does not deploy Workers, apply Terraform/OpenTofu, mutate DNS, restart tunnels, or call Cloudflare write APIs.
+- wrangler deploy
+- terraform apply
+- tofu apply
+- terraform destroy
+- tofu destroy
+- Cloudflare write API calls
+- secret printing
