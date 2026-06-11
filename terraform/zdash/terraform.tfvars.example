@@ -1,6 +1,0 @@
-cloudflare_zone_id   = "REPLACE_WITH_REAL_ZONE_ID"
-cloudflare_tunnel_id = "REPLACE_WITH_REAL_TUNNEL_UUID"
-
-zdash_domain         = "zzdash.zeaz.dev"
-zdash_api_domain     = "api-zzdash.zeaz.dev"
-zdash_release_domain = "release.zeaz.dev"
