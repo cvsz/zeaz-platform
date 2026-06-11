@@ -90,13 +90,58 @@ The live tunnel (`ef0355dd`, token-based at `/etc/cloudflared/config.yml`) is **
 2. Add canonical `infra/cloudflare/config/tunnels.yml` matching live config
 3. Remove orphaned credential file `22bd858b` from disk
 
-## Phase 6 Recommendation
+## Phase 6 — Workers/Wrangler Route Ownership Cleanup
 
-**Phase 6 — Workers/Wrangler Route Ownership Cleanup**
+### Summary
 
-Resolve:
-- Worker route vs DNS CNAME conflicts (www.zeaz.dev)
-- Placeholder KV/DO IDs in wrangler.toml files
-- Inline JWT_SECRET and API token references
-- Wrangler route overlap with tunnel ingress hostnames
-- Duplicate `wrangler.toml` across examples and active configs
+| Metric | Value | Status |
+|---|---|---|
+| Worker/wrangler configs found | 4 (3 live + 1 example) | ✅ Scan created |
+| Wrangler route scan script | `infra/cloudflare/scripts/scan-workers-routes.sh` | ✅ Created |
+| Wrangler example checker | `infra/cloudflare/scripts/check-wrangler-examples.sh` | ✅ Created |
+| Validator integration | `validate-cloudflare-config.sh --workers` | ✅ Updated |
+| Route ownership plan doc | `docs/infra/cloudflare-workers-route-ownership-plan.md` | ✅ Created |
+| Worker inventory doc | `docs/infra/cloudflare-workers-route-inventory.md` | ✅ Created |
+
+### Phase 6 Findings
+
+#### Workers Discovered
+
+| Worker | File | Routes | Status |
+|---|---|---|---|
+| `zeaz-platform` | `wrangler.toml` (root) | None (dev only) | Clean |
+| `zeaz-loading` | `workers/zeaz-loading/wrangler.toml` | `www.zeaz.dev/*` | Production |
+| `edge-gateway` | `workers/edge-gateway/wrangler.toml` | None (dev only) | Placeholder KV ID |
+| `edge-gateway` (example) | `workers/edge-gateway/wrangler.toml.example` | None | Exact copy of live |
+
+Key findings:
+- **`www.zeaz.dev` triple ownership**: Worker route (zeaz-loading) + DNS CNAME (terraform/cloudflare-apps) + tunnel domain reference
+- **`edge-gateway` example**: `wrangler.toml` and `wrangler.toml.example` are **identical** — example has no value
+- **`edge-gateway` placeholder KV**: `EDGE_RATE_LIMIT_KV` binding with `00000000000000000000000000000000`
+- **No Terraform worker route resources**: `cloudflare_worker_route` resources absent from all TF/OpenTofu modules
+- **OpenTofu module**: `opentofu/modules/cloudflare-workers/` is a skeleton with `cloudflare_worker_script` only — not wired into any root module
+- **Missing examples**: Root `wrangler.toml` and `workers/zeaz-loading/wrangler.toml` have no `.example` counterparts
+- **No route/tunnel overlaps discovered**: The sole worker production route (`www.zeaz.dev`) is not in the known tunnel hostname set
+
+### Actions Completed
+
+1. **Scripts created**:
+   - `infra/cloudflare/scripts/scan-workers-routes.sh` — read-only scanner for all wrangler configs
+   - `infra/cloudflare/scripts/check-wrangler-examples.sh` — example file hygiene checker
+   - `infra/cloudflare/scripts/validate-cloudflare-config.sh --workers` — integrated Phase 6 validation
+
+2. **Documentation created**:
+   - `docs/infra/cloudflare-workers-route-inventory.md` — full worker inventory
+   - `docs/infra/cloudflare-workers-route-ownership-plan.md` — ownership rules and migration path
+
+3. **Validation integrated**:
+   - Worker route scanning via `--workers` flag
+   - Duplicate route detection
+   - Route/tunnel overlap detection
+   - Example file hygiene checking
+
+## Phase 7 Recommendation
+
+**Phase 7 — Workers, Edge, and AI Gateway**
+
+Build Workers foundation, AI Gateway config, rate limiting, JWT hooks, abuse controls, docs, and tests.

@@ -22,7 +22,9 @@ This directory contains configuration, scripts, and documentation for Cloudflare
 | `scan-tunnel-configs.sh` | Phase 4 | Offline tunnel config drift scanner |
 | `scan-dns-ownership.sh` | Phase 5 | DNS hostname ownership scanner across all sources |
 | `check-secret-leaks.sh` | Phase 5 | Detects tracked secret-like files in git |
-| `validate-cloudflare-config.sh` | Phase 5 | Combined offline validator |
+| `validate-cloudflare-config.sh` | Phase 5+6 | Combined offline validator |
+| `scan-workers-routes.sh` | Phase 6 | Worker route ownership scanner (--markdown/--json/--strict) |
+| `check-wrangler-examples.sh` | Phase 6 | Wrangler example file hygiene checker |
 | `compare-tunnel.sh` | Phase 3 | Live tunnel comparison (requires tokens) |
 | `compare-dns.sh` | Phase 3 | Live DNS comparison (requires tokens) |
 
@@ -74,9 +76,100 @@ The actual running tunnel uses **token-based auth** (not config files in this re
 - Config: `/etc/cloudflared/config.yml` (8 hostnames, different port range)
 - Old tunnel `22bd858b` is orphaned (credential file on disk, no running process)
 
+## Worker Route Ownership Model (Phase 6)
+
+### Source-of-Truth Rules
+
+| Layer | Authority | Notes |
+|---|---|---|
+| Cloudflare Workers routes | `workers/*/wrangler.toml` | Only source for Worker route patterns |
+| Cloudflare DNS CNAMEs | `terraform/cloudflare-apps` | Primary DNS module |
+| Cloudflare Tunnel ingress | Live `/etc/cloudflared/config.yml` | Runtime source of truth |
+| Terraform worker routes | `cloudflare_worker_route` resources | None currently exist |
+
+### Ownership Boundaries
+
+| Hostname | Worker Route | DNS CNAME | Tunnel Ingress | Owner |
+|---|---|---|---|---|
+| `www.zeaz.dev` | `zeaz-loading` | TA module | No | **Worker** (route wins) |
+| `zeaz.dev` apex | No | No | Yes | **Tunnel** |
+| `app.zeaz.dev` | No | TA module | Yes | **Tunnel** |
+| `api-*.zeaz.dev` | No | TC module | Yes | **Tunnel** |
+
+**Rule**: Any new Worker route + existing DNS CNAME for same hostname must be handled in the same PR (add route + remove CNAME).
+
+### Placeholder ID Policy
+
+- Every binding ID in `wrangler.toml` must be a real Cloudflare ID or explicit placeholder (`00000000000000000000000000000000`)
+- Placeholders are **not deployable** — operator must replace before deploy
+- Example files must use placeholders; real IDs forbidden in examples
+
+### Example File Policy
+
+- Every `wrangler.toml` must have a corresponding `.example` file
+- Example file must **not** be an exact copy
+- Example file must not contain real-looking IDs, tokens, secrets, or routes
+
+## Safe Operator Workflow (Phase 6 Added)
+
+```bash
+# 1. Check for secret leaks
+infra/cloudflare/scripts/check-secret-leaks.sh --strict
+
+# 2. Run DNS ownership scan
+infra/cloudflare/scripts/scan-dns-ownership.sh --strict
+
+# 3. Validate configs (Phase 5 + 6)
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers
+
+# 4. Compare against live (requires tokens)
+infra/cloudflare/scripts/compare-tunnel.sh --live
+infra/cloudflare/scripts/compare-dns.sh --live
+```
+
+## Worker Route Validation
+
+```bash
+# Scan all Worker routes (markdown for docs)
+infra/cloudflare/scripts/scan-workers-routes.sh --markdown > docs/infra/cloudflare-workers-route-scan.md
+
+# Scan all Worker routes (JSON for tooling)
+infra/cloudflare/scripts/scan-workers-routes.sh --json > docs/infra/cloudflare-workers-route-scan.json
+
+# Strict mode (exits non-zero on duplicates, exact copies, placeholders, overlaps)
+infra/cloudflare/scripts/scan-workers-routes.sh --strict
+
+# Check wrangler example hygiene
+infra/cloudflare/scripts/check-wrangler-examples.sh --strict
+```
+
+## No-Deploy Safety Warning
+
+**This phase is documentation, scanning, validation, and source-of-truth planning only.**
+
+- Do not run `wrangler deploy`
+- Do not run `terraform apply`
+- Do not run `tofu apply`
+- Do not mutate Cloudflare DNS
+- Do not mutate Cloudflare tunnels
+- Do not call Cloudflare write APIs
+- Do not print secrets
+- Do not commit credentials
+- Do not delete production config files
+
+## Future Live Verification Requirements
+
+Before any Worker route deployment:
+1. Operator verifies `www.zeaz.dev` DNS CNAME removed from `terraform/cloudflare-apps`
+2. Operator replaces placeholder KV IDs in `workers/edge-gateway/wrangler.toml`
+3. Operator creates `wrangler.toml.example` for root and `workers/zeaz-loading/`
+4. Validation gates: `validate-cloudflare-config.sh --check --secrets --workers` passes
+5. Scan artifacts updated: `docs/infra/cloudflare-workers-route-scan.{md,json}`
+
 ## Directory History
 
 - Phase 2: Created canonical config layout (`config/tunnels.yml`)
 - Phase 3: Added comparison scripts (`compare-*.sh`)
 - Phase 4: Added scanner, inventory, drift report, consolidation plan
 - Phase 5: Secret containment plan, DNS ownership matrix, secret leak detection, enhanced validator
+- Phase 6: Worker route ownership model, scanner scripts, example checker, inventory, ownership plan

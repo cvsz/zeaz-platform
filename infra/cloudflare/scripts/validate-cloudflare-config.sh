@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # validate-cloudflare-config.sh
-# Phase 5: Offline validation of Cloudflare tunnel configuration files.
-# Checks for: malformed YAML, missing env vars, hardcoded values,
-# duplicate hostnames, credential file safety, secret leak detection,
-# canonical config presence, required placeholder variables.
+# Phase 5+6: Offline validation of Cloudflare tunnel configuration files.
+# Phase 6 adds: Worker route scanning, wrangler example hygiene,
+# duplicate route detection, route/tunnel overlap detection.
 # No API calls. No destructive operations.
 set -Eeuo pipefail
 IFS=$'\n\t'
@@ -11,6 +10,7 @@ IFS=$'\n\t'
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../" && pwd)"
 readonly CONFIG_DIR="${REPO_ROOT}/infra/cloudflare"
+readonly SCRIPTS_DIR="${CONFIG_DIR}/scripts"
 
 # ---------- Colors ----------
 readonly RED='\033[0;31m'
@@ -30,7 +30,7 @@ show_help() {
   cat <<EOF
 Usage: $(basename "$0") [OPTIONS] [CONFIG_FILE...]
 
-Validate Cloudflare tunnel configuration files.
+Validate Cloudflare configuration files.
 
 Offline validation. No API calls. Checks:
   - File existence and readability
@@ -39,6 +39,8 @@ Offline validation. No API calls. Checks:
   - Hardcoded tunnel names and credential paths
   - Duplicate hostnames within a config
   - Credential file safety
+  - Worker route scanning and duplication detection
+  - Wrangler example file hygiene
 
 Options:
   --help        Show this help message and exit
@@ -46,6 +48,7 @@ Options:
   --verbose     Show detailed validation output
   --json        Output results in JSON format
   --secrets     Also run secret leak detection
+  --workers     Also run worker route scanning and example checking (Phase 6)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -61,6 +64,7 @@ MODE="human"
 VERBOSE=false
 CHECK=false
 CHECK_SECRETS=false
+CHECK_WORKERS=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -70,6 +74,7 @@ while [[ $# -gt 0 ]]; do
     --verbose) VERBOSE=true ;;
     --json)    MODE="json" ;;
     --secrets) CHECK_SECRETS=true ;;
+    --workers) CHECK_WORKERS=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -279,6 +284,106 @@ validate_canonical_presence() {
   echo "$issues"
 }
 
+# ---------- Phase 6: Worker Route Validation ----------
+validate_worker_routes() {
+  local issues=0
+  local scanner="${SCRIPTS_DIR}/scan-workers-routes.sh"
+
+  if [[ ! -f "$scanner" ]] || [[ ! -x "$scanner" ]]; then
+    errors+=("scan-workers-routes.sh: not found or not executable")
+    return 1
+  fi
+
+  local scan_output
+  scan_output=$("$scanner" --json 2>/dev/null || true)
+
+  if [[ -z "$scan_output" ]]; then
+    errors+=("Failed to run worker route scanner")
+    return 1
+  fi
+
+  local issue_count
+  issue_count=$(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('issue_count',0))" 2>/dev/null || echo "0")
+
+  if [[ "$issue_count" -gt 0 ]]; then
+    local duplicates
+    duplicates=$(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('duplicate_routes',[])))" 2>/dev/null || echo "0")
+    local exact
+    exact=$(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('exact_copies',[])))" 2>/dev/null || echo "0")
+    local missing
+    missing=$(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('missing_examples',[])))" 2>/dev/null || echo "0")
+    local ph
+    ph=$(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('placeholders',0))" 2>/dev/null || echo "0")
+    local overlaps
+    overlaps=$(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('tunnel_overlaps',[])))" 2>/dev/null || echo "0")
+
+    if [[ "$duplicates" -gt 0 ]]; then
+      while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        errors+=("duplicate route: $line")
+        issues=$((issues + 1))
+      done < <(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(r) for r in d.get('duplicate_routes',[])]" 2>/dev/null || true)
+    fi
+
+    if [[ "$exact" -gt 0 ]]; then
+      while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        warnings+=("exact copy live→example: $line")
+        issues=$((issues + 1))
+      done < <(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(r) for r in d.get('exact_copies',[])]" 2>/dev/null || true)
+    fi
+
+    if [[ "$missing" -gt 0 ]]; then
+      while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        warnings+=("missing example: $line")
+        issues=$((issues + 1))
+      done < <(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(r) for r in d.get('missing_examples',[])]" 2>/dev/null || true)
+    fi
+
+    if [[ "$overlaps" -gt 0 ]]; then
+      while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        warnings+=("worker/tunnel route overlap: $line")
+        issues=$((issues + 1))
+      done < <(echo "$scan_output" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(r) for r in d.get('tunnel_overlaps',[])]" 2>/dev/null || true)
+    fi
+
+    if [[ "$ph" -gt 0 ]]; then
+      warnings+=("$ph placeholder binding IDs found in wrangler configs")
+      issues=$((issues + 1))
+    fi
+  else
+    log_info "Worker routes: no issues"
+  fi
+
+  echo "$issues"
+}
+
+validate_wrangler_examples() {
+  local issues=0
+  local checker="${SCRIPTS_DIR}/check-wrangler-examples.sh"
+
+  if [[ ! -f "$checker" ]] || [[ ! -x "$checker" ]]; then
+    errors+=("check-wrangler-examples.sh: not found or not executable")
+    return 1
+  fi
+
+  local check_output
+  check_output=$("$checker" 2>&1 || true)
+
+  if echo "$check_output" | grep -q "UNSAFE"; then
+    while IFS= read -r line; do
+      if echo "$line" | grep -q "UNSAFE"; then
+        errors+=("unsafe wrangler example: $line")
+        issues=$((issues + 1))
+      fi
+    done <<< "$check_output"
+  fi
+
+  echo "$issues"
+}
+
 # ---------- Validation ----------
 if [[ ${#TARGET_FILES[@]} -eq 0 ]]; then
   while IFS= read -r -d '' file; do
@@ -339,6 +444,15 @@ for file in "${TARGET_FILES[@]}"; do
   ph_issues=$(validate_required_placeholders "$file")
   total_warnings=$((total_warnings + ph_issues))
 done
+
+# Phase 6: Worker route validation
+if [[ "$CHECK_WORKERS" == true ]]; then
+  log_info "Running Phase 6 worker route validation..."
+  worker_issues=$(validate_worker_routes)
+  total_errors=$((total_errors + worker_issues))
+  example_issues=$(validate_wrangler_examples)
+  total_errors=$((total_errors + example_issues))
+fi
 
 # ---------- Output ----------
 if [[ "$MODE" == "json" ]]; then
