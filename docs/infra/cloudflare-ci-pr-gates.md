@@ -42,3 +42,10 @@ All PRs modifying files in `infra/cloudflare/`, `docs/infra/`, `terraform/`, `op
 
 ## Emergency/manual workflow isolation
 Manual execution of `terraform apply` or Cloudflare mutation commands must be isolated to `workflow_dispatch` triggers with production environment protections. They must never run in PR or push contexts.
+
+## Phase 14 Runtime Baseline Gate
+- Runtime baseline gate.
+- Ownership lockfile validation.
+- Baseline diff report.
+- PR requirements before ownership changes.
+- No deploy/apply authorization.

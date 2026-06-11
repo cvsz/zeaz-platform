@@ -214,8 +214,30 @@ Forbidden in PR CI:
 
 - wrangler deploy
 - terraform apply
-- tofu apply
-- terraform destroy
 - tofu destroy
 - Cloudflare write API calls
 - secret printing
+
+## Phase 14 — Cloudflare Runtime Baseline Freeze
+
+- **Runtime baseline freeze**: Captures the current repository intent into a documented production baseline (`docs/infra/cloudflare-phase14-runtime-baseline.md`).
+- **Ownership lockfile**: Tracks ownership intent of hostnames mapping to DNS, Worker, and Tunnel rules (`docs/infra/cloudflare-phase14-ownership-lockfile.md`).
+- **Baseline diff report**: Validates differences and decisions for any future changes (`docs/infra/cloudflare-phase14-baseline-diff-report.md`).
+
+**Phase 14 Commands:**
+
+```bash
+infra/cloudflare/scripts/generate-runtime-baseline.sh --strict
+infra/cloudflare/scripts/check-runtime-baseline.sh --strict
+infra/cloudflare/scripts/compare-runtime-baseline.sh --strict
+infra/cloudflare/scripts/validate-cloudflare-config.sh \
+  --check \
+  --secrets \
+  --workers \
+  --release-readiness \
+  --manual-release-governance \
+  --break-glass-governance \
+  --runtime-baseline
+```
+
+**Safety Statement:** Phase 14 is evidence-only and does not authorize deploy/apply/destroy.
