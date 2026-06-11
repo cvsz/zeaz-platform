@@ -9,7 +9,7 @@ async function main() {
     create: {
       email: "demo@zsp-aitool.local",
       name: "ผู้ใช้เดโม ZSP",
-      password: "demo-pw-hash"
+      password: "example-password-hash"
     }
   });
 
