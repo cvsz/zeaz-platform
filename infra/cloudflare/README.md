@@ -194,3 +194,17 @@ infra/cloudflare/scripts/generate-runtime-governance-report.sh
 # Run comprehensive offline validation containing all Phase 7 checks
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers --runtime-governance --worker-bindings --no-mutation
 ```
+
+## Phase 11 — Release Readiness Gate
+
+Phase 11 adds a read-only release readiness gate for Cloudflare runtime governance.
+
+Required commands:
+
+```bash
+infra/cloudflare/scripts/check-release-readiness.sh --strict --no-live
+infra/cloudflare/scripts/generate-release-evidence.sh --markdown --strict \
+  --output docs/infra/cloudflare-phase11-release-evidence.md
+```
+
+This phase does not deploy Workers, apply Terraform/OpenTofu, mutate DNS, restart tunnels, or call Cloudflare write APIs.

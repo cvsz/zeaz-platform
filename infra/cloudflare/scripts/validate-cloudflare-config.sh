@@ -50,6 +50,7 @@ Options:
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
   --terraform   Also run terraform ownership scanning (Phase 8)
+  --release-readiness Also run release readiness check (Phase 11)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -70,6 +71,7 @@ CHECK_TERRAFORM=false
 CHECK_RUNTIME_GOVERNANCE=false
 CHECK_WORKER_BINDINGS=false
 CHECK_NO_MUTATION=false
+CHECK_RELEASE_READINESS=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -84,6 +86,7 @@ while [[ $# -gt 0 ]]; do
     --runtime-governance) CHECK_RUNTIME_GOVERNANCE=true ;;
     --worker-bindings) CHECK_WORKER_BINDINGS=true ;;
     --no-mutation) CHECK_NO_MUTATION=true ;;
+    --release-readiness) CHECK_RELEASE_READINESS=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -484,6 +487,31 @@ if [[ "$CHECK_WORKER_BINDINGS" == true ]]; then
   log_info "Running Phase 7 worker bindings scanner..."
   if ! "$SCRIPTS_DIR/scan-worker-bindings.sh" --strict >/dev/null 2>&1; then
     errors+=("Worker bindings scanner failed.")
+    total_errors=$((total_errors + 1))
+  fi
+fi
+
+# Phase 11: Release readiness validation
+if [[ "$CHECK_RELEASE_READINESS" == true ]]; then
+  log_info "Running Phase 11 release readiness validation..."
+  
+  if [[ ! -f "$SCRIPTS_DIR/check-release-readiness.sh" ]]; then
+    errors+=("check-release-readiness.sh not found")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ ! -f "$SCRIPTS_DIR/generate-release-evidence.sh" ]]; then
+    errors+=("generate-release-evidence.sh not found")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ ! -f "${REPO_ROOT}/.github/workflows/cloudflare-release-readiness.yml" ]]; then
+    errors+=("cloudflare-release-readiness.yml not found")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ ! -f "${REPO_ROOT}/docs/infra/cloudflare-phase11-release-evidence.md" ]]; then
+    errors+=("docs/infra/cloudflare-phase11-release-evidence.md not found")
     total_errors=$((total_errors + 1))
   fi
 fi

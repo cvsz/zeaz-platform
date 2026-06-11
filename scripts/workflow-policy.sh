@@ -132,6 +132,28 @@ while IFS= read -r workflow_file; do
     normalized_name_to_file[$normalized_name]="$workflow_file"
   fi
 
+  if [[ "$workflow_base" == "cloudflare-release-readiness.yml" || "$workflow_base" == *"release-readiness"* ]]; then
+    if search_workflows "$workflow_file" -qE 'wrangler[[:space:]]+deploy|terraform[[:space:]]+apply|tofu[[:space:]]+apply|terraform[[:space:]]+destroy|tofu[[:space:]]+destroy|cloudflared[[:space:]]+tunnel[[:space:]]+route[[:space:]]+dns|curl[[:space:]]+-X[[:space:]]+(POST|PUT|PATCH|DELETE)[[:space:]]+.*api\.cloudflare\.com'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must not contain mutating commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'permissions:'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must have explicit permissions"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    elif ! awk '/^permissions:/, /^[a-zA-Z]/ { if ($0 ~ /contents: read/) found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'check-release-readiness\.sh'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must run check-release-readiness.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'generate-release-evidence\.sh'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must run generate-release-evidence.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
 done < <(find "$WORKFLOW_DIR" -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) | sort)
 
 if [[ $fail_count -gt 0 ]]; then
