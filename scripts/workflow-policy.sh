@@ -151,6 +151,13 @@ while IFS= read -r workflow_file; do
     fi
   fi
 
+  if search_workflows "$workflow_file" -q 'make[[:space:]]+tf-apply|make[[:space:]]+zeaz-dev-apply'; then
+    if [[ "$in_pr_workflow" == true ]]; then
+      printf '{"level":"ERROR","file":"%s","msg":"make apply targets not allowed in PR workflows"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
   if search_workflows "$workflow_file" -q 'branches:.*master'; then
     printf '{"level":"ERROR","file":"%s","msg":"workflows must target main, not master"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))
@@ -197,6 +204,32 @@ while IFS= read -r workflow_file; do
     fi
     if ! search_workflows "$workflow_file" -q 'generate-release-evidence\.sh'; then
       printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must run generate-release-evidence.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
+  if [[ "$workflow_base" == "cloudflare-runtime-baseline.yml" || "$workflow_base" == *"runtime-baseline"* ]]; then
+    if search_workflows "$workflow_file" -qE 'wrangler[[:space:]]+deploy|terraform[[:space:]]+apply|tofu[[:space:]]+apply|terraform[[:space:]]+destroy|tofu[[:space:]]+destroy|make[[:space:]]+tf-apply|make[[:space:]]+zeaz-dev-apply|curl[[:space:]]+-X[[:space:]]+(POST|PUT|PATCH|DELETE)[[:space:]]+.*api\.cloudflare\.com'; then
+      printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must not contain mutating commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'permissions:'; then
+      printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must have explicit permissions"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    elif ! awk '/^permissions:/, /^[a-zA-Z]/ { if ($0 ~ /contents: read/) found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
+      printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'check-runtime-baseline\.sh'; then
+      printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must run check-runtime-baseline.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'compare-runtime-baseline\.sh'; then
+      printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must run compare-runtime-baseline.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'validate-cloudflare-config\.sh.*--runtime-baseline'; then
+      printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must run validate-cloudflare-config.sh --runtime-baseline"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
   fi
