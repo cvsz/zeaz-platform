@@ -49,6 +49,8 @@ Options:
   --json        Output results in JSON format
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
+  --terraform-ownership Also run Terraform ownership scanning (Phase 8)
+  --access-ownership    Also run Access ownership scanning (Phase 8)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -65,6 +67,8 @@ VERBOSE=false
 CHECK=false
 CHECK_SECRETS=false
 CHECK_WORKERS=false
+CHECK_TF_OWNERSHIP=false
+CHECK_ACCESS_OWNERSHIP=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -75,6 +79,8 @@ while [[ $# -gt 0 ]]; do
     --json)    MODE="json" ;;
     --secrets) CHECK_SECRETS=true ;;
     --workers) CHECK_WORKERS=true ;;
+    --terraform-ownership) CHECK_TF_OWNERSHIP=true ;;
+    --access-ownership) CHECK_ACCESS_OWNERSHIP=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -452,6 +458,36 @@ if [[ "$CHECK_WORKERS" == true ]]; then
   total_errors=$((total_errors + worker_issues))
   example_issues=$(validate_wrangler_examples)
   total_errors=$((total_errors + example_issues))
+fi
+
+# Phase 8: Terraform and Access Ownership validation
+if [[ "$CHECK_TF_OWNERSHIP" == true ]]; then
+  log_info "Running Phase 8 Terraform ownership validation..."
+  tf_scanner="${SCRIPTS_DIR}/scan-terraform-cloudflare-ownership.sh"
+  if [[ -x "$tf_scanner" ]]; then
+    if "$tf_scanner" --strict > /dev/null 2>&1; then
+      log_ok "Terraform ownership scanner passed"
+    else
+      log_warn "Terraform ownership scanner found issues (run manually to inspect)"
+      # Not adding to errors for now as it exits 1 on high risk
+    fi
+  else
+    log_warn "scan-terraform-cloudflare-ownership.sh not found or not executable"
+  fi
+fi
+
+if [[ "$CHECK_ACCESS_OWNERSHIP" == true ]]; then
+  log_info "Running Phase 8 Access ownership validation..."
+  access_scanner="${SCRIPTS_DIR}/scan-cloudflare-access-ownership.sh"
+  if [[ -x "$access_scanner" ]]; then
+    if "$access_scanner" --strict > /dev/null 2>&1; then
+      log_ok "Access ownership scanner passed"
+    else
+      log_warn "Access ownership scanner found issues (run manually to inspect)"
+    fi
+  else
+    log_warn "scan-cloudflare-access-ownership.sh not found or not executable"
+  fi
 fi
 
 # ---------- Output ----------

@@ -173,3 +173,12 @@ Before any Worker route deployment:
 - Phase 4: Added scanner, inventory, drift report, consolidation plan
 - Phase 5: Secret containment plan, DNS ownership matrix, secret leak detection, enhanced validator
 - Phase 6: Worker route ownership model, scanner scripts, example checker, inventory, ownership plan
+- Phase 8: Terraform ownership inventory, Access ownership inventory, Reconciliation plan
+
+## Phase 8: Terraform and Access Ownership Reconciliation
+
+**Commands:**
+- `infra/cloudflare/scripts/scan-terraform-cloudflare-ownership.sh --markdown`
+- `infra/cloudflare/scripts/scan-cloudflare-access-ownership.sh --markdown`
+- `infra/cloudflare/scripts/generate-terraform-ownership-report.sh`
+- `infra/cloudflare/scripts/validate-cloudflare-config.sh --terraform-ownership --access-ownership`
