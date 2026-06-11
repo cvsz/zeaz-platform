@@ -47,8 +47,12 @@ Provides a structured rollback plan to quickly mitigate and recover from failed 
 ## Post-Rollback Report
 - Write an incident report detailing the failure and the rollback steps taken.
 
-## Future Phase Handoff
-- Phase 13 will expand on runtime rollback evidence and break-glass procedures.
+## Phase 13 Emergency Rollback Evidence
+- planned rollback remains Phase 12
+- emergency rollback evidence is Phase 13
+- emergency rollback requires incident evidence
+- rollback execution remains manual
+- no automated rollback from CI
 
 This document does not contain secrets.
 This document does not contain live credentials.

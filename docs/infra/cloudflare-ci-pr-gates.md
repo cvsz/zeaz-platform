@@ -43,6 +43,14 @@ All PRs modifying files in `infra/cloudflare/`, `docs/infra/`, `terraform/`, `op
 ## Emergency/manual workflow isolation
 Manual execution of `terraform apply` or Cloudflare mutation commands must be isolated to `workflow_dispatch` triggers with production environment protections. They must never run in PR or push contexts.
 
+## Phase 13 — Break-Glass Governance Gate
+- PR workflows validate governance only.
+- Break-glass is not executable from PR.
+- Runtime rollback evidence must exist before future emergency manual action.
+- Phase 13 checker enforces structure only.
+- Phase 13 does not approve execution.
+- Phase 13 does not bypass Phase 10/11/12.
+
 ## Phase 14 Runtime Baseline Gate
 - Runtime baseline gate.
 - Ownership lockfile validation.

@@ -186,10 +186,14 @@ while IFS= read -r workflow_file; do
     normalized_name_to_file[$normalized_name]="$workflow_file"
   fi
 
-  # Phase 12 No-Mutation Policy
+  # Phase 12 & 13 No-Mutation Policy
   if search_workflows "$workflow_file" -q 'pull_request'; then
-    if search_workflows "$workflow_file" -q '(wrangler deploy|terraform apply|tofu apply|terraform destroy|tofu destroy|make tf-apply|make zeaz-dev-apply|curl -X (POST|PUT|PATCH|DELETE) api.cloudflare.com)'; then
+    if search_workflows "$workflow_file" -q '(wrangler deploy|terraform apply|tofu apply|terraform destroy|tofu destroy|make tf-apply|make zeaz-dev-apply|curl -X (POST|PUT|PATCH|DELETE) .*api.cloudflare.com)'; then
       printf '{"level":"ERROR","file":"%s","msg":"PR workflow must not run mutating Cloudflare commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
   if [[ "$workflow_base" == "cloudflare-release-readiness.yml" || "$workflow_base" == *"release-readiness"* ]]; then
     if search_workflows "$workflow_file" -qE 'wrangler[[:space:]]+deploy|terraform[[:space:]]+apply|tofu[[:space:]]+apply|terraform[[:space:]]+destroy|tofu[[:space:]]+destroy|cloudflared[[:space:]]+tunnel[[:space:]]+route[[:space:]]+dns|curl[[:space:]]+-X[[:space:]]+(POST|PUT|PATCH|DELETE)[[:space:]]+.*api\.cloudflare\.com'; then
       printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must not contain mutating commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
@@ -228,6 +232,25 @@ while IFS= read -r workflow_file; do
     fi
     if ! search_workflows "$workflow_file" -q 'check-manual-release-approval.sh --strict'; then
       printf '{"level":"ERROR","file":"%s","msg":"cloudflare-manual-release-approval.yml must run check-manual-release-approval.sh --strict"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
+  # Specific checks for Phase 13 break-glass governance workflow
+  if [[ "$workflow_base" == "cloudflare-break-glass-governance.yml" ]]; then
+    if ! search_workflows "$workflow_file" -q 'permissions:[[:space:]]*\n[[:space:]]*contents: read'; then
+      printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if search_workflows "$workflow_file" -q '(wrangler deploy|terraform apply|tofu apply|terraform destroy|tofu destroy|curl -X (POST|PUT|PATCH|DELETE) .*api.cloudflare.com)'; then
+      printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must not run deploy/apply/destroy or mutate Cloudflare API"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'check-break-glass-governance.sh --strict'; then
+      printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must run check-break-glass-governance.sh --strict"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
   if [[ "$workflow_base" == "cloudflare-runtime-baseline.yml" || "$workflow_base" == *"runtime-baseline"* ]]; then
     if search_workflows "$workflow_file" -qE 'wrangler[[:space:]]+deploy|terraform[[:space:]]+apply|tofu[[:space:]]+apply|terraform[[:space:]]+destroy|tofu[[:space:]]+destroy|make[[:space:]]+tf-apply|make[[:space:]]+zeaz-dev-apply|curl[[:space:]]+-X[[:space:]]+(POST|PUT|PATCH|DELETE)[[:space:]]+.*api\.cloudflare\.com'; then
       printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must not contain mutating commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
