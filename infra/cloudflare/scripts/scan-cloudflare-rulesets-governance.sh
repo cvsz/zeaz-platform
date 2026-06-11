@@ -7,7 +7,7 @@ IFS=$'\n\t'
 
 MODE="markdown"
 STRICT=false
-SEARCH_ROOT="."
+SEARCH_ROOT="infra/cloudflare"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in

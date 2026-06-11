@@ -7,7 +7,7 @@ IFS=$'\n\t'
 
 MODE="markdown"
 STRICT=false
-SEARCH_ROOT="."
+SEARCH_ROOT="infra/cloudflare"
 
 show_help() {
   cat <<EOF
