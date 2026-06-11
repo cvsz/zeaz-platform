@@ -315,7 +315,7 @@ function updateCodexConfig() {
 }
 
 if (!fs.existsSync(repoAgentsDir)) {
-  fail(`repo agents directory not found: ${repoAgentsDir}`);
+  log(`WARN: repo agents directory not found, using project Codex agents only: ${repoAgentsDir}`);
 }
 if (!fs.existsSync(repoSkillsDir)) {
   fail(`repo skills directory not found: ${repoSkillsDir}`);

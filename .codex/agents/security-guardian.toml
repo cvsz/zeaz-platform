@@ -1,3 +1,5 @@
+name = "security_guardian"
+description = "Security-first reviewer for secrets, access policies, token separation, and guarded automation."
 model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"

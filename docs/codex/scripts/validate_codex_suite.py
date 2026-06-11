@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -67,6 +68,34 @@ def validate_safety_contract(data: dict[str, Any]) -> None:
         require_bool(contract, key, False)
 
 
+def load_agent_config(agent_id: str, config_file: str) -> dict[str, Any]:
+    config_path = ROOT / config_file
+    if not config_path.is_file():
+        fail(f"agent {agent_id} references missing config_file: {config_file}")
+    try:
+        config = tomllib.loads(config_path.read_text())
+    except tomllib.TOMLDecodeError as exc:
+        fail(f"agent {agent_id} config is invalid TOML: {exc}")
+    if not isinstance(config, dict):
+        fail(f"agent {agent_id} config must be a TOML table")
+    return config
+
+
+def validate_agent_config(agent_id: str, config_file: str) -> None:
+    config = load_agent_config(agent_id, config_file)
+    name = config.get("name")
+    if not isinstance(name, str) or not name.strip():
+        fail(f"agent {agent_id} config must define a non-empty name")
+    if name != agent_id:
+        fail(f"agent {agent_id} config name must match agent id, got: {name}")
+    description = config.get("description")
+    if not isinstance(description, str) or not description.strip():
+        fail(f"agent {agent_id} config must define a non-empty description")
+    instructions = config.get("developer_instructions")
+    if not isinstance(instructions, str) or not instructions.strip():
+        fail(f"agent {agent_id} config must define non-empty developer_instructions")
+
+
 def validate_agents(data: dict[str, Any]) -> None:
     agents = data.get("agent_roster")
     if not isinstance(agents, list) or not agents:
@@ -82,8 +111,9 @@ def validate_agents(data: dict[str, Any]) -> None:
         if agent_id in seen:
             fail(f"duplicate agent id: {agent_id}")
         seen.add(agent_id)
-        if not isinstance(config_file, str) or not (ROOT / config_file).is_file():
-            fail(f"agent {agent_id} references missing config_file: {config_file}")
+        if not isinstance(config_file, str) or not config_file:
+            fail(f"agent {agent_id} must reference a config_file")
+        validate_agent_config(agent_id, config_file)
         if agent.get("mode") != "read-only":
             fail(f"agent {agent_id} must remain read-only")
 
