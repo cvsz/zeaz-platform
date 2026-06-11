@@ -1,0 +1,14 @@
+{
+  "name": "@zeaz/zdev",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VDev browser-based all-in-one development environment product surface for Zeaz.",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 4181 --directory ../..",
+    "validate": "node scripts/validate-zdev.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

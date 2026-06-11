@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="VDev by Zeaz is a browser-based all-in-one development environment built on a code-server foundation." />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests" />
+    <title>VDev · Zeaz Development Environment</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="Primary navigation">
+        <a class="brand" href="#main" aria-label="VDev home">
+          <span class="brand-mark">VD</span>
+          <span><strong>VDev</strong><small>Zeaz dev workspace</small></span>
+        </a>
+        <div class="nav-links" aria-label="Page sections">
+          <a href="#features">Features</a>
+          <a href="#workflow">How it works</a>
+          <a href="#start">Get started</a>
+          <a href="#security">Security</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero section-grid" aria-labelledby="hero-title">
+        <div class="hero-copy glass-panel reveal">
+          <p class="eyebrow">Welcome to VDev</p>
+          <h1 id="hero-title">Your all-in-one development environment, ready from any browser.</h1>
+          <p class="hero-text">VDev empowers developers to code, collaborate, and create without boundaries. Built on a code-server foundation, it brings a polished Zeaz workspace to software teams that need secure browser-based development.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#start">Start your workspace plan</a>
+            <a class="button secondary" href="#features">Explore features</a>
+          </div>
+        </div>
+        <aside class="hero-console glass-panel reveal" aria-label="Workspace readiness snapshot">
+          <div class="console-topline">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Workspace profile</span>
+          </div>
+          <dl class="metric-grid">
+            <div><dt>Access</dt><dd>Browser</dd></div>
+            <div><dt>Base</dt><dd>Code-server</dd></div>
+            <div><dt>Mode</dt><dd>Collaborative</dd></div>
+            <div><dt>Secrets</dt><dd>Externalized</dd></div>
+          </dl>
+          <p class="note">This app is an offline-safe product surface. It does not connect to a live IDE, execute code, or store credentials.</p>
+        </aside>
+      </section>
+
+      <section id="features" class="section reveal" aria-labelledby="features-title">
+        <div class="section-heading">
+          <p class="eyebrow">Key features</p>
+          <h2 id="features-title">Everything developers need in one unified workspace.</h2>
+          <p>VDev combines accessibility, flexible tooling, and collaboration into a focused development cockpit.</p>
+        </div>
+        <div id="feature-grid" class="card-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="workflow" class="section reveal" aria-labelledby="workflow-title">
+        <div class="section-heading">
+          <p class="eyebrow">How it works</p>
+          <h2 id="workflow-title">Move from sign-in to shared delivery without local setup friction.</h2>
+          <p>Follow a simple flow: access, customize, code, collaborate, and share outcomes with your team.</p>
+        </div>
+        <div id="workflow-steps" class="timeline"></div>
+      </section>
+
+      <section id="start" class="section reveal" aria-labelledby="start-title">
+        <div class="section-heading">
+          <p class="eyebrow">Get started</p>
+          <h2 id="start-title">A practical readiness checklist for launching a VDev workspace.</h2>
+          <p>Checklist state is local to the browser and should never contain secrets or production identifiers.</p>
+        </div>
+        <div class="checklist-shell glass-panel">
+          <div class="progress-card" aria-live="polite"><span id="progress-value">0%</span><small>ready</small></div>
+          <div id="checklist" class="checklist"></div>
+        </div>
+      </section>
+
+      <section id="security" class="section reveal" aria-labelledby="security-title">
+        <div class="section-heading">
+          <p class="eyebrow">Why choose VDev?</p>
+          <h2 id="security-title">Simple, flexible, collaborative, accessible, and secure by design.</h2>
+          <p>VDev keeps the product promise clear while aligning with Zeaz platform safety rules.</p>
+        </div>
+        <div id="trust-grid" class="trust-grid"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>VDev is a Zeaz product concept for browser-based development environments. Production deployment requires separate identity, access, runtime, and secret-management review.</p>
+    </footer>
+  </body>
+</html>
