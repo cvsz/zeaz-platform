@@ -182,3 +182,47 @@ Build Workers foundation, AI Gateway config, rate limiting, JWT hooks, abuse con
 **Phase 9 — Controlled Terraform Drift Remediation**
 
 Execute the Phase 8 reconciliation plan: manually import missing records, remove conflicting legacy modules, and run `terraform plan` to verify a zero-destruction dry-run before moving to a fully managed GitOps workflow.
+
+---
+
+## Phase 15 — Drift SLA Governance Fields
+
+> Added by Phase 15: Runtime Drift SLA + Ownership Review Board
+> All drift items must be classified with these fields from Phase 15 onward.
+
+### SLA Field Reference
+
+Each active drift item must carry the following fields (add to any existing item above when re-reviewed):
+
+```yaml
+sla_class: Critical | High | Medium | Low | Accepted Exception
+aging_bucket: Fresh (0-7d) | Aging (8-14d) | Stale (15-30d) | Overdue (31+d)
+detected_date: YYYY-MM-DD
+last_reviewed: YYYY-MM-DD
+exception_id: CF-DRIFT-YYYY-NNN  # only if Accepted Exception
+owner: <role name>
+status: OPEN | IN_PROGRESS | ESCALATED | CLOSED | ACCEPTED_EXCEPTION
+```
+
+### Known Open Drift Items — Phase 15 SLA Classification
+
+| Drift Item | System Area | SLA Class | Aging Bucket | Owner | Status |
+|---|---|---|---|---|---|
+| Orphaned credential file `/etc/cloudflared/22bd858b-7cd2-4b54-91a7-9365cdb9eb80.json` | Tunnel / Secret | Medium | (set when reviewed) | Cloudflare Runtime Owner | OPEN |
+| `infrastructure/cloudflare/config.yml` hardcoded tunnel name `zeaz-platform` | IaC | Low | (set when reviewed) | Terraform Owner | OPEN |
+| `apps/zLinebot/cloudflared/config.yml` hardcoded tunnel name `zlinebot` | IaC | Low | (set when reviewed) | Worker Owner | OPEN |
+| `tunnels/cloudflared/config.yml` empty tunnel name, malformed cred path | IaC | Low | (set when reviewed) | Cloudflare Runtime Owner | OPEN |
+| 20 duplicate hostnames across repo config files | DNS / IaC | Medium | (set when reviewed) | DNS Owner | OPEN |
+| Live tunnel (8 hostnames) vs repo config complete mismatch | Tunnel / DNS | High | (set when reviewed) | Cloudflare Runtime Owner | OPEN |
+| 3 overlapping Terraform modules managing DNS records | IaC | High | (set when reviewed) | Terraform Owner | OPEN |
+
+> **Note:** `detected_date`, `last_reviewed`, and `aging_bucket` must be filled by the assigned owner
+> at the next weekly drift triage meeting.
+
+### Phase 15 Documents
+
+- SLA classes and aging buckets: `docs/infra/cloudflare-runtime-drift-sla.md`
+- Ownership review board: `docs/infra/cloudflare-ownership-review-board.md`
+- Exception register: `docs/infra/cloudflare-drift-exception-register.md`
+- Monthly evidence template: `docs/infra/cloudflare-monthly-governance-evidence.md`
+
