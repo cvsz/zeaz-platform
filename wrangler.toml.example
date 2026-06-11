@@ -1,0 +1,12 @@
+# Root Worker example for local review only.
+# Copy to wrangler.toml only after replacing placeholders with environment-specific values.
+
+name = "zeaz-platform-example"
+main = "workers/src/index.js"
+compatibility_date = "2026-06-01"
+account_id = "<ACCOUNT_ID>"
+workers_dev = true
+
+[vars]
+ENVIRONMENT = "example"
+PRIMARY_DOMAIN = "example.invalid"

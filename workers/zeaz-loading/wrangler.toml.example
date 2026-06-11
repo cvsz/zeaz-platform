@@ -1,0 +1,19 @@
+# Zeaz loading Worker example for local review only.
+# Production route ownership for www.zeaz.dev is documented in docs/infra/.
+
+name = "zeaz-loading-example"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+account_id = "<ACCOUNT_ID>"
+
+workers_dev = false
+
+routes = [
+  { pattern = "<WORKER_ROUTE_PATTERN>", zone_name = "<ZONE_NAME>" }
+]
+
+[vars]
+BRAND_NAME = "ZeaZ"
+APP_URL = "https://example.invalid"
+STATUS_TEXT_TH = "example loading message"
+STATUS_TEXT_EN = "Example loading message"

@@ -1,18 +1,34 @@
-name = "edge-gateway"
+name = "edge-gateway-example"
 main = "src/index.ts"
-compatibility_date = "2026-05-12"
+compatibility_date = "2026-06-01"
+account_id = "<ACCOUNT_ID>"
 workers_dev = true
 
 [[kv_namespaces]]
 binding = "EDGE_RATE_LIMIT_KV"
-id = "00000000000000000000000000000000"
+id = "<KV_NAMESPACE_ID>"
+
+# Optional D1 audit store. Do not enable until the database exists.
+# [[d1_databases]]
+# binding = "EDGE_AUDIT_D1"
+# database_name = "<D1_DATABASE_NAME>"
+# database_id = "<D1_DATABASE_ID>"
+
+# Optional R2 upload quarantine bucket. Do not enable until the bucket exists.
+# [[r2_buckets]]
+# binding = "EDGE_UPLOADS_R2"
+# bucket_name = "<R2_BUCKET_NAME>"
 
 # Optional: enable Durable Object limiter for strong consistency on high-risk endpoints.
 # [durable_objects]
 # bindings = [{ name = "EDGE_DURABLE_LIMITER", class_name = "EdgeDurableLimiter" }]
 
+# Optional Workers AI binding. Enable only after AI Gateway policy is reviewed.
+# [ai]
+# binding = "AI"
+
 [vars]
 JWT_AUDIENCE = "edge-gateway"
 EDGE_USE_DURABLE_LIMITER = "false"
-CLOUDFLARE_AI_GATEWAY_SLUG = "zeaz-platform-ai-gateway"
+CLOUDFLARE_AI_GATEWAY_SLUG = "<AI_GATEWAY_NAME>"
 # JWT_SECRET must be injected with `wrangler secret put JWT_SECRET` or GitHub Actions secret.
