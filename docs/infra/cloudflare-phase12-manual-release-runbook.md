@@ -64,8 +64,12 @@ This runbook and associated tools strictly observe a read-only boundary.
 ## Post-Change Evidence
 - After manual deployment, updated state or evidence must be collected in a subsequent PR if requested.
 
-## Future Phase Handoff
-Phase 13 will cover Runtime Rollback Evidence + Break-Glass Governance.
+## Phase 13 Handoff — Break-Glass and Runtime Rollback Evidence
+- normal change windows remain Phase 12
+- emergency/break-glass governance moves to Phase 13
+- Phase 13 requires runtime rollback evidence
+- Phase 13 still requires manual human approval
+- Phase 13 does not execute rollback
 
 Phase 12 does not authorize deployment.
 Phase 12 does not run deployment.

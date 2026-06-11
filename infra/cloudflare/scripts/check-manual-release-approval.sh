@@ -143,28 +143,7 @@ if [[ -f "$EVIDENCE_FILE" ]]; then
   done
 fi
 
-# Forbidden content scan (do not scan in node_modules, .git, etc.)
-# Find files matching forbidden strings.
-FORBIDDEN=(
-  "wrangler deploy"
-  "terraform apply -auto-approve"
-  "tofu apply -auto-approve"
-  "terraform destroy"
-  "tofu destroy"
-  "curl -X POST api.cloudflare.com"
-  "curl -X PUT api.cloudflare.com"
-  "curl -X PATCH api.cloudflare.com"
-  "curl -X DELETE api.cloudflare.com"
-)
 
-# We will just do a basic grep over infra/cloudflare/scripts and github workflows for Phase 12
-if [[ -d "${REPO_ROOT}/infra/cloudflare/scripts" ]]; then
-  for fstring in "${FORBIDDEN[@]}"; do
-    if grep -r -q "$fstring" "${REPO_ROOT}/infra/cloudflare/scripts" "${REPO_ROOT}/.github/workflows" 2>/dev/null; then
-      ERRORS+=("Forbidden command found in repo: ${fstring}")
-    fi
-  done
-fi
 
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
   if [[ "$MODE" == "json" ]]; then

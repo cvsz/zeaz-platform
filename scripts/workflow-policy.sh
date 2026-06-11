@@ -132,9 +132,9 @@ while IFS= read -r workflow_file; do
     normalized_name_to_file[$normalized_name]="$workflow_file"
   fi
 
-  # Phase 12 No-Mutation Policy
+  # Phase 12 & 13 No-Mutation Policy
   if search_workflows "$workflow_file" -q 'pull_request'; then
-    if search_workflows "$workflow_file" -q '(wrangler deploy|terraform apply|tofu apply|terraform destroy|tofu destroy|make tf-apply|make zeaz-dev-apply|curl -X (POST|PUT|PATCH|DELETE) api.cloudflare.com)'; then
+    if search_workflows "$workflow_file" -q '(wrangler deploy|terraform apply|tofu apply|terraform destroy|tofu destroy|make tf-apply|make zeaz-dev-apply|curl -X (POST|PUT|PATCH|DELETE) .*api.cloudflare.com)'; then
       printf '{"level":"ERROR","file":"%s","msg":"PR workflow must not run mutating Cloudflare commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
@@ -182,6 +182,24 @@ while IFS= read -r workflow_file; do
     fi
   fi
 
+  if [[ "$workflow_base" == "cloudflare-break-glass-governance.yml" ]]; then
+    if ! awk '/^permissions:/ { in_perm=1 } /^[^ \t]/ && !/^permissions:/ { in_perm=0 } in_perm && /contents: read/ { found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
+      printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if search_workflows "$workflow_file" -q '(wrangler deploy|terraform apply|tofu apply|terraform destroy|tofu destroy|make tf-apply|make zeaz-dev-apply|curl -X (POST|PUT|PATCH|DELETE) .*api.cloudflare.com|api.cloudflare.com/client/v4)'; then
+      printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must not run mutating commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'check-break-glass-governance.sh --strict'; then
+      printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must run check-break-glass-governance.sh --strict"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if search_workflows "$workflow_file" -q '^[[:space:]]*push:' && search_workflows "$workflow_file" -i -q 'emergency|break-glass'; then
+      printf '{"level":"ERROR","file":"%s","msg":"break-glass workflow must not run on push"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
 
 done < <(find "$WORKFLOW_DIR" -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) | sort)
 

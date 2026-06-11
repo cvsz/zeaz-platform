@@ -237,3 +237,54 @@ infra/cloudflare/scripts/check-manual-release-approval.sh --strict
 infra/cloudflare/scripts/check-release-readiness.sh --strict --no-live
 infra/cloudflare/scripts/check-manual-release-approval.sh --strict
 ```
+
+## Phase 13 — Runtime Rollback Evidence + Break-Glass Governance
+
+Phase 13 adds a read-only governance layer for emergency Cloudflare rollback and break-glass procedures.
+
+**Purpose**: Defines required emergency evidence, human ownership, rollback scope, runtime snapshots, stop conditions, secret safety checks, and post-incident review requirements.
+
+**Safety boundary**: Phase 13 is governance-only. It does not execute rollback, deployment, Terraform/OpenTofu apply, Wrangler deploy, DNS mutation, tunnel mutation, or Cloudflare API mutation.
+
+**Created docs**:
+- `docs/infra/cloudflare-phase13-break-glass-policy.md`
+- `docs/infra/cloudflare-phase13-runtime-rollback-evidence.md`
+- `docs/infra/cloudflare-phase13-incident-rollback-runbook.md`
+- `docs/infra/cloudflare-phase13-post-incident-review.md`
+
+**Created scripts**:
+- `infra/cloudflare/scripts/check-break-glass-governance.sh`
+- `infra/cloudflare/scripts/generate-runtime-rollback-evidence.sh`
+
+**Created workflow**:
+- `.github/workflows/cloudflare-break-glass-governance.yml`
+
+**Relationship to Phase 10/11/12**:
+Builds upon the prior gates but handles emergency break-glass cases securely.
+
+### Generation command
+
+```bash
+infra/cloudflare/scripts/generate-runtime-rollback-evidence.sh \
+  --output docs/infra/cloudflare-phase13-runtime-rollback-evidence.md \
+  --timezone Asia/Bangkok \
+  --strict
+```
+
+### Validation command
+
+```bash
+infra/cloudflare/scripts/check-break-glass-governance.sh --strict
+```
+
+### Full Validation
+
+```bash
+infra/cloudflare/scripts/validate-cloudflare-config.sh \
+  --check \
+  --secrets \
+  --workers \
+  --release-readiness \
+  --manual-release-governance \
+  --break-glass-governance
+```

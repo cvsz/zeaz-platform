@@ -133,9 +133,9 @@ parse_wrangler() {
   local -a placeholders=()
   local -a hardcoded=()
 
-  name=$(grep -E '^name[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//')
-  main_js=$(grep -E '^main[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//')
-  dev=$(grep -E '^workers_dev[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*//')
+  name=$(grep -E '^name[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//' || true)
+  main_js=$(grep -E '^main[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//' || true)
+  dev=$(grep -E '^workers_dev[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*//' || true)
 
   worker_names["$rel"]="$name"
   worker_dev["$rel"]="$dev"
@@ -177,7 +177,7 @@ parse_wrangler() {
 
   # Also check for single route = "..."
   local single_route
-  single_route=$(grep -E '^route[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//')
+  single_route=$(grep -E '^route[[:space:]]*=' "$file" 2>/dev/null | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//' || true)
   if [[ -n "$single_route" ]]; then
     routes+=("$single_route")
     hostname="${single_route%%/*}"
@@ -232,6 +232,7 @@ parse_wrangler() {
   worker_bindings["$rel"]="${bindings[*]:-}"
   [[ ${#placeholders[@]} -gt 0 ]] && worker_placeholders["$rel"]="${placeholders[*]}"
   [[ ${#hardcoded[@]} -gt 0 ]] && worker_hardcoded["$rel"]="${hardcoded[*]}"
+  return 0
 }
 
 for f in "${wrangler_files[@]}"; do
