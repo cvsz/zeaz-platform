@@ -37,7 +37,6 @@ overrides:
   defu: latest
   axios: latest
   tar: latest
-  xlsx: latest
   samlify: latest
   tmp: latest
   rollup: latest
