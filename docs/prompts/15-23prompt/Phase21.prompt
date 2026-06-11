@@ -1,0 +1,223 @@
+# Phase 21 — Cloudflare Post-Release Verification
+
+## Objective
+
+Add post-change evidence templates and manual verification gates that must be executed after any Cloudflare production change. This establishes the post-release side of the governance lifecycle, complementing Phase 20 (production readiness review) and Phase 16 (evidence archive).
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare. It is a documentation and template layer only.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-post-release-verification
+```
+
+## Commit Message
+
+```
+docs(cloudflare): add post-release verification gates
+```
+
+---
+
+## Scope
+
+- Create post-release verification overview doc
+- Create post-change evidence template (aligned with Phase 16 archive format)
+- Create manual verification gates doc
+- Create release follow-up checklist
+- Update `infra/cloudflare/README.md` with Phase 21 entry
+
+---
+
+## Non-Goals
+
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT print, log, or commit secrets, credentials, or tokens
+- Execution of live verification checks is MANUAL — this phase only documents the gates
+- Do NOT start or restart any services
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT modify files outside Phase 21 scope
+
+---
+
+## Safety Rules
+
+1. All verification steps must be labeled `[MANUAL]` or `[READ-ONLY CHECK]`
+2. No automated Cloudflare read or write in templates
+3. All examples must use sanitized placeholder values
+4. Evidence template must be aligned with Phase 16 archive structure
+5. Never print credentials or tokens in any example
+6. All docs must clearly separate: verification gate | method | expected result | evidence captured | owner
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Live ingress hostnames: office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Verification Gates (Cover All in Docs)
+
+After any production Cloudflare change, the following gates must be verified manually:
+
+1. **DNS resolution verified** — All changed DNS records resolve to expected targets
+2. **Tunnel route verified** — Tunnel ingress routes traffic correctly to all expected services
+3. **Worker route verified** — All modified Worker routes respond correctly (no 4xx/5xx for basic health)
+4. **Access policy verified** — Access policies allow expected users and block unexpected access
+5. **No unintended route overlap** — No new Worker route overlaps with existing prod routes
+6. **No new secret exposure** — No credentials or tokens visible in Worker output, headers, or logs
+7. **Rollback still available** — Rollback plan from Phase 12/13 is still executable if needed
+8. **Evidence archived** — All required evidence for this change is filed in Phase 16 archive
+9. **Owner sign-off complete** — All required owners have reviewed and signed off post-change
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-post-release-verification.md`**
+   - Overview of post-release verification process
+   - When post-release verification is required (all prod changes)
+   - How it links to Phase 16 (evidence archive) and Phase 20 (readiness review)
+   - Who conducts the verification
+   - What constitutes a verification failure
+   - What to do if a gate fails (escalation to Phase 19 DR)
+
+2. **`docs/infra/cloudflare-post-change-evidence-template.md`**
+   - Template for filing evidence after a prod change
+   - Structure aligned with Phase 16 archive (`docs/infra/evidence/cloudflare/CHANGE-ID/post-release-verification.md`)
+   - Required fields:
+     - Change ID
+     - Change description
+     - Date/time of change (UTC)
+     - Date/time of verification (UTC)
+     - Verifier name/role
+     - Per-gate status: `[ ] PASS / FAIL / SKIP`
+     - DNS resolution result (read-only, no live query required to file template)
+     - Tunnel route result
+     - Worker route result
+     - Access policy result
+     - Route overlap check result
+     - Secret exposure check result
+     - Rollback availability status
+     - Evidence archive link
+     - Owner sign-off
+   - Sanitized example with placeholder values
+
+3. **`docs/infra/cloudflare-manual-verification-gates.md`**
+   - Detailed description of each of the 9 verification gates
+   - For each gate: gate name | check method | expected result | pass criteria | fail criteria | evidence to capture
+   - All check methods labeled `[MANUAL]` or `[READ-ONLY]`
+   - Tool suggestions for each gate (e.g., `dig`, `curl --head`, `wrangler tail --format json`)
+   - Important: tool execution is opt-in and MANUAL — not automated by this phase
+
+4. **`docs/infra/cloudflare-release-followup-checklist.md`**
+   - Ordered checklist to run after every prod release
+   - Sections: Immediate (within 1 hour) | Short-term (within 24 hours) | Closure (within 72 hours)
+   - Items:
+     - Verify all 9 gates (mark PASS/FAIL/SKIP)
+     - Capture any unexpected behavior
+     - File post-change evidence in archive
+     - Notify owner if any gate FAIL
+     - Escalate to DR if critical failure
+     - Schedule follow-up if CONDITIONAL
+     - Close change record in evidence archive
+     - Owner sign-off on closure
+
+5. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 21 entry with links to all deliverables above
+
+---
+
+## Evidence Outputs
+
+- All documentation files committed and readable via `cat`
+- Evidence template aligned with Phase 16 archive format
+- All 9 verification gates documented with MANUAL/READ-ONLY labels
+- `infra/cloudflare/README.md` updated with Phase 21 links
+- No secrets found in any new file
+- `git diff --name-only` shows only Phase 21 files
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-post-release-verification.md` exists with overview
+- [ ] `docs/infra/cloudflare-post-change-evidence-template.md` exists, aligned with Phase 16 archive
+- [ ] `docs/infra/cloudflare-manual-verification-gates.md` exists with all 9 gates documented
+- [ ] All gates labeled `[MANUAL]` or `[READ-ONLY]`
+- [ ] `docs/infra/cloudflare-release-followup-checklist.md` exists with Immediate/Short-term/Closure sections
+- [ ] `infra/cloudflare/README.md` updated with Phase 21 section
+- [ ] Evidence template has `[ ] PASS / FAIL / SKIP` fields for each gate
+- [ ] No live mutation, deployment, or secret exposure in any file
+- [ ] No deployment, apply, or Cloudflare write performed
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-post-release-verification
+
+# After writing files
+cat docs/infra/cloudflare-post-release-verification.md
+cat docs/infra/cloudflare-post-change-evidence-template.md
+cat docs/infra/cloudflare-manual-verification-gates.md
+cat docs/infra/cloudflare-release-followup-checklist.md
+
+# Verify all 9 gates documented
+GATES=("DNS resolution" "Tunnel route" "Worker route" "Access policy" "route overlap" "secret exposure" "Rollback" "Evidence archived" "Owner sign-off")
+for gate in "${GATES[@]}"; do
+  grep -iq "$gate" docs/infra/cloudflare-manual-verification-gates.md && echo "FOUND: $gate" || echo "MISSING: $gate"
+done
+
+# Verify MANUAL/READ-ONLY labels
+grep -c "\[MANUAL\]\|\[READ-ONLY\]" docs/infra/cloudflare-manual-verification-gates.md
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-post-release-verification.md \
+  docs/infra/cloudflare-post-change-evidence-template.md \
+  docs/infra/cloudflare-manual-verification-gates.md \
+  docs/infra/cloudflare-release-followup-checklist.md || echo "No secrets found"
+
+# Commit
+git add docs/infra/cloudflare-post-release-verification.md \
+        docs/infra/cloudflare-post-change-evidence-template.md \
+        docs/infra/cloudflare-manual-verification-gates.md \
+        docs/infra/cloudflare-release-followup-checklist.md \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): add post-release verification gates"
+
+git push origin fix/cloudflare-post-release-verification
+gh pr create --title "docs(cloudflare): add post-release verification gates" \
+  --body "Phase 21: Adds post-release verification framework with 9 manual gates, evidence template aligned with Phase 16 archive, release follow-up checklist. Read-only governance. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Verification gates coverage (all 9 listed)
+4. Validation commands run and their output summary
+5. Any warnings (missing gates, unlabeled steps)
+6. Git status summary (`git diff --stat`)
+7. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**
+**Execution of live verification checks is MANUAL and was NOT performed by this phase.**

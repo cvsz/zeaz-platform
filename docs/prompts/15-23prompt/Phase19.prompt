@@ -1,0 +1,227 @@
+# Phase 19 — Cloudflare Disaster Recovery Governance
+
+## Objective
+
+Add disaster recovery tabletop exercise templates, recovery ownership assignments, restore evidence requirements, and a manual recovery checklist for Cloudflare runtime failures within the ZeaZ Platform. This phase establishes the human-in-the-loop DR governance layer.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare. It is a documentation-only governance layer.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-disaster-recovery-governance
+```
+
+## Commit Message
+
+```
+docs(cloudflare): add disaster recovery governance
+```
+
+---
+
+## Scope
+
+- Create DR governance overview doc
+- Create tabletop exercise template
+- Create manual recovery checklist (read-only, no destructive commands)
+- Create restore evidence template
+- Create recovery ownership matrix
+- Update `infra/cloudflare/README.md` with Phase 19 entry
+- All content must be human-executable (no automated destructive actions)
+
+---
+
+## Non-Goals
+
+- Do NOT include executable commands that mutate Cloudflare
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT print, log, or commit any secrets or credentials
+- Do NOT start or restart any services
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT modify files outside Phase 19 scope
+- The checklist must remain read-only / manual — it documents human steps, not automation
+
+---
+
+## Safety Rules
+
+1. All recovery steps must be clearly labeled as MANUAL — requiring human decision before execution
+2. Never include destructive commands (DELETE, DROP, DESTROY, purge) without explicit WARNING labels and MANUAL tags
+3. Never print credentials, tokens, or tunnel IDs in examples
+4. All docs must clearly separate: scenario description | impact | detection | recovery steps | evidence required
+5. DR templates must use sanitized placeholder values in all examples
+6. Active credential file must NEVER be printed or committed
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live cloudflared runtime config: `/etc/cloudflared/config.yml` (DO NOT EDIT — reference only)
+- systemd unit: `/etc/systemd/system/cloudflared.service`
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Known orphaned credential file: `/etc/cloudflared/22bd858b-7cd2-4b54-91a7-9365cdb9eb80.json`
+- Live ingress hostnames: office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev, catch-all 404
+
+---
+
+## DR Scenarios (Cover All in Tabletop Template)
+
+1. **DNS misroute** — A DNS record change routes prod traffic to wrong service
+2. **Worker route collision** — A Worker route pattern overlaps, breaking a prod service
+3. **Tunnel outage** — `cloudflared` service stops or tunnel disconnects
+4. **Credential leak or suspected leak** — Tunnel token or API token potentially exposed
+5. **Terraform state drift** — Terraform state diverges from live Cloudflare state
+6. **Access policy lockout** — A Zero Trust access policy blocks legitimate users
+7. **Production rollback required** — A change must be rolled back (reference Phase 13 break-glass)
+8. **Evidence archive unavailable** — The evidence archive is inaccessible when needed for audit
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-disaster-recovery-governance.md`**
+   - Overview of DR governance model
+   - Relationship to Phase 13 (break-glass) and Phase 15 (review board)
+   - DR scenarios list (all 8 above)
+   - How DR decisions are made (human-in-the-loop requirement)
+   - Evidence requirements after any DR action
+   - Post-DR review process
+
+2. **`docs/infra/cloudflare-dr-tabletop-template.md`**
+   - Template for running a DR tabletop exercise
+   - Required fields per scenario:
+     - Scenario name and ID
+     - Trigger condition (what causes this)
+     - Detection method (how we know it happened)
+     - Impact assessment (affected services, users, data)
+     - Immediate containment steps (MANUAL)
+     - Recovery steps (MANUAL, ordered)
+     - Verification steps (how we confirm recovery)
+     - Evidence required (reference to Phase 16 archive)
+     - Lessons learned
+     - Owner sign-off
+   - Pre-filled example for Scenario 1 (DNS misroute) — sanitized
+   - Blank template sections for all 8 scenarios
+
+3. **`docs/infra/cloudflare-manual-recovery-checklist.md`**
+   - Ordered checklist for each DR scenario
+   - All steps are clearly labeled: `[MANUAL]` or `[READ-ONLY CHECK]`
+   - No automated destructive commands
+   - Each step has: action | owner | prerequisite | evidence to capture
+   - Tunnel outage checklist must include systemd status check (read-only)
+   - Rollback checklist must reference Phase 13 break-glass runbook
+
+4. **`docs/infra/cloudflare-restore-evidence-template.md`**
+   - Template for capturing evidence after a DR event:
+     - Incident ID
+     - Scenario type
+     - Date/time of incident (UTC)
+     - Date/time of recovery (UTC)
+     - Recovery owner
+     - Recovery steps taken (with timestamps)
+     - Verification results
+     - Services confirmed restored
+     - Rollback used (yes/no + Phase 16 archive reference)
+     - Approver sign-off
+     - Post-DR review date scheduled
+
+5. **`docs/infra/cloudflare-recovery-ownership-matrix.md`**
+   - Matrix: Scenario × Owner × Backup Owner × Escalation Contact × SLA to Start × SLA to Resolve
+   - All 8 scenarios must have owners assigned (use role names from Phase 15 review board)
+   - Contact info fields: use `<ROLE_NAME>` placeholders, not real emails or phone numbers
+
+6. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 19 entry with links to all deliverables above
+
+---
+
+## Evidence Outputs
+
+- All five documentation files committed and readable via `cat`
+- `infra/cloudflare/README.md` updated with Phase 19 links
+- `git diff --name-only` shows only Phase 19 files
+- No secrets, credentials, or real contact info in any new file
+- No destructive commands in the recovery checklist without MANUAL label
+- Grep for secrets shows only "no secrets" pattern references
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-disaster-recovery-governance.md` exists with all 8 scenarios listed
+- [ ] `docs/infra/cloudflare-dr-tabletop-template.md` exists with all required fields and example
+- [ ] `docs/infra/cloudflare-manual-recovery-checklist.md` exists, all steps labeled MANUAL or READ-ONLY
+- [ ] `docs/infra/cloudflare-restore-evidence-template.md` exists with all required fields
+- [ ] `docs/infra/cloudflare-recovery-ownership-matrix.md` exists with all 8 scenarios and owners
+- [ ] `infra/cloudflare/README.md` updated with Phase 19 section
+- [ ] No real secrets, credentials, or contact info in any file
+- [ ] No automated destructive actions in checklist
+- [ ] No deployment, apply, or Cloudflare write performed
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-disaster-recovery-governance
+
+# After writing files, verify
+cat docs/infra/cloudflare-disaster-recovery-governance.md
+cat docs/infra/cloudflare-dr-tabletop-template.md
+cat docs/infra/cloudflare-manual-recovery-checklist.md
+cat docs/infra/cloudflare-restore-evidence-template.md
+cat docs/infra/cloudflare-recovery-ownership-matrix.md
+
+# Verify all steps labeled MANUAL or READ-ONLY
+grep -c "\[MANUAL\]\|\[READ-ONLY" docs/infra/cloudflare-manual-recovery-checklist.md
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-disaster-recovery-governance.md \
+  docs/infra/cloudflare-dr-tabletop-template.md \
+  docs/infra/cloudflare-manual-recovery-checklist.md \
+  docs/infra/cloudflare-restore-evidence-template.md \
+  docs/infra/cloudflare-recovery-ownership-matrix.md || echo "No secrets found"
+
+# Git status
+git diff --name-only
+
+# Commit
+git add docs/infra/cloudflare-disaster-recovery-governance.md \
+        docs/infra/cloudflare-dr-tabletop-template.md \
+        docs/infra/cloudflare-manual-recovery-checklist.md \
+        docs/infra/cloudflare-restore-evidence-template.md \
+        docs/infra/cloudflare-recovery-ownership-matrix.md \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): add disaster recovery governance"
+
+git push origin fix/cloudflare-disaster-recovery-governance
+gh pr create --title "docs(cloudflare): add disaster recovery governance" \
+  --body "Phase 19: Adds DR tabletop template, manual recovery checklist, restore evidence template, and recovery ownership matrix for 8 DR scenarios. Read-only governance. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. DR scenarios covered (list all 8)
+4. Validation commands run and their output summary
+5. Any warnings (missing scenarios, unlabeled steps)
+6. Git status summary (`git diff --stat`)
+7. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**
+**Do not include real contact info, credentials, or automated destructive commands.**
