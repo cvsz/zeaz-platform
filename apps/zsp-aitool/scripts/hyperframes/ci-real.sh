@@ -16,6 +16,7 @@ if [[ "${CI:-}" == "true" ]]; then
   if [[ -d "/tmp/hyperframes/renders/smoke" ]]; then
     cp -R /tmp/hyperframes/renders/smoke/. .artifacts/hyperframes/ || true
   fi
+fi
 export CI="${CI:-true}"
 export HYPERFRAMES_RENDER_ENABLED="true"
 export HYPERFRAMES_RENDER_SMOKE_CONFIRM="YES"
