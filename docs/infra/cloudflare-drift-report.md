@@ -145,3 +145,40 @@ Key findings:
 **Phase 7 — Workers, Edge, and AI Gateway**
 
 Build Workers foundation, AI Gateway config, rate limiting, JWT hooks, abuse controls, docs, and tests.
+
+## Phase 8 — Terraform and Live Runtime Reconciliation
+
+### Summary
+
+| Metric | Value | Status |
+|---|---|---|
+| Terraform files with Cloudflare resources | Multiple | ✅ Inventoried |
+| Live runtime config | `/etc/cloudflared/config.yml` | ✅ Inventoried |
+| Terraform Ownership Scanner | `scan-terraform-cloudflare-ownership.sh` | ✅ Created |
+| Validator integration | `validate-cloudflare-config.sh --terraform` | ✅ Updated |
+| Reconciliation Plan | `docs/infra/cloudflare-terraform-reconciliation-plan.md` | ✅ Created |
+
+### Phase 8 Findings
+
+#### Terraform vs Live Runtime Conflicts
+
+- **DNS Management Overlap**: The legacy `terraform/cloudflare/main.tf` and `terraform/zdash/main.tf` contain DNS records that conflict with `terraform/cloudflare-apps/main.tf`.
+- **Live Runtime Drift**: The live `/etc/cloudflared/config.yml` uses a token and defines hostnames that are not accurately reflected in the Terraform modules.
+- **Worker Route Conflict**: `www.zeaz.dev` is defined as a CNAME in Terraform but also has a Worker route. The DNS record should be removed from Terraform to avoid conflict.
+
+### Actions Completed
+
+1. **Scripts created**:
+   - `infra/cloudflare/scripts/scan-terraform-cloudflare-ownership.sh` — detects hostnames in `.tf` files and checks for conflicts against live runtime and canonical configs.
+2. **Documentation created**:
+   - `docs/infra/cloudflare-live-runtime-inventory.md` — absolute source of truth for current active routing.
+   - `docs/infra/cloudflare-terraform-ownership-matrix.md` — inventories all Terraform resources.
+   - `docs/infra/cloudflare-terraform-reconciliation-plan.md` — safe path to apply fixes.
+3. **Validation integrated**:
+   - Terraform ownership scanning via `--terraform` flag.
+
+## Phase 9 Recommendation
+
+**Phase 9 — Controlled Terraform Drift Remediation**
+
+Execute the Phase 8 reconciliation plan: manually import missing records, remove conflicting legacy modules, and run `terraform plan` to verify a zero-destruction dry-run before moving to a fully managed GitOps workflow.

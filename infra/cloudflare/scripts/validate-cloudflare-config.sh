@@ -50,9 +50,6 @@ Options:
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
   --terraform   Also run terraform ownership scanning (Phase 8)
-  --runtime-governance  Also run runtime governance scanning (Phase 7)
-  --worker-bindings     Also run worker bindings scanning (Phase 7)
-  --no-mutation         Also run no-mutation guard scanning (Phase 7)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
