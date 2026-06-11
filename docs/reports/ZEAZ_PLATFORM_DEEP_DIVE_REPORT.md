@@ -11,7 +11,7 @@ Read-only audit of `/home/zeazdev/zeaz-platform` before platform refactor mutati
 - Root Compose entrypoint: `docker-compose.yml` includes `infra/traefik`, `infra/cloudflare`, `infra/authentik`, `infra/observability`, `infra/ai-runtime`, and `infra/security` compose fragments.
 - Existing Cloudflare configs: `infra/cloudflare/config.yml`, `tunnels/config/config.yml`, `tunnels/config.yaml`, and root `wrangler.toml`.
 - Existing validation/security scripts: `scripts/validate.sh`, `scripts/validate-yaml.py`, `scripts/validate-env-files.py`, `scripts/secret-scan-tracked.sh`, `scripts/security-scan.sh`, and others.
-- Existing app directories under `apps/`: `ABTPi18n`, `api`, `openwork`, `web`, `zAcademy`, `zLinebot`, `zcino`, `zcino-modern`, `zdash`, `zkbtrader`, `zlms-prod`, `zoffice`, `zsp-aitool`, `zsticker`, `ztrader`, `zveo`, and `zwallet`.
+- Existing app directories under `apps/`: `ABTPi18n`, `api`, `openwork`, `web`, `zAcademy`, `zLinebot`, `zcino`, `zcino-modern`, `zdash`, `zkbtrader`, `zlms`, `zoffice`, `zsp-aitool`, `zsticker`, `ztrader`, `zveo`, and `zwallet`.
 
 ## Canonical App Inventory
 
@@ -28,7 +28,7 @@ Read-only audit of `/home/zeazdev/zeaz-platform` before platform refactor mutati
 | zveo | `apps/zveo` | no package/config detected in shallow scan | not detected | not detected | 4109 | `zveo.zeaz.dev` | not found | unknown | none detected | `/` fallback |
 | zsticker | `apps/zsticker` | Python app (`main.py`) | `python3 main.py` with `PORT` | none detected | 4110 | `zsticker.zeaz.dev` | `apps/zsticker/.env.example` | app-specific persistence review required | `apps/zsticker/docker-compose.yml` | `/health` expected |
 | zcino | `apps/zcino` | PHP legacy app + Go service + Next.js frontend | Docker/Next/PHP-specific | frontend `npm run build` | 4111 | `zcino.zeaz.dev` | not found | MySQL/PHP legacy SQL; modern migrations present | `apps/zcino/infra/docker-compose.yml` | `/health` expected |
-| zlms-prod | `apps/zlms-prod` | Next.js/TypeScript migration tooling | app-specific | typecheck/migration scripts | 4112 | `zlms.zeaz.dev` | not found | frontend/runtime migration only in shallow scan | no root service found | `/` fallback |
+| zlms | `apps/zlms` | Next.js/TypeScript migration tooling | app-specific | typecheck/migration scripts | 4112 | `zlms.zeaz.dev` | not found | frontend/runtime migration only in shallow scan | no root service found | `/` fallback |
 | zLinebot | `apps/zLinebot` | empty canonical directory detected | to be created | to be created | 4113 | internal bot service | not found | LINE webhook persistence to standardize | none detected | `/health` required |
 
 ## Non-Canonical / Adjacent App Inventory
@@ -42,7 +42,7 @@ Read-only audit of `/home/zeazdev/zeaz-platform` before platform refactor mutati
 
 ## Framework and Tooling Signals
 
-- Next.js: `apps/web`, `apps/ztrader/frontend`, `apps/zcino/frontend`, `apps/zcino-modern/frontend`, `apps/zlms-prod`.
+- Next.js: `apps/web`, `apps/ztrader/frontend`, `apps/zcino/frontend`, `apps/zcino-modern/frontend`, `apps/zlms`.
 - Vite: `apps/zdash/frontend`.
 - Python/FastAPI-style: `apps/api`, `apps/zoffice/app`, `apps/zsticker`, `apps/zdash/backend`, `apps/ztrader/backend`, `apps/zwallet/api`.
 - Go: `apps/zcino`, `apps/zcino-modern`.

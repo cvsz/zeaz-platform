@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Protocol
 
 import numpy as np
-from ztrader.abt.binance_perp_bot.models import (
+from binance_perp_bot.models import (
     Position,
     PositionIntent,
     RegimeMode,

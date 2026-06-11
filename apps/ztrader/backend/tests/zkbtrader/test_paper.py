@@ -1,8 +1,8 @@
 import pytest
 
-from ztrader.zkb.zkbtrader.models import IntentSide, PaperPortfolio, StrategyIntent
-from ztrader.zkb.zkbtrader.paper import PaperExecutionEngine
-from ztrader.zkb.zkbtrader.risk import RiskEngine, RiskLimits
+from zkbtrader.models import IntentSide, PaperPortfolio, StrategyIntent
+from zkbtrader.paper import PaperExecutionEngine
+from zkbtrader.risk import RiskEngine, RiskLimits
 
 
 def test_paper_enter_long_updates_virtual_balances() -> None:

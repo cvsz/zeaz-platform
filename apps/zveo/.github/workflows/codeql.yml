@@ -1,0 +1,82 @@
+name: "CodeQL Advanced Analysis"
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '**.mdx'
+  schedule:
+    - cron: '25 13 * * 0'   # Weekly on Sunday at 13:25 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+
+          - language: javascript-typescript
+            build-mode: none
+
+          - language: python
+            build-mode: none
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # CodeQL runs in build-mode: none for JavaScript/TypeScript and Python,
+      # so dependency installation and package-manager caches are unnecessary.
+      # Avoid setting up pnpm/pip caches here: setup-node requires a pnpm
+      # executable for pnpm caching, and setup-python warns when no pip cache
+      # directory exists because nothing has been installed.
+
+      # === Initialize CodeQL with optimized configuration ===
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          
+          # Enhanced query suite for security and quality
+          queries: security-extended,security-and-quality
+          
+          # Use dedicated config file for easier maintenance
+          config-file: ./.github/codeql/codeql-config.yml
+
+      # === Manual build step (only if needed) ===
+      - name: Run Manual Build Steps
+        if: matrix.build-mode == 'manual'
+        shell: bash
+        run: |
+          echo "Manual build not required for interpreted languages in current setup."
+
+      # === Perform Analysis ===
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:${{ matrix.language }}"
+          upload: true
+          ram: 14584   # Optimized for larger runners / better performance
+          threads: 4

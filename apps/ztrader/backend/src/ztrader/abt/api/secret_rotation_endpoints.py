@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from ztrader.abt.services.secret_rotation_service import SecretRotationService
+from src.services.secret_rotation_service import SecretRotationService
 
 router = APIRouter()
 rotation_service = SecretRotationService()

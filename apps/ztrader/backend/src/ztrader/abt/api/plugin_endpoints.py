@@ -9,9 +9,9 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from ztrader.abt.plugins.plugin_loader import PluginLoader
-from ztrader.abt.utils.dependencies import get_current_user_id
-from ztrader.abt.utils.exceptions import handle_service_error
+from src.plugins.plugin_loader import PluginLoader
+from src.utils.dependencies import get_current_user_id
+from src.utils.exceptions import handle_service_error
 
 router = APIRouter()
 plugin_loader = PluginLoader()

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from ztrader.abt.binance_perp_bot.indicators import atr, closes, ema, rsi
-from ztrader.abt.binance_perp_bot.models import (
+from binance_perp_bot.indicators import atr, closes, ema, rsi
+from binance_perp_bot.models import (
     MarketSnapshot,
     RegimeMode,
     SignalAction,
     StrategyKind,
     TradeSignal,
 )
-from ztrader.abt.binance_perp_bot.strategies.base import BaseStrategy
+from binance_perp_bot.strategies.base import BaseStrategy
 
 
 def atr_scaled_notional(

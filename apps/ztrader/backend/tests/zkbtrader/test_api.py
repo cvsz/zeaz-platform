@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 
-from ztrader.zkb.zkbtrader.adapters.kucoin import InvalidMarketDataResponse, MarketDataUnavailable
+from zkbtrader.adapters.kucoin import InvalidMarketDataResponse, MarketDataUnavailable
 
 
 def _client_with_sqlite(tmp_path: Path) -> TestClient:
@@ -17,12 +17,12 @@ def _client_with_sqlite(tmp_path: Path) -> TestClient:
     os.environ["EXECUTION_MODE"] = "paper"
     os.environ["LIVE_TRADING_ENABLED"] = "false"
 
-    from ztrader.zkb.zkbtrader import db
+    from zkbtrader import db
 
     db.get_engine.cache_clear()
     db.get_session_factory.cache_clear()
 
-    from ztrader.zkb.zkbtrader.api import app
+    from zkbtrader.api import app
 
     return TestClient(app)
 
@@ -101,12 +101,12 @@ def test_lifespan_initializes_db_tables(tmp_path: Path) -> None:
     os.environ["EXECUTION_MODE"] = "paper"
     os.environ["LIVE_TRADING_ENABLED"] = "false"
 
-    from ztrader.zkb.zkbtrader import db
+    from zkbtrader import db
 
     db.get_engine.cache_clear()
     db.get_session_factory.cache_clear()
 
-    from ztrader.zkb.zkbtrader.api import app
+    from zkbtrader.api import app
 
     with TestClient(app) as client:
         health = client.get("/health")
@@ -157,7 +157,7 @@ def test_market_api_maps_unavailable_to_safe_503(tmp_path: Path, monkeypatch) ->
         def get_ticker(self, symbol: str) -> None:
             raise MarketDataUnavailable("transport details should not leak")
 
-    from ztrader.zkb.zkbtrader import api as api_module
+    from zkbtrader import api as api_module
 
     monkeypatch.setattr(api_module, "_market_adapter", lambda: _UnavailableAdapter())
 
@@ -173,7 +173,7 @@ def test_market_api_maps_invalid_payload_to_safe_502(tmp_path: Path, monkeypatch
         def list_symbols(self) -> list[str]:
             raise InvalidMarketDataResponse("upstream payload body should not leak")
 
-    from ztrader.zkb.zkbtrader import api as api_module
+    from zkbtrader import api as api_module
 
     monkeypatch.setattr(api_module, "_market_adapter", lambda: _InvalidPayloadAdapter())
 
@@ -189,7 +189,7 @@ def test_market_api_server_time_maps_unavailable_to_safe_503(tmp_path: Path, mon
         def get_server_time(self) -> None:
             raise MarketDataUnavailable("raw upstream detail should not leak")
 
-    from ztrader.zkb.zkbtrader import api as api_module
+    from zkbtrader import api as api_module
 
     monkeypatch.setattr(api_module, "_market_adapter", lambda: _UnavailableAdapter())
 

@@ -15,7 +15,7 @@ Generated: 2026-06-09 UTC
 | zveo | `apps/zveo` | `zveo.zeaz.dev` | 4109 |
 | zsticker | `apps/zsticker` | `zsticker.zeaz.dev` | 4110 |
 | zcino | `apps/zcino` | `zcino.zeaz.dev` | 4111 |
-| zlms-prod | `apps/zlms-prod` | `zlms.zeaz.dev` | 4112 |
+| zlms | `apps/zlms` | `zlms.zeaz.dev` | 4112 |
 | zLinebot | `apps/zLinebot` | internal | 4113 |
 
 ## Completed

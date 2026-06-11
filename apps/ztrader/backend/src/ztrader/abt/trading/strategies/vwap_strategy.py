@@ -8,7 +8,7 @@ from typing import Any, Dict
 
 import numpy as np
 
-from ztrader.abt.trading.strategy_interface import Strategy, StrategyRegistry
+from src.trading.strategy_interface import Strategy, StrategyRegistry
 
 
 class VWAPStrategy(Strategy):

@@ -30,6 +30,12 @@
       "origin": "http://localhost:3009",
       "kind": "frontend",
       "proxied": true
+    },
+    {
+      "hostname": "zcloud.zeaz.dev",
+      "origin": "http://localhost:3003",
+      "kind": "frontend",
+      "proxied": true
     }
   ],
   "fallback": {

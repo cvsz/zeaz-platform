@@ -9,17 +9,17 @@ from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
-from ztrader.zkb.zkbtrader import __version__
-from ztrader.zkb.zkbtrader.adapters.kucoin import (
+from zkbtrader import __version__
+from zkbtrader.adapters.kucoin import (
     InvalidMarketDataResponse,
     KucoinReadOnlyAdapter,
     MarketDataError,
     MarketDataUnavailable,
 )
-from ztrader.zkb.zkbtrader.audit import AuditEvent
-from ztrader.zkb.zkbtrader.backtest import BacktestEngine
-from ztrader.zkb.zkbtrader.config import get_settings
-from ztrader.zkb.zkbtrader.db import (
+from zkbtrader.audit import AuditEvent
+from zkbtrader.backtest import BacktestEngine
+from zkbtrader.config import get_settings
+from zkbtrader.db import (
     AuditEventRepository,
     BacktestRun,
     BacktestRunRepository,
@@ -27,10 +27,10 @@ from ztrader.zkb.zkbtrader.db import (
     PaperOrderRepository,
     get_engine,
 )
-from ztrader.zkb.zkbtrader.models import IntentSide, PaperPortfolio, StrategyIntent
-from ztrader.zkb.zkbtrader.paper import PaperExecutionEngine
-from ztrader.zkb.zkbtrader.risk import RiskEngine
-from ztrader.zkb.zkbtrader.strategy import Candle, MovingAverageCrossoverStrategy
+from zkbtrader.models import IntentSide, PaperPortfolio, StrategyIntent
+from zkbtrader.paper import PaperExecutionEngine
+from zkbtrader.risk import RiskEngine
+from zkbtrader.strategy import Candle, MovingAverageCrossoverStrategy
 
 AuditValue = str | int | float | bool | dict[str, str | int | float | bool]
 BacktestValue = str | int | float | bool | dict[str, str | int | float | bool]

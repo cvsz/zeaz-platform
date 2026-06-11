@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ztrader.abt.models import SecretRotation
+from src.models import SecretRotation
 
 
 class SecretRotationService:

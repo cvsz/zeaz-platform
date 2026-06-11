@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ztrader.abt.binance_perp_bot.indicators import adx, atr, closes
-from ztrader.abt.binance_perp_bot.models import MarketSnapshot, RegimeMode
+from binance_perp_bot.indicators import adx, atr, closes
+from binance_perp_bot.models import MarketSnapshot, RegimeMode
 
 
 class ADXRegimeDetector:

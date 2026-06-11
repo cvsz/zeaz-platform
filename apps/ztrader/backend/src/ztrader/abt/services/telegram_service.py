@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from telegram import Bot
 from telegram.error import TelegramError
 
-from ztrader.abt.models import TelegramLink
+from src.models import TelegramLink
 
 
 class TelegramService:

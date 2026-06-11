@@ -11,11 +11,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ztrader.abt.models import BotRun, TradeLog
-from ztrader.abt.services.exchange_service import ExchangeConnector
-from ztrader.abt.services.metrics_service import MetricsCollector
-from ztrader.abt.trading.risk_manager import EnhancedRiskManager
-from ztrader.abt.trading.strategy_interface import StrategyRegistry
+from src.models import BotRun, TradeLog
+from src.services.exchange_service import ExchangeConnector
+from src.services.metrics_service import MetricsCollector
+from src.trading.risk_manager import EnhancedRiskManager
+from src.trading.strategy_interface import StrategyRegistry
 
 
 # Legacy RiskManager for backward compatibility

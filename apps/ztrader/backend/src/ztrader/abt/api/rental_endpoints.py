@@ -9,9 +9,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from ztrader.abt.services.rental_service import RentalService
-from ztrader.abt.utils.dependencies import get_current_user_id
-from ztrader.abt.utils.exceptions import handle_service_error, raise_not_found
+from src.services.rental_service import RentalService
+from src.utils.dependencies import get_current_user_id
+from src.utils.exceptions import handle_service_error, raise_not_found
 
 router = APIRouter()
 rental_service = RentalService()

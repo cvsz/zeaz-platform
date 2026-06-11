@@ -10,10 +10,10 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlalchemy import select
 
-from ztrader.abt.models import BotRun
-from ztrader.abt.utils.database import get_db_connection
-from ztrader.abt.utils.exceptions import raise_bad_request, raise_not_found
-from ztrader.abt.worker.tasks import run_bot_loop
+from src.models import BotRun
+from src.utils.database import get_db_connection
+from src.utils.exceptions import raise_bad_request, raise_not_found
+from src.worker.tasks import run_bot_loop
 
 router = APIRouter()
 

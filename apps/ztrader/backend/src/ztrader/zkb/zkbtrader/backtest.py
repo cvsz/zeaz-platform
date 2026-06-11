@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ztrader.zkb.zkbtrader.models import PaperPortfolio
-from ztrader.zkb.zkbtrader.paper import PaperExecutionEngine
-from ztrader.zkb.zkbtrader.risk import RiskEngine, RiskLimits
-from ztrader.zkb.zkbtrader.strategy import Candle, Strategy
+from zkbtrader.models import PaperPortfolio
+from zkbtrader.paper import PaperExecutionEngine
+from zkbtrader.risk import RiskEngine, RiskLimits
+from zkbtrader.strategy import Candle, Strategy
 
 
 @dataclass(frozen=True)

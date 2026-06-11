@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ztrader.zkb.zkbtrader.models import (
+from zkbtrader.models import (
     IntentSide,
     PaperOrder,
     PaperPortfolio,
     RiskDecisionStatus,
     StrategyIntent,
 )
-from ztrader.zkb.zkbtrader.risk import RiskEngine
+from zkbtrader.risk import RiskEngine
 
 
 class PaperExecutionEngine:

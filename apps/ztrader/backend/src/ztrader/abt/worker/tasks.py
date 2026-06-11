@@ -7,13 +7,13 @@
 import asyncio
 import logging
 
-from ztrader.abt.services.audit_service import AuditService
-from ztrader.abt.services.notification_service import NotificationService
-from ztrader.abt.services.rental_service import RentalService
-from ztrader.abt.services.secret_rotation_service import SecretRotationService
-from ztrader.abt.trading.bot_runner import BotRunner
-from ztrader.abt.utils.database import get_db_connection
-from ztrader.abt.worker.celery_app import celery_app
+from src.services.audit_service import AuditService
+from src.services.notification_service import NotificationService
+from src.services.rental_service import RentalService
+from src.services.secret_rotation_service import SecretRotationService
+from src.trading.bot_runner import BotRunner
+from src.utils.database import get_db_connection
+from src.worker.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
 

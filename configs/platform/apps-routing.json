@@ -150,8 +150,8 @@
       "gateway_prefix": "/v1/zwallet"
     },
     {
-      "app_id": "zlms-prod",
-      "path": "apps/zlms-prod",
+      "app_id": "zlms",
+      "path": "apps/zlms",
       "type": "app",
       "hostnames": ["zlms.zeaz.dev"],
       "origin": null,

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ztrader.abt.binance_perp_bot.models import StrategyKind
-from ztrader.abt.binance_perp_bot.strategies.base import BaseStrategy
-from ztrader.abt.binance_perp_bot.strategies.concrete import (
+from binance_perp_bot.models import StrategyKind
+from binance_perp_bot.strategies.base import BaseStrategy
+from binance_perp_bot.strategies.concrete import (
     PositionStrategy,
     ScalpStrategy,
     SwingStrategy,

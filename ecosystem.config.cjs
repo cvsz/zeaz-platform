@@ -17,6 +17,15 @@ module.exports = {
     "env": {
       "PORT": "3001"
     }
+  },
+  {
+    "name": "zcloud",
+    "script": "npm",
+    "args": "run dev",
+    "cwd": "apps/zcloud",
+    "env": {
+      "PORT": "3004"
+    }
   }
 ]
 };

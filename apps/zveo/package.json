@@ -1,0 +1,66 @@
+{
+  "name": "zveo",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev:dashboard": "pnpm --filter @zveo/dashboard dev",
+    "build": "pnpm --filter @zveo/dashboard build",
+    "typecheck": "pnpm --filter @zveo/dashboard typecheck",
+    "build:scene-graph": "pnpm --filter @zveo/scene-graph build",
+    "test:scene-graph": "pnpm --filter @zveo/scene-graph test",
+    "typecheck:scene-graph": "pnpm --filter @zveo/scene-graph typecheck",
+    "build:core": "pnpm --filter @zveo/core build",
+    "typecheck:core": "pnpm --filter @zveo/core typecheck",
+    "build:queue": "pnpm --filter @zveo/queue build",
+    "typecheck:queue": "pnpm --filter @zveo/queue typecheck",
+    "build:api": "pnpm --filter @zveo/api-gateway build",
+    "typecheck:api": "pnpm --filter @zveo/api-gateway typecheck",
+    "build:render-worker": "pnpm --filter @zveo/render-worker build",
+    "typecheck:render-worker": "pnpm --filter @zveo/render-worker typecheck",
+    "build:prompt-compiler": "pnpm --filter @zveo/prompt-compiler build",
+    "typecheck:prompt-compiler": "pnpm --filter @zveo/prompt-compiler typecheck",
+    "build:foundation": "pnpm -r --filter @zveo/contracts --filter @zveo/ai-script-generator --filter @zveo/core --filter @zveo/db --filter @zveo/queue --filter @zveo/prompt-compiler --filter @zveo/api-gateway --filter @zveo/render-worker --filter @zveo/scene-graph --filter @zveo/media-pipeline --filter @zveo/workflow-engine --filter @zveo/scene-memory --filter @zveo/providers --filter @zveo/telemetry build",
+    "typecheck:foundation": "pnpm build:foundation && pnpm -r --filter @zveo/contracts --filter @zveo/ai-script-generator --filter @zveo/core --filter @zveo/db --filter @zveo/queue --filter @zveo/prompt-compiler --filter @zveo/api-gateway --filter @zveo/render-worker --filter @zveo/scene-graph --filter @zveo/media-pipeline --filter @zveo/workflow-engine --filter @zveo/scene-memory --filter @zveo/providers --filter @zveo/telemetry typecheck",
+    "build:media-pipeline": "pnpm --filter @zveo/media-pipeline build",
+    "typecheck:media-pipeline": "pnpm --filter @zveo/media-pipeline typecheck",
+    "test:media-pipeline": "pnpm --filter @zveo/media-pipeline test",
+    "build:contracts": "pnpm --filter @zveo/contracts build",
+    "typecheck:contracts": "pnpm --filter @zveo/contracts typecheck",
+    "build:workflow-engine": "pnpm --filter @zveo/workflow-engine build",
+    "typecheck:workflow-engine": "pnpm --filter @zveo/workflow-engine typecheck",
+    "build:scene-memory": "pnpm --filter @zveo/scene-memory build",
+    "typecheck:scene-memory": "pnpm --filter @zveo/scene-memory typecheck",
+    "build:providers": "pnpm --filter @zveo/providers build",
+    "typecheck:providers": "pnpm --filter @zveo/providers typecheck",
+    "build:telemetry": "pnpm --filter @zveo/telemetry build",
+    "typecheck:telemetry": "pnpm --filter @zveo/telemetry typecheck",
+    "migrate:contracts": "node scripts/migrations/migrate-contract-imports.mjs",
+    "migrate:monorepo": "node scripts/migrations/standardize-package-names.mjs",
+    "queue:monitor": "node scripts/queue-monitor.mjs",
+    "verify:foundation": "pnpm build:foundation && pnpm typecheck:foundation",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:check": "drizzle-kit check",
+    "db:seed": "node packages/db/src/scripts/seed.mjs",
+    "db:smoke": "bash scripts/db-smoke.sh",
+    "dev:node": "docker compose -f infra/docker/docker-compose.yml --profile node up --build",
+    "build:node": "pnpm build:foundation && pnpm --filter @zveo/dashboard build",
+    "typecheck:node": "pnpm typecheck:foundation && pnpm --filter @zveo/dashboard typecheck",
+    "test:node": "pnpm -r --filter @zveo/ai-script-generator --filter @zveo/core --filter @zveo/media-pipeline --filter @zveo/publisher-meta --filter @zveo/render-worker --filter @zveo/scene-graph test",
+    "verify:node": "pnpm build:node && pnpm typecheck:node && pnpm test:node"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "drizzle-kit": "^0.31.4",
+    "pg": "^8.16.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "8.5.14"
+    }
+  }
+}

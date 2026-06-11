@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ztrader.zkb.zkbtrader.models import RiskDecision, RiskDecisionStatus, StrategyIntent
+from zkbtrader.models import RiskDecision, RiskDecisionStatus, StrategyIntent
 
 
 @dataclass(frozen=True)

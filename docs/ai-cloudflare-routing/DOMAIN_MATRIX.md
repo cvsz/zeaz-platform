@@ -8,7 +8,7 @@
 | api | `/home/zeazdev/zeaz-platform/apps/api` | `api.zeaz.dev` | `protected-api` |
 | zcino | `/home/zeazdev/zeaz-platform/apps/zcino` | `zcino.zeaz.dev` | `public-or-team` |
 | zdash | `/home/zeazdev/zeaz-platform/apps/zdash` | `zdash.zeaz.dev, api-zdash.zeaz.dev` | `mixed-public-api` |
-| zlms-prod | `/home/zeazdev/zeaz-platform/apps/zlms-prod` | `zlms.zeaz.dev` | `protected-team` |
+| zlms | `/home/zeazdev/zeaz-platform/apps/zlms` | `zlms.zeaz.dev` | `protected-team` |
 | zoffice | `/home/zeazdev/zeaz-platform/apps/zoffice` | `zoffice.zeaz.dev` | `protected-team` |
 | zsp-aitool | `/home/zeazdev/zeaz-platform/apps/zsp-aitool` | `zaiz.zeaz.dev, api-zveo.zeaz.dev` | `mixed-public-api` |
 | zsticker | `/home/zeazdev/zeaz-platform/apps/zsticker` | `zsticker.zeaz.dev` | `public-or-team` |

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from ztrader.zkb.zkbtrader.api import app
+from zkbtrader.api import app
 
 
 def test_dashboard_head_returns_200() -> None:

@@ -10,9 +10,9 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from ztrader.abt.backtesting.backtest_service import BacktestService
-from ztrader.abt.utils.dependencies import get_current_user_id
-from ztrader.abt.utils.exceptions import handle_service_error
+from src.backtesting.backtest_service import BacktestService
+from src.utils.dependencies import get_current_user_id
+from src.utils.exceptions import handle_service_error
 
 router = APIRouter()
 backtest_service = BacktestService()

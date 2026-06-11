@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ztrader.abt.models import BotRun, RentalContract
+from src.models import BotRun, RentalContract
 
 
 class RentalService:

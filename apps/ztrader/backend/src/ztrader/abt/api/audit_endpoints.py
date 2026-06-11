@@ -12,8 +12,8 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from ztrader.abt.services.audit_service import AuditService
-from ztrader.abt.utils.exceptions import raise_bad_request, raise_not_found
+from src.services.audit_service import AuditService
+from src.utils.exceptions import raise_bad_request, raise_not_found
 
 router = APIRouter()
 audit_service = AuditService()

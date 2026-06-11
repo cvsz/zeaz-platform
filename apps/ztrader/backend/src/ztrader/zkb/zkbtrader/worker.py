@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ztrader.zkb.zkbtrader.config import get_settings
+from zkbtrader.config import get_settings
 
 
 def main() -> None:

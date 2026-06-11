@@ -24,7 +24,10 @@ ingress:
     service_from_origin_hosts: treasury
   - hostname: admin-wallet.${PRIMARY_DOMAIN}
     service_from_origin_hosts: admin-wallet
+  - hostname: zcloud.${PRIMARY_DOMAIN}
+    service: http://localhost:3004
   - service: http_status:404
+
 healthchecks:
   path: /healthz
   interval_seconds: 30

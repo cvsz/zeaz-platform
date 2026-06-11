@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zveo-api
+  labels: {app: zveo-api}
+spec:
+  replicas: 3
+  selector:
+    matchLabels: {app: zveo-api}
+  template:
+    metadata:
+      labels: {app: zveo-api}
+    spec:
+      serviceAccountName: zveo-api
+      containers:
+        - name: api
+          image: ghcr.io/zveo/api:latest
+          ports: [{containerPort: 8000}]
+          envFrom: [{secretRef: {name: zveo-secrets}}, {configMapRef: {name: zveo-config}}]
+          readinessProbe: {httpGet: {path: /health, port: 8000}, initialDelaySeconds: 5, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /health, port: 8000}, initialDelaySeconds: 15, periodSeconds: 20}
+          resources:
+            requests: {cpu: "250m", memory: "512Mi"}
+            limits: {cpu: "1000m", memory: "1Gi"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zveo-api
+spec:
+  selector: {app: zveo-api}
+  ports: [{port: 80, targetPort: 8000}]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zveo-api

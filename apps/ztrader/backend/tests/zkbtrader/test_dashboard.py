@@ -14,12 +14,12 @@ def _dashboard_client(tmp_path: Path) -> TestClient:
     os.environ["EXECUTION_MODE"] = "paper"
     os.environ["LIVE_TRADING_ENABLED"] = "false"
 
-    from ztrader.zkb.zkbtrader import db
+    from zkbtrader import db
 
     db.get_engine.cache_clear()
     db.get_session_factory.cache_clear()
 
-    from ztrader.zkb.zkbtrader.api import app
+    from zkbtrader.api import app
 
     return TestClient(app)
 
@@ -61,12 +61,12 @@ def test_dashboard_does_not_expose_sensitive_env_values(tmp_path: Path) -> None:
     os.environ["EXECUTION_MODE"] = "paper"
     os.environ["LIVE_TRADING_ENABLED"] = "false"
 
-    from ztrader.zkb.zkbtrader import db
+    from zkbtrader import db
 
     db.get_engine.cache_clear()
     db.get_session_factory.cache_clear()
 
-    from ztrader.zkb.zkbtrader.api import app
+    from zkbtrader.api import app
 
     with TestClient(app) as client:
         response = client.get("/")

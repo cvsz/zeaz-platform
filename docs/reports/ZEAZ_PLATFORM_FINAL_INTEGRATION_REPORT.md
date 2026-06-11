@@ -38,7 +38,7 @@ See `git status --short` for the exact working tree. Major additions include scr
 | zveo | `zveo.zeaz.dev` | 4109 |
 | zsticker | `zsticker.zeaz.dev` | 4110 |
 | zcino | `zcino.zeaz.dev` | 4111 |
-| zlms-prod | `zlms.zeaz.dev` | 4112 |
+| zlms | `zlms.zeaz.dev` | 4112 |
 | zLinebot | internal | 4113 |
 
 ## PostgreSQL Status

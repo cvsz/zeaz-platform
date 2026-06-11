@@ -7,7 +7,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 from typing import Any
 
-from ztrader.abt.binance_perp_bot.runtime import BotRuntimeState
+from binance_perp_bot.runtime import BotRuntimeState
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 

@@ -1,98 +1,174 @@
 # ZeaZ Platform
 
-Last updated: 2026-06-10
+ZeaZ Platform is a multi-application, Cloudflare-first monorepo designed for infrastructure automation, developer tools, edge deployments, and algorithmic trading systems. It hosts several integrated application stacks, deployment configuration scripts, and centralized operational tools.
 
-`cvsz/zeaz-platform` is the ZeaZ monorepo for Cloudflare-first infrastructure, app routing, local/self-hosted services, and imported CVSZ application stacks. Each app under `apps/*` keeps its own stack, commands, ports, security notes, and deployment workflow. Do not merge app-specific stacks into one shared runtime unless a future migration explicitly says so.
+## What the Platform Includes
 
-## Operating rule
+The platform provides a unified workspace containing:
+- **Web Frontend:** The main public portal built with Next.js (`apps/web`).
+- **Developer Tools & Cockpit:** CloudPanel operations dashboard (`apps/zcloud`).
+- **Algo Trading Engine:** Celery/FastAPI trading stack (`apps/ztrader`).
+- **Lightweight APIs:** Microservice API routers (`apps/api`).
+- **Automation & Daemons:** Chatbot triggers (`apps/zLinebot`) and image manipulation workflows (`apps/zsticker`).
+- **Learning SaaS & Enterprise Modernization:** Academic dashboard (`apps/zAcademy`) and modern LMS interfaces (`apps/zlms`).
+- **Shared Infrastructure:** Core OpenTofu/Terraform infrastructure-as-code files (`opentofu/`, `terraform/`), Cloudflare Tunnels, and Docker orchestration assets.
 
-```text
-root README = platform map and operator entrypoint
-apps/* README = each app's own stack, own commands, own runtime notes
+---
+
+## Architecture Overview
+
+ZeaZ Platform follows a decoupled, application-centric architectural model:
+- **Isolated App Runtimes:** Each application under `apps/*` maintains its own standalone runtime environment, dependencies, local port maps, and command workflows. App-specific runtimes are *not* merged into a shared runtime.
+- **Root Envelope Infrastructure:** Root-level orchestrations govern global resources—Cloudflare routing parameters, SSL configurations, network tunnels, global WAF rules, and local Docker compose networks.
+- **Secured API Layer:** Shared platform APIs connect separate frontend surfaces while preserving permission boundaries.
+
+```
+┌────────────────────────────────────────────────────────┐
+│                    Cloudflare Edge                     │
+│           (Tunnels, WAF, DNS Routing, Access)          │
+└───────────────────────────┬────────────────────────────┘
+                            │ (Secure Port Mapping)
+┌───────────────────────────▼────────────────────────────┐
+│                    ZeaZ Platform                       │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │  apps/web    │  │  apps/zcloud │  │ apps/ztrader │  │
+│  │ (Next.js)    │  │  (CloudPanel)│  │ (FastAPI/Cel)│  │
+│  └──────────────┘  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │  apps/api    │  │   apps/zlms  │  │  apps/zwallet│  │
+│  │ (FastAPI)    │  │  (Modern LMS)│  │ (Node/pnpm)  │  │
+│  └──────────────┘  └──────────────┘  └──────────────┘  │
+└────────────────────────────────────────────────────────┘
 ```
 
-## Current repository layout
+---
 
-The repository contains app stacks under `apps/`, shared platform configs under `configs/`, Cloudflare/infra assets under `infra/` and `infrastructure/`, and operational docs under `docs/` and `reports/`.
+## Repository Structure
 
-## App stack inventory
+```text
+.
+├── .github/              # CI/CD Workflows & GitHub Templates
+├── apps/                 # Application Stacks
+│   ├── api/              # Python FastAPI microservices
+│   ├── openwork/         # Cowork agent workspace assets
+│   ├── web/              # Next.js main web dashboard
+│   ├── zAcademy/         # Node/pnpm educational portal
+│   ├── zcino/            # Go + Postgres game services
+│   ├── zcloud/           # Zeaz-branded CloudPanel cockpit
+│   ├── zdash/            # FastAPI + Vite AI ops dashboard
+│   ├── zLinebot/         # LINE automation chatbot daemon
+│   ├── zlms/             # Modernized LMS interface
+│   ├── zoffice/          # AI workspace dashboard
+│   ├── zsp-aitool/       # Next.js SaaS automation panel
+│   ├── zsticker/         # Image & asset generation script
+│   ├── ztrader/          # Unified algo trading platform (merged)
+│   ├── zveo/             # Video rendering & processing service
+│   └── zwallet/          # Decentralized payments stack
+├── configs/              # Global configuration variables & route maps
+├── infrastructure/       # Global OpenTofu, Docker & Terraform setup
+├── docs/                 # General operator documentation & runbooks
+├── scripts/              # Shared deployment and validation scripts
+└── Makefile              # Monorepo build and command orchestrator
+```
 
-| App | Path | Primary stack | Runtime / purpose | README status |
-|---|---|---|---|---|
-| ABTPi18n | `apps/ABTPi18n` | Python + pnpm workspace | Auto Bot Trader Pro i18n / strategy support | Updated app README |
-| api | `apps/api` | Python FastAPI | Lightweight platform API routers | README generated if missing |
-| openwork | `apps/openwork` | Node / pnpm monorepo | Open-source cowork / agent desktop-style platform | Updated app README |
-| web | `apps/web` | Next.js / TypeScript | Main ZeaZ public web frontend | Updated app README |
-| zAcademy | `apps/zAcademy` | Node / pnpm monorepo | Academy / learning SaaS platform | Updated app README |
-| zcino | `apps/zcino` | Go + PostgreSQL + Redis | Game catalog / casino-style service | Updated app README |
-| zdash | `apps/zdash` | FastAPI + React/Vite + Docker | Safety-first AI ops and trading dashboard | Updated app README |
-| zkbtrader | `apps/zkbtrader` | Python + Node harness | Crypto research / paper trading | Updated app README |
-| zLinebot | `apps/zLinebot` | Node/Python/Docker mixed stack | LINE bot automation platform | README generated if missing |
-| zlms-prod | `apps/zlms-prod` | ASP.NET legacy + Next/security modernization assets | LMS production migration stack | Updated app README |
-| zoffice | `apps/zoffice` | Python static server + OpenClaw/Hermes adapters | AI office dashboard | Updated app README |
-| zsp-aitool | `apps/zsp-aitool` | Next.js + Prisma + Vitest | AI tool SaaS / dashboard app | README generated if missing |
-| zsticker | `apps/zsticker` | Python automation | LINE sticker/image automation | Updated app README |
-| ztrader | `apps/ztrader` | FastAPI + Next.js + Celery/Postgres | Multi-language algo trading platform | Updated app README |
-| zveo | `apps/zveo` | Node/pnpm + Python services | AI/video/service platform | README generated if missing |
-| zwallet | `apps/zwallet` | Node/pnpm + backend services | Wallet, payments, swap, mobile/admin stack | Updated app README |
+---
 
-## Root platform responsibilities
+## Quick Start
 
-Root-level files control the platform envelope only:
+### Prerequisites
+Make sure you have the following installed on your machine:
+- Node.js (v18+ recommended) and `pnpm` (v8+)
+- Python (v3.10+ recommended) and `pip`
+- Docker and Docker Compose
+- GNU Make
 
-- Cloudflare routing and tunnel planning
-- app port mapping and domain ownership
-- shared infrastructure docs and runbooks
-- root-level Docker/compose orchestration where explicitly defined
-- repo-level audits, reports, prompts, and generated inventories
+### 1. Clone the Repository
+```bash
+git clone https://github.com/cvsz/zeaz-platform.git
+cd zeaz-platform
+```
 
-Do not put app-local runtime data, app-local secrets, app-local generated reports, or app-specific lock files at root unless the app README or a platform migration explicitly requires it.
+### 2. Configure Environment Variables
+Copy the root example variables template:
+```bash
+cp .env.example .env
+```
+Ensure you also populate the application-specific envs if you plan to launch them (e.g., `apps/web/.env`).
 
-## Common operator flow
+### 3. Build the Entire Stack
+To verify compiler checks and package dependency integrity across all monorepo applications:
+```bash
+make build-all-stacks
+```
+
+---
+
+## Local Development
+
+Each application can be run independently. Change directories into your target app and follow the local instructions:
 
 ```bash
-git pull --ff-only origin main
+# Run web client
+cd apps/web
+pnpm install
+pnpm dev
 
-# inspect repo-level map
-sed -n '1,220p' README.md
-
-# operate each app inside its own path
-cd apps/<app-name>
-cat README.md
+# Run platform API
+cd apps/api
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
 ```
 
-## Safety and security baseline
+Refer to the individual `README.md` files located in each `apps/*` subfolder for details on port configurations and script options.
 
-- No real secrets in git.
-- Keep `.env`, runtime data, generated logs, pid files, and local databases out of commits.
-- Use app-local README commands before running a stack.
-- Keep live trading, real payments, real posting, SMS, IoT, and external provider actions explicitly gated by the app's own safety controls.
-- Prefer dry-run, local, or paper mode by default.
-- Use Cloudflare Access / private networking for sensitive dashboards.
+---
 
-## Latest platform updates
+## Docker Usage
 
-- zOffice now has app-local runtime paths, safe feature env generation, license operator helpers, license receipt integrity hardening, and branding migration tooling.
-- zDash has safety-first local feature env generation, local port alignment, hardened Docker compose defaults, backend host/CORS alignment, and Makefile operational targets.
-- README files are being normalized so each app documents only its own stack and does not copy commands from other apps.
+The root of the repository provides containerized configuration files:
+- Build and spin up all local backing services (e.g., PostgreSQL, Redis, local daemons):
+  ```bash
+  docker compose up -d --build
+  ```
+- View running containers:
+  ```bash
+  docker compose ps
+  ```
 
-## Quick links
+---
 
-```text
-apps/ABTPi18n/README.md
-apps/api/README.md
-apps/openwork/README.md
-apps/web/README.md
-apps/zAcademy/README.md
-apps/zcino/README.md
-apps/zdash/README.md
-apps/zkbtrader/README.md
-apps/zLinebot/README.md
-apps/zlms-prod/README.md
-apps/zoffice/README.md
-apps/zsp-aitool/README.md
-apps/zsticker/README.md
-apps/ztrader/README.md
-apps/zveo/README.md
-apps/zwallet/README.md
-```
+## Cloudflare Deployment Notes
+
+This repository is optimized for deployment on the Cloudflare network:
+- **Cloudflare Tunnels:** Configured under `infrastructure/tunnels` to route traffic securely from the local container environment to specific hostnames (e.g., `zdash.zeaz.dev`).
+- **Cloudflare Workers:** Edge code is deployed via Wrangler configs located in the `workers/` directory.
+- **Routing & Domains:** Controlled via configuration maps inside `configs/platform/`.
+
+---
+
+## Security Model
+
+Security is built directly into our operational guidelines:
+- **No Committed Secrets:** Secrets are loaded strictly at runtime through `.env` configurations. All credentials must be absent from commits.
+- **Strict Verification:** Commits must be GPG signed to verify identity before they are merged.
+- **Access Control:** Dashboard user interfaces are protected behind Cloudflare Zero Trust policies.
+- For vulnerability reports and disclosure procedures, see [SECURITY.md](SECURITY.md).
+
+---
+
+## Contributing
+
+We welcome contributions to stabilize, improve, and add new features to the platform.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) to understand our branch conventions, commit styling, and pull request testing pipeline.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Maintainer Note
+
+We prioritize absolute separation of concerns. Do not commit test keys, database credentials, or third-party screenshots. Maintain runtime decoupling so that issue triage in one stack does not impact adjacent production components.

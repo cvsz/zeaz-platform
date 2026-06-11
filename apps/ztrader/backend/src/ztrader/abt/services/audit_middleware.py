@@ -10,7 +10,7 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from ztrader.abt.services.audit_service import AuditService
+from src.services.audit_service import AuditService
 
 
 class AuditMiddleware(BaseHTTPMiddleware):

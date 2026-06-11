@@ -229,7 +229,7 @@ title: Zeaz Platform Structure
 │   │   ├── zlinebot-master-orchestrator.sh
 │   │   ├── zlinebot-master-selfheal.sh
 │   │   └── zlinebot-master.sh
-│   ├── zlms-prod
+│   ├── zlms
 │   │   ├── AGENTS.md
 │   │   ├── app
 │   │   ├── architecture

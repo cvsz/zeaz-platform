@@ -22,5 +22,12 @@ ingress:
       noTLSVerify: false
       originServerName: ""
 
+  - hostname: zcloud.zeaz.dev
+    service: http://localhost:3003
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
   # Default catch-all - block if not matched
   - service: http_status:404
+

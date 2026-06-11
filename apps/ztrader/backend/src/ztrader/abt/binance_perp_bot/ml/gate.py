@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from ztrader.abt.binance_perp_bot.indicators import adx, atr, closes, ema, rsi
-from ztrader.abt.binance_perp_bot.models import (
+from binance_perp_bot.indicators import adx, atr, closes, ema, rsi
+from binance_perp_bot.models import (
     MarketSnapshot,
     RegimeMode,
     SignalAction,

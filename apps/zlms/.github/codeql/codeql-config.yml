@@ -1,0 +1,26 @@
+name: zlms-codeql
+
+disable-default-queries: false
+
+paths-ignore:
+  - node_modules
+  - vendor
+  - public/vendor
+  - public/assets/vendor
+  - dist
+  - build
+  - coverage
+  - min
+  - tmp
+  - cache
+  - storage
+  - bootstrap/cache
+  - public/build
+  - public/dist
+  - '**/*.min.js'
+  - '**/*.bundle.js'
+  - '**/generated/**'
+  - '**/compiled/**'
+
+queries:
+  - uses: security-and-quality

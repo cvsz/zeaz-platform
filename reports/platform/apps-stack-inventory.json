@@ -4,7 +4,7 @@
       "app_id": "ABTPi18n",
       "path": "apps/ABTPi18n",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 262,
       "git_status": [],
       "stack": [
         "docker",
@@ -66,7 +66,6 @@
           ],
           "3000": [
             "apps/ABTPi18n/.env.example",
-            "apps/ABTPi18n/README.md",
             "apps/ABTPi18n/apps/backend/main.py",
             "apps/ABTPi18n/apps/backend/src/auth/google_provider.py",
             "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
@@ -88,7 +87,6 @@
             "apps/ABTPi18n/verify.sh"
           ],
           "3001": [
-            "apps/ABTPi18n/README.md",
             "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
             "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md",
             "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
@@ -129,7 +127,6 @@
           "8000": [
             "apps/ABTPi18n/.env.example",
             "apps/ABTPi18n/Grok.md",
-            "apps/ABTPi18n/README.md",
             "apps/ABTPi18n/apps/backend/Dockerfile",
             "apps/ABTPi18n/apps/backend/src/api/tradingview_endpoints.py",
             "apps/ABTPi18n/apps/frontend/src/app/[lng]/dashboard/page.tsx",
@@ -158,7 +155,6 @@
             "apps/ABTPi18n/verify.sh"
           ],
           "9090": [
-            "apps/ABTPi18n/README.md",
             "apps/ABTPi18n/docs/enterprise/CONFIGURATION.en.md",
             "apps/ABTPi18n/docs/enterprise/CONFIGURATION.th.md",
             "apps/ABTPi18n/docs/enterprise/GETTING_STARTED.en.md",
@@ -201,12 +197,14 @@
       "app_id": "api",
       "path": "apps/api",
       "nested_git": false,
-      "root_tracked_files": 10,
+      "root_tracked_files": 13,
       "git_status": [],
       "stack": [
+        "docker",
         "python"
       ],
       "stack_files": [
+        "apps/api/docker-compose.yml",
         "apps/api/requirements.txt"
       ],
       "package": null,
@@ -215,13 +213,397 @@
           "6379": [
             "apps/api/routers/scheduler.py",
             "apps/api/routers/swarm.py"
+          ],
+          "8000": [
+            "apps/api/docker-compose.yml"
           ]
         },
-        "domains": {},
+        "domains": {
+          "api-zcfdash.zeaz.dev": [
+            "apps/api/routers/cloudflare_control.py"
+          ],
+          "api.zeaz.dev": [
+            "apps/api/README.md",
+            "apps/api/docker-compose.yml"
+          ],
+          "zcfdash.zeaz.dev": [
+            "apps/api/routers/cloudflare_control.py"
+          ]
+        },
         "extension_counts": {
-          ".py": 9,
+          ".py": 10,
           ".bak": 1,
+          ".yml": 1,
+          ".md": 1,
           ".txt": 1
+        }
+      }
+    },
+    {
+      "app_id": "openwork",
+      "path": "apps/openwork",
+      "nested_git": false,
+      "root_tracked_files": 1679,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "node",
+        "npm",
+        "pnpm"
+      ],
+      "stack_files": [
+        "apps/openwork/.devcontainer/Dockerfile",
+        "apps/openwork/.devcontainer/docker-compose.yml",
+        "apps/openwork/.opencode/package-lock.json",
+        "apps/openwork/.opencode/package.json",
+        "apps/openwork/Makefile",
+        "apps/openwork/apps/app/package.json",
+        "apps/openwork/apps/app/tsconfig.json",
+        "apps/openwork/apps/app/vite.config.ts",
+        "apps/openwork/apps/desktop/package.json",
+        "apps/openwork/apps/desktop/server/package.json",
+        "apps/openwork/apps/opencode-router/package.json",
+        "apps/openwork/apps/opencode-router/tsconfig.json",
+        "apps/openwork/apps/orchestrator/package.json",
+        "apps/openwork/apps/orchestrator/tsconfig.json",
+        "apps/openwork/apps/server/package.json",
+        "apps/openwork/apps/server/tsconfig.json",
+        "apps/openwork/apps/ui-demo/package.json",
+        "apps/openwork/apps/ui-demo/tsconfig.json",
+        "apps/openwork/apps/ui-demo/vite.config.ts",
+        "apps/openwork/ee/apps/den-api/package.json",
+        "apps/openwork/ee/apps/den-api/tsconfig.json",
+        "apps/openwork/ee/apps/den-web/next.config.js",
+        "apps/openwork/ee/apps/den-web/package.json",
+        "apps/openwork/ee/apps/den-web/tsconfig.json",
+        "apps/openwork/ee/apps/den-worker-proxy/package.json",
+        "apps/openwork/ee/apps/den-worker-proxy/tsconfig.json",
+        "apps/openwork/ee/apps/inference/package.json",
+        "apps/openwork/ee/apps/inference/tsconfig.json",
+        "apps/openwork/ee/apps/landing/next.config.js",
+        "apps/openwork/ee/apps/landing/package.json",
+        "apps/openwork/ee/apps/landing/tsconfig.json",
+        "apps/openwork/ee/packages/den-db/package.json",
+        "apps/openwork/ee/packages/den-db/tsconfig.json",
+        "apps/openwork/ee/packages/utils/package.json",
+        "apps/openwork/ee/packages/utils/tsconfig.json",
+        "apps/openwork/package-lock.json",
+        "apps/openwork/package.json",
+        "apps/openwork/packages/email/package.json",
+        "apps/openwork/packages/email/tsconfig.json",
+        "apps/openwork/packages/handsfree/package.json",
+        "apps/openwork/packages/openwork-ui-mcp/package.json",
+        "apps/openwork/packages/types/package.json",
+        "apps/openwork/packages/types/tsconfig.json",
+        "apps/openwork/packages/ui/package.json",
+        "apps/openwork/packaging/docker/Dockerfile",
+        "apps/openwork/packaging/docker/docker-compose.yml",
+        "apps/openwork/pnpm-lock.yaml"
+      ],
+      "package": {
+        "name": "@different-ai/openwork-workspace",
+        "version": "0.0.0",
+        "scripts": [
+          "build",
+          "build:ui",
+          "build:web",
+          "bump:major",
+          "bump:minor",
+          "bump:patch",
+          "bump:set",
+          "dev",
+          "dev:den",
+          "dev:den-docker",
+          "dev:den-local",
+          "dev:den:api",
+          "dev:den:db-push",
+          "dev:den:inference",
+          "dev:den:mysql",
+          "dev:den:mysql:down",
+          "dev:den:seed-demo",
+          "dev:den:web",
+          "dev:electron",
+          "dev:headless-web",
+          "dev:sandbox",
+          "dev:ui",
+          "dev:ui-demo",
+          "dev:web",
+          "dev:web-local",
+          "dev:windows",
+          "dev:windows:x64",
+          "email:dev",
+          "preview",
+          "release:prepare",
+          "release:prepare:dry",
+          "release:review",
+          "release:ship",
+          "release:ship:watch",
+          "test:e2e",
+          "test:events",
+          "test:fs-engine",
+          "test:health",
+          "test:orchestrator",
+          "test:permissions",
+          "test:refactor",
+          "test:session-error-recovery",
+          "test:session-scope",
+          "test:session-switch",
+          "test:sessions",
+          "test:todos",
+          "typecheck"
+        ],
+        "dependencies_count": 1,
+        "dev_dependencies_count": 1
+      },
+      "signals": {
+        "ports": {
+          "443": [
+            "apps/openwork/ee/apps/den-web/proxy.ts"
+          ],
+          "587": [
+            "apps/openwork/ee/apps/den-api/.env.example"
+          ],
+          "1234": [
+            "apps/openwork/apps/app/tests/session-sync-permissions.test.ts",
+            "apps/openwork/apps/app/tests/session-sync-tool-parts.test.ts"
+          ],
+          "3000": [
+            "apps/openwork/apps/app/scripts/open-target.test.ts",
+            "apps/openwork/apps/app/tests/env-context.test.ts",
+            "apps/openwork/ee/apps/den-api/.env.example",
+            "apps/openwork/ee/apps/inference/.env.example",
+            "apps/openwork/ee/apps/landing/app/api/_lib/security.ts",
+            "apps/openwork/scripts/harness/agents/gan-evaluator.md",
+            "apps/openwork/scripts/harness/agents/gan-generator.md"
+          ],
+          "3001": [
+            "apps/openwork/ee/apps/den-api/.env.example"
+          ],
+          "3005": [
+            "apps/openwork/.devcontainer/README.md",
+            "apps/openwork/.devcontainer/docker-compose.yml",
+            "apps/openwork/.devcontainer/start-services.sh",
+            "apps/openwork/.opencode/skills/daytona-cloud-instance/SKILL.md",
+            "apps/openwork/.opencode/skills/daytona-electron-test/SKILL.md",
+            "apps/openwork/apps/opencode-router/.env.example",
+            "apps/openwork/ee/apps/den-api/.env.example",
+            "apps/openwork/ee/apps/den-web/README.md",
+            "apps/openwork/ee/apps/landing/app/api/_lib/security.ts",
+            "apps/openwork/evals/cloud-admin-to-member-assignment-flows.md",
+            "apps/openwork/packaging/docker/README.md",
+            "apps/openwork/packaging/docker/docker-compose.den-dev.yml",
+            "apps/openwork/packaging/systemd/openwork.env.example"
+          ],
+          "3306": [
+            "apps/openwork/.devcontainer/start-daytona-server.sh",
+            "apps/openwork/.opencode/skills/daytona-electron-test/SKILL.md",
+            "apps/openwork/.opencode/skills/daytona-seeded-cloud-demo/SKILL.md",
+            "apps/openwork/ee/apps/den-api/.env.example",
+            "apps/openwork/ee/apps/den-api/package.json",
+            "apps/openwork/ee/apps/den-api/test/github-webhook.test.ts",
+            "apps/openwork/ee/apps/den-api/test/internal-mcp-principal.test.ts",
+            "apps/openwork/ee/apps/den-api/test/org-invitations.test.ts",
+            "apps/openwork/ee/apps/den-api/test/plugin-system-access.test.ts",
+            "apps/openwork/ee/apps/den-api/test/plugin-system-cross-org-idor.test.ts",
+            "apps/openwork/ee/apps/inference/.env.example",
+            "apps/openwork/ee/apps/inference/src/env.ts",
+            "apps/openwork/package.json",
+            "apps/openwork/packaging/systemd/openwork.env.example",
+            "apps/openwork/scripts/dev-web-local.sh"
+          ],
+          "3333": [
+            "apps/openwork/apps/ui-demo/vite.config.ts"
+          ],
+          "3978": [
+            "apps/openwork/evals/daytona-flows.md"
+          ],
+          "4096": [
+            "apps/openwork/apps/app/src/react-app/shell/providers.tsx",
+            "apps/openwork/apps/opencode-router/.env.example",
+            "apps/openwork/apps/opencode-router/README.md",
+            "apps/openwork/apps/opencode-router/install.sh",
+            "apps/openwork/apps/opencode-router/src/config.ts",
+            "apps/openwork/apps/opencode-router/test/bridge-e2e.test.js",
+            "apps/openwork/apps/opencode-router/test/bridge-multiworkspace.test.js",
+            "apps/openwork/apps/opencode-router/test/health-send.test.js",
+            "apps/openwork/apps/server/README.md",
+            "apps/openwork/packaging/docker/Dockerfile",
+            "apps/openwork/packaging/docker/README.md"
+          ],
+          "4321": [
+            "apps/openwork/apps/server/src/artifact-files.e2e.test.ts"
+          ],
+          "5173": [
+            "apps/openwork/.devcontainer/docker-compose.yml",
+            "apps/openwork/.devcontainer/start-services.sh",
+            "apps/openwork/.opencode/skills/browser-automation/SKILL.md",
+            "apps/openwork/.opencode/skills/daytona-dev/SKILL.md",
+            "apps/openwork/.opencode/skills/daytona-electron-test/SKILL.md",
+            "apps/openwork/apps/app/scripts/open-target.test.ts",
+            "apps/openwork/apps/server/README.md",
+            "apps/openwork/apps/server/src/env-routes.e2e.test.ts",
+            "apps/openwork/packaging/docker/docker-compose.den-dev.yml",
+            "apps/openwork/packaging/docker/docker-compose.dev.yml",
+            "apps/openwork/packaging/systemd/openwork.env.example"
+          ],
+          "5432": [
+            "apps/openwork/scripts/harness/agents/opensource-forker.md"
+          ],
+          "6000": [
+            "apps/openwork/apps/server/src/opencode-connection.test.ts"
+          ],
+          "6080": [
+            "apps/openwork/.devcontainer/start-services.sh",
+            "apps/openwork/.devcontainer/test-on-daytona.sh"
+          ],
+          "6379": [
+            "apps/openwork/scripts/harness/agents/opensource-forker.md"
+          ],
+          "8080": [
+            "apps/openwork/apps/server/src/validators.test.ts",
+            "apps/openwork/scripts/harness/agents/opensource-forker.md",
+            "apps/openwork/scripts/harness/commands/rust-test.md"
+          ],
+          "8090": [
+            "apps/openwork/.devcontainer/test-on-daytona.sh",
+            "apps/openwork/.opencode/skills/daytona-recording-artifacts/SKILL.md"
+          ],
+          "8787": [
+            "apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts",
+            "apps/openwork/apps/app/src/app/lib/openwork-server.ts",
+            "apps/openwork/apps/app/tests/openwork-env-runtime.test.ts",
+            "apps/openwork/apps/server/src/config.ts",
+            "apps/openwork/apps/server/src/extensions/google-workspace.test.ts",
+            "apps/openwork/apps/server/src/tokens.test.ts",
+            "apps/openwork/ee/apps/den-worker-proxy/.env.example",
+            "apps/openwork/packaging/docker/README.md",
+            "apps/openwork/packaging/docker/docker-compose.dev.yml",
+            "apps/openwork/scripts/build-microsandbox-openwork-image.sh"
+          ],
+          "8788": [
+            "apps/openwork/.devcontainer/docker-compose.yml",
+            "apps/openwork/.devcontainer/start-services.sh",
+            "apps/openwork/.opencode/skills/daytona-seeded-cloud-demo/SKILL.md",
+            "apps/openwork/evals/cloud-admin-to-member-assignment-flows.md",
+            "apps/openwork/packaging/docker/docker-compose.den-dev.yml"
+          ],
+          "8789": [
+            "apps/openwork/ee/apps/den-worker-proxy/.env.example",
+            "apps/openwork/packaging/docker/docker-compose.den-dev.yml"
+          ],
+          "8790": [
+            "apps/openwork/ee/apps/den-api/.env.example",
+            "apps/openwork/ee/apps/den-api/test/github-webhook.test.ts",
+            "apps/openwork/ee/apps/den-api/test/internal-mcp-principal.test.ts",
+            "apps/openwork/ee/apps/den-api/test/org-invitations.test.ts",
+            "apps/openwork/ee/apps/den-api/test/plugin-system-access.test.ts",
+            "apps/openwork/ee/apps/den-api/test/plugin-system-cross-org-idor.test.ts",
+            "apps/openwork/packaging/docker/README.md",
+            "apps/openwork/packaging/systemd/openwork.env.example"
+          ],
+          "8791": [
+            "apps/openwork/apps/server/src/embedded.ts",
+            "apps/openwork/ee/apps/den-api/src/env.ts",
+            "apps/openwork/ee/apps/inference/.env.example",
+            "apps/openwork/ee/apps/inference/src/models/openwork-dev.json",
+            "apps/openwork/packaging/systemd/openwork.env.example"
+          ],
+          "9222": [
+            "apps/openwork/.opencode/skills/daytona-chrome-cdp/SKILL.md"
+          ],
+          "9223": [
+            "apps/openwork/evals/browser-extension-flows.md"
+          ],
+          "9823": [
+            "apps/openwork/.opencode/skills/browser-automation/SKILL.md",
+            "apps/openwork/evals/openable-items-flow.md",
+            "apps/openwork/evals/react-session-flows.md",
+            "apps/openwork/packaging/systemd/openwork.env.example",
+            "apps/openwork/scripts/openwork-debug.sh"
+          ],
+          "9825": [
+            "apps/openwork/.devcontainer/README.md",
+            "apps/openwork/.devcontainer/docker-compose.yml",
+            "apps/openwork/.devcontainer/start-services.sh",
+            "apps/openwork/.devcontainer/test-on-daytona.sh",
+            "apps/openwork/.opencode/skills/daytona-dev/SKILL.md",
+            "apps/openwork/.opencode/skills/daytona-electron-test/SKILL.md",
+            "apps/openwork/.opencode/skills/run-evals/SKILL.md",
+            "apps/openwork/evals/README.md",
+            "apps/openwork/evals/daytona-flows.md"
+          ],
+          "9830": [
+            "apps/openwork/.opencode/skills/browser-automation/SKILL.md"
+          ],
+          "11434": [
+            "apps/openwork/apps/app/src/app/extensions.ts",
+            "apps/openwork/apps/app/src/react-app/domains/settings/openai-image-extension.ts",
+            "apps/openwork/apps/server/src/jsonc.test.ts",
+            "apps/openwork/ee/apps/den-api/src/routes/org/plugin-system/store.ts"
+          ],
+          "18801": [
+            "apps/openwork/scripts/install-openwork.sh"
+          ],
+          "19876": [
+            "apps/openwork/apps/app/src/i18n/locales/ca.ts",
+            "apps/openwork/apps/app/src/i18n/locales/en.ts",
+            "apps/openwork/apps/app/src/i18n/locales/es.ts",
+            "apps/openwork/apps/app/src/i18n/locales/fr.ts",
+            "apps/openwork/apps/app/src/i18n/locales/ja.ts",
+            "apps/openwork/apps/app/src/i18n/locales/pt-BR.ts",
+            "apps/openwork/apps/app/src/i18n/locales/ru.ts",
+            "apps/openwork/apps/app/src/i18n/locales/th.ts",
+            "apps/openwork/apps/app/src/i18n/locales/vi.ts",
+            "apps/openwork/apps/app/src/i18n/locales/zh.ts"
+          ],
+          "48123": [
+            "apps/openwork/apps/server/src/embedded.ts"
+          ],
+          "49999": [
+            "apps/openwork/apps/server/src/workspace-activate.e2e.test.ts"
+          ],
+          "52431": [
+            "apps/openwork/docs/mcp-ui-control-profile.md"
+          ],
+          "54235": [
+            "apps/openwork/apps/server/src/opencode-connection.test.ts"
+          ],
+          "59673": [
+            "apps/openwork/evals/browser-extension-flows.md"
+          ],
+          "59674": [
+            "apps/openwork/evals/browser-extension-flows.md"
+          ],
+          "59675": [
+            "apps/openwork/evals/browser-extension-flows.md"
+          ]
+        },
+        "domains": {
+          "openwork.zeaz.dev": [
+            "apps/openwork/README.md"
+          ]
+        },
+        "extension_counts": {
+          ".json": 775,
+          ".timestamp": 631,
+          ".d": 561,
+          ".rlib": 520,
+          ".rmeta": 520,
+          ".ts": 448,
+          ".tsx": 365,
+          ".png": 265,
+          ".md": 245,
+          ".o": 159,
+          ".mjs": 70,
+          "run-build-script-build-script-build": 68,
+          "dep-build-script-build-script-build": 68,
+          "build-script-build-script-build": 68,
+          ".so": 39,
+          ".sh": 27,
+          ".mdx": 27,
+          ".sql": 21,
+          ".yml": 20,
+          ".svg": 18
         }
       }
     },
@@ -229,16 +611,18 @@
       "app_id": "web",
       "path": "apps/web",
       "nested_git": false,
-      "root_tracked_files": 43,
+      "root_tracked_files": 49,
       "git_status": [],
       "stack": [
         "node",
-        "npm"
+        "npm",
+        "pnpm"
       ],
       "stack_files": [
         "apps/web/next.config.ts",
         "apps/web/package-lock.json",
         "apps/web/package.json",
+        "apps/web/pnpm-lock.yaml",
         "apps/web/tsconfig.json"
       ],
       "package": {
@@ -255,25 +639,56 @@
       },
       "signals": {
         "ports": {
-          "3000": [
-            "apps/web/README.md"
-          ],
           "8000": [
             "apps/web/src/app/swarm-runtime/page.tsx",
             "apps/web/src/lib/api.ts"
           ]
         },
-        "domains": {},
+        "domains": {
+          "api-zcfdash.zeaz.dev": [
+            "apps/web/src/app/dashboard/page.tsx"
+          ],
+          "api-zdash.zeaz.dev": [
+            "apps/web/src/app/reports/page.tsx"
+          ],
+          "app.zeaz.dev": [
+            "apps/web/src/app/loading.tsx",
+            "apps/web/src/app/reports/page.tsx"
+          ],
+          "ssh.zeaz.dev": [
+            "apps/web/src/app/reports/page.tsx"
+          ],
+          "www.zeaz.dev": [
+            "apps/web/README.md",
+            "apps/web/src/app/reports/page.tsx"
+          ],
+          "zcfdash.zeaz.dev": [
+            "apps/web/src/app/dashboard/page.tsx"
+          ],
+          "zcino.zeaz.dev": [
+            "apps/web/src/app/reports/page.tsx"
+          ],
+          "zdash.zeaz.dev": [
+            "apps/web/src/app/reports/page.tsx"
+          ],
+          "zveo.zeaz.dev": [
+            "apps/web/src/app/reports/page.tsx"
+          ]
+        },
         "extension_counts": {
-          ".tsx": 25,
+          ".tsx": 27,
           ".ts": 5,
           ".svg": 5,
           ".json": 4,
           ".mjs": 2,
+          ".yaml": 2,
           ".md": 1,
           ".gitignore": 1,
+          ".npmrc": 1,
+          ".tsbuildinfo": 1,
           ".ico": 1,
-          ".css": 1
+          ".css": 1,
+          ".html": 1
         }
       }
     },
@@ -281,7 +696,7 @@
       "app_id": "zAcademy",
       "path": "apps/zAcademy",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 133,
       "git_status": [],
       "stack": [
         "node",
@@ -347,42 +762,201 @@
       }
     },
     {
-      "app_id": "zcino",
-      "path": "apps/zcino",
-      "nested_git": false,
-      "root_tracked_files": 0,
+      "app_id": "zLinebot",
+      "path": "apps/zLinebot",
+      "nested_git": true,
+      "root_tracked_files": 13,
       "git_status": [],
       "stack": [
-        "unknown"
+        "node"
       ],
       "stack_files": [
-        "apps/zcino/Makefile"
+        "apps/zLinebot/admin/package-lock.json",
+        "apps/zLinebot/app/package-lock.json",
+        "apps/zLinebot/package.json"
+      ],
+      "package": {
+        "name": "@zeaz/zlinebot",
+        "version": "0.1.0",
+        "scripts": [
+          "dev",
+          "health",
+          "start"
+        ],
+        "dependencies_count": 0,
+        "dev_dependencies_count": 0
+      },
+      "signals": {
+        "ports": {
+          "4113": [
+            "apps/zLinebot/.env.example"
+          ]
+        },
+        "domains": {
+          "zlinebot.zeaz.dev": [
+            "apps/zLinebot/cloudflared/config.yml"
+          ]
+        },
+        "extension_counts": {
+          ".md": 7,
+          ".js": 4,
+          ".json": 3,
+          ".example": 1,
+          ".bak": 1,
+          ".env": 1,
+          ".log": 1,
+          ".yml": 1
+        }
+      }
+    },
+    {
+      "app_id": "zcfdash",
+      "path": "apps/zcfdash",
+      "nested_git": false,
+      "root_tracked_files": 2,
+      "git_status": [],
+      "stack": [
+        "docker"
+      ],
+      "stack_files": [
+        "apps/zcfdash/docker-compose.yml"
       ],
       "package": null,
       "signals": {
         "ports": {},
-        "domains": {},
+        "domains": {
+          "zcfdash.zeaz.dev": [
+            "apps/zcfdash/docker-compose.yml"
+          ]
+        },
+        "extension_counts": {
+          ".yml": 1,
+          ".html": 1
+        }
+      }
+    },
+    {
+      "app_id": "zcino",
+      "path": "apps/zcino",
+      "nested_git": false,
+      "root_tracked_files": 3119,
+      "git_status": [],
+      "stack": [
+        "docker"
+      ],
+      "stack_files": [
+        "apps/zcino/Dockerfile",
+        "apps/zcino/Makefile",
+        "apps/zcino/docker-compose.yml",
+        "apps/zcino/frontend/Dockerfile",
+        "apps/zcino/frontend/package-lock.json",
+        "apps/zcino/frontend/package.json",
+        "apps/zcino/frontend/tsconfig.json",
+        "apps/zcino/infra/docker-compose.yml",
+        "apps/zcino/infra/zeaz-testnet/docker-compose.yml",
+        "apps/zcino/sdk/typescript/package-lock.json",
+        "apps/zcino/sdk/typescript/package.json",
+        "apps/zcino/sdk/typescript/tsconfig.json"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "3000": [
+            "apps/zcino/frontend/Dockerfile"
+          ],
+          "3020": [
+            "apps/zcino/frontend/start_next.sh"
+          ],
+          "4222": [
+            "apps/zcino/docs/source-checklist.md",
+            "apps/zcino/k8s/baseline/network-policies.yaml"
+          ],
+          "4225": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "5432": [
+            "apps/zcino/docs/source-checklist.md",
+            "apps/zcino/k8s/baseline/network-policies.yaml"
+          ],
+          "5437": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "6379": [
+            "apps/zcino/docs/operations.md",
+            "apps/zcino/docs/source-checklist.md",
+            "apps/zcino/k8s/baseline/network-policies.yaml"
+          ],
+          "6383": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "6443": [
+            "apps/zcino/release/zeaz_release_v2.sh"
+          ],
+          "8080": [
+            "apps/zcino/docs/api.md",
+            "apps/zcino/docs/operations.md",
+            "apps/zcino/infra/docker-compose.yml",
+            "apps/zcino/k8s/game-service.yaml"
+          ],
+          "8082": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "8086": [
+            "apps/zcino/frontend/start_next.sh",
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "8087": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "8090": [
+            "apps/zcino/docker-compose.yml",
+            "apps/zcino/docs/source-checklist.md",
+            "apps/zcino/k8s/zeaz-testnet/zeaz-node.yaml"
+          ],
+          "8123": [
+            "apps/zcino/infra/docker-compose.yml",
+            "apps/zcino/k8s/baseline/network-policies.yaml"
+          ],
+          "8125": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "8222": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "8225": [
+            "apps/zcino/infra/docker-compose.yml"
+          ],
+          "9007": [
+            "apps/zcino/infra/docker-compose.yml"
+          ]
+        },
+        "domains": {
+          "zcino.zeaz.dev": [
+            "apps/zcino/README.md",
+            "apps/zcino/docker-compose.yml"
+          ]
+        },
         "extension_counts": {
           ".png": 1921,
           ".php": 264,
+          ".tsx": 161,
           ".gif": 147,
           ".xml": 100,
+          ".go": 97,
           ".js": 77,
           ".jpg": 59,
           ".htm": 57,
           ".map": 40,
-          ".css": 30,
+          ".css": 31,
+          ".md": 19,
+          ".ts": 18,
           ".html": 16,
           ".psd": 11,
-          ".DS_Store": 10,
           ".ttf": 10,
+          ".yaml": 9,
           ".txt": 8,
-          ".swf": 7,
-          ".htaccess": 6,
-          ".swz": 5,
-          ".pdf": 5,
-          ".mno": 5,
-          ".ico": 2
+          ".json": 8,
+          ".swf": 7
         }
       }
     },
@@ -390,7 +964,7 @@
       "app_id": "zcino-modern",
       "path": "apps/zcino-modern",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 208,
       "git_status": [],
       "stack": [
         "docker"
@@ -398,12 +972,10 @@
       "stack_files": [
         "apps/zcino-modern/Dockerfile",
         "apps/zcino-modern/frontend/Dockerfile",
-        "apps/zcino-modern/frontend/package-lock.json",
         "apps/zcino-modern/frontend/package.json",
         "apps/zcino-modern/frontend/tsconfig.json",
         "apps/zcino-modern/infra/docker-compose.yml",
         "apps/zcino-modern/infra/zeaz-testnet/docker-compose.yml",
-        "apps/zcino-modern/sdk/typescript/package-lock.json",
         "apps/zcino-modern/sdk/typescript/package.json",
         "apps/zcino-modern/sdk/typescript/tsconfig.json"
       ],
@@ -463,14 +1035,18 @@
             "apps/zcino-modern/infra/docker-compose.yml"
           ]
         },
-        "domains": {},
+        "domains": {
+          "zcino.zeaz.dev": [
+            "apps/zcino-modern/INACTIVE_AFTER_MERGE.md"
+          ]
+        },
         "extension_counts": {
-          ".go": 96,
+          ".go": 95,
           ".tsx": 31,
-          ".md": 19,
+          ".md": 20,
           ".ts": 18,
           ".yaml": 9,
-          ".json": 8,
+          ".json": 6,
           ".sql": 5,
           ".yml": 3,
           ".dockerignore": 2,
@@ -489,10 +1065,61 @@
       }
     },
     {
+      "app_id": "zcloud",
+      "path": "apps/zcloud",
+      "nested_git": false,
+      "root_tracked_files": 18,
+      "git_status": [],
+      "stack": [
+        "node",
+        "npm"
+      ],
+      "stack_files": [
+        "apps/zcloud/next.config.ts",
+        "apps/zcloud/package-lock.json",
+        "apps/zcloud/package.json",
+        "apps/zcloud/tsconfig.json"
+      ],
+      "package": {
+        "name": "zcloud",
+        "version": "0.1.0",
+        "scripts": [
+          "build",
+          "dev",
+          "lint",
+          "start"
+        ],
+        "dependencies_count": 4,
+        "dev_dependencies_count": 7
+      },
+      "signals": {
+        "ports": {
+          "5000": [
+            "apps/zcloud/src/app/api/chat/route.ts"
+          ],
+          "11434": [
+            "apps/zcloud/src/app/api/chat/route.ts"
+          ],
+          "18789": [
+            "apps/zcloud/src/app/api/chat/route.ts"
+          ]
+        },
+        "domains": {},
+        "extension_counts": {
+          ".ts": 11,
+          ".json": 3,
+          ".tsx": 2,
+          ".mjs": 1,
+          ".md": 1,
+          ".css": 1
+        }
+      }
+    },
+    {
       "app_id": "zdash",
       "path": "apps/zdash",
       "nested_git": false,
-      "root_tracked_files": 1121,
+      "root_tracked_files": 1123,
       "git_status": [],
       "stack": [
         "docker",
@@ -529,7 +1156,6 @@
           "5173": [
             "apps/zdash/.env.example",
             "apps/zdash/.github/workflows/e2e.yml",
-            "apps/zdash/README.md",
             "apps/zdash/backend/app/core/config.py",
             "apps/zdash/backend/app/tests/test_phase7_dashboard_api.py",
             "apps/zdash/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md",
@@ -540,12 +1166,12 @@
             "apps/zdash/docs/runbooks/ROLLBACK_RUNBOOK.md",
             "apps/zdash/docs/runbooks/START_SERVER.md",
             "apps/zdash/docs/runbooks/rollback-runbook.md",
+            "apps/zdash/scripts/feature-local-env.sh",
             "apps/zdash/scripts/prod/capture-go-live-evidence.sh",
             "apps/zdash/tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md"
           ],
           "5432": [
             "apps/zdash/.github/workflows/e2e.yml",
-            "apps/zdash/README.md",
             "apps/zdash/backend/app/tests/test_production_safety.py",
             "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
             "apps/zdash/infra/k8s/postgres-statefulset.yaml"
@@ -562,7 +1188,6 @@
             "apps/zdash/.env.example",
             "apps/zdash/.github/workflows/e2e.yml",
             "apps/zdash/AGENTS.md",
-            "apps/zdash/README.md",
             "apps/zdash/docker-compose.prod.yml",
             "apps/zdash/docker-compose.yml",
             "apps/zdash/docs/AI_TRADER_CONTROL_PLANE.md",
@@ -588,31 +1213,30 @@
             "apps/zdash/docs/runbooks/SUBSCRIPTION_SUPPORT_RUNBOOK.md",
             "apps/zdash/docs/runbooks/final-release-runbook.md",
             "apps/zdash/docs/runbooks/incident-response-runbook.md",
-            "apps/zdash/docs/runbooks/rollback-runbook.md"
+            "apps/zdash/docs/runbooks/rollback-runbook.md",
+            "apps/zdash/frontend/.env.example"
           ],
           "9009": [
             "apps/zdash/docs/reports/zdash-deep-scan/06-package-make-scripts.txt"
+          ],
+          "16380": [
+            "apps/zdash/.env.example",
+            "apps/zdash/scripts/feature-local-env.sh"
           ]
         },
         "domains": {
-          "api-zzdash.zeaz.dev": [
+          "api-zdash.zeaz.dev": [
             "apps/zdash/IMPORT_SOURCE.md",
+            "apps/zdash/Makefile",
+            "apps/zdash/README.md",
             "apps/zdash/infra/cloudflare/tunnel-config.example.yml",
             "apps/zdash/infra/k8s/nginx-ingress.yaml"
           ],
           "release.zeaz.dev": [
-            "apps/zdash/IMPORT_SOURCE.md"
+            "apps/zdash/IMPORT_SOURCE.md",
+            "apps/zdash/Makefile"
           ],
           "zdash.zeaz.dev": [
-            "apps/zdash/IMPORT_SOURCE.md",
-            "apps/zdash/docs/reports/zdash-deep-scan/04-routes-api.txt",
-            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
-            "apps/zdash/frontend/src/api/endpoints.ts",
-            "apps/zdash/frontend/src/tests/Enterprise.test.tsx",
-            "apps/zdash/frontend/src/tests/mocks/apiMockData.ts",
-            "apps/zdash/frontend/src/tests/setup.ts"
-          ],
-          "zzdash.zeaz.dev": [
             "apps/zdash/.env.example",
             "apps/zdash/CODE-OF-CONDUCT.md",
             "apps/zdash/COMMUNITY.md",
@@ -621,26 +1245,34 @@
             "apps/zdash/Makefile",
             "apps/zdash/README.md",
             "apps/zdash/SECURITY.md",
+            "apps/zdash/backend/app/core/config.py",
             "apps/zdash/docs/ops/SIGNED_RELEASE_ATTESTATION.md",
             "apps/zdash/docs/releases/FINAL_RELEASE_NOTES.md",
             "apps/zdash/docs/releases/v0.42.0-rc1.md",
             "apps/zdash/docs/releases/v2.0.1.md",
             "apps/zdash/docs/releases/v2.0.2.md",
+            "apps/zdash/docs/reports/zdash-deep-scan/04-routes-api.txt",
+            "apps/zdash/docs/reports/zdash-deep-scan/05-env-vars.txt",
             "apps/zdash/docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md",
             "apps/zdash/docs/runbooks/INSTALLATION.md",
             "apps/zdash/docs/runbooks/REALTIME_GATEWAY.md",
+            "apps/zdash/frontend/src/api/endpoints.ts",
+            "apps/zdash/frontend/src/tests/Enterprise.test.tsx",
+            "apps/zdash/frontend/src/tests/mocks/apiMockData.ts",
+            "apps/zdash/frontend/src/tests/setup.ts",
             "apps/zdash/frontend/src/tests/useCollaboration.test.ts",
             "apps/zdash/infra/cloudflare/tunnel-config.example.yml",
             "apps/zdash/infra/k8s/configmap.yaml",
             "apps/zdash/infra/k8s/nginx-ingress.yaml",
-            "apps/zdash/infra/scripts/cloudflare-dry-run.sh"
+            "apps/zdash/infra/scripts/cloudflare-dry-run.sh",
+            "apps/zdash/scripts/feature-local-env.sh"
           ]
         },
         "extension_counts": {
           ".py": 488,
           ".tsx": 212,
           ".md": 106,
-          ".sh": 65,
+          ".sh": 66,
           ".prompt": 60,
           ".ts": 54,
           ".yml": 20,
@@ -664,7 +1296,7 @@
       "app_id": "zkbtrader",
       "path": "apps/zkbtrader",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 77,
       "git_status": [],
       "stack": [
         "docker",
@@ -816,7 +1448,6 @@
           ],
           "8004": [
             "apps/zkbtrader/.env.example",
-            "apps/zkbtrader/README.md",
             "apps/zkbtrader/docs/prompt/zkbtrader-ecc-next.md"
           ],
           "8080": [
@@ -934,11 +1565,13 @@
       "app_id": "zlms-prod",
       "path": "apps/zlms-prod",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 30846,
       "git_status": [],
       "stack": [
+        "docker",
         "node",
-        "npm"
+        "npm",
+        "pnpm"
       ],
       "stack_files": [
         "apps/zlms-prod/app/assets/global/plugins/bootstrap-markdown/package.json",
@@ -946,9 +1579,11 @@
         "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-markdown/package.json",
         "apps/zlms-prod/app/phpMyAdmin/package.json",
         "apps/zlms-prod/app/phpMyAdmin/yarn.lock",
+        "apps/zlms-prod/docker-compose.yml",
         "apps/zlms-prod/next.config.ts",
         "apps/zlms-prod/package-lock.json",
-        "apps/zlms-prod/package.json"
+        "apps/zlms-prod/package.json",
+        "apps/zlms-prod/pnpm-lock.yaml"
       ],
       "package": {
         "name": "zlms-frontend-runtime-migration",
@@ -984,6 +1619,7 @@
             "apps/zlms-prod/app/assets/global/plugins/bootstrap-editable/README.md",
             "apps/zlms-prod/app/bin/Release/Publish/assets/global/plugins/bootstrap-editable/README.md",
             "apps/zlms-prod/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-editable/README.md",
+            "apps/zlms-prod/docker-compose.yml",
             "apps/zlms-prod/git-tools.sh"
           ],
           "4318": [
@@ -1014,7 +1650,12 @@
             "apps/zlms-prod/z-runner/telemetry/otel-config.yaml"
           ]
         },
-        "domains": {},
+        "domains": {
+          "zlms.zeaz.dev": [
+            "apps/zlms-prod/README.md",
+            "apps/zlms-prod/docker-compose.yml"
+          ]
+        },
         "extension_counts": {
           ".png": 8638,
           ".js": 8098,
@@ -1043,7 +1684,7 @@
       "app_id": "zoffice",
       "path": "apps/zoffice",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 138,
       "git_status": [],
       "stack": [
         "docker"
@@ -1063,11 +1704,11 @@
           "8087": [
             "apps/zoffice/INTEGRATION-SPEC.md",
             "apps/zoffice/app/vo-config.json",
-            "apps/zoffice/app/whisper-server.py"
+            "apps/zoffice/app/whisper-server.py",
+            "apps/zoffice/scripts/feature-local-env.sh"
           ],
           "8090": [
             "apps/zoffice/INTEGRATION-SPEC.md",
-            "apps/zoffice/README.md",
             "apps/zoffice/TASK-editor-ui.md",
             "apps/zoffice/TASK-furniture-editor.md",
             "apps/zoffice/app/gateway_presence.py",
@@ -1078,7 +1719,15 @@
           ],
           "8091": [
             "apps/zoffice/INTEGRATION-SPEC.md",
-            "apps/zoffice/app/chat.js"
+            "apps/zoffice/README.md",
+            "apps/zoffice/scripts/feature-local-env.sh"
+          ],
+          "8092": [
+            "apps/zoffice/README.md",
+            "apps/zoffice/scripts/feature-local-env.sh"
+          ],
+          "8093": [
+            "apps/zoffice/scripts/feature-local-env.sh"
           ],
           "9222": [
             "apps/zoffice/INTEGRATION-SPEC.md",
@@ -1096,18 +1745,26 @@
           ],
           "18789": [
             "apps/zoffice/INTEGRATION-SPEC.md",
+            "apps/zoffice/Makefile",
             "apps/zoffice/QA-CODE-QUALITY-SCAN.md",
             "apps/zoffice/README.md",
-            "apps/zoffice/app/vo-config.json"
+            "apps/zoffice/app/game.js",
+            "apps/zoffice/app/vo-config.json",
+            "apps/zoffice/scripts/feature-local-env.sh"
           ]
         },
-        "domains": {},
+        "domains": {
+          "zoffice.zeaz.dev": [
+            "apps/zoffice/Makefile",
+            "apps/zoffice/README.md"
+          ]
+        },
         "extension_counts": {
-          ".py": 55,
+          ".py": 60,
           ".md": 29,
           ".js": 11,
+          ".sh": 10,
           ".html": 7,
-          ".sh": 7,
           ".json": 6,
           ".png": 6,
           ".css": 3,
@@ -1126,10 +1783,280 @@
       }
     },
     {
+      "app_id": "zsp-aitool",
+      "path": "apps/zsp-aitool",
+      "nested_git": true,
+      "root_tracked_files": 1,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "node",
+        "npm"
+      ],
+      "stack_files": [
+        "apps/zsp-aitool/Dockerfile",
+        "apps/zsp-aitool/Makefile",
+        "apps/zsp-aitool/docker-compose.yml",
+        "apps/zsp-aitool/extension/package-lock.json",
+        "apps/zsp-aitool/extension/package.json",
+        "apps/zsp-aitool/extension/tsconfig.json",
+        "apps/zsp-aitool/extension/vite.config.ts",
+        "apps/zsp-aitool/next.config.js",
+        "apps/zsp-aitool/next.config.ts",
+        "apps/zsp-aitool/package-lock.json",
+        "apps/zsp-aitool/package.json",
+        "apps/zsp-aitool/tsconfig.json"
+      ],
+      "package": {
+        "name": "zeaz-platform",
+        "version": "0.1.0",
+        "scripts": [
+          "ai:content-queue-status",
+          "ai:content-worker",
+          "ai:content-worker:once",
+          "build",
+          "ci:local-preflight",
+          "db:import-csv-products",
+          "db:import-csv-table",
+          "db:schema-drift-check",
+          "dev",
+          "health",
+          "hyperframes:ci:mock",
+          "hyperframes:ci:real",
+          "hyperframes:cleanup-renders",
+          "hyperframes:cleanup:disable-timer",
+          "hyperframes:cleanup:install-timer",
+          "hyperframes:cleanup:status",
+          "hyperframes:diag",
+          "hyperframes:doctor",
+          "hyperframes:enqueue-smoke-job",
+          "hyperframes:queue-status",
+          "hyperframes:recover-stale-jobs",
+          "hyperframes:render-inventory",
+          "hyperframes:render-job-status",
+          "hyperframes:render-smoke",
+          "hyperframes:safe-rollback",
+          "hyperframes:test-render",
+          "hyperframes:worker",
+          "hyperframes:worker:alerts",
+          "hyperframes:worker:disable-real",
+          "hyperframes:worker:disable-service",
+          "hyperframes:worker:enable-real",
+          "hyperframes:worker:install-alert-timer",
+          "hyperframes:worker:install-log-policy",
+          "hyperframes:worker:install-service",
+          "hyperframes:worker:journal-summary",
+          "hyperframes:worker:live-trial",
+          "hyperframes:worker:logs",
+          "hyperframes:worker:once",
+          "hyperframes:worker:preflight",
+          "hyperframes:worker:status",
+          "hyperframes:worker:trial",
+          "hyperframes:worker:watchdog",
+          "imports:csv-products:status",
+          "imports:csv-products:worker",
+          "imports:csv-products:worker:once",
+          "lint",
+          "monitor:backend",
+          "post-launch:smoke-routes",
+          "post-launch:status-summary",
+          "postbuild",
+          "prisma:generate",
+          "prisma:migrate",
+          "prisma:migrate:deploy",
+          "prisma:seed",
+          "start",
+          "test",
+          "test:all",
+          "test:db",
+          "test:security",
+          "typecheck"
+        ],
+        "dependencies_count": 6,
+        "dev_dependencies_count": 17
+      },
+      "signals": {
+        "ports": {
+          "3000": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docker-compose.yml",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml",
+            "apps/zsp-aitool/src/app/dashboard/products/[id]/similar/page.tsx",
+            "apps/zsp-aitool/tests/url-safety.test.ts"
+          ],
+          "3001": [
+            "apps/zsp-aitool/.env.example",
+            "apps/zsp-aitool/.zagents/README-omnibus.md",
+            "apps/zsp-aitool/.zagents/README.md",
+            "apps/zsp-aitool/.zagents/reports/RELEASE_READINESS-20260522-110147.md",
+            "apps/zsp-aitool/.zagents/reports/RELEASE_READINESS-20260522-111315.md",
+            "apps/zsp-aitool/.zagents/reports/RELEASE_READINESS.latest.md",
+            "apps/zsp-aitool/.zagents/zsp-agent-omnibus-oneclick.sh",
+            "apps/zsp-aitool/AGENTS.md",
+            "apps/zsp-aitool/CLAUDE.md",
+            "apps/zsp-aitool/GEMINI.md",
+            "apps/zsp-aitool/README.md",
+            "apps/zsp-aitool/docs/ci-production-readiness-review-2026-05-17.md",
+            "apps/zsp-aitool/docs/prompts/005-final-full-repo-production-readiness.prompt.md",
+            "apps/zsp-aitool/docs/prompts/015-production-launch-polish.prompt.md",
+            "apps/zsp-aitool/docs/prompts/016-post-launch-monitoring-and-growth.prompt.md",
+            "apps/zsp-aitool/docs/prompts/017-first-100-users-growth-loop.prompt.md",
+            "apps/zsp-aitool/docs/prompts/019-full-ux-ui-final-release-day-night-system.prompt.md",
+            "apps/zsp-aitool/docs/prompts/032-shopee-affiliate-portal-integration-polish.prompt.md",
+            "apps/zsp-aitool/docs/prompts/033-shopee-affiliate-automation-safe-ingestion.prompt.md",
+            "apps/zsp-aitool/docs/prompts/036-shopee-affiliate-persist-social-drafts.prompt.md",
+            "apps/zsp-aitool/docs/prompts/037-marqeta-core-api-sandbox-foundation.prompt.md",
+            "apps/zsp-aitool/docs/prompts/040-backend-monitor-dashboard-cli.prompt.md",
+            "apps/zsp-aitool/docs/prompts/zsp-aitool-step-by-step-th.md",
+            "apps/zsp-aitool/docs/runbooks/hyperframes-remediation.md",
+            "apps/zsp-aitool/docs/runbooks/production-launch.md",
+            "apps/zsp-aitool/scripts/health-zsp-aitool.sh",
+            "apps/zsp-aitool/scripts/post-launch/smoke-routes.sh",
+            "apps/zsp-aitool/src/app/dashboard/admin/backend-monitor/page.tsx",
+            "apps/zsp-aitool/src/services/BackendMonitorService.ts",
+            "apps/zsp-aitool/tests/lib/shopee-affiliate-url-safety.test.ts"
+          ],
+          "5173": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/docs/reports/generated/plugin-health.md"
+          ],
+          "5174": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/docs/reports/generated/plugin-health.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          ],
+          "5175": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/docs/reports/generated/plugin-health.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          ],
+          "5432": [
+            "apps/zsp-aitool/.env.example",
+            "apps/zsp-aitool/.github/workflows/build.yml",
+            "apps/zsp-aitool/.github/workflows/ci.yml",
+            "apps/zsp-aitool/docs/ci-production-readiness-review-2026-05-17.md"
+          ],
+          "8005": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/docs/reports/generated/plugin-health.md"
+          ]
+        },
+        "domains": {
+          "api-zdash.zeaz.dev": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          ],
+          "api-zveo.zeaz.dev": [
+            "apps/zsp-aitool/docker-compose.yml"
+          ],
+          "app.zeaz.dev": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          ],
+          "release.zeaz.dev": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          ],
+          "studio.zeaz.dev": [
+            "apps/zsp-aitool/.env.example",
+            "apps/zsp-aitool/.zagents/README-omnibus.md",
+            "apps/zsp-aitool/.zagents/README.md",
+            "apps/zsp-aitool/.zagents/reports/RELEASE_READINESS-20260522-110147.md",
+            "apps/zsp-aitool/.zagents/reports/RELEASE_READINESS-20260522-111315.md",
+            "apps/zsp-aitool/.zagents/reports/RELEASE_READINESS.latest.md",
+            "apps/zsp-aitool/.zagents/zsp-agent-omnibus-oneclick.sh",
+            "apps/zsp-aitool/AGENTS.md",
+            "apps/zsp-aitool/GEMINI.md",
+            "apps/zsp-aitool/README.md",
+            "apps/zsp-aitool/docs/ci-production-readiness-review-2026-05-17.md",
+            "apps/zsp-aitool/docs/prompts/015-production-launch-polish.prompt.md",
+            "apps/zsp-aitool/docs/prompts/016-post-launch-monitoring-and-growth.prompt.md",
+            "apps/zsp-aitool/docs/prompts/017-first-100-users-growth-loop.prompt.md",
+            "apps/zsp-aitool/docs/reviews/extension-integration-review-2026-05-17.md",
+            "apps/zsp-aitool/docs/runbooks/hyperframes-remediation.md",
+            "apps/zsp-aitool/docs/runbooks/production-launch.md",
+            "apps/zsp-aitool/scripts/health-zsp-aitool.sh",
+            "apps/zsp-aitool/scripts/monitor/backend-monitor.sh"
+          ],
+          "tunnel.zeaz.dev": [
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
+            "apps/zsp-aitool/scripts/plugins/plugin-render-cloudflare.sh"
+          ],
+          "www.zeaz.dev": [
+            "apps/zsp-aitool/docs/ZEAZ_PLATFORM_DESIGN.md"
+          ],
+          "zaiz.zeaz.dev": [
+            "apps/zsp-aitool/docker-compose.yml"
+          ],
+          "zdash-api.zeaz.dev": [
+            "apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md",
+            "apps/zsp-aitool/scripts/plugins/plugin-validate.sh"
+          ],
+          "zdash.zeaz.dev": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml",
+            "apps/zsp-aitool/src/app/zdash/page.tsx"
+          ],
+          "zveo.zeaz.dev": [
+            "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
+            "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
+            "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+            "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
+            "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          ]
+        },
+        "extension_counts": {
+          ".ts": 410,
+          ".md": 128,
+          ".tsx": 124,
+          ".sh": 52,
+          ".log": 18,
+          ".sql": 14,
+          ".yml": 11,
+          ".json": 11,
+          ".js": 6,
+          ".svg": 5,
+          ".service": 3,
+          ".example": 2,
+          ".tsbuildinfo": 2,
+          ".txt": 2,
+          ".css": 2,
+          ".timer": 2,
+          ".html": 2,
+          ".yaml": 2,
+          "Dockerfile": 1,
+          ".gitignore": 1
+        }
+      }
+    },
+    {
       "app_id": "zsticker",
       "path": "apps/zsticker",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 83,
       "git_status": [],
       "stack": [
         "docker",
@@ -1151,8 +2078,10 @@
             "apps/zsticker/Dockerfile"
           ],
           "8007": [
-            "apps/zsticker/Makefile",
-            "apps/zsticker/README.md"
+            "apps/zsticker/Makefile"
+          ],
+          "8080": [
+            "apps/zsticker/src/cli/auth_gdrive.py"
           ]
         },
         "domains": {
@@ -1162,13 +2091,15 @@
           ]
         },
         "extension_counts": {
-          ".py": 28,
+          ".py": 31,
+          ".md": 14,
           ".sh": 11,
-          ".md": 9,
+          ".log": 10,
+          ".png": 6,
+          ".html": 5,
           ".yml": 4,
-          ".png": 4,
-          ".log": 4,
           ".example": 2,
+          ".json": 2,
           ".zip": 1,
           ".dockerignore": 1,
           "Dockerfile": 1,
@@ -1177,9 +2108,343 @@
           ".env": 1,
           "Makefile": 1,
           ".txt": 1,
-          ".html": 1,
           ".service": 1,
+          ".webp": 1,
           ".ttf": 1
+        }
+      }
+    },
+    {
+      "app_id": "ztrader",
+      "path": "apps/ztrader",
+      "nested_git": false,
+      "root_tracked_files": 287,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "python"
+      ],
+      "stack_files": [
+        "apps/ztrader/Makefile",
+        "apps/ztrader/backend/Dockerfile",
+        "apps/ztrader/backend/requirements.txt",
+        "apps/ztrader/backend/src/ztrader/abt/tools/package.json",
+        "apps/ztrader/docker-compose.yml",
+        "apps/ztrader/frontend/Dockerfile",
+        "apps/ztrader/frontend/next.config.js",
+        "apps/ztrader/frontend/package.json",
+        "apps/ztrader/frontend/pnpm-lock.yaml",
+        "apps/ztrader/frontend/tsconfig.json"
+      ],
+      "package": null,
+      "signals": {
+        "ports": {
+          "375": [
+            "apps/ztrader/backend/src/ztrader/abt/tools/ARCHITECTURE.md"
+          ],
+          "768": [
+            "apps/ztrader/backend/src/ztrader/abt/tools/ARCHITECTURE.md"
+          ],
+          "1920": [
+            "apps/ztrader/backend/src/ztrader/abt/tools/ARCHITECTURE.md"
+          ],
+          "3000": [
+            "apps/ztrader/backend/src/ztrader/abt/auth/google_provider.py",
+            "apps/ztrader/backend/src/ztrader/abt/tools/ARCHITECTURE.md",
+            "apps/ztrader/backend/src/ztrader/abt/tools/EXAMPLES.md",
+            "apps/ztrader/backend/src/ztrader/abt/tools/README.md",
+            "apps/ztrader/backend/src/ztrader/abt/tools/README_SCREENSHOTS.md",
+            "apps/ztrader/backend/src/ztrader/abt/tools/package.json",
+            "apps/ztrader/backend/src/ztrader/abt/tools/run_screenshots.sh",
+            "apps/ztrader/backend/src/ztrader/abt/tools/screenshot_pages.js",
+            "apps/ztrader/docker-compose.yml"
+          ],
+          "3001": [
+            "apps/ztrader/backend/src/ztrader/abt/tools/EXAMPLES.md",
+            "apps/ztrader/backend/src/ztrader/abt/tools/README.md",
+            "apps/ztrader/backend/src/ztrader/abt/tools/README_SCREENSHOTS.md"
+          ],
+          "3016": [
+            "apps/ztrader/.env.example"
+          ],
+          "5432": [
+            "apps/ztrader/.env.example",
+            "apps/ztrader/backend/src/ztrader/core/config.py"
+          ],
+          "6379": [
+            "apps/ztrader/.env.example",
+            "apps/ztrader/backend/src/ztrader/abt/api/health_endpoints.py",
+            "apps/ztrader/backend/src/ztrader/core/config.py"
+          ],
+          "8000": [
+            "apps/ztrader/backend/Dockerfile",
+            "apps/ztrader/backend/src/ztrader/abt/api/tradingview_endpoints.py",
+            "apps/ztrader/backend/src/ztrader/main.py",
+            "apps/ztrader/docker-compose.yml",
+            "apps/ztrader/frontend/src/app/[lng]/admin/page.tsx",
+            "apps/ztrader/frontend/src/app/[lng]/dashboard/page.tsx",
+            "apps/ztrader/frontend/src/app/[lng]/settings/page.tsx",
+            "apps/ztrader/frontend/src/components/auth/GoogleSignIn.tsx",
+            "apps/ztrader/frontend/src/components/settings/NotificationPreferences.tsx",
+            "apps/ztrader/frontend/src/components/settings/TelegramLink.tsx",
+            "apps/ztrader/frontend/src/components/settings/TradingViewConfig.tsx"
+          ],
+          "8016": [
+            "apps/ztrader/.env.example"
+          ]
+        },
+        "domains": {
+          "api-ztrader.zeaz.dev": [
+            "apps/ztrader/.env.example",
+            "apps/ztrader/Makefile",
+            "apps/ztrader/docker-compose.yml"
+          ],
+          "ztrader.zeaz.dev": [
+            "apps/ztrader/.env.example",
+            "apps/ztrader/Makefile",
+            "apps/ztrader/docker-compose.yml"
+          ]
+        },
+        "extension_counts": {
+          ".py": 160,
+          ".sh": 26,
+          ".txt": 21,
+          ".md": 16,
+          ".tsx": 16,
+          ".json": 13,
+          ".yml": 9,
+          ".yaml": 8,
+          ".js": 4,
+          ".ts": 3,
+          "Dockerfile": 2,
+          ".example": 1,
+          "Makefile": 1,
+          ".20260610-040208": 1,
+          "LICENSE": 1,
+          "PKG-INFO": 1,
+          ".sql": 1,
+          ".dockerignore": 1,
+          ".gitignore": 1,
+          ".npmrc": 1
+        }
+      }
+    },
+    {
+      "app_id": "zveo",
+      "path": "apps/zveo",
+      "nested_git": true,
+      "root_tracked_files": 1,
+      "git_status": [],
+      "stack": [
+        "docker",
+        "node",
+        "pnpm",
+        "python"
+      ],
+      "stack_files": [
+        "apps/zveo/apps/api-gateway/Dockerfile",
+        "apps/zveo/apps/api-gateway/package.json",
+        "apps/zveo/apps/api-gateway/tsconfig.json",
+        "apps/zveo/apps/api_gateway/Dockerfile",
+        "apps/zveo/apps/dashboard/Dockerfile",
+        "apps/zveo/apps/dashboard/next.config.ts",
+        "apps/zveo/apps/dashboard/package.json",
+        "apps/zveo/apps/dashboard/tsconfig.json",
+        "apps/zveo/apps/orchestrator/Dockerfile",
+        "apps/zveo/apps/render-worker/Dockerfile",
+        "apps/zveo/apps/render-worker/package.json",
+        "apps/zveo/apps/render-worker/tsconfig.json",
+        "apps/zveo/apps/worker_render/Dockerfile",
+        "apps/zveo/docker-compose.yml",
+        "apps/zveo/infra/docker/docker-compose.yml",
+        "apps/zveo/legacy/python-compat/apps/worker_media/Dockerfile",
+        "apps/zveo/package.json",
+        "apps/zveo/packages/ai-script-generator/package.json",
+        "apps/zveo/packages/ai-script-generator/tsconfig.json",
+        "apps/zveo/packages/contracts/package.json",
+        "apps/zveo/packages/contracts/tsconfig.json",
+        "apps/zveo/packages/core/package.json",
+        "apps/zveo/packages/core/tsconfig.json",
+        "apps/zveo/packages/db/package.json",
+        "apps/zveo/packages/db/tsconfig.json",
+        "apps/zveo/packages/media-pipeline/package.json",
+        "apps/zveo/packages/media-pipeline/tsconfig.json",
+        "apps/zveo/packages/prompt-compiler/package.json",
+        "apps/zveo/packages/prompt-compiler/tsconfig.json",
+        "apps/zveo/packages/providers/package.json",
+        "apps/zveo/packages/providers/tsconfig.json",
+        "apps/zveo/packages/publisher-meta/package.json",
+        "apps/zveo/packages/publisher-meta/tsconfig.json",
+        "apps/zveo/packages/queue-ts/package.json",
+        "apps/zveo/packages/queue-ts/tsconfig.json",
+        "apps/zveo/packages/scene-graph/package.json",
+        "apps/zveo/packages/scene-graph/tsconfig.json",
+        "apps/zveo/packages/scene-memory/package.json",
+        "apps/zveo/packages/scene-memory/tsconfig.json",
+        "apps/zveo/packages/telemetry-ts/package.json",
+        "apps/zveo/packages/telemetry-ts/tsconfig.json",
+        "apps/zveo/packages/workflow-engine/package.json",
+        "apps/zveo/packages/workflow-engine/tsconfig.json",
+        "apps/zveo/pnpm-lock.yaml",
+        "apps/zveo/requirements.txt"
+      ],
+      "package": {
+        "name": "zveo",
+        "version": null,
+        "scripts": [
+          "build",
+          "build:api",
+          "build:contracts",
+          "build:core",
+          "build:foundation",
+          "build:media-pipeline",
+          "build:node",
+          "build:prompt-compiler",
+          "build:providers",
+          "build:queue",
+          "build:render-worker",
+          "build:scene-graph",
+          "build:scene-memory",
+          "build:telemetry",
+          "build:workflow-engine",
+          "db:check",
+          "db:generate",
+          "db:migrate",
+          "db:seed",
+          "db:smoke",
+          "db:studio",
+          "dev:dashboard",
+          "dev:node",
+          "migrate:contracts",
+          "migrate:monorepo",
+          "queue:monitor",
+          "test:media-pipeline",
+          "test:node",
+          "test:scene-graph",
+          "typecheck",
+          "typecheck:api",
+          "typecheck:contracts",
+          "typecheck:core",
+          "typecheck:foundation",
+          "typecheck:media-pipeline",
+          "typecheck:node",
+          "typecheck:prompt-compiler",
+          "typecheck:providers",
+          "typecheck:queue",
+          "typecheck:render-worker",
+          "typecheck:scene-graph",
+          "typecheck:scene-memory",
+          "typecheck:telemetry",
+          "typecheck:workflow-engine",
+          "verify:foundation",
+          "verify:node"
+        ],
+        "dependencies_count": 0,
+        "dev_dependencies_count": 3
+      },
+      "signals": {
+        "ports": {
+          "443": [
+            "apps/zveo/infra/kubernetes/base/network-policy.yaml"
+          ],
+          "3000": [
+            "apps/zveo/README.md",
+            "apps/zveo/docker-compose.yml",
+            "apps/zveo/docs/architecture/node-only-profile.md",
+            "apps/zveo/infra/docker/docker-compose.yml"
+          ],
+          "3100": [
+            "apps/zveo/infra/observability/loki/loki.yml"
+          ],
+          "3200": [
+            "apps/zveo/infra/observability/tempo/tempo.yml"
+          ],
+          "4317": [
+            "apps/zveo/infra/kubernetes/production/observability.yaml",
+            "apps/zveo/infra/observability/otel-collector/config.yml",
+            "apps/zveo/infra/observability/tempo/tempo.yml"
+          ],
+          "4318": [
+            "apps/zveo/infra/kubernetes/production/observability.yaml",
+            "apps/zveo/infra/observability/otel-collector/config.yml",
+            "apps/zveo/infra/observability/tempo/tempo.yml"
+          ],
+          "5432": [
+            "apps/zveo/drizzle.config.ts",
+            "apps/zveo/scripts/db-smoke.sh"
+          ],
+          "6379": [
+            "apps/zveo/apps/api-gateway/src/config.ts",
+            "apps/zveo/apps/api_gateway/main.py",
+            "apps/zveo/apps/render-worker/src/worker.ts",
+            "apps/zveo/apps/worker_render/main.py",
+            "apps/zveo/infra/kubernetes/base/network-policy.yaml"
+          ],
+          "8000": [
+            "apps/zveo/apps/api_gateway/Dockerfile",
+            "apps/zveo/infra/kubernetes/api.yaml"
+          ],
+          "8080": [
+            "apps/zveo/README.md",
+            "apps/zveo/apps/api-gateway/src/openapi.ts",
+            "apps/zveo/apps/dashboard/app/settings/page.tsx",
+            "apps/zveo/apps/dashboard/lib/api.test.ts",
+            "apps/zveo/apps/dashboard/lib/api.ts",
+            "apps/zveo/docs/architecture/node-only-profile.md",
+            "apps/zveo/docs/openapi/api-gateway.openapi.ts",
+            "apps/zveo/infra/docker/docker-compose.yml",
+            "apps/zveo/infra/kubernetes/base/api-gateway.yaml",
+            "apps/zveo/infra/kubernetes/base/blue-green.yaml",
+            "apps/zveo/infra/kubernetes/base/network-policy.yaml"
+          ],
+          "9000": [
+            "apps/zveo/docs/architecture/node-only-profile.md",
+            "apps/zveo/infra/docker/docker-compose.yml"
+          ],
+          "9090": [
+            "apps/zveo/infra/kubernetes/media-worker.yaml"
+          ],
+          "9093": [
+            "apps/zveo/infra/observability/loki/loki.yml"
+          ],
+          "9100": [
+            "apps/zveo/infra/kubernetes/worker.yaml"
+          ],
+          "9464": [
+            "apps/zveo/infra/kubernetes/production/observability.yaml",
+            "apps/zveo/infra/observability/otel-collector/config.yml"
+          ],
+          "13133": [
+            "apps/zveo/infra/kubernetes/production/observability.yaml"
+          ]
+        },
+        "domains": {
+          "zveo.zeaz.dev": [
+            "apps/zveo/docker-compose.yml",
+            "apps/zveo/infra/docker/docker-compose.yml"
+          ]
+        },
+        "extension_counts": {
+          ".ts": 59,
+          ".py": 38,
+          ".json": 34,
+          ".md": 22,
+          ".yaml": 19,
+          ".tsx": 19,
+          ".gitkeep": 15,
+          ".yml": 14,
+          "Dockerfile": 7,
+          ".mjs": 4,
+          ".example": 2,
+          ".txt": 2,
+          ".sql": 2,
+          ".ini": 1,
+          ".node": 1,
+          ".gitignore": 1,
+          ".npmrc": 1,
+          ".css": 1,
+          ".tf": 1,
+          ".sh": 1
         }
       }
     },
@@ -1187,7 +2452,7 @@
       "app_id": "zwallet",
       "path": "apps/zwallet",
       "nested_git": false,
-      "root_tracked_files": 0,
+      "root_tracked_files": 452,
       "git_status": [],
       "stack": [
         "docker",
@@ -1277,7 +2542,9 @@
       "signals": {
         "ports": {
           "3000": [
+            "apps/zwallet/.env.example",
             "apps/zwallet/apps/api/src/server.ts",
+            "apps/zwallet/docs/api-spec.yaml",
             "apps/zwallet/infra/helm/templates/api-deployment.yaml",
             "apps/zwallet/infra/k8s/api-deployment.yaml",
             "apps/zwallet/infra/k8s/monitoring.yaml",
@@ -1290,6 +2557,7 @@
             "apps/zwallet/apps/world/README.md"
           ],
           "5432": [
+            "apps/zwallet/.env.example",
             "apps/zwallet/infra/k8s/postgres.yaml"
           ],
           "5601": [
@@ -1298,8 +2566,10 @@
             "apps/zwallet/k8s/logging/elk-stack.yaml"
           ],
           "6379": [
+            "apps/zwallet/.env.example",
             "apps/zwallet/admin/panel/enterprise/audit_store.py",
             "apps/zwallet/admin/panel/enterprise/main.py",
+            "apps/zwallet/admin/panel/main.py",
             "apps/zwallet/api/app/middleware/security_advanced.py",
             "apps/zwallet/api/app/middleware/security_distributed.py",
             "apps/zwallet/api/app/security/adaptive_rate_limiter.py",
@@ -1420,15 +2690,20 @@
             "apps/zwallet/k8s/logging/elk-stack.yaml"
           ]
         },
-        "domains": {},
+        "domains": {
+          "app.zeaz.dev": [
+            "apps/zwallet/README.md"
+          ]
+        },
         "extension_counts": {
           ".ts": 118,
           ".md": 61,
           ".json": 60,
-          ".yaml": 56,
+          ".yaml": 57,
           ".py": 44,
           ".kt": 22,
           ".yml": 18,
+          ".tsbuildinfo": 13,
           ".sql": 12,
           ".sh": 10,
           ".tf": 7,
@@ -1438,10 +2713,9 @@
           ".js": 3,
           ".conf": 3,
           ".kts": 3,
+          ".example": 2,
           ".go": 2,
-          ".xml": 2,
-          "CNAME": 1,
-          ".gitkeep": 1
+          ".xml": 2
         }
       }
     }

@@ -1,19 +1,65 @@
 version: 2
 updates:
+  # GitHub Actions Workflows
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "security"
 
-  - package-ecosystem: "terraform"
-    directory: "/terraform"
+  # apps/web (Next.js)
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "security"
+
+  # apps/zAcademy (Node/pnpm)
+  - package-ecosystem: "npm"
+    directory: "/apps/zAcademy"
+    schedule:
+      interval: "weekly"
+
+  # apps/openwork (Node/pnpm)
+  - package-ecosystem: "npm"
+    directory: "/apps/openwork"
+    schedule:
+      interval: "weekly"
+
+  # apps/zwallet (Node/pnpm)
+  - package-ecosystem: "npm"
+    directory: "/apps/zwallet"
+    schedule:
+      interval: "weekly"
+
+  # apps/ztrader (Node & Python FastAPI)
+  - package-ecosystem: "npm"
+    directory: "/apps/ztrader"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/apps/ztrader"
+    schedule:
+      interval: "weekly"
+
+  # apps/api (Python FastAPI)
+  - package-ecosystem: "pip"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+
+  # apps/zdash (Python FastAPI)
+  - package-ecosystem: "pip"
+    directory: "/apps/zdash"
+    schedule:
+      interval: "weekly"
+
+  # apps/zveo (Node/pnpm & Python)
+  - package-ecosystem: "npm"
+    directory: "/apps/zveo"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/apps/zveo"
+    schedule:
+      interval: "weekly"

@@ -3,15 +3,15 @@ from __future__ import annotations
 import asyncio
 
 import numpy as np
-from ztrader.abt.binance_perp_bot.models import (
+from binance_perp_bot.models import (
     MarketSnapshot,
     RegimeMode,
     SignalAction,
     StrategyKind,
     TradeSignal,
 )
-from ztrader.abt.binance_perp_bot.risk.position_manager import PositionManager
-from ztrader.abt.binance_perp_bot.strategies import (
+from binance_perp_bot.risk.position_manager import PositionManager
+from binance_perp_bot.strategies import (
     BaseStrategy,
     PositionStrategy,
     ScalpStrategy,
@@ -158,7 +158,7 @@ def test_market_snapshot_bounds_ohlcv_without_mutating_original() -> None:
 
 
 def test_xgboost_gate_uses_cold_start_when_model_missing(tmp_path) -> None:
-    from ztrader.abt.binance_perp_bot.ml.gate import XGBoostTradeGate
+    from binance_perp_bot.ml.gate import XGBoostTradeGate
 
     gate = XGBoostTradeGate(str(tmp_path / "missing.json"), threshold=0.10)
     signal = TradeSignal(
@@ -177,7 +177,7 @@ def test_xgboost_gate_uses_cold_start_when_model_missing(tmp_path) -> None:
 def test_crypto_service_imports_without_encryption_key(monkeypatch) -> None:
     monkeypatch.delenv("ENCRYPTION_KEY", raising=False)
 
-    from ztrader.abt.security import crypto_service
+    from security import crypto_service
 
     try:
         crypto_service.encrypt_data("secret")
@@ -190,7 +190,7 @@ def test_crypto_service_imports_without_encryption_key(monkeypatch) -> None:
 def test_crypto_service_round_trip(monkeypatch) -> None:
     import base64
 
-    from ztrader.abt.security import crypto_service
+    from security import crypto_service
 
     monkeypatch.setenv("ENCRYPTION_KEY", base64.b64encode(b"1" * 32).decode())
 
