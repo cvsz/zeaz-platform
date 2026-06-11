@@ -197,6 +197,34 @@ infra/cloudflare/scripts/generate-runtime-governance-report.sh
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers --runtime-governance --worker-bindings --no-mutation
 ```
 
+## Phase 12: Manual Release Approval + Change Window Governance
+
+Phase 12 adds manual release approval evidence, change-window policy, rollback planning, and read-only release governance.
+
+Phase 12 does not deploy.
+Phase 12 does not apply Terraform/OpenTofu.
+Phase 12 does not mutate Cloudflare.
+
+### Generate Phase 12 approval evidence
+
+```bash
+infra/cloudflare/scripts/generate-manual-release-checklist.sh \
+  --output docs/infra/cloudflare-phase12-approval-evidence.md \
+  --timezone Asia/Bangkok
+```
+
+### Validate Phase 12 approval evidence
+
+```bash
+infra/cloudflare/scripts/check-manual-release-approval.sh --strict
+```
+
+### Full pre-release governance chain
+
+```bash
+infra/cloudflare/scripts/check-release-readiness.sh --strict --no-live
+infra/cloudflare/scripts/check-manual-release-approval.sh --strict
+```
 ## Phase 10 — CI Enforcement + PR Gates
 
 Cloudflare-sensitive PRs must pass:
