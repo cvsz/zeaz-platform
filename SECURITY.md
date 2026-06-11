@@ -43,13 +43,31 @@ Once a report is received:
 3. **Validation:** We will validate the remediation steps.
 4. **Release:** We will coordinate the release of the security update and publish a security advisory.
 
-## Secret Handling Guidance
+## Secret Handling & Scanning Guidance
 
-To prevent credentials from leaking into the repository:
-- **Never commit secrets:** Do not commit API keys, private keys, database passwords, or session tokens.
+To prevent credentials, API keys, and private infrastructure configurations from leaking into the repository:
+- **Never commit secrets:** Do not commit API keys, private keys, database passwords, or active session tokens.
 - **Use Template Files:** Use the provided `.env.example` templates to configure your local setup. Keep your active `.env` files untracked (safely ignored by `.gitignore`).
 - **GPG Signing:** Maintainers are required to sign commits using GPG to ensure author authenticity.
-- **Audit Logs:** We periodically run checks to scan for credentials and audit permission models.
+
+### Automated Secrets Scanning
+We use Gitleaks in our CI pipelines to automatically scan all commits and pull requests for potential secrets. The scanner runs automatically on:
+- Every push to the `main` branch or any `security/*` branch.
+- All Pull Requests targeting the `main` branch.
+
+If the pipeline detects a secret, the check will fail and must be remediated before the PR can be merged.
+
+### Local Secrets Scanning
+Before committing, you can run a local secret scan using Gitleaks:
+1. Install Gitleaks (e.g., via Homebrew, Go, or direct binary download).
+2. Run a scan on your uncommitted changes:
+   ```bash
+   gitleaks detect --verbose --redact
+   ```
+3. To scan your local commit history:
+   ```bash
+   gitleaks detect --log-opts="origin/main..HEAD"
+   ```
 
 ## Dependency Security Expectations
 
