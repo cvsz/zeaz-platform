@@ -1,0 +1,255 @@
+# Phase 17 — Cloudflare Runtime Risk Scoring
+
+## Objective
+
+Implement a pre-merge risk scoring system for DNS, Worker, Tunnel, and IaC changes within the ZeaZ Platform Cloudflare governance sequence. Risk scoring gates must be evaluated before any change reaches production. All scoring is offline and read-only.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-runtime-risk-scoring
+```
+
+## Commit Message
+
+```
+docs(cloudflare): add runtime risk scoring gates
+```
+
+---
+
+## Scope
+
+- Create risk scoring documentation and scorecard template
+- Create risk gate policy
+- Create `infra/cloudflare/scripts/score-cloudflare-change-risk.sh` shell script
+- Extend `infra/cloudflare/scripts/validate-cloudflare-config.sh` to include risk score check
+- Update `docs/infra/cloudflare-drift-report.md` with risk scoring fields
+- Update `infra/cloudflare/README.md` with Phase 17 entry
+
+---
+
+## Non-Goals
+
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT require network access in the scoring script
+- Do NOT print secrets, tokens, credentials, or zone IDs
+- Do NOT start or restart any services
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT modify files outside Phase 17 scope
+
+---
+
+## Safety Rules
+
+1. Scoring script must be shell-safe (`set -euo pipefail`)
+2. Script must support `--help`, `--markdown`, `--json`, `--strict`
+3. Script must NOT require network access (offline by default)
+4. Script must NEVER print `CLOUDFLARE_API_TOKEN`, credentials, or secret values
+5. Strict mode must fail with non-zero exit on critical unapproved risk
+6. All docs must clearly separate: live runtime facts | repo intent | risk scoring results | manual review actions
+7. Examples in documentation must use sanitized placeholder values only
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live ingress hostnames known: office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev, catch-all 404
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Risk Scoring Dimensions
+
+Score each proposed change across the following dimensions:
+
+| Dimension                      | Low | Medium | High | Critical |
+|-------------------------------|-----|--------|------|----------|
+| DNS record changes             | Internal only | Non-prod domain | Prod subdomain | Prod apex/wildcard |
+| Worker route changes           | New route, no overlap | Route update, no prod | Prod route update | Prod route removal |
+| Tunnel ingress changes         | Add non-prod host | Modify non-prod | Modify prod host | Remove prod host |
+| Terraform ownership changes    | Comments only | Variable change | Resource change | Provider/backend change |
+| Access policy changes          | New non-prod policy | Update non-prod | Update prod policy | Remove prod policy |
+| Secret/config file changes     | Non-secret config | Dev/staging env | Prod config reference | Direct secret or credential |
+| Production domain changes      | No prod domains | 1 prod domain touched | Multiple prod domains | Apex or wildcard |
+| Rollback availability          | Tested rollback plan | Documented plan | Manual only | No rollback plan |
+| Evidence completeness          | Full evidence | Most fields complete | Some fields missing | Evidence absent |
+
+**Risk levels:**
+- **Low** — approved, no additional gates required
+- **Medium** — approval from one owner required
+- **High** — approval from two owners required (Terraform owner + Security reviewer)
+- **Critical** — release approver + security reviewer + board quorum required; strict mode fails
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-runtime-risk-scoring.md`**
+   - Overview of scoring model
+   - Scoring dimensions table (as above)
+   - Risk level definitions and approval gates
+   - Link to scorecard template and gate policy
+   - Integration with Phase 16 evidence archive
+
+2. **`docs/infra/cloudflare-risk-scorecard-template.md`**
+   - Template for completing before any production change:
+     - Change ID
+     - Change description
+     - System area
+     - Score per dimension (Low/Medium/High/Critical)
+     - Aggregate risk level
+     - Required approvers (derived from aggregate level)
+     - Rollback plan reference
+     - Evidence archive link
+     - Approver sign-off fields
+
+3. **`docs/infra/cloudflare-risk-gate-policy.md`**
+   - Gate policy per risk level
+   - Who can approve each level
+   - What evidence is required per level
+   - What happens when risk is Critical (strict mode behavior)
+   - Integration with review board (Phase 15)
+
+4. **`docs/infra/cloudflare-drift-report.md`** *(update)*
+   - Add risk score field to each tracked drift item
+   - Cross-reference risk gate policy
+
+5. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 17 entry with links to all deliverables above
+
+### Script
+
+6. **`infra/cloudflare/scripts/score-cloudflare-change-risk.sh`**
+
+   Requirements:
+   - `#!/usr/bin/env bash` with `set -euo pipefail`
+   - `--help` prints usage and exits 0
+   - `--markdown` outputs scoring table in markdown
+   - `--json` outputs scoring result as JSON
+   - `--strict` exits non-zero if aggregate risk is Critical and unapproved
+   - Does not require network access
+   - Does not read `/etc/cloudflared/config.yml` unless `--live` passed
+   - Does not print any secret or credential value
+   - Reads change description from stdin or a file argument
+   - Outputs: per-dimension score, aggregate score, required approvers, evidence checklist
+
+   Skeleton structure (implement fully):
+   ```bash
+   #!/usr/bin/env bash
+   set -euo pipefail
+
+   usage() { echo "Usage: $0 [--help] [--markdown] [--json] [--strict] [change-file]"; exit 0; }
+
+   MARKDOWN=false
+   JSON=false
+   STRICT=false
+   CHANGE_FILE=""
+
+   while [[ $# -gt 0 ]]; do
+     case "$1" in
+       --help) usage ;;
+       --markdown) MARKDOWN=true ;;
+       --json) JSON=true ;;
+       --strict) STRICT=true ;;
+       *) CHANGE_FILE="$1" ;;
+     esac
+     shift
+   done
+
+   # ... scoring logic ...
+   ```
+
+7. **`infra/cloudflare/scripts/validate-cloudflare-config.sh`** *(extend)*
+   - Add check: verify `score-cloudflare-change-risk.sh` exists and is executable
+   - Add check: verify `docs/infra/cloudflare-risk-scorecard-template.md` exists
+
+---
+
+## Evidence Outputs
+
+- Script passes `bash -n` syntax check
+- `--help` output captured and committed as comment in script
+- `--markdown` produces readable table
+- `--json` produces valid JSON (validate with `python3 -m json.tool` or `jq`)
+- `--strict` exits non-zero on Critical unapproved risk (documented behavior)
+- No secrets found in script or docs
+- `git diff --name-only` shows only Phase 17 files
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-runtime-risk-scoring.md` exists with full scoring model
+- [ ] `docs/infra/cloudflare-risk-scorecard-template.md` exists with all required fields
+- [ ] `docs/infra/cloudflare-risk-gate-policy.md` exists with gate policy per level
+- [ ] `docs/infra/cloudflare-drift-report.md` updated with risk score field
+- [ ] `infra/cloudflare/scripts/score-cloudflare-change-risk.sh` exists, is executable, passes `bash -n`
+- [ ] `infra/cloudflare/scripts/validate-cloudflare-config.sh` updated with risk score checks
+- [ ] `infra/cloudflare/README.md` updated with Phase 17 section
+- [ ] Script supports `--help`, `--markdown`, `--json`, `--strict`
+- [ ] Script never prints secrets
+- [ ] No deployment, apply, or Cloudflare write performed
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-runtime-risk-scoring
+
+# After writing script
+chmod +x infra/cloudflare/scripts/score-cloudflare-change-risk.sh
+bash -n infra/cloudflare/scripts/score-cloudflare-change-risk.sh
+infra/cloudflare/scripts/score-cloudflare-change-risk.sh --help
+infra/cloudflare/scripts/score-cloudflare-change-risk.sh --markdown
+infra/cloudflare/scripts/score-cloudflare-change-risk.sh --json | python3 -m json.tool
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-runtime-risk-scoring.md \
+  docs/infra/cloudflare-risk-scorecard-template.md \
+  docs/infra/cloudflare-risk-gate-policy.md \
+  infra/cloudflare/scripts/score-cloudflare-change-risk.sh || echo "No secrets found"
+
+# Commit
+git add docs/infra/cloudflare-runtime-risk-scoring.md \
+        docs/infra/cloudflare-risk-scorecard-template.md \
+        docs/infra/cloudflare-risk-gate-policy.md \
+        docs/infra/cloudflare-drift-report.md \
+        infra/cloudflare/scripts/score-cloudflare-change-risk.sh \
+        infra/cloudflare/scripts/validate-cloudflare-config.sh \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): add runtime risk scoring gates"
+
+git push origin fix/cloudflare-runtime-risk-scoring
+gh pr create --title "docs(cloudflare): add runtime risk scoring gates" \
+  --body "Phase 17: Adds offline risk scoring system for Cloudflare changes (DNS/Worker/Tunnel/IaC). Includes scoring script, scorecard template, gate policy. Read-only. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Script feature summary (flags supported, example outputs)
+4. Validation commands run and their output summary
+5. Any warnings (missing dimensions, shell issues)
+6. Git status summary (`git diff --stat`)
+7. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**

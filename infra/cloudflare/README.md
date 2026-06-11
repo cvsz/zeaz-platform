@@ -308,3 +308,47 @@ infra/cloudflare/scripts/validate-cloudflare-config.sh \
 ```
 
 **Safety Statement:** Phase 14 is evidence-only and does not authorize deploy/apply/destroy.
+
+---
+
+## Phase 15 — Runtime Drift SLA + Ownership Review Board
+
+Phase 15 adds scheduled drift review cadence, SLA classifications for all drift severity levels, an exception register, drift aging buckets, and monthly governance evidence templates.
+
+**Phase 15 is governance documentation only. It does not deploy, apply Terraform, or mutate Cloudflare.**
+
+### Phase 15 Documents
+
+| Document | Purpose |
+|---|---|
+| `docs/infra/cloudflare-runtime-drift-sla.md` | SLA classes (Critical/High/Medium/Low/Accepted Exception) and aging buckets |
+| `docs/infra/cloudflare-ownership-review-board.md` | Review board roles, meeting cadence, quorum, charter |
+| `docs/infra/cloudflare-drift-exception-register.md` | Exception register with all required fields and process |
+| `docs/infra/cloudflare-monthly-governance-evidence.md` | Template for monthly governance evidence capture |
+| `docs/infra/cloudflare-drift-report.md` | Updated with SLA class and aging bucket fields (Phase 15 section) |
+
+### Phase 15 Validation
+
+```bash
+# Verify all Phase 15 docs exist
+for doc in \
+  docs/infra/cloudflare-runtime-drift-sla.md \
+  docs/infra/cloudflare-ownership-review-board.md \
+  docs/infra/cloudflare-drift-exception-register.md \
+  docs/infra/cloudflare-monthly-governance-evidence.md; do
+  [ -f "$doc" ] && echo "EXISTS: $doc" || echo "MISSING: $doc"
+done
+
+# Verify drift report has Phase 15 SLA section
+grep -q "Phase 15" docs/infra/cloudflare-drift-report.md && echo "PASS: drift-report has Phase 15 fields" || echo "FAIL"
+
+# Secret check on Phase 15 docs
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-runtime-drift-sla.md \
+  docs/infra/cloudflare-ownership-review-board.md \
+  docs/infra/cloudflare-drift-exception-register.md \
+  docs/infra/cloudflare-monthly-governance-evidence.md || echo "No secrets found"
+```
+
+**Safety Statement:** Phase 15 is governance documentation only. It does not deploy, apply Terraform/OpenTofu, restart services, or mutate Cloudflare.
+

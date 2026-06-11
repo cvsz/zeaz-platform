@@ -18,6 +18,7 @@ The platform provides a unified workspace containing:
 - **Lightweight APIs:** Microservice API routers (`apps/api`).
 - **Automation & Daemons:** Chatbot triggers (`apps/zLinebot`) and image manipulation workflows (`apps/zsticker`).
 - **Learning SaaS & Enterprise Modernization:** Academic dashboard (`apps/zAcademy`) and modern LMS interfaces (`apps/zlms`).
+- **Monitoring Dashboard:** Internal operations and metrics dashboard (`apps/zdash`).
 - **Shared Infrastructure:** Core OpenTofu/Terraform infrastructure-as-code files (`opentofu/`, `terraform/`), Cloudflare Tunnels, and Docker orchestration assets.
 
 ---

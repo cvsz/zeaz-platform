@@ -1,0 +1,273 @@
+# Phase 23 — Cloudflare Final Operating Model
+
+## Objective
+
+Produce the final, long-term operating model for safe Cloudflare runtime governance within the ZeaZ Platform. This phase synthesizes all prior governance phases (10–22) into a unified RACI, governance runbook, change lifecycle, and quarterly review framework that ensures the governance system remains maintainable long-term.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare. It is the final documentation layer in this governance sequence.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-final-operating-model
+```
+
+## Commit Message
+
+```
+docs(cloudflare): add final operating model
+```
+
+---
+
+## Scope
+
+- Create the final operating model overview doc
+- Create RACI ownership matrix
+- Create governance runbook
+- Create quarterly review template
+- Create runtime governance summary (links all phases 10–23)
+- Update `infra/cloudflare/README.md` with Phase 23 entry and finalize the phase table
+
+---
+
+## Non-Goals
+
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT print, log, or commit secrets, credentials, or tokens
+- Do NOT start or restart any services
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT modify files outside Phase 23 scope
+
+---
+
+## Safety Rules
+
+1. All RACI entries must use role names — not real personal information or email addresses
+2. No executable mutating commands in the runbook
+3. All docs must clearly separate: governance area | owner | process | cadence | evidence required
+4. Runbook must not include commands that deploy, apply, or delete live Cloudflare resources
+5. Quarterly review template must include a column for "governance gaps found"
+6. Never print secrets or credentials in any example
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Live ingress hostnames: office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Operating Model Lifecycle Domains
+
+The operating model must define ownership and process for all of the following lifecycles:
+
+1. **RACI ownership** — Who is Responsible, Accountable, Consulted, Informed per domain
+2. **Review cadence** — Daily (CI), weekly (drift check), monthly (governance board), quarterly (full review)
+3. **Change lifecycle** — Propose → Risk score → Review → Approve → Evidence → Deploy → Verify → Archive → Close
+4. **CI gate lifecycle** — PR opened → Scanners run → Gates pass/fail → Merge allowed/blocked → Evidence generated
+5. **Evidence lifecycle** — Change record opened → Evidence captured → Review completed → Archive filed → Retention enforced
+6. **Exception lifecycle** — Drift found → Exception proposed → Risk assessed → Approved/rejected → Expiry set → Review scheduled → Closed
+7. **Incident lifecycle** — Detected → Contained → Recovered → Evidence captured → DR template filed → Post-incident review → Lessons updated
+8. **Environment lifecycle** — Dev created → Staging promoted → Prod promoted → Decommissioned → Evidence archived
+9. **Disaster recovery lifecycle** — Tabletop scheduled → Scenario reviewed → Recovery owner confirmed → DR evidence filed → Lessons fed back
+10. **Production readiness lifecycle** — Change proposed → Readiness checklist completed → Go/no-go decided → Approved → Released → Verified
+11. **Post-release verification lifecycle** — Gates checked → Evidence filed → Sign-off obtained → Change record closed → Archive updated
+12. **Long-term maintenance model** — Quarterly review → Scanner updates → Doc refresh → RACI review → Evidence purge per retention policy → GAP remediation
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-final-operating-model.md`**
+   - Executive summary of the governance model
+   - Relationship to all prior phases (10–22) with links
+   - All 12 lifecycle domains described (as above)
+   - How the model evolves over time
+   - How new services/routes/changes are onboarded to the governance model
+   - Maintenance responsibilities
+   - What "governance complete" means for any given change
+
+2. **`docs/infra/cloudflare-operating-model-raci.md`**
+   - RACI table covering all governance domains:
+     - DNS ownership
+     - Tunnel runtime ownership
+     - Worker route ownership
+     - AI Gateway governance
+     - Terraform ownership
+     - Secret containment
+     - CI gate maintenance
+     - Risk scoring
+     - Environment separation
+     - Disaster recovery
+     - Production readiness review
+     - Post-release verification
+     - Evidence archive maintenance
+     - Quarterly review coordination
+   - Roles (columns): Cloudflare Runtime Owner | DNS Owner | Worker Owner | Terraform Owner | Security Reviewer | Release Approver | Platform Lead
+   - Activities (rows): one per governance task
+   - Cells: R (Responsible) / A (Accountable) / C (Consulted) / I (Informed) / — (Not involved)
+   - Notes column for caveats
+
+3. **`docs/infra/cloudflare-governance-runbook.md`**
+   - Step-by-step runbook for routine governance operations:
+     - How to run a drift scan (manual, read-only)
+     - How to open a change record (Phase 16)
+     - How to complete a risk scorecard (Phase 17)
+     - How to complete a readiness review (Phase 20)
+     - How to file post-release evidence (Phase 21)
+     - How to add a drift exception (Phase 15)
+     - How to escalate a critical drift item (Phase 15 → Phase 19)
+     - How to conduct a DR tabletop (Phase 19)
+     - How to run the quarterly review (this phase)
+   - All steps labeled: `[READ-ONLY]`, `[MANUAL]`, or `[REQUIRES APPROVAL]`
+   - No automated destructive commands
+   - Links to relevant phase docs for each section
+
+4. **`docs/infra/cloudflare-quarterly-review-template.md`**
+   - Template for the quarterly governance review:
+     - Quarter and year
+     - Review date
+     - Participants (roles, not names)
+     - Quorum met? (yes/no)
+   - Sections:
+     - Governance phase completeness status (Phases 10–23)
+     - Open drift items and SLA compliance (Phase 15)
+     - Exception register review (Phase 15)
+     - Evidence archive health (Phase 16)
+     - Scanner index review (Phase 22) — any GAPs to close?
+     - RACI changes needed
+     - Environment boundary changes needed (Phase 18)
+     - DR tabletop scheduled for next quarter? (Phase 19)
+     - Governance gaps found (new column: description | priority | owner | target close date)
+     - Recommendations for next quarter
+     - Sign-off table (per role)
+
+5. **`docs/infra/cloudflare-runtime-governance-summary.md`**
+   - Master summary linking all governance phases (10–23)
+   - Table: Phase | Title | Branch | Status | Key Documents | Key Scripts | Phase Summary
+   - Cumulative governance coverage assessment:
+     - DNS: coverage assessment
+     - Tunnel: coverage assessment
+     - Workers: coverage assessment
+     - Terraform: coverage assessment
+     - Secrets: coverage assessment
+     - CI: coverage assessment
+     - Evidence: coverage assessment
+     - DR: coverage assessment
+     - Environment separation: coverage assessment
+     - Risk scoring: coverage assessment
+   - Known remaining gaps (if any)
+   - Long-term maintenance schedule
+
+6. **`infra/cloudflare/README.md`** *(update — finalize)*
+   - Add Phase 23 entry
+   - Update master phase table to mark Phases 10–23 as complete
+   - Add link to governance summary and operating model
+
+---
+
+## Evidence Outputs
+
+- All five documentation files committed and readable via `cat`
+- RACI covers all 14 governance domains
+- Runbook has labeled steps for all 9 operations
+- Quarterly review template has governance gaps section
+- Runtime governance summary links all 14 phases (10–23)
+- `infra/cloudflare/README.md` finalized with all phase entries
+- No secrets found in any new file
+- `git diff --name-only` shows only Phase 23 files
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-final-operating-model.md` exists with all 12 lifecycle domains
+- [ ] `docs/infra/cloudflare-operating-model-raci.md` exists with all 14 domains and 7 roles
+- [ ] `docs/infra/cloudflare-governance-runbook.md` exists with all 9 operational procedures labeled
+- [ ] `docs/infra/cloudflare-quarterly-review-template.md` exists with governance gaps section
+- [ ] `docs/infra/cloudflare-runtime-governance-summary.md` exists linking all phases 10–23
+- [ ] `infra/cloudflare/README.md` finalized and updated with Phase 23
+- [ ] No secrets, credentials, or automated deployment commands in any file
+- [ ] No deployment, apply, or Cloudflare write performed
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-final-operating-model
+
+# After writing files
+cat docs/infra/cloudflare-final-operating-model.md
+cat docs/infra/cloudflare-operating-model-raci.md
+cat docs/infra/cloudflare-governance-runbook.md
+cat docs/infra/cloudflare-quarterly-review-template.md
+cat docs/infra/cloudflare-runtime-governance-summary.md
+
+# Verify all 12 lifecycle domains in operating model
+for domain in "RACI" "Review cadence" "Change lifecycle" "CI gate" "Evidence lifecycle" "Exception lifecycle" "Incident lifecycle" "Environment lifecycle" "Disaster recovery lifecycle" "Production readiness" "Post-release" "Long-term maintenance"; do
+  grep -iq "$domain" docs/infra/cloudflare-final-operating-model.md && echo "FOUND: $domain" || echo "MISSING: $domain"
+done
+
+# Verify all 14 RACI domains in RACI doc
+for domain in "DNS" "Tunnel" "Worker" "AI Gateway" "Terraform" "Secret" "CI gate" "Risk scoring" "Environment" "Disaster" "Production readiness" "Post-release" "Evidence archive" "Quarterly"; do
+  grep -iq "$domain" docs/infra/cloudflare-operating-model-raci.md && echo "FOUND: $domain" || echo "MISSING: $domain"
+done
+
+# Verify phases 10-23 all appear in summary
+for phase in 10 11 12 13 14 15 16 17 18 19 20 21 22 23; do
+  grep -q "Phase $phase" docs/infra/cloudflare-runtime-governance-summary.md && echo "FOUND: Phase $phase" || echo "MISSING: Phase $phase"
+done
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-final-operating-model.md \
+  docs/infra/cloudflare-operating-model-raci.md \
+  docs/infra/cloudflare-governance-runbook.md \
+  docs/infra/cloudflare-quarterly-review-template.md \
+  docs/infra/cloudflare-runtime-governance-summary.md || echo "No secrets found"
+
+# Commit
+git add docs/infra/cloudflare-final-operating-model.md \
+        docs/infra/cloudflare-operating-model-raci.md \
+        docs/infra/cloudflare-governance-runbook.md \
+        docs/infra/cloudflare-quarterly-review-template.md \
+        docs/infra/cloudflare-runtime-governance-summary.md \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): add final operating model"
+
+git push origin fix/cloudflare-final-operating-model
+gh pr create --title "docs(cloudflare): add final operating model" \
+  --body "Phase 23 (FINAL): Adds the long-term Cloudflare governance operating model including RACI, governance runbook, quarterly review template, and runtime governance summary linking all phases 10–23. Read-only. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Lifecycle domains covered (all 12 listed)
+4. RACI domains covered (all 14 listed)
+5. Phases linked in governance summary (10–23)
+6. Validation commands run and their output summary
+7. Any warnings (missing domains, unlabeled runbook steps)
+8. Git status summary (`git diff --stat`)
+9. Suggested commit command (already done or ready to run)
+10. Statement confirming governance sequence Phase 10–23 is now complete
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**
+**This is the final phase. The governance sequence for Cloudflare runtime (Phases 10–23) is now documented and complete pending PR review and merge.**

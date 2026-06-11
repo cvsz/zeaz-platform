@@ -1,0 +1,288 @@
+# Phase 20 — Cloudflare Production Readiness Review
+
+## Objective
+
+Produce a final production-readiness review framework covering all Cloudflare governance areas accumulated across Phases 10–19. This provides a comprehensive checklist, a go/no-go decision template, and a rollback readiness checklist that must be completed before any Cloudflare production change.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare. It is a documentation and checklist layer only.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-production-readiness-review
+```
+
+## Commit Message
+
+```
+docs(cloudflare): add production readiness review
+```
+
+---
+
+## Scope
+
+- Create production readiness review overview doc
+- Create production readiness checklist with pass/fail/blocked fields per area
+- Create go/no-go decision template
+- Create rollback readiness checklist
+- Update `docs/infra/cloudflare-drift-report.md` with readiness reference
+- Update `infra/cloudflare/README.md` with Phase 20 entry
+
+---
+
+## Non-Goals
+
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT print, log, or commit secrets, credentials, or tokens
+- Do NOT start or restart any services
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT modify files outside Phase 20 scope
+
+---
+
+## Safety Rules
+
+1. All checklist items must have status fields: `[ ] PASS`, `[ ] FAIL`, `[ ] BLOCKED`, `[ ] N/A`
+2. No step in the checklist should trigger an automated deployment or write
+3. Live verification steps must be labeled `[READ-ONLY]` or `[MANUAL]`
+4. All docs must clearly separate: governance area | status | evidence reference | owner | blocker description
+5. Rollback checklist must reference Phase 13 (break-glass) and Phase 12 (rollback plan) evidence
+6. Never print secrets or credentials in examples
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Live ingress hostnames: office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Production Readiness Review Areas
+
+The checklist must include all of the following areas (with pass/fail/blocked/N-A per item):
+
+### 1. DNS Ownership
+- All prod DNS records have documented owners
+- No unowned DNS records
+- DNS ownership matrix reviewed and current (Phase 10 / earlier)
+- DNS scan passed in last 7 days
+
+### 2. Tunnel Runtime Ownership
+- Active tunnel ID documented
+- Tunnel ingress hostnames match runtime
+- No orphaned credential files unaddressed
+- Tunnel runtime config matches repo intent
+- Cloudflared service running (read-only status check)
+
+### 3. Worker Route Ownership
+- All prod Worker routes documented with owners
+- No route overlap detected
+- Worker routes match Terraform intent
+- Worker routes tagged with environment: prod
+
+### 4. AI Gateway Governance
+- All AI Gateway routes documented
+- KV/D1/R2 bindings documented
+- Binding ownership assigned
+- No undocumented bindings
+
+### 5. KV / D1 / R2 Bindings
+- All bindings inventoried
+- No stale or orphaned bindings
+- Bindings documented with owner and purpose
+
+### 6. Terraform Ownership
+- All Cloudflare Terraform resources have owners
+- State matches documentation intent
+- No drift detected (or drift documented with SLA)
+- Backend configuration is a single valid backend (no duplicate blocks)
+
+### 7. Secret Containment
+- No secrets committed to repository
+- No tokens found in tracked files
+- Secret scan passed (gitleaks or equivalent)
+- Credential files are outside repository
+
+### 8. CI Enforcement
+- All CI gates active and passing
+- Shellcheck passing
+- Validation scripts passing
+- No workflow policy violations
+
+### 9. Risk Scoring
+- Phase 17 risk score completed for this change
+- Aggregate risk level documented
+- Required approvals obtained per risk level
+- Evidence scorecard in archive
+
+### 10. Environment Separation
+- Dev/staging/prod boundaries verified (Phase 18)
+- No prod domains in dev/staging configs
+- Environment YAML files reviewed
+
+### 11. Disaster Recovery
+- DR tabletop completed for applicable scenarios (Phase 19)
+- Recovery ownership matrix current
+- Restore evidence template available
+
+### 12. Rollback Plan
+- Rollback plan documented (Phase 12/13)
+- Rollback owner identified
+- Rollback steps tested or reviewed
+- Break-glass procedure available if needed
+
+### 13. Evidence Archive
+- Change record opened in evidence archive (Phase 16)
+- CI report captured
+- Baseline diff captured
+- Release approval form completed
+
+### 14. Owner Sign-Off
+- All required owners have signed off
+- Review board quorum met (if High/Critical risk)
+- Sign-off evidence in archive
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-production-readiness-review.md`**
+   - Overview of production readiness framework
+   - How this review links to all prior phases (10–19)
+   - When this review is required
+   - Who conducts the review
+   - What blocks a go decision
+
+2. **`docs/infra/cloudflare-production-readiness-checklist.md`**
+   - All 14 areas above with full checklist items
+   - Each item has: status field `[ ] PASS / FAIL / BLOCKED / N-A` | evidence reference | owner
+   - Summary section: total PASS / FAIL / BLOCKED count
+   - Final decision field: GO / NO-GO / CONDITIONAL
+
+3. **`docs/infra/cloudflare-production-go-no-go-template.md`**
+   - Change ID
+   - Change description
+   - Risk level (from Phase 17)
+   - Environment
+   - Checklist summary (pass/fail counts)
+   - Blocking items (list)
+   - Conditional items (list)
+   - Decision: GO / NO-GO / CONDITIONAL
+   - Decision rationale
+   - Approver sign-off fields
+   - Evidence archive reference
+
+4. **`docs/infra/cloudflare-rollback-readiness-checklist.md`**
+   - Pre-change rollback readiness:
+     - Rollback plan documented? (Phase 12)
+     - Break-glass procedure available? (Phase 13)
+     - Rollback owner identified?
+     - Rollback steps reviewed?
+     - Rollback evidence template ready (Phase 19)?
+   - Post-change rollback verification:
+     - Change applied successfully?
+     - Rollback still possible if needed?
+     - Evidence captured?
+
+5. **`docs/infra/cloudflare-drift-report.md`** *(update)*
+   - Add `production_readiness_status` field per drift item
+   - Cross-reference Phase 20 checklist
+
+6. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 20 entry with links to all deliverables above
+
+---
+
+## Evidence Outputs
+
+- All documentation files committed and readable via `cat`
+- Checklist has pass/fail/blocked/N-A fields for all 14 areas
+- Go/no-go template has all required decision fields
+- Rollback readiness checklist has both pre- and post-change sections
+- `infra/cloudflare/README.md` updated with Phase 20 links
+- No secrets found in any new file
+- `git diff --name-only` shows only Phase 20 files
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-production-readiness-review.md` exists with overview
+- [ ] `docs/infra/cloudflare-production-readiness-checklist.md` exists with all 14 areas
+- [ ] All checklist items have `[ ] PASS / FAIL / BLOCKED / N-A` status fields
+- [ ] `docs/infra/cloudflare-production-go-no-go-template.md` exists with GO/NO-GO/CONDITIONAL decision field
+- [ ] `docs/infra/cloudflare-rollback-readiness-checklist.md` exists with pre- and post-change sections
+- [ ] `docs/infra/cloudflare-drift-report.md` updated with readiness field
+- [ ] `infra/cloudflare/README.md` updated with Phase 20 section
+- [ ] All docs cross-reference relevant prior phases (Phase 10–19)
+- [ ] No secrets, credentials, or automated deployment actions in any file
+- [ ] No deployment, apply, or Cloudflare write performed
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-production-readiness-review
+
+# After writing files
+cat docs/infra/cloudflare-production-readiness-review.md
+cat docs/infra/cloudflare-production-readiness-checklist.md
+cat docs/infra/cloudflare-production-go-no-go-template.md
+cat docs/infra/cloudflare-rollback-readiness-checklist.md
+
+# Count checklist items
+grep -c "PASS\|FAIL\|BLOCKED" docs/infra/cloudflare-production-readiness-checklist.md
+
+# Verify all 14 areas present
+for area in "DNS Ownership" "Tunnel Runtime" "Worker Route" "AI Gateway" "KV / D1" "Terraform" "Secret" "CI Enforcement" "Risk Scoring" "Environment Separation" "Disaster Recovery" "Rollback" "Evidence Archive" "Owner Sign"; do
+  grep -q "$area" docs/infra/cloudflare-production-readiness-checklist.md && echo "FOUND: $area" || echo "MISSING: $area"
+done
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-production-readiness-review.md \
+  docs/infra/cloudflare-production-readiness-checklist.md \
+  docs/infra/cloudflare-production-go-no-go-template.md \
+  docs/infra/cloudflare-rollback-readiness-checklist.md || echo "No secrets found"
+
+# Commit
+git add docs/infra/cloudflare-production-readiness-review.md \
+        docs/infra/cloudflare-production-readiness-checklist.md \
+        docs/infra/cloudflare-production-go-no-go-template.md \
+        docs/infra/cloudflare-rollback-readiness-checklist.md \
+        docs/infra/cloudflare-drift-report.md \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): add production readiness review"
+
+git push origin fix/cloudflare-production-readiness-review
+gh pr create --title "docs(cloudflare): add production readiness review" \
+  --body "Phase 20: Adds production readiness checklist (14 areas), go/no-go template, rollback readiness checklist, and readiness review overview. Read-only governance. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Checklist coverage summary (areas covered count)
+4. Validation commands run and their output summary
+5. Any warnings (missing areas, unlabeled steps)
+6. Git status summary (`git diff --stat`)
+7. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**
