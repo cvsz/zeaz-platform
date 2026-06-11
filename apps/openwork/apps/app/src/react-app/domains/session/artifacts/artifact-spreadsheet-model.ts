@@ -1,3 +1,5 @@
+import ExcelJS from "exceljs";
+
 import type { Data } from "./open-target";
 
 export type SpreadsheetRows = string[][];
@@ -83,10 +85,17 @@ function serializeDelimited(rows: SpreadsheetRows, delimiter: string) {
     .join("\n") + "\n";
 }
 
-function normalizeRows(rows: unknown[][]): SpreadsheetRows {
-  const next = rows.map((row) => row.map((cell) => cell == null ? "" : String(cell)));
+function normalizeRows(rows: SpreadsheetRows): SpreadsheetRows {
+  return rows.length ? rows : [[""]];
+}
 
-  return next.length ? next : [[""]];
+function arrayBufferFrom(output: ExcelJS.Buffer): ArrayBuffer {
+  const bytes = output instanceof Uint8Array ? output : new Uint8Array(output);
+  const copy = new Uint8Array(bytes.byteLength);
+
+  copy.set(bytes);
+
+  return copy.buffer;
 }
 
 export async function parseSpreadsheet(input: { name: string; content: Data }): Promise<SpreadsheetRows> {
@@ -96,17 +105,34 @@ export async function parseSpreadsheet(input: { name: string; content: Data }): 
     return parseDelimited(input.content.kind === "text" ? input.content.data : "", delimiterForName(input.name));
   }
 
-  const XLSX = await import("xlsx");
-  const workbook = XLSX.read(input.content.kind === "binary" ? input.content.data : new ArrayBuffer(0), { type: "array" });
-  const firstSheetName = workbook.SheetNames[0];
+  const workbook = new ExcelJS.Workbook();
 
-  if (!firstSheetName) { 
+  if (input.content.kind === "binary") {
+    await workbook.xlsx.load(input.content.data);
+  }
+
+  const sheet = workbook.worksheets[0];
+
+  if (!sheet) {
     return [[""]]; 
   }
 
-  const sheet = workbook.Sheets[firstSheetName];
+  const rows: SpreadsheetRows = [];
 
-  return normalizeRows(XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, blankrows: true }) as unknown[][]);
+  sheet.eachRow({ includeEmpty: true }, (row) => {
+    const values = row.values;
+    const cells: string[] = [];
+
+    if (Array.isArray(values)) {
+      for (const cell of values.slice(1)) {
+        cells.push(cell == null ? "" : String(cell));
+      }
+    }
+
+    rows.push(cells);
+  });
+
+  return normalizeRows(rows);
 }
 
 export async function serializeSpreadsheet(name: string, rows: SpreadsheetRows): Promise<Data> {
@@ -116,22 +142,12 @@ export async function serializeSpreadsheet(name: string, rows: SpreadsheetRows):
     return { kind: "text", data: serializeDelimited(rows, delimiterForName(name)) };
   }
 
-  const XLSX = await import("xlsx");
-  const workbook = XLSX.utils.book_new();
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Sheet1");
 
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(rows), "Sheet1");
+  sheet.addRows(rows);
 
-  const bookType = ext === "xls" ? "xls" : ext === "ods" ? "ods" : "xlsx";
-  const output = XLSX.write(workbook, { type: "array", bookType });
+  const output = await workbook.xlsx.writeBuffer();
 
-  if (output instanceof ArrayBuffer) {
-    return { kind: "binary", data: output };
-  }
-
-  const view = output as Uint8Array;
-  const copy = new Uint8Array(view.byteLength);
-
-  copy.set(view);
-
-  return { kind: "binary", data: copy.buffer };
+  return { kind: "binary", data: arrayBufferFrom(output) };
 }
