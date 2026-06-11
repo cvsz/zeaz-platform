@@ -1,0 +1,48 @@
+name: Feature Request
+description: Propose a new feature, optimization, or stack enhancement
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this template to propose a new feature or improvement to the ZeaZ Platform.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What feature or enhancement are you proposing?
+      placeholder: E.g., Add centralized health monitoring endpoints across all microservices...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution / Expected Behavior
+      description: Describe the solution you would like to see implemented.
+      placeholder: We should implement a health check script that queries each application port...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or workarounds you have considered.
+    validations:
+      required: false
+  - type: textarea
+    id: target_stack
+    attributes:
+      label: Target Stack / Context
+      description: Which application stacks or infrastructure configs does this request affect?
+      placeholder: E.g., apps/web, configs/platform, or global Makefiles...
+    validations:
+      required: true
+  - type: textarea
+    id: security_considerations
+    attributes:
+      label: Security Considerations
+      description: Are there any new network ports exposed, extra permissions required, or key storage needs introduced by this feature?
+      placeholder: E.g., Requires adding a new Cloudflare Access route rule...
+    validations:
+      required: false

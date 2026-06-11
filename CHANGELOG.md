@@ -1,8 +1,25 @@
 # Changelog
 
-## Unreleased
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Added repository security policy guidelines (`SECURITY.md`).
+- Added contributor guidelines (`CONTRIBUTING.md`) and Code of Conduct (`CODE_OF_CONDUCT.md`).
+- Added platform development Roadmap tracker (`ROADMAP.md`).
+- Added GitHub templates: Pull Request template, Bug Report form, and Feature Request form.
+- Added GitHub Actions `oss-readiness.yml` workflow for automated validation.
+
+### Changed
+- Updated `LICENSE` to specify ZeaZDev Company Limited as the copyright holder.
+- Merged `zkbtrader` and `ABTPi18n` application stacks into a unified `apps/ztrader` folder.
+- Renamed application folder `apps/zlms-prod` to `apps/zlms` to match standard naming.
 
 ### Fixed
 - Added Phase 51 and Phase 52 validation reports.
-- Added CI-safe apps/web dependency install helper.
+- Added CI-safe `apps/web` dependency install helper.
 - Stabilized Tailwind oxide dependency install for GitHub Actions.
