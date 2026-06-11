@@ -114,6 +114,53 @@ while IFS= read -r workflow_file; do
     fail_count=$((fail_count + 1))
   fi
 
+  in_pr_workflow=false
+  in_push_workflow=false
+  if search_workflows "$workflow_file" -q '^[[:space:]]*pull_request:'; then
+    in_pr_workflow=true
+  fi
+  if search_workflows "$workflow_file" -q '^[[:space:]]*push:'; then
+    in_push_workflow=true
+  fi
+
+  if search_workflows "$workflow_file" -q 'wrangler[[:space:]]+deploy'; then
+    if [[ "$in_pr_workflow" == true ]] || [[ "$in_push_workflow" == true ]]; then
+      printf '{"level":"ERROR","file":"%s","msg":"wrangler deploy not allowed in PR or push workflows"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
+  if search_workflows "$workflow_file" -q 'terraform[[:space:]]+apply|tofu[[:space:]]+apply'; then
+    if [[ "$in_pr_workflow" == true ]]; then
+      printf '{"level":"ERROR","file":"%s","msg":"terraform/tofu apply not allowed in PR workflows"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
+  if search_workflows "$workflow_file" -q 'terraform[[:space:]]+destroy|tofu[[:space:]]+destroy'; then
+    if [[ "$in_pr_workflow" == true ]]; then
+      printf '{"level":"ERROR","file":"%s","msg":"terraform/tofu destroy not allowed in PR workflows"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
+  if search_workflows "$workflow_file" -q 'api\.cloudflare\.com' && search_workflows "$workflow_file" -q 'POST|PUT|PATCH|DELETE'; then
+    if [[ "$in_pr_workflow" == true ]] || [[ "$in_push_workflow" == true ]]; then
+      printf '{"level":"ERROR","file":"%s","msg":"Cloudflare API write methods not allowed in PR or push workflows"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
+  if search_workflows "$workflow_file" -q 'branches:.*master'; then
+    printf '{"level":"ERROR","file":"%s","msg":"workflows must target main, not master"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+    fail_count=$((fail_count + 1))
+  fi
+
+  if search_workflows "$workflow_file" -q 'continue-on-error:[[:space:]]*true'; then
+    printf '{"level":"ERROR","file":"%s","msg":"continue-on-error: true is not allowed"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+    fail_count=$((fail_count + 1))
+  fi
+
   if search_workflows "$workflow_file" -q 'run:[[:space:]]*make validate([[:space:]]|$)' && ! search_workflows "$workflow_file" -q 'opentofu/setup-opentofu@v[12]'; then
     printf '{"level":"ERROR","file":"%s","msg":"workflows running make validate must install OpenTofu"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
     fail_count=$((fail_count + 1))

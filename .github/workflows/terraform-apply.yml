@@ -1,4 +1,5 @@
 name: Terraform Apply
+# Note: Excluded from PR gates. Runs manually only.
 
 on:
   workflow_dispatch:
