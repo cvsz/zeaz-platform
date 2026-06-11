@@ -3,3 +3,5 @@ creation_rules:
     age: "age1mqzsgdnmcg2ptgmrr45gza0t4dgyl6d34s9t8utuh0mn7tc4g5use094g4"
   - path_regex: "secrets/.*\\.yaml$"
     age: "age1mqzsgdnmcg2ptgmrr45gza0t4dgyl6d34s9t8utuh0mn7tc4g5use094g4"
+  - path_regex: ".*\\.env$"
+    age: "age1mqzsgdnmcg2ptgmrr45gza0t4dgyl6d34s9t8utuh0mn7tc4g5use094g4"
