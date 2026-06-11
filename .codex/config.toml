@@ -7,26 +7,32 @@ web_search = "live"
 
 [mcp_servers.github]
 command = "npx"
-args = ["-y", "@modelcontextprotocol/server-github"]
+args = ["--yes", "--silent", "@modelcontextprotocol/server-github"]
+startup_timeout_sec = 60
 
 [mcp_servers.context7]
 command = "npx"
-args = ["-y", "@upstash/context7-mcp@latest"]
+args = ["--yes", "--silent", "@upstash/context7-mcp@latest", "--transport", "stdio"]
+startup_timeout_sec = 60
 
 [mcp_servers.exa]
 url = "https://mcp.exa.ai/mcp"
+startup_timeout_sec = 60
 
 [mcp_servers.memory]
 command = "npx"
-args = ["-y", "@modelcontextprotocol/server-memory"]
+args = ["--yes", "--silent", "@modelcontextprotocol/server-memory"]
+startup_timeout_sec = 60
 
 [mcp_servers.playwright]
 command = "npx"
-args = ["-y", "@playwright/mcp@latest", "--extension"]
+args = ["--yes", "--silent", "@playwright/mcp@latest", "--extension"]
+startup_timeout_sec = 60
 
 [mcp_servers.sequential-thinking]
 command = "npx"
-args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+args = ["--yes", "--silent", "@modelcontextprotocol/server-sequential-thinking"]
+startup_timeout_sec = 60
 
 [features]
 multi_agent = true

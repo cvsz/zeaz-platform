@@ -39,7 +39,7 @@ body:
     attributes:
       label: Actual Behavior
       description: Describe what actually happened.
-      placeholder: Compiler error: port conflict detected on zlms stack...
+      placeholder: "Compiler error: port conflict detected on zlms stack..."
     validations:
       required: true
   - type: textarea
