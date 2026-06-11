@@ -49,6 +49,12 @@ Options:
   --json        Output results in JSON format
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
+  --terraform-ownership Also run Terraform ownership scanning (Phase 8)
+  --access-ownership    Also run Access ownership scanning (Phase 8)
+  --zero-trust-governance Run Zero Trust governance scanning (Phase 9)
+  --security-headers      Run Security Headers governance scanning (Phase 9)
+  --rulesets-governance   Run Rulesets governance scanning (Phase 9)
+  --phase9                Run all Phase 9 scanners
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -65,6 +71,11 @@ VERBOSE=false
 CHECK=false
 CHECK_SECRETS=false
 CHECK_WORKERS=false
+CHECK_TF_OWNERSHIP=false
+CHECK_ACCESS_OWNERSHIP=false
+CHECK_ZT_GOV=false
+CHECK_SEC_HEADERS=false
+CHECK_RULESETS_GOV=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -75,6 +86,16 @@ while [[ $# -gt 0 ]]; do
     --json)    MODE="json" ;;
     --secrets) CHECK_SECRETS=true ;;
     --workers) CHECK_WORKERS=true ;;
+    --terraform-ownership) CHECK_TF_OWNERSHIP=true ;;
+    --access-ownership) CHECK_ACCESS_OWNERSHIP=true ;;
+    --zero-trust-governance) CHECK_ZT_GOV=true ;;
+    --security-headers) CHECK_SEC_HEADERS=true ;;
+    --rulesets-governance) CHECK_RULESETS_GOV=true ;;
+    --phase9)
+      CHECK_ZT_GOV=true
+      CHECK_SEC_HEADERS=true
+      CHECK_RULESETS_GOV=true
+      ;;
     -*)
       log_error "Unknown option: $1"
       show_help
