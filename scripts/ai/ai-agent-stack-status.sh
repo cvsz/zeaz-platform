@@ -41,8 +41,8 @@ done
 
 redact() {
   sed -E \
-    -e 's/([A-Za-z0-9_]*(TOKEN|SECRET|PASSWORD|API_KEY|KEY)[A-Za-z0-9_]*=)[^[:space:]]+/\1[redacted]/Ig' \
-    -e 's/(Bearer )[A-Za-z0-9._~+\/=-]+/\1[redacted]/Ig' \
+    -e 's/([A-Za-z0-9_]*([Tt][Oo][Kk][Ee][Nn]|[Ss][Ee][Cc][Rr][Ee][Tt]|[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd]|[Aa][Pp][Ii]_[Kk][Ee][Yy]|[Kk][Ee][Yy])[A-Za-z0-9_]*=)[^[:space:]]+/\1[redacted]/g' \
+    -e 's/([Bb][Ee][Aa][Rr][Ee][R] )[A-Za-z0-9._~+\/=-]+/\1[redacted]/g' \
     -e 's/(sk-[A-Za-z0-9_-]{8})[A-Za-z0-9_-]+/\1[redacted]/g'
 }
 
@@ -56,8 +56,15 @@ run_version() {
   local IFS=' '
   read -r -a args <<<"$version_args"
 
+  local timeout_cmd=""
   if command -v timeout >/dev/null 2>&1; then
-    output="$(timeout "${VERSION_TIMEOUT_SECONDS}s" "$command_name" "${args[@]}" 2>&1 | head -n 2 | redact || true)"
+    timeout_cmd="timeout"
+  elif command -v gtimeout >/dev/null 2>&1; then
+    timeout_cmd="gtimeout"
+  fi
+
+  if [[ -n "$timeout_cmd" ]]; then
+    output="$($timeout_cmd "${VERSION_TIMEOUT_SECONDS}s" "$command_name" "${args[@]}" 2>&1 | head -n 2 | redact || true)"
   else
     output="$("$command_name" "${args[@]}" 2>&1 | head -n 2 | redact || true)"
   fi
@@ -147,13 +154,33 @@ print_project_configs() {
 
   print_section "Project Agent Configs"
   find "$HOME_DIR" -maxdepth 3 \
-    \( -path "$HOME_DIR/.cache" -o -path "$HOME_DIR/.npm" -o -path "$HOME_DIR/node_modules" -o -path '*/node_modules' \) -prune \
+    \( -path "$HOME_DIR/.cache" -o -path "$HOME_DIR/.npm" -o -path "$HOME_DIR/node_modules" -o -path '*/node_modules' \
+       -o -path "$HOME_DIR/.git" -o -path "$HOME_DIR/.local" -o -path "$HOME_DIR/Library" \) -prune \
     -o -type d \
     \( -name .agent -o -name .agents -o -name .codex -o -name .claude -o -name .gemini -o -name .qwen -o -name .opencode -o -name .zagents \) \
     -print 2>/dev/null | sort | while IFS= read -r path; do
       printf '[CONFIG] %s\n' "$path"
     done
 }
+
+# Self-check: verify required tools and patterns before running.
+_self_check() {
+  local ok=0
+  if ! command -v sed >/dev/null 2>&1; then
+    echo "ERROR: sed not found" >&2
+    ok=1
+  fi
+  if ! command -v find >/dev/null 2>&1; then
+    echo "ERROR: find not found" >&2
+    ok=1
+  fi
+  if ! echo "test TOKEN=secret" | sed -E 's/(TOKEN=).*/\1[redacted]/' >/dev/null 2>&1; then
+    echo "ERROR: sed -E not supported" >&2
+    ok=1
+  fi
+  return "$ok"
+}
+_self_check || exit 2
 
 TOOLS=(
   "Managed stack|Antigravity|antigravity|-"
@@ -266,7 +293,7 @@ LOCAL_SCRIPTS=(
 echo "=== AI Agent Stack Status ==="
 printf 'Host: %s\n' "$(hostname 2>/dev/null || echo unknown)"
 printf 'User: %s\n' "$(id -un 2>/dev/null || echo unknown)"
-printf 'Time: %s\n' "$(date -Is)"
+printf 'Time: %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')"
 
 print_tool_group
 print_known_config_dirs
