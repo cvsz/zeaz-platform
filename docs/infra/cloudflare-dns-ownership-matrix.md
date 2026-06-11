@@ -137,3 +137,10 @@ These will return 404 from the tunnel catch-all unless they're routed in the liv
 3. **Orphaned TC subdomains**: 7 hostnames in TC have no tunnel ingress rule, causing 404 at runtime.
 4. **Duplicate `release.zeaz.dev`**: Managed by both TA and TZ.
 5. **`zcino.zeaz.dev`** managed by TA, TZ, and present in 5 total config files.
+
+## Phase 8 Notes
+- **Terraform ownership risks**: Modules managing the same record across `TA` and `TZ` require manual consolidation.
+- **Worker/DNS overlap for www.zeaz.dev**: `www.zeaz.dev` is defined in both Wrangler configuration and Terraform DNS CNAME. Worker route wins; DNS CNAME should be evaluated for removal.
+- **Tunnel/DNS ownership separation**: Keep separation between where DNS is managed (Terraform) and ingress runtime (Live config) until full IaC migration is approved.
+- **Manual decisions still pending**: Consolidate canonical Terraform module, cleanup orphaned subdomains, and address overlap risks.
+

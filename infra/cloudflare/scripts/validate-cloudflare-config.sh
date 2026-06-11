@@ -49,12 +49,10 @@ Options:
   --json        Output results in JSON format
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
-  --terraform-ownership Also run Terraform ownership scanning (Phase 8)
-  --access-ownership    Also run Access ownership scanning (Phase 8)
-  --zero-trust-governance Run Zero Trust governance scanning (Phase 9)
-  --security-headers      Run Security Headers governance scanning (Phase 9)
-  --rulesets-governance   Run Rulesets governance scanning (Phase 9)
-  --phase9                Run all Phase 9 scanners
+  --terraform   Also run terraform ownership scanning (Phase 8)
+  --runtime-governance  Also run runtime governance scanning (Phase 7)
+  --worker-bindings     Also run worker bindings scanning (Phase 7)
+  --no-mutation         Also run no-mutation guard scanning (Phase 7)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -71,11 +69,10 @@ VERBOSE=false
 CHECK=false
 CHECK_SECRETS=false
 CHECK_WORKERS=false
-CHECK_TF_OWNERSHIP=false
-CHECK_ACCESS_OWNERSHIP=false
-CHECK_ZT_GOV=false
-CHECK_SEC_HEADERS=false
-CHECK_RULESETS_GOV=false
+CHECK_TERRAFORM=false
+CHECK_RUNTIME_GOVERNANCE=false
+CHECK_WORKER_BINDINGS=false
+CHECK_NO_MUTATION=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -86,16 +83,10 @@ while [[ $# -gt 0 ]]; do
     --json)    MODE="json" ;;
     --secrets) CHECK_SECRETS=true ;;
     --workers) CHECK_WORKERS=true ;;
-    --terraform-ownership) CHECK_TF_OWNERSHIP=true ;;
-    --access-ownership) CHECK_ACCESS_OWNERSHIP=true ;;
-    --zero-trust-governance) CHECK_ZT_GOV=true ;;
-    --security-headers) CHECK_SEC_HEADERS=true ;;
-    --rulesets-governance) CHECK_RULESETS_GOV=true ;;
-    --phase9)
-      CHECK_ZT_GOV=true
-      CHECK_SEC_HEADERS=true
-      CHECK_RULESETS_GOV=true
-      ;;
+    --terraform) CHECK_TERRAFORM=true ;;
+    --runtime-governance) CHECK_RUNTIME_GOVERNANCE=true ;;
+    --worker-bindings) CHECK_WORKER_BINDINGS=true ;;
+    --no-mutation) CHECK_NO_MUTATION=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -473,6 +464,31 @@ if [[ "$CHECK_WORKERS" == true ]]; then
   total_errors=$((total_errors + worker_issues))
   example_issues=$(validate_wrangler_examples)
   total_errors=$((total_errors + example_issues))
+fi
+
+# Phase 7: Governance validation
+if [[ "$CHECK_NO_MUTATION" == true ]]; then
+  log_info "Running Phase 7 no-mutation guard..."
+  if ! "$SCRIPTS_DIR/check-cloudflare-no-mutation.sh" --strict >/dev/null 2>&1; then
+    errors+=("No-mutation guard failed.")
+    total_errors=$((total_errors + 1))
+  fi
+fi
+
+if [[ "$CHECK_RUNTIME_GOVERNANCE" == true ]]; then
+  log_info "Running Phase 7 runtime governance scanner..."
+  if ! "$SCRIPTS_DIR/scan-runtime-governance.sh" --strict >/dev/null 2>&1; then
+    errors+=("Runtime governance scanner failed.")
+    total_errors=$((total_errors + 1))
+  fi
+fi
+
+if [[ "$CHECK_WORKER_BINDINGS" == true ]]; then
+  log_info "Running Phase 7 worker bindings scanner..."
+  if ! "$SCRIPTS_DIR/scan-worker-bindings.sh" --strict >/dev/null 2>&1; then
+    errors+=("Worker bindings scanner failed.")
+    total_errors=$((total_errors + 1))
+  fi
 fi
 
 # ---------- Output ----------
