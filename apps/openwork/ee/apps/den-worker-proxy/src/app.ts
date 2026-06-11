@@ -8,8 +8,6 @@ import { env } from "./env.js"
 
 const { db } = createDenDb({
   databaseUrl: env.databaseUrl,
-  mode: env.dbMode,
-  planetscale: env.planetscale,
 })
 const app = new Hono()
 const maxSignedPreviewExpirySeconds = 60 * 60 * 24

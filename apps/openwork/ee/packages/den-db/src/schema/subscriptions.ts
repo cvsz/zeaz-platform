@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm"
-import { boolean, index, int, mysqlEnum, mysqlTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core"
+import { boolean, index, integer, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { pgEnum } from "drizzle-orm/pg-core"
 import { denTypeIdColumn, timestamps } from "../columns"
 import { MemberTable, OrganizationTable } from "./org"
 
@@ -16,24 +17,27 @@ export const OrgSubscriptionStatus = [
   "expired",
 ] as const
 
-export const OrgSubscriptionTable = mysqlTable(
+export const orgSubscriptionTypeEnum = pgEnum("org_subscription_type", OrgSubscriptionType)
+export const orgSubscriptionStatusEnum = pgEnum("org_subscription_status", OrgSubscriptionStatus)
+
+export const OrgSubscriptionTable = pgTable(
   "org_subscriptions",
   {
     id: denTypeIdColumn("orgSubscription", "id").notNull().primaryKey(),
     organization_id: denTypeIdColumn("organization", "organization_id").notNull(),
     created_by_org_membership_id: denTypeIdColumn("member", "created_by_org_membership_id"),
-    type: mysqlEnum("type", OrgSubscriptionType).notNull(),
-    status: mysqlEnum("status", OrgSubscriptionStatus).notNull().default("incomplete"),
+    type: orgSubscriptionTypeEnum("type").notNull(),
+    status: orgSubscriptionStatusEnum("status").notNull().default("incomplete"),
     stripe_customer_id: varchar("stripe_customer_id", { length: 255 }).notNull(),
     stripe_subscription_id: varchar("stripe_subscription_id", { length: 255 }).notNull(),
     stripe_price_id: varchar("stripe_price_id", { length: 255 }),
     stripe_subscription_item_id: varchar("stripe_subscription_item_id", { length: 255 }),
-    quantity: int("quantity").notNull().default(0),
-    current_period_start: timestamp("current_period_start", { fsp: 3 }),
-    current_period_end: timestamp("current_period_end", { fsp: 3 }),
+    quantity: integer("quantity").notNull().default(0),
+    current_period_start: timestamp("current_period_start", { precision: 3 }),
+    current_period_end: timestamp("current_period_end", { precision: 3 }),
     cancel_at_period_end: boolean("cancel_at_period_end").notNull().default(false),
-    canceled_at: timestamp("canceled_at", { fsp: 3 }),
-    ended_at: timestamp("ended_at", { fsp: 3 }),
+    canceled_at: timestamp("canceled_at", { precision: 3 }),
+    ended_at: timestamp("ended_at", { precision: 3 }),
     last_event_id: varchar("last_event_id", { length: 255 }),
     ...timestamps,
   },

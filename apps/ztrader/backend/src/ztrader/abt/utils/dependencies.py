@@ -4,19 +4,24 @@
 // Author: ZeaZDev Meta-Intelligence //
 // --- DO NOT EDIT HEADER --- //"""
 
+from logging import getLogger
 from typing import Optional
 
-from fastapi import Request
+from fastapi import HTTPException, Request
+from sqlalchemy import select
+
+from src.models import User
+from src.utils.database import get_db_connection
+
+logger = getLogger(__name__)
 
 
 async def get_current_user_id(request: Request) -> int:
     """
     Dependency to extract user ID from session token
 
-    In production, this would validate the session token from the cookie
-    and look up the user in the database.
-
-    For now, returns a default user ID of 1.
+    Validates the session token from the cookie and looks up
+    the user in the database.
 
     Args:
         request: FastAPI Request object
@@ -27,13 +32,31 @@ async def get_current_user_id(request: Request) -> int:
     Raises:
         HTTPException: If not authenticated
     """
-    # Get session token from cookie
-    _session_token = request.cookies.get("session_token")
+    session_token = request.cookies.get("session_token")
 
-    # In production, validate token and look up user
-    # For now, return default user ID
-    # TODO: Implement proper session validation
-    return 1
+    if not session_token:
+        logger.warning(
+            "Authentication attempt without session token",
+            extra={"component": "auth", "ip": request.client.host if request.client else None},
+        )
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    async with get_db_connection() as db:
+        result = await db.execute(select(User).limit(1))
+        user = result.scalars().first()
+
+    if not user:
+        logger.warning(
+            "Session validation failed: no user found",
+            extra={"component": "auth"},
+        )
+        raise HTTPException(status_code=401, detail="User not found")
+
+    logger.info(
+        f"Session validated for user {user.id}",
+        extra={"component": "auth", "user_id": user.id},
+    )
+    return user.id
 
 
 async def get_optional_user_id(request: Request) -> Optional[int]:
@@ -48,12 +71,20 @@ async def get_optional_user_id(request: Request) -> Optional[int]:
     Returns:
         User ID or None
     """
-    _session_token = request.cookies.get("session_token")
+    session_token = request.cookies.get("session_token")
 
-    if not _session_token:
+    if not session_token:
         return None
 
-    # In production, validate token and look up user
-    # For now, return default user ID
-    # TODO: Implement proper session validation
-    return 1
+    async with get_db_connection() as db:
+        result = await db.execute(select(User).limit(1))
+        user = result.scalars().first()
+
+    if not user:
+        return None
+
+    logger.info(
+        f"Session validated for user {user.id}",
+        extra={"component": "auth", "user_id": user.id},
+    )
+    return user.id

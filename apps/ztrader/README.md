@@ -1,13 +1,8 @@
 # zTrader
 
-Last updated: 2026-06-10
+Last updated: 2026-06-11
 
-`apps/ztrader` is the safety-first multi-language algorithmic trading platform stack and the active merge target for useful source material from:
-
-```text
-apps/ABTPi18n
-apps/zkbtrader
-```
+`apps/ztrader` is the safety-first multi-language algorithmic trading platform stack and the active merge target for archived source material under `.ops/backups`.
 
 ## Merge status
 
@@ -15,10 +10,10 @@ apps/zkbtrader
 STATUS: MERGE IMPLEMENTATION STARTED
 SOURCE MATERIAL: retained until validation passes
 TARGET: apps/ztrader
-PLAN: ../../docs/plans/ztrader-merge-abtpi18n-zkbtrader-plan.md
+PLAN: reports/merge/ztrader-source-merge-report.md
 ```
 
-Source apps are retained during migration. They should only be cleaned up after inventory, mapping, validation, and final report gates pass.
+Source material is retained during migration. The active application layout remains under `apps/ztrader`; archived source names are not recreated as application folders.
 
 ## Stack
 
@@ -77,29 +72,31 @@ apps/ztrader/reports/merge/
 
 ## Source mapping summary
 
-### ABTPi18n
+### Platform Archive
 
 | Source | Target |
 |---|---|
-| `apps/ABTPi18n/configs/` | `apps/ztrader/config/abtpi18n/` |
-| `apps/ABTPi18n/core/` | `apps/ztrader/backend/src/ztrader/abt/core/` |
-| `apps/ABTPi18n/strategies/` | `apps/ztrader/backend/src/ztrader/strategies/abtpi18n/` |
-| `apps/ABTPi18n/monitoring/` | `apps/ztrader/backend/src/ztrader/monitoring/abtpi18n/` |
-| `apps/ABTPi18n/scripts/` | `apps/ztrader/scripts/abtpi18n/` |
-| `apps/ABTPi18n/tests/` | `apps/ztrader/backend/tests/abtpi18n/` |
-| metadata files | `apps/ztrader/merge-sources/abtpi18n/` |
+| platform configs | `apps/ztrader/config/integrations/` |
+| `.ops/backups/ABTPi18n/core/` | `apps/ztrader/backend/src/ztrader/abt/core/` |
+| platform strategies | `apps/ztrader/backend/src/ztrader/strategies/external/` |
+| platform monitoring | `apps/ztrader/backend/src/ztrader/monitoring/trading/` |
+| platform scripts | `apps/ztrader/scripts/integrations/` |
+| platform tests | `apps/ztrader/backend/tests/integrations/` |
+| metadata files | `apps/ztrader/merge-sources/platform/` |
 
-### zkbtrader
+### Market Archive
 
 | Source | Target |
 |---|---|
-| `apps/zkbtrader/src/` | `apps/ztrader/backend/src/ztrader/zkb/` |
-| `apps/zkbtrader/harness/` | `apps/ztrader/harness/zkbtrader/` |
-| `apps/zkbtrader/tests/` | `apps/ztrader/backend/tests/zkbtrader/` |
-| `apps/zkbtrader/reports/` | `apps/ztrader/reports/zkbtrader/` |
-| `apps/zkbtrader/scripts/` | `apps/ztrader/scripts/zkbtrader/` |
-| `apps/zkbtrader/alembic/` | `apps/ztrader/backend/alembic/zkbtrader_source/` |
-| metadata/Docker files | `apps/ztrader/merge-sources/zkbtrader/` |
+| market source package | `apps/ztrader/backend/src/ztrader/market/` |
+| market harness | `apps/ztrader/harness/trading/` |
+| market tests | `apps/ztrader/backend/tests/market/` |
+| market reports | `apps/ztrader/reports/trading/` |
+| market scripts | `apps/ztrader/scripts/market/` |
+| market migrations | `apps/ztrader/backend/alembic/source/` |
+| metadata/Docker files | `apps/ztrader/merge-sources/market/` |
+
+The backend uses `PYTHONPATH=backend/src:backend/src/ztrader/abt` so `ztrader` and compatibility imports resolve during local tests and container runtime.
 
 ## Local development
 
@@ -149,7 +146,7 @@ make server-stop
 ```text
 frontend/
 backend/
-scripts/merge-abtpi18n-zkbtrader.sh
+scripts/merge-sources.sh
 docker-compose.yml
 Makefile
 README.md
@@ -161,8 +158,8 @@ reports/merge/
 
 - `make merge-apply` completed locally.
 - `make merge-validate` passes.
-- ABTPi18n source-only features are mapped or intentionally archived.
-- zkbtrader source-only features are mapped or intentionally archived.
+- Platform archive source-only features are mapped or intentionally archived.
+- Market archive source-only features are mapped or intentionally archived.
 - Final report exists under `apps/ztrader/reports/merge/`.
 - Root README and zTrader README reflect the final state.
 - No imports or operational docs require the old source paths.

@@ -86,7 +86,7 @@ class SecretRotationService:
             previousHash=previous.previousHash if previous else None,
             nextRotation=next_rotation,
             status="ACTIVE",
-            metadata=str(metadata) if metadata else None,
+            metadataJson=str(metadata) if metadata else None,
         )
         db.add(rotation)
         await db.flush()

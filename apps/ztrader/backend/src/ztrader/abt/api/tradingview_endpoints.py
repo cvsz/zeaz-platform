@@ -14,15 +14,17 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from src.models import TradingViewAlert
+from src.models import TradingViewAlert as TradingViewAlertRecord
+from src.services.exchange_service import ExchangeConnector
 from src.utils.database import get_db_connection
 
 logger = getLogger(__name__)
 
 router = APIRouter()
+prisma: Any = None
 
 
-class TradingViewAlertPayload(BaseModel):
+class TradingViewAlert(BaseModel):
     """TradingView webhook alert payload"""
 
     ticker: str = Field(..., description="Trading symbol (e.g., BTCUSDT)")
@@ -55,7 +57,10 @@ class TradingViewWebhookConfig(BaseModel):
     )
 
 
-def _model_dump(alert: TradingViewAlertPayload) -> dict[str, Any]:
+TradingViewAlertPayload = TradingViewAlert
+
+
+def _model_dump(alert: TradingViewAlert) -> dict[str, Any]:
     """Return a Pydantic v2-compatible dump with a v1 fallback."""
     if hasattr(alert, "model_dump"):
         return alert.model_dump()
@@ -95,9 +100,33 @@ def verify_webhook_secret(
     return x_webhook_secret
 
 
+async def _connect_prisma_if_needed() -> None:
+    if prisma is None:
+        return
+    is_connected = getattr(prisma, "is_connected", None)
+    connect = getattr(prisma, "connect", None)
+    if callable(is_connected) and not is_connected() and callable(connect):
+        await connect()
+
+
+def _format_alert(alert: Any) -> dict[str, Any]:
+    received_at = getattr(alert, "receivedAt", None)
+    return {
+        "id": alert.id,
+        "ticker": alert.ticker,
+        "exchange": alert.exchange,
+        "action": alert.action,
+        "price": alert.price,
+        "strategy": alert.strategy,
+        "interval": alert.interval,
+        "message": alert.message,
+        "received_at": received_at.isoformat() if received_at else None,
+    }
+
+
 @router.post("/webhook")
 async def tradingview_webhook(
-    alert: TradingViewAlertPayload, webhook_secret: str = Depends(verify_webhook_secret)
+    alert: TradingViewAlert, webhook_secret: str = Depends(verify_webhook_secret)
 ):
     """
     Receive TradingView webhook alerts.
@@ -133,20 +162,31 @@ async def tradingview_webhook(
             )
 
         payload = _model_dump(alert)
+        alert_data = {
+            "ticker": alert.ticker,
+            "exchange": alert.exchange,
+            "action": action,
+            "price": alert.price,
+            "strategy": alert.strategy or "TRADINGVIEW_ALERT",
+            "interval": alert.interval,
+            "volume": alert.volume,
+            "message": alert.message,
+            "receivedAt": datetime.utcnow(),
+            "rawPayload": json.dumps(payload, default=str),
+        }
+
+        if prisma is not None:
+            await _connect_prisma_if_needed()
+            alert_record = await prisma.tradingviewalert.create(data=alert_data)
+            return {
+                "status": "success",
+                "alert_id": alert_record.id,
+                "message": f"Alert received: {action} {alert.ticker}",
+                "timestamp": datetime.utcnow().isoformat(),
+            }
 
         async with get_db_connection() as db:
-            alert_record = TradingViewAlert(
-                ticker=alert.ticker,
-                exchange=alert.exchange,
-                action=action,
-                price=alert.price,
-                strategy=alert.strategy or "TRADINGVIEW_ALERT",
-                interval=alert.interval,
-                volume=alert.volume,
-                message=alert.message,
-                receivedAt=datetime.utcnow(),
-                rawPayload=json.dumps(payload, default=str),
-            )
+            alert_record = TradingViewAlertRecord(**alert_data)
             db.add(alert_record)
             await db.flush()
 
@@ -160,9 +200,53 @@ async def tradingview_webhook(
                 },
             )
 
-            # TODO: Implement auto-trading logic here
-            # Check if user has auto_trade enabled
-            # Execute trade via CCXT if configured
+            auto_trade_enabled = os.getenv(
+                "AUTO_TRADE_ENABLED", "false"
+            ).lower() in ("true", "1", "yes")
+            webhook_config = TradingViewWebhookConfig(
+                user_id=str(alert_record.id),
+                webhook_secret=webhook_secret,
+                auto_trade=auto_trade_enabled,
+            )
+
+            if webhook_config.auto_trade:
+                try:
+                    exchange = await ExchangeConnector.for_exchange(
+                        db, alert.exchange
+                    )
+                    order = exchange.create_order(
+                        symbol=alert.ticker,
+                        type="market",
+                        side=action.lower(),
+                        amount=webhook_config.position_size or 1.0,
+                    )
+                    trade_id = (
+                        order.get("id")
+                        if isinstance(order, dict)
+                        else str(order)
+                    )
+                    logger.info(
+                        f"Auto-trade executed: {action} {alert.ticker} "
+                        f"on {alert.exchange} (order: {trade_id})",
+                        extra={
+                            "component": "tradingview",
+                            "alert_id": alert_record.id,
+                            "ticker": alert.ticker,
+                            "action": action,
+                            "order_id": trade_id,
+                        },
+                    )
+                except Exception as trade_error:
+                    logger.error(
+                        f"Auto-trade failed for {alert.ticker}: {trade_error}",
+                        extra={
+                            "component": "tradingview",
+                            "alert_id": alert_record.id,
+                            "ticker": alert.ticker,
+                            "action": action,
+                            "error": str(trade_error),
+                        },
+                    )
 
             return {
                 "status": "success",
@@ -200,34 +284,37 @@ async def list_tradingview_alerts(
         List of TradingView alerts
     """
     try:
-        async with get_db_connection() as db:
-            query = select(TradingViewAlert)
+        if prisma is not None:
+            await _connect_prisma_if_needed()
+            where: dict[str, Any] = {}
             if ticker:
-                query = query.where(TradingViewAlert.ticker == ticker)
+                where["ticker"] = ticker
             if action:
-                query = query.where(TradingViewAlert.action == action.upper())
-            query = query.order_by(TradingViewAlert.receivedAt.desc()).limit(limit)
+                where["action"] = action.upper()
+            alerts = await prisma.tradingviewalert.find_many(
+                where=where or None,
+                order={"receivedAt": "desc"},
+                take=limit,
+            )
+            return {
+                "alerts": [_format_alert(alert) for alert in alerts],
+                "count": len(alerts),
+            }
+
+        async with get_db_connection() as db:
+            query = select(TradingViewAlertRecord)
+            if ticker:
+                query = query.where(TradingViewAlertRecord.ticker == ticker)
+            if action:
+                query = query.where(TradingViewAlertRecord.action == action.upper())
+            query = query.order_by(TradingViewAlertRecord.receivedAt.desc()).limit(limit)
 
             result = await db.execute(query)
             alerts = result.scalars().all()
 
             return {
                 "alerts": [
-                    {
-                        "id": alert.id,
-                        "ticker": alert.ticker,
-                        "exchange": alert.exchange,
-                        "action": alert.action,
-                        "price": alert.price,
-                        "strategy": alert.strategy,
-                        "interval": alert.interval,
-                        "message": alert.message,
-                        "received_at": (
-                            alert.receivedAt.isoformat()
-                            if alert.receivedAt
-                            else None
-                        ),
-                    }
+                    _format_alert(alert)
                     for alert in alerts
                 ],
                 "count": len(alerts),

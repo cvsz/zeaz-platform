@@ -8,7 +8,7 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app:/app/src
+    PYTHONPATH=/app:/app/src:/app/src/ztrader/abt
 
 WORKDIR /app
 

@@ -1,18 +1,16 @@
-import { relations, sql } from "drizzle-orm"
-import { index, mysqlTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core"
+import { relations } from "drizzle-orm"
+import { index, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 import { denTypeIdColumn } from "../columns"
 import { MemberTable, OrganizationTable } from "./org"
 
-export const TeamTable = mysqlTable(
+export const TeamTable = pgTable(
   "team",
   {
     id: denTypeIdColumn("team", "id").notNull().primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("team_organization_id").on(table.organizationId),
@@ -20,13 +18,13 @@ export const TeamTable = mysqlTable(
   ],
 )
 
-export const TeamMemberTable = mysqlTable(
+export const TeamMemberTable = pgTable(
   "team_member",
   {
     id: denTypeIdColumn("teamMember", "id").notNull().primaryKey(),
     teamId: denTypeIdColumn("team", "team_id").notNull(),
     orgMembershipId: denTypeIdColumn("member", "org_membership_id").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("team_member_team_id").on(table.teamId),

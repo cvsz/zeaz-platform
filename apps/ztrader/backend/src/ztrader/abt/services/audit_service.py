@@ -103,7 +103,7 @@ class AuditService:
             ipAddress=ip_address,
             userAgent=user_agent,
             requestData=sanitized_request,
-            metadata=sanitized_metadata,
+            metadataJson=sanitized_metadata,
         )
         db.add(audit_log)
         await db.flush()
@@ -192,7 +192,7 @@ class AuditService:
                     "ipAddress": log.ipAddress,
                     "userAgent": log.userAgent,
                     "requestData": log.requestData,
-                    "metadata": log.metadata,
+                    "metadata": log.metadataJson,
                     "createdAt": log.createdAt.isoformat(),
                 }
                 for log in logs
@@ -225,7 +225,7 @@ class AuditService:
             "ipAddress": log.ipAddress,
             "userAgent": log.userAgent,
             "requestData": log.requestData,
-            "metadata": log.metadata,
+            "metadata": log.metadataJson,
             "createdAt": log.createdAt.isoformat(),
         }
 

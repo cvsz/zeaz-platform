@@ -3,7 +3,10 @@
 HOST ?= 127.0.0.1
 FRONTEND_PORT ?= 3016
 BACKEND_PORT ?= 8016
-PYTHONPATH ?= backend/src
+PYTHON ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
+PIP ?= $(shell if [ -x .venv/bin/pip ]; then echo .venv/bin/pip; else echo pip; fi)
+PYTEST ?= $(shell if [ -x .venv/bin/pytest ]; then echo .venv/bin/pytest; else echo pytest; fi)
+PYTHONPATH ?= backend/src:backend/src/ztrader/abt
 RUNTIME_DIR ?= ../../runtime/app-servers
 REPORT_DIR ?= ../../reports/platform
 MERGE_REPORT_DIR ?= reports/merge
@@ -31,8 +34,8 @@ help:
 	@echo "  run-docker        - Orchestrate all services using docker-compose"
 	@echo "  stop-docker       - Stop and tear down docker-compose containers"
 	@echo "  merge-plan        - Show zTrader merge plan path"
-	@echo "  merge-dry-run     - Preview ABTPi18n + zkbtrader source mapping into zTrader"
-	@echo "  merge-apply       - Apply source mapping into zTrader, retaining source apps"
+	@echo "  merge-dry-run     - Preview source archive mapping into zTrader"
+	@echo "  merge-apply       - Apply source archive mapping into zTrader"
 	@echo "  merge-report      - Show generated merge report files"
 	@echo "  merge-validate    - Run local validation after merge mapping"
 	@echo "  format            - Format Python files using black"
@@ -45,7 +48,7 @@ help:
 	@echo "  merge-report      - Generate a merge completion report"
 
 install-backend:
-	pip install -r backend/requirements.txt
+	$(PIP) install -r backend/requirements.txt
 
 install-frontend:
 	cd frontend && pnpm install
@@ -94,30 +97,30 @@ server-report: server-status
 	@echo "Report: $(SERVER_REPORT)"
 
 validate-local:
-	@PYTHONPATH=$(PYTHONPATH) python3 -m compileall -q backend/src
-	@python3 -m json.tool frontend/package.json >/dev/null
+	@PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m compileall -q backend/src
+	@$(PYTHON) -m json.tool frontend/package.json >/dev/null
 	@echo "PASS: ztrader local validation complete"
 
 test-backend:
-	PYTHONPATH=$(PYTHONPATH) pytest backend/tests/ -v
+	PYTHONPATH=$(PYTHONPATH) $(PYTEST) backend/tests/ -v
 
 merge-plan:
-	@echo "../../docs/plans/ztrader-merge-abtpi18n-zkbtrader-plan.md"
+	@echo "reports/merge/ztrader-source-merge-report.md"
 
 merge-dry-run:
-	DRY_RUN=true bash scripts/merge-abtpi18n-zkbtrader.sh
+	DRY_RUN=true bash scripts/merge-sources.sh
 
 merge-apply:
-	DRY_RUN=false bash scripts/merge-abtpi18n-zkbtrader.sh
+	DRY_RUN=false bash scripts/merge-sources.sh
 
 merge-validate: validate-local
 	@echo "Validating Python compilation..."
-	python3 -m compileall backend/src/ztrader
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m compileall backend/src/ztrader
 	@echo "Validating Frontend JSON..."
 	jq . frontend/package.json > /dev/null
 	@echo "Checking merged sources metadata..."
-	@ls merge-sources/abtpi18n/package.json >/dev/null
-	@ls merge-sources/zkbtrader/pyproject.toml >/dev/null
+	@ls merge-sources/platform/package.json >/dev/null
+	@ls merge-sources/market/pyproject.toml >/dev/null
 	@grep -R "GLOBAL_KILL_SWITCH: bool = True" backend/src/ztrader/core/config.py >/dev/null
 	@echo "Validation Passed."
 
@@ -126,7 +129,7 @@ merge-report:
 	@echo "# zTrader Merge Report" > reports/merge/summary.md
 	@echo "Generated: $$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> reports/merge/summary.md
 	@echo "Status: COMPLETED" >> reports/merge/summary.md
-	@echo "Source Apps: ABTPi18n, zkbtrader" >> reports/merge/summary.md
+	@echo "Source Archives: platform, market" >> reports/merge/summary.md
 	@echo "Target App: ztrader" >> reports/merge/summary.md
 	@echo "Report saved to reports/merge/summary.md"
 	@echo "Report Files:"

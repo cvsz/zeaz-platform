@@ -2,12 +2,8 @@ import { DEN_WORKER_POLL_INTERVAL_MS } from "./CONSTS.js"
 import { z } from "zod"
 
 const EnvSchema = z.object({
-  DATABASE_URL: z.string().min(1).optional(),
-  DATABASE_HOST: z.string().min(1).optional(),
-  DATABASE_USERNAME: z.string().min(1).optional(),
-  DATABASE_PASSWORD: z.string().optional(),
+  DATABASE_URL: z.string().min(1),
   DEN_DB_ENCRYPTION_KEY: z.string().trim().min(32),
-  DB_MODE: z.enum(["mysql", "planetscale"]).optional(),
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.string().min(1),
   DEN_MCP_RESOURCE_URL: z.string().optional(),
@@ -101,28 +97,6 @@ const EnvSchema = z.object({
   STRIPE_SEAT_PRICE_ID: z.string().optional(),
   STRIPE_BILLING_SUCCESS_URL: z.string().optional(),
   STRIPE_BILLING_CANCEL_URL: z.string().optional(),
-}).superRefine((value, ctx) => {
-  const inferredMode = value.DB_MODE ?? (value.DATABASE_URL ? "mysql" : "planetscale")
-
-  if (inferredMode === "mysql" && !value.DATABASE_URL) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "DATABASE_URL is required when using mysql mode",
-      path: ["DATABASE_URL"],
-    })
-  }
-
-  if (inferredMode === "planetscale") {
-    for (const key of ["DATABASE_HOST", "DATABASE_USERNAME", "DATABASE_PASSWORD"] as const) {
-      if (!value[key]) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `${key} is required when using planetscale mode`,
-          path: [key],
-        })
-      }
-    }
-  }
 })
 
 const parsed = EnvSchema.parse(process.env)
@@ -163,20 +137,9 @@ const port = Number(parsed.PORT ?? "8790")
 const daytonaSandboxPublic =
   (parsed.DAYTONA_SANDBOX_PUBLIC ?? "false").toLowerCase() === "true"
 
-const planetscaleCredentials =
-  parsed.DATABASE_HOST && parsed.DATABASE_USERNAME && parsed.DATABASE_PASSWORD !== undefined
-    ? {
-        host: parsed.DATABASE_HOST,
-        username: parsed.DATABASE_USERNAME,
-        password: parsed.DATABASE_PASSWORD,
-      }
-    : null
-
 export const env = {
   databaseUrl: parsed.DATABASE_URL,
   dbEncryptionKey: optionalString(parsed.DEN_DB_ENCRYPTION_KEY),
-  dbMode: parsed.DB_MODE ?? (parsed.DATABASE_URL ? "mysql" : "planetscale"),
-  planetscale: planetscaleCredentials,
   betterAuthSecret: parsed.BETTER_AUTH_SECRET,
   betterAuthUrl: normalizeOrigin(parsed.BETTER_AUTH_URL),
   mcpResourceUrl: optionalString(parsed.DEN_MCP_RESOURCE_URL)

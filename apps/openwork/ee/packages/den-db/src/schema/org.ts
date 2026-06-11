@@ -1,17 +1,17 @@
 import { relations, sql } from "drizzle-orm"
-import { index, json, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core"
+import { index, json, pgTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 import type { DesktopAppRestrictions } from "@openwork/types/den/desktop-app-restrictions"
 import { denTypeIdColumn } from "../columns"
 
-export const DesktopHandoffGrantTable = mysqlTable(
+export const DesktopHandoffGrantTable = pgTable(
   "desktop_handoff_grant",
   {
     id: varchar("id", { length: 64 }).notNull().primaryKey(),
     user_id: denTypeIdColumn("user", "user_id").notNull(),
     session_token: text("session_token").notNull(),
-    expires_at: timestamp("expires_at", { fsp: 3 }).notNull(),
-    consumed_at: timestamp("consumed_at", { fsp: 3 }),
-    created_at: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    expires_at: timestamp("expires_at", { precision: 3 }).notNull(),
+    consumed_at: timestamp("consumed_at", { precision: 3 }),
+    created_at: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("desktop_handoff_grant_user_id").on(table.user_id),
@@ -19,7 +19,7 @@ export const DesktopHandoffGrantTable = mysqlTable(
   ],
 )
 
-export const OrganizationTable = mysqlTable(
+export const OrganizationTable = pgTable(
   "organization",
   {
     id: denTypeIdColumn("organization", "id").notNull().primaryKey(),
@@ -29,15 +29,13 @@ export const OrganizationTable = mysqlTable(
     allowedEmailDomains: json("allowed_email_domains").$type<string[] | null>(),
     desktopAppRestrictions: json("desktop_app_restrictions").$type<DesktopAppRestrictions>().notNull().default(sql`(json_object())`),
     metadata: json("metadata").$type<Record<string, unknown> | null>(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("organization_slug").on(table.slug)],
 )
 
-export const MemberTable = mysqlTable(
+export const MemberTable = pgTable(
   "member",
   {
     id: denTypeIdColumn("member", "id").notNull().primaryKey(),
@@ -46,10 +44,10 @@ export const MemberTable = mysqlTable(
     inviteId: denTypeIdColumn("invitation", "invite_id"),
     invitedByOrgMember: denTypeIdColumn("member", "invited_by_org_member"),
     role: varchar("role", { length: 255 }).notNull().default("member"),
-    joinedAt: timestamp("joined_at", { fsp: 3 }).defaultNow(),
-    removedAt: timestamp("removed_at", { fsp: 3 }),
+    joinedAt: timestamp("joined_at", { precision: 3 }).defaultNow(),
+    removedAt: timestamp("removed_at", { precision: 3 }),
     removedByOrgMember: denTypeIdColumn("member", "removed_by_org_member"),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("member_organization_id").on(table.organizationId),
@@ -62,7 +60,7 @@ export const MemberTable = mysqlTable(
   ],
 )
 
-export const InvitationTable = mysqlTable(
+export const InvitationTable = pgTable(
   "invitation",
   {
     id: denTypeIdColumn("invitation", "id").notNull().primaryKey(),
@@ -74,8 +72,8 @@ export const InvitationTable = mysqlTable(
     inviterId: denTypeIdColumn("user", "inviter_id").notNull(),
     orgMemberId: denTypeIdColumn("member", "org_member_id"),
     inviteToken: varchar("invite_token", { length: 64 }),
-    expiresAt: timestamp("expires_at", { fsp: 3 }).notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { precision: 3 }).notNull(),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("invitation_organization_id").on(table.organizationId),
@@ -87,17 +85,15 @@ export const InvitationTable = mysqlTable(
   ],
 )
 
-export const OrganizationRoleTable = mysqlTable(
+export const OrganizationRoleTable = pgTable(
   "organization_role",
   {
     id: denTypeIdColumn("organizationRole", "id").notNull().primaryKey(),
     organizationId: denTypeIdColumn("organization", "organization_id").notNull(),
     role: varchar("role", { length: 255 }).notNull(),
     permission: text("permission").notNull(),
-    createdAt: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { fsp: 3 })
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    createdAt: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { precision: 3 }).notNull().defaultNow(),
   },
   (table) => [
     index("organization_role_organization_id").on(table.organizationId),

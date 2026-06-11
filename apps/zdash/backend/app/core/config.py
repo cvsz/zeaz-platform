@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     backend_host: str = Field(default="127.0.0.1", alias="BACKEND_HOST")
     backend_port: int = Field(default=8005, alias="BACKEND_PORT")
 
-    database_url: str = Field(default="sqlite:///./zdash.db", alias="DATABASE_URL")
+    database_url: str = Field(default="postgresql+psycopg://postgres:postgres@localhost:5432/zdash", alias="DATABASE_URL")
     db_echo: bool = Field(default=False, alias="DB_ECHO")
     db_pool_size: int = Field(default=5, alias="DB_POOL_SIZE")
     db_max_overflow: int = Field(default=10, alias="DB_MAX_OVERFLOW")

@@ -12,6 +12,7 @@ services:
       - "3000"
     networks:
       - proxy
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
@@ -20,6 +21,30 @@ services:
       - "traefik.http.services.zlms.loadbalancer.server.port=3000"
     restart: unless-stopped
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@zeaz.dev
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    expose:
+      - "80"
+    networks:
+      - proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.zeaz.dev`)"
+      - "traefik.http.routers.pgadmin.entrypoints=web"
+      - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+volumes:
+  pgadmin-data:
+
 networks:
   proxy:
     external: true
+  internal:

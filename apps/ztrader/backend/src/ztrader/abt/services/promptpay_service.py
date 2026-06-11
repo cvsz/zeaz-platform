@@ -90,7 +90,7 @@ class PromptPayService:
             currency=currency,
             status="PENDING",
             paymentMethod="PROMPTPAY",
-            metadata=json.dumps({"description": description}),
+            metadataJson=json.dumps({"description": description}),
         )
         db.add(transaction)
         await db.flush()
@@ -161,9 +161,9 @@ class PromptPayService:
         # Update transaction status
         transaction.status = status
         transaction.completedAt = datetime.utcnow() if status == "SUCCESS" else None
-        transaction.metadata = json.dumps(
+        transaction.metadataJson = json.dumps(
             {
-                **json.loads(transaction.metadata or "{}"),
+                **json.loads(transaction.metadataJson or "{}"),
                 "callback_metadata": metadata or {},
             }
         )

@@ -1,5 +1,5 @@
 import * as crypto from "node:crypto"
-import { customType, timestamp, varchar } from "drizzle-orm/mysql-core"
+import { customType, timestamp, varchar } from "drizzle-orm/pg-core"
 import {
   type DenTypeId,
   type DenTypeIdName,
@@ -123,8 +123,8 @@ export const denTypeIdColumn = <TName extends DenTypeIdName>(
   })(columnName)
 
 export const timestamps = {
-  created_at: timestamp("created_at", { fsp: 3 }).notNull().defaultNow(),
-  updated_at: timestamp("updated_at", { fsp: 3 })
+  created_at: timestamp("created_at", { precision: 3 }).notNull().defaultNow(),
+  updated_at: timestamp("updated_at", { precision: 3 })
     .notNull()
-    .default(sql`CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)`),
+    .default(sql`now()`),
 }

@@ -1,12 +1,12 @@
 # zTrader Source Merge Report
 
-Generated: 2026-06-10T23:50:11Z
+Generated: 2026-06-11T05:22:37Z
 Dry run: false
 
 ## Source stacks
 
-- apps/ABTPi18n
-- apps/zkbtrader
+- .ops/backups/ABTPi18n
+- .ops/backups/zkbtrader
 
 ## Target stack
 
