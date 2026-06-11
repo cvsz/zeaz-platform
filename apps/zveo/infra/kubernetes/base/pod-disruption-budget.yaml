@@ -1,0 +1,17 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: zveo-api-gateway
+  labels: { app.kubernetes.io/name: zveo, app.kubernetes.io/component: api-gateway }
+spec:
+  minAvailable: 2
+  selector: { matchLabels: { app.kubernetes.io/component: api-gateway } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: zveo-render-worker
+  labels: { app.kubernetes.io/name: zveo, app.kubernetes.io/component: render-worker }
+spec:
+  minAvailable: 2
+  selector: { matchLabels: { app.kubernetes.io/component: render-worker } }

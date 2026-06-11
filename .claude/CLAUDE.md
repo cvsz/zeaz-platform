@@ -10,7 +10,17 @@ This repository provisions Cloudflare-native enterprise infrastructure with Open
 - Keep scripts idempotent and rollback-capable.
 
 ## Execution Order
-1. `make validate`\n2. `make plan-tier`\n3. `make mcp-config`\n4. `make plan`\n5. `make apply`\n6. `make drift`
+1. `make validate`
+2. `make plan-tier`
+3. `make mcp-config`
+4. `make plan`
+5. Stop for human review before any apply, deploy, token rotation, tunnel mutation, or other external mutation.
+6. After a separately approved manual apply, run `make drift` for evidence collection.
+
+## Claude-Assisted App Building
+- Use `docs/ai/free-claude-code-app-builder.md` for safe "free Claude" or third-party-provider app-building workflows.
+- Do not claim Claude Code is available on the free Claude.ai plan unless official Anthropic documentation changes and the repo guide is updated.
+- Keep provider keys and local model endpoints with credentials in ignored local files only.
 
 ## MCP and AI Tooling
 Use `.mcp.json` endpoints for Cloudflare-compatible MCP workflows and only execute allowlisted commands from `zeaz-platform/scripts/ai/bootstrap-agents.sh`.

@@ -8,7 +8,8 @@
                 {{- database_count -}}
             </span>
         </th>
-        {% for stat_name, stat in column_order if stat_name in first_database|keys %}
+        {% for stat_name, stat in column_order %}
+        {% if stat_name in first_database|keys %}
             {% if stat['format'] is same as('byte') %}
                 {% set byte_format = Util_formatByteDown(stat['footer'], 3, 1) %}
                 {% set value = byte_format[0] %}
@@ -31,6 +32,7 @@
             {% if stat['format'] is same as('byte') %}
                 <th class="unit">{{ unit }}</th>
             {% endif %}
+        {% endif %}
         {% endfor %}
         {% if master_replication %}
             <th></th>

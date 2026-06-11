@@ -69,3 +69,6 @@ __pycache__/
 *.tfplan
 .terraform.tfstate.lock.info
 # END Phase 58 cvsz apps adoption guardrails
+
+# Local agent workspace clones and runtime state must not become nested Git entries.
+workspace/

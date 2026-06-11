@@ -1,0 +1,8 @@
+resources:
+  - config.yaml
+  - rbac.yaml
+  - api-gateway.yaml
+  - render-worker.yaml
+  - network-policy.yaml
+  - pod-disruption-budget.yaml
+  - blue-green.yaml

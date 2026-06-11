@@ -14,7 +14,8 @@
             {{ current['SCHEMA_NAME'] }}
         </a>
     </td>
-    {% for stat_name, stat in column_order if stat_name in current|keys %}
+    {% for stat_name, stat in column_order %}
+    {% if stat_name in current|keys %}
         {% if stat['format'] is same as('byte') %}
             {% set byte_format = Util_formatByteDown(current[stat_name], 3, 1) %}
             {% set value = byte_format[0] %}
@@ -37,6 +38,7 @@
         {% if stat['format'] is same as('byte') %}
             <td class="unit">{{ unit }}</td>
         {% endif %}
+    {% endif %}
     {% endfor %}
 
     {% if master_replication_status %}

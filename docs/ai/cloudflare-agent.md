@@ -4,6 +4,7 @@
 - Codex context: `.codex/context.md`
 - Codex Master Meta Cloud Suite: `docs/codex/master-meta-cloud-suite.md` and `.codex/suite/master-meta-cloud-suite.json`
 - Claude Code: `.claude/CLAUDE.md`
+- Free Claude-assisted app building guide: `docs/ai/free-claude-code-app-builder.md`
 - Cursor: `.cursor/rules.md`
 - GitHub Copilot: `.github/copilot-instructions.md`
 - MCP runtime: `.mcp.json`

@@ -1,0 +1,9 @@
+{
+  "title": "zVEO Operations",
+  "schemaVersion": 39,
+  "panels": [
+    {"type": "timeseries", "title": "Queue Depth", "targets": [{"expr": "queue_depth"}], "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}},
+    {"type": "timeseries", "title": "Failed Jobs", "targets": [{"expr": "rate(failed_jobs_total[5m])"}], "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}},
+    {"type": "histogram", "title": "Render Latency", "targets": [{"expr": "render_duration_seconds_bucket"}], "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}}
+  ]
+}

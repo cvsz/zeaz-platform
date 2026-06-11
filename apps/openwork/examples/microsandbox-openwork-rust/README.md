@@ -1,6 +1,6 @@
 # Microsandbox OpenWork Rust Example
 
-Small standalone Rust example that starts the OpenWork micro-sandbox image with the `microsandbox` SDK, publishes the OpenWork server on a host port, persists `/workspace` and `/data` with host bind mounts, verifies `/health`, checks that `/workspaces` is `401` without a token and `200` with the client token, then keeps the sandbox alive until `Ctrl+C` while streaming the sandbox logs to your terminal.
+Small standalone Rust example that starts the OpenWork micro-sandbox image with the `microsandbox` SDK, persists `/workspace` and `/data` with host bind mounts, then keeps the sandbox alive until `Ctrl+C` while streaming the sandbox logs to your terminal. Host port publishing is intentionally disabled in this dependency-safe build because the current `microsandbox-network` release pulls a vulnerable `hickory-proto` line.
 
 ## Run
 
@@ -15,7 +15,6 @@ Useful environment overrides:
 - `OPENWORK_MICROSANDBOX_WORKSPACE_DIR` - host directory bind-mounted at `/workspace`. Defaults to `examples/microsandbox-openwork-rust/.state/<sandbox-name>/workspace`.
 - `OPENWORK_MICROSANDBOX_DATA_DIR` - host directory bind-mounted at `/data`. Defaults to `examples/microsandbox-openwork-rust/.state/<sandbox-name>/data`.
 - `OPENWORK_MICROSANDBOX_REPLACE` - set to `1` or `true` to replace the sandbox instead of reusing persistent state. Defaults to off.
-- `OPENWORK_MICROSANDBOX_PORT` - published host port. Defaults to `8787`.
 - `OPENWORK_CONNECT_HOST` - hostname you want clients to use. Defaults to `127.0.0.1`.
 - `OPENWORK_TOKEN` - remote-connect client token. Defaults to `microsandbox-token`.
 - `OPENWORK_HOST_TOKEN` - host/admin token. Defaults to `microsandbox-host-token`.
@@ -34,21 +33,13 @@ cargo run --manifest-path examples/microsandbox-openwork-rust/Cargo.toml
 
 ## Test
 
-The crate includes an ignored end-to-end smoke test that:
-
-- boots the microsandbox image
-- waits for `/health`
-- verifies unauthenticated `/workspaces` returns `401`
-- verifies authenticated `/workspaces` returns `200`
-- creates an OpenCode session through `/w/:workspaceId/opencode/session`
-- fetches the created session and its messages
-
-Run it explicitly:
+Run the compile-time unit test with:
 
 ```bash
-OPENWORK_MICROSANDBOX_IMAGE=ttl.sh/openwork-microsandbox-11559:1d \
-cargo test --manifest-path examples/microsandbox-openwork-rust/Cargo.toml -- --ignored --nocapture
+cargo test --manifest-path examples/microsandbox-openwork-rust/Cargo.toml
 ```
+
+End-to-end host HTTP checks are disabled until `microsandbox-network` can be re-enabled on a patched `hickory-proto` release.
 
 ## Persistence behavior
 

@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: render-worker
+  labels:
+    app: render-worker
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: render-worker
+  template:
+    metadata:
+      labels:
+        app: render-worker
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+    spec:
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: worker
+          image: ghcr.io/zveo/render-worker:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9100
+          env:
+            - name: SERVICE_NAME
+              value: zveo-render-worker
+            - name: BULLMQ_QUEUE
+              value: render
+            - name: METRICS_PORT
+              value: "9100"
+            - name: LEASE_SECONDS
+              value: "90"
+            - name: WORKER_MAX_CONCURRENCY
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.nvidia.com/gpu
+                  divisor: "1"
+          envFrom:
+            - secretRef:
+                name: zveo-secrets
+            - configMapRef:
+                name: zveo-config
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+              nvidia.com/gpu: "1"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: render-worker
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: render-worker
+  minReplicas: 2
+  maxReplicas: 50
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+        - type: Percent
+          value: 25
+          periodSeconds: 300
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Pods
+      pods:
+        metric:
+          name: queue_depth_per_worker
+        target:
+          type: AverageValue
+          averageValue: "4"
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: render-worker
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: render-worker

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zveo-api-gateway
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 25m
+    nginx.ingress.kubernetes.io/limit-rps: "25"
+spec:
+  tls:
+    - hosts: ["api.zveo.example.com"]
+      secretName: zveo-api-tls
+  rules:
+    - host: api.zveo.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: zveo-api-gateway
+                port: { name: http }
