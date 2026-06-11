@@ -52,11 +52,11 @@ func TestRegoEvaluatorAllowsValidProposal(t *testing.T) {
 	}
 
 	input := RegoInput{
-		TenantID:  "tenant-1",
-		Risk:      0.3,
-		Type:      "code",
-		Change:    "refactor_module",
-		Metrics:   RegoMetrics{KillSwitchActive: false, ErrorRate: 0.01, BudgetPerHour: 100, SpendPerHour: 30},
+		TenantID:   "tenant-1",
+		Risk:       0.3,
+		Type:       "code",
+		Change:     "refactor_module",
+		Metrics:    RegoMetrics{KillSwitchActive: false, ErrorRate: 0.01, BudgetPerHour: 100, SpendPerHour: 30},
 		Guardrails: RegoGuardrails{MaxErrorRate: 0.05, AllowDirectRiskyActions: false},
 	}
 
@@ -118,11 +118,11 @@ func TestRegoEvaluatorDeniesErrorRateExceeded(t *testing.T) {
 	}
 
 	input := RegoInput{
-		TenantID:  "tenant-1",
-		Risk:      0.3,
-		Type:      "code",
-		Change:    "refactor_module",
-		Metrics:   RegoMetrics{ErrorRate: 0.1, SpendPerHour: 10, BudgetPerHour: 100},
+		TenantID:   "tenant-1",
+		Risk:       0.3,
+		Type:       "code",
+		Change:     "refactor_module",
+		Metrics:    RegoMetrics{ErrorRate: 0.1, SpendPerHour: 10, BudgetPerHour: 100},
 		Guardrails: RegoGuardrails{MaxErrorRate: 0.05},
 	}
 
@@ -162,8 +162,8 @@ func TestRegoEvaluatorDeniesMissingTenantID(t *testing.T) {
 	}
 
 	input := RegoInput{
-		Risk:  0.3,
-		Type:  "code",
+		Risk:   0.3,
+		Type:   "code",
 		Change: "refactor_module",
 	}
 
@@ -214,10 +214,10 @@ func TestRegoEvaluatorReportsMultipleDenyReasons(t *testing.T) {
 	}
 
 	input := RegoInput{
-		Risk:     0.9,
-		Type:     "infra",
-		Change:   "delete_cluster",
-		Metrics:  RegoMetrics{KillSwitchActive: true},
+		Risk:    0.9,
+		Type:    "infra",
+		Change:  "delete_cluster",
+		Metrics: RegoMetrics{KillSwitchActive: true},
 	}
 
 	result := eval.Evaluate(context.Background(), input)
@@ -242,8 +242,8 @@ func TestRegoInputFromProposalMapsFields(t *testing.T) {
 		Type:   ProposalTypeCode,
 		Change: "scale_deployment",
 		Metadata: map[string]string{
-			"tenant_id":       "tenant-42",
-			"country":         "US",
+			"tenant_id":        "tenant-42",
+			"country":          "US",
 			"requested_action": "scale_up",
 		},
 	}
