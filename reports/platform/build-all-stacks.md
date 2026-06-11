@@ -1,6 +1,6 @@
 # Build all stacks report
 
-Generated: 2026-06-11T00:00:54Z
+Generated: 2026-06-11T00:29:57Z
 
 Mode: `safe`
 
@@ -29,15 +29,3 @@ Mode: `safe`
 | zlms | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zoffice | python-compile | `cd 'apps/zoffice' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | zoffice | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zsp-aitool | node-build | `cd 'apps/zsp-aitool' && npm run build` | PASS |
-| zsp-aitool | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zsticker | python-compile | `cd 'apps/zsticker' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
-| zsticker | docker | RUN_DOCKER_BUILD=false | SKIP |
-| ztrader | python-compile | `cd 'apps/ztrader' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
-| ztrader | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zveo | node-build | `cd 'apps/zveo' && pnpm run build` | PASS |
-| zveo | python-compile | `cd 'apps/zveo' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
-| zveo | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zwallet | node | no build script | SKIP |
-| zwallet | python-compile | `cd 'apps/zwallet' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
-| zwallet | docker | RUN_DOCKER_BUILD=false | SKIP |

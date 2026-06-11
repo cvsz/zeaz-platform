@@ -2,7 +2,7 @@ $ cd 'apps/openwork' && pnpm run build
 $ node scripts/build.mjs
 $ node ./scripts/electron-build.mjs
 OpenCode sidecar already present (1.15.12).
-(node:35095) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(node:199819) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 {
   "ok": true,
@@ -10,7 +10,7 @@ OpenCode sidecar already present (1.15.12).
   "reason": "computer-use-helper-is-macos-only"
 }
 $ tsc -p tsconfig.json && bun build src/opencode-plugins/openwork-extensions-preview.ts src/opencode-plugins/openwork-capabilities-knowledge.ts --outdir dist/opencode-plugins --target node --format esm
-Bundled 78 modules in 63ms
+Bundled 78 modules in 174ms
 
   openwork-extensions-preview.js      0.48 MB  (entry point)
   openwork-capabilities-knowledge.js  7.0 KB   (entry point)
@@ -28,9 +28,9 @@ CLI Target: es2022
 CLI Cleaning output folder
 ESM Build start
 ESM dist/react/index.js 14.41 KB
-ESM ⚡️ Build success in 340ms
+ESM ⚡️ Build success in 1407ms
 DTS Build start
-DTS ⚡️ Build success in 4090ms
+DTS ⚡️ Build success in 8228ms
 DTS dist/react/index.d.ts 2.84 KB
 CLI Building entry: {"solid/index":"src/solid/index.ts"}
 CLI Using tsconfig: tsconfig.solid.json
@@ -39,9 +39,9 @@ CLI Using tsup config: /home/zeazdev/zeaz-platform/apps/openwork/packages/ui/tsu
 CLI Target: es2022
 ESM Build start
 ESM dist/solid/index.js 17.76 KB
-ESM ⚡️ Build success in 415ms
+ESM ⚡️ Build success in 1000ms
 DTS Build start
-DTS ⚡️ Build success in 4152ms
+DTS ⚡️ Build success in 11294ms
 DTS dist/solid/index.d.ts 3.65 KB
 $ vite build
 vite v8.0.16 building client environment for production...
@@ -416,12 +416,12 @@ dist/assets/cpp-D9Km65fR.js                                          626.05 kB �
 dist/assets/emacs-lisp-B4R74twV.js                                   779.87 kB │ gzip:   197.55 kB
 dist/assets/app-D8mtlBdd.js                                        3,971.63 kB │ gzip: 1,085.55 kB
 
-✓ built in 15.16s
 [plugin builtin:vite-reporter] 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 27.45s
 Electron desktop bridge covers 50 renderer methods.
 {
   "ok": true,

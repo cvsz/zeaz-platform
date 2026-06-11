@@ -3,8 +3,8 @@ $ next build --turbopack
    ▲ Next.js 15.5.18 (Turbopack)
 
    Creating an optimized production build ...
- ✓ Finished writing to disk in 97ms
- ✓ Compiled successfully in 16.6s
+ ✓ Finished writing to disk in 522ms
+ ✓ Compiled successfully in 35.8s
    Linting and checking validity of types ...
  ⨯ ESLint: nextVitals is not iterable
    Collecting page data ...
@@ -17,12 +17,12 @@ $ next build --turbopack
    Collecting build traces ...
 
 Route (app)                         Size  First Load JS
-┌ ○ /                                0 B         119 kB
+┌ ○ /                            4.12 kB         123 kB
 ├ ○ /_not-found                      0 B         119 kB
 ├ ○ /agents                      1.18 kB         129 kB
 ├ ○ /auth                        1.28 kB         129 kB
 ├ ○ /autonomous-actions              0 B         119 kB
-├ ○ /dashboard                   8.67 kB         136 kB
+├ ○ /dashboard                   8.72 kB         137 kB
 ├ ○ /deployments                 1.27 kB         129 kB
 ├ ○ /edge                        1.25 kB         129 kB
 ├ ○ /healing                     1.13 kB         129 kB
@@ -34,7 +34,7 @@ Route (app)                         Size  First Load JS
 ├ ○ /risk-analysis                   0 B         119 kB
 ├ ○ /risk-center                     0 B         119 kB
 ├ ○ /runtime-memory                  0 B         119 kB
-├ ○ /services                    1.39 kB         129 kB
+├ ○ /services                    1.41 kB         129 kB
 ├ ○ /swarm-runtime               2.01 kB         162 kB
 ├ ○ /system-convergence              0 B         119 kB
 ├ ○ /terminal                    1.07 kB         129 kB
@@ -44,7 +44,7 @@ Route (app)                         Size  First Load JS
   ├ chunks/0bd4e51802ab9385.js   59.2 kB
   ├ chunks/8eaaa6792bc64f87.js   22.1 kB
   ├ chunks/aa9377c5a298bf59.js   17.2 kB
-  ├ chunks/b11c40c237324b02.css  15.9 kB
+  ├ chunks/6c9b3a8a0e8c70ad.css  16.4 kB
   └ other shared chunks (total)  20.2 kB
 
 
