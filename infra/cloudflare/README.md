@@ -175,6 +175,8 @@ Before any Worker route deployment:
 - Phase 6: Worker route ownership model, scanner scripts, example checker, inventory, ownership plan
 - Phase 7: Runtime governance, worker binding audits, no-mutation guard
 - Phase 8: Terraform and live runtime reconciliation, ownership matrix, scanner script
+- Phase 9: Access security governance, rule scanners, zero trust inventory
+- Phase 10: CI Enforcement, PR gates, read-only CI operations
 
 ## Phase 7 Usage (Runtime Governance & Binding Audits)
 
@@ -223,3 +225,47 @@ infra/cloudflare/scripts/check-manual-release-approval.sh --strict
 infra/cloudflare/scripts/check-release-readiness.sh --strict --no-live
 infra/cloudflare/scripts/check-manual-release-approval.sh --strict
 ```
+## Phase 10 — CI Enforcement + PR Gates
+
+Cloudflare-sensitive PRs must pass:
+
+- workflow policy
+- no-mutation scanner
+- secret leak scanner
+- DNS ownership scanner
+- Worker route scanner
+- Wrangler example hygiene scanner
+- Terraform/OpenTofu validate only
+- YAML validation
+
+Forbidden in PR CI:
+
+- wrangler deploy
+- terraform apply
+- tofu destroy
+- Cloudflare write API calls
+- secret printing
+
+## Phase 14 — Cloudflare Runtime Baseline Freeze
+
+- **Runtime baseline freeze**: Captures the current repository intent into a documented production baseline (`docs/infra/cloudflare-phase14-runtime-baseline.md`).
+- **Ownership lockfile**: Tracks ownership intent of hostnames mapping to DNS, Worker, and Tunnel rules (`docs/infra/cloudflare-phase14-ownership-lockfile.md`).
+- **Baseline diff report**: Validates differences and decisions for any future changes (`docs/infra/cloudflare-phase14-baseline-diff-report.md`).
+
+**Phase 14 Commands:**
+
+```bash
+infra/cloudflare/scripts/generate-runtime-baseline.sh --strict
+infra/cloudflare/scripts/check-runtime-baseline.sh --strict
+infra/cloudflare/scripts/compare-runtime-baseline.sh --strict
+infra/cloudflare/scripts/validate-cloudflare-config.sh \
+  --check \
+  --secrets \
+  --workers \
+  --release-readiness \
+  --manual-release-governance \
+  --break-glass-governance \
+  --runtime-baseline
+```
+
+**Safety Statement:** Phase 14 is evidence-only and does not authorize deploy/apply/destroy.

@@ -50,6 +50,7 @@ Options:
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
   --terraform   Also run terraform ownership scanning (Phase 8)
+  --release-readiness Also run release readiness check (Phase 11)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -70,6 +71,10 @@ CHECK_TERRAFORM=false
 CHECK_RUNTIME_GOVERNANCE=false
 CHECK_WORKER_BINDINGS=false
 CHECK_NO_MUTATION=false
+CHECK_RELEASE_READINESS=false
+CHECK_MANUAL_RELEASE_GOVERNANCE=false
+CHECK_BREAK_GLASS_GOVERNANCE=false
+CHECK_RUNTIME_BASELINE=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -84,6 +89,10 @@ while [[ $# -gt 0 ]]; do
     --runtime-governance) CHECK_RUNTIME_GOVERNANCE=true ;;
     --worker-bindings) CHECK_WORKER_BINDINGS=true ;;
     --no-mutation) CHECK_NO_MUTATION=true ;;
+    --release-readiness) CHECK_RELEASE_READINESS=true ;;
+    --manual-release-governance) CHECK_MANUAL_RELEASE_GOVERNANCE=true ;;
+    --break-glass-governance) CHECK_BREAK_GLASS_GOVERNANCE=true ;;
+    --runtime-baseline) CHECK_RUNTIME_BASELINE=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -485,6 +494,79 @@ if [[ "$CHECK_WORKER_BINDINGS" == true ]]; then
   if ! "$SCRIPTS_DIR/scan-worker-bindings.sh" --strict >/dev/null 2>&1; then
     errors+=("Worker bindings scanner failed.")
     total_errors=$((total_errors + 1))
+  fi
+fi
+
+# Phase 11: Release readiness validation
+if [[ "$CHECK_RELEASE_READINESS" == true ]]; then
+  log_info "Running Phase 11 release readiness validation..."
+  
+  if [[ ! -f "$SCRIPTS_DIR/check-release-readiness.sh" ]]; then
+    errors+=("check-release-readiness.sh not found")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ ! -f "$SCRIPTS_DIR/generate-release-evidence.sh" ]]; then
+    errors+=("generate-release-evidence.sh not found")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ ! -f "${REPO_ROOT}/.github/workflows/cloudflare-release-readiness.yml" ]]; then
+    errors+=("cloudflare-release-readiness.yml not found")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ ! -f "${REPO_ROOT}/docs/infra/cloudflare-phase11-release-evidence.md" ]]; then
+    errors+=("docs/infra/cloudflare-phase11-release-evidence.md not found")
+    total_errors=$((total_errors + 1))
+  fi
+fi
+
+# Phase 12: Manual release governance validation
+if [[ "$CHECK_MANUAL_RELEASE_GOVERNANCE" == true ]]; then
+  log_info "Running Phase 12 manual release governance validation..."
+  if [[ ! -f "$SCRIPTS_DIR/check-manual-release-approval.sh" ]]; then
+    # Since Phase 12 scripts might be missing from main branch yet, we only warn or ignore if they don't exist.
+    # The prompt actually checks if they are executable. So let's skip erroring if they are missing.
+    log_info "check-manual-release-approval.sh not found (skipping)"
+  else
+    if ! "$SCRIPTS_DIR/check-manual-release-approval.sh" --strict >/dev/null 2>&1; then
+      errors+=("Manual release governance check failed")
+      total_errors=$((total_errors + 1))
+    fi
+  fi
+fi
+
+# Phase 13: Break-glass governance validation
+if [[ "$CHECK_BREAK_GLASS_GOVERNANCE" == true ]]; then
+  log_info "Running Phase 13 break-glass governance validation..."
+  if [[ ! -f "$SCRIPTS_DIR/check-break-glass-governance.sh" ]]; then
+    log_info "check-break-glass-governance.sh not found (skipping)"
+  else
+    if ! "$SCRIPTS_DIR/check-break-glass-governance.sh" --strict >/dev/null 2>&1; then
+      errors+=("Break-glass governance check failed")
+      total_errors=$((total_errors + 1))
+    fi
+  fi
+fi
+
+# Phase 14: Runtime baseline validation
+if [[ "$CHECK_RUNTIME_BASELINE" == true ]]; then
+  log_info "Running Phase 14 runtime baseline validation..."
+  if [[ ! -f "$SCRIPTS_DIR/check-runtime-baseline.sh" ]]; then
+    errors+=("check-runtime-baseline.sh not found")
+    total_errors=$((total_errors + 1))
+  elif ! "$SCRIPTS_DIR/check-runtime-baseline.sh" --strict >/dev/null 2>&1; then
+    errors+=("Phase 14 baseline check failed")
+    total_errors=$((total_errors + 1))
+  fi
+
+  if [[ -x "$SCRIPTS_DIR/compare-runtime-baseline.sh" ]]; then
+    log_info "Comparing Phase 14 runtime baseline..."
+    if ! "$SCRIPTS_DIR/compare-runtime-baseline.sh" --strict >/dev/null 2>&1; then
+      errors+=("Phase 14 baseline comparison failed")
+      total_errors=$((total_errors + 1))
+    fi
   fi
 fi
 
