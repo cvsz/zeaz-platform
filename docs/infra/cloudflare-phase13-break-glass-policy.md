@@ -70,3 +70,5 @@ A post-incident review must be completed.
 
 ## Future Phase Handoff
 Changes performed during break-glass must be reconciled back into IaC and standard CI pipelines during the post-incident phase.
+- Break-glass actions must reference Phase 14 baseline before emergency manual action.
+- Emergency ownership deviation must produce post-incident baseline review.

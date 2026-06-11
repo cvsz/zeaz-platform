@@ -67,5 +67,9 @@ Save all terminal logs, commands, and outputs from the manual intervention secur
 ## Post-Incident Review
 Trigger the Phase 13 Post-Incident Review template to document the emergency response.
 
+## Phase 14 Baseline Check
+- Compare incident rollback scope against Phase 14 baseline.
+- If rollback changes ownership, require baseline update PR after incident.
+
 ## Future Phase Handoff
 Changes made manually must be codified and merged into the main line using standard CI/CD and Phase 12 governance.
