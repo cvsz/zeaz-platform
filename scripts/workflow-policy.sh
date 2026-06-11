@@ -142,7 +142,7 @@ while IFS= read -r workflow_file; do
 
   # Specific checks for Phase 12 manual release approval workflow
   if [[ "$workflow_base" == "cloudflare-manual-release-approval.yml" ]]; then
-    if ! search_workflows "$workflow_file" -q 'permissions:[[:space:]]*\n[[:space:]]*contents: read'; then
+    if ! awk '/^permissions:/ { in_perm=1 } /^[^ \t]/ && !/^permissions:/ { in_perm=0 } in_perm && /contents: read/ { found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
       printf '{"level":"ERROR","file":"%s","msg":"cloudflare-manual-release-approval.yml must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
@@ -159,6 +159,29 @@ while IFS= read -r workflow_file; do
       fail_count=$((fail_count + 1))
     fi
   fi
+
+  if [[ "$workflow_base" == "cloudflare-release-readiness.yml" || "$workflow_base" == *"release-readiness"* ]]; then
+    if search_workflows "$workflow_file" -q 'wrangler[[:space:]]+deploy|terraform[[:space:]]+apply|tofu[[:space:]]+apply|terraform[[:space:]]+destroy|tofu[[:space:]]+destroy|cloudflared[[:space:]]+tunnel[[:space:]]+route[[:space:]]+dns|curl[[:space:]]+-X[[:space:]]+(POST|PUT|PATCH|DELETE)[[:space:]]+.*api\.cloudflare\.com'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must not contain mutating commands"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'permissions:'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must have explicit permissions"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    elif ! awk '/^permissions:/ { in_perm=1 } /^[^ \t]/ && !/^permissions:/ { in_perm=0 } in_perm && /contents: read/ { found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'check-release-readiness\.sh'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must run check-release-readiness.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+    if ! search_workflows "$workflow_file" -q 'generate-release-evidence\.sh'; then
+      printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must run generate-release-evidence.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
+      fail_count=$((fail_count + 1))
+    fi
+  fi
+
 
 done < <(find "$WORKFLOW_DIR" -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) | sort)
 
