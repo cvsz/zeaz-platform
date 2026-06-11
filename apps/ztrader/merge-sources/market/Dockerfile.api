@@ -14,8 +14,10 @@ COPY src ./src
 
 RUN python -m pip install --no-cache-dir --upgrade pip \
     && python -m pip install --no-cache-dir .
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 EXPOSE 8004
+USER appuser
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD curl -fsS http://127.0.0.1:8004/health || exit 1

@@ -19,6 +19,10 @@ ENV VO_STATUS_DIR=/data \
 
 EXPOSE 18090 18091
 
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser && chown -R appuser:appgroup /app /data
 RUN chmod +x entrypoint.sh
+
+USER appuser
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:18090/')" || exit 1
 
 CMD ["sh", "entrypoint.sh"]

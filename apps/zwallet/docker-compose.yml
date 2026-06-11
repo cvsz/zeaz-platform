@@ -5,16 +5,16 @@ services:
       POSTGRES_DB: zwallet
       POSTGRES_USER: zwallet
       POSTGRES_PASSWORD: zwallet
-    ports: ['5432:5432']
+    ports: ['127.0.0.1:5432:5432']
 
   redis:
     image: redis:7-alpine
-    ports: ['6379:6379']
+    ports: ['127.0.0.1:6379:6379']
 
   nats:
     image: nats:2.11-alpine
     command: ['-js']
-    ports: ['4222:4222']
+    ports: ['127.0.0.1:4222:4222']
 
   gateway:
     image: node:22-alpine

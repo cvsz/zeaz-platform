@@ -49,4 +49,9 @@ RUN set -eux; \
 RUN test "$(openwork --version)" = "$OPENWORK_ORCHESTRATOR_VERSION" \
   && opencode --version
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["node", "-e", "process.exit(0)"]
+
+USER node
+
 CMD ["sleep", "infinity"]

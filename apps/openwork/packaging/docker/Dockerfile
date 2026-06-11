@@ -28,11 +28,16 @@ EXPOSE 3005
 
 VOLUME ["/workspace", "/data"]
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:8787/ || exit 1
+
 # Defaults:
 # - OpenWork server is published intentionally via --remote-access
 # - OpenCode stays internal (127.0.0.1:4096)
 # - OpenWork server proxies OpenCode via localhost
 # - OpenCode Router disabled by default
+USER node
+
 CMD [
   "openwork",
   "serve",
@@ -42,7 +47,7 @@ CMD [
   "--opencode-host", "127.0.0.1",
   "--opencode-port", "4096",
   "--connect-host", "127.0.0.1",
-  "--cors", "*",
+  "--cors", "https://*.zeaz.dev",
   "--approval", "manual",
   "--no-opencode-router"
 ]

@@ -10,9 +10,15 @@ RUN apt-get update \
 
 WORKDIR /app
 COPY requirements.txt ./
-RUN pip3 install --break-system-packages --no-cache-dir -r requirements.txt
+RUN python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+RUN pip3 install --no-cache-dir -r requirements.txt
 COPY packages ./packages
 COPY apps ./apps
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser && chown -R appuser:appgroup /app /venv
 
 EXPOSE 9100
+USER appuser
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:9100/')" || exit 1
+
 CMD ["python3", "-m", "apps.worker_render.main"]

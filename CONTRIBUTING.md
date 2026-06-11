@@ -47,7 +47,27 @@ We use conventional commit messages to keep our git history clean and readable:
 
 ## Local Development and Code Quality
 
-### 1. Verification and Linting
+### 1. Code Formatting (Prettier)
+All JavaScript, TypeScript, JSON, CSS, and Markdown files should be formatted with Prettier using the root `.prettierrc` config:
+```bash
+npx prettier --check .
+npx prettier --write .   # auto-fix
+```
+
+### 2. Python Linting (Ruff)
+Python code must pass `ruff check` using the root `ruff.toml` config:
+```bash
+ruff check .
+ruff check --fix .       # auto-fix
+```
+
+### 3. Go Linting (golangci-lint)
+Go code must pass `golangci-lint` using the root `.golangci.yml` config:
+```bash
+golangci-lint run ./...
+```
+
+### 4. Verification and Linting
 Before submitting changes, make sure all tests pass and there are no compilation errors:
 - Review the `Makefile` in the root directory for target commands.
 - Run typecheck and linting on affected applications in `apps/*`.
@@ -56,13 +76,23 @@ Before submitting changes, make sure all tests pass and there are no compilation
   make build-all-stacks
   ```
 
-### 2. Security Expectations
+### 5. Security Expectations
 - **Secrets Management:** Double check that no sensitive tokens, API keys, passwords, or live configuration files are staged for commit. Use `.env.example` templates to document new variables.
 - **Commit Signing:** Commits pushed to the upstream repository must be GPG signed.
+- **Secret Scanning:** The repository uses Gitleaks for secret scanning. Run locally before committing:
+  ```bash
+  gitleaks detect --source . -v
+  ```
 
-### 3. Documentation Requirements
+### 6. Documentation Requirements
 - If you modify application behavior under `apps/<app_name>`, you **must** update the corresponding application's `README.md`.
 - Ensure all public functions, environment variables, and custom build scripts are properly documented.
+
+### 7. Dockerfile Standards
+- All production Dockerfiles must include a `USER` directive (non-root).
+- All production Dockerfiles must include a `HEALTHCHECK` instruction.
+- Prefer multi-stage builds to minimize final image size.
+- Include a `.dockerignore` alongside each Dockerfile.
 
 ---
 

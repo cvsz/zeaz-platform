@@ -25,4 +25,9 @@ RUN pnpm --dir /app/ee/apps/den-api run build
 
 EXPOSE 8788
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "const h=require('http');h.get('http://localhost:8788',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"
+
+USER node
+
 CMD ["sh", "-lc", "yes | pnpm --dir /app/ee/packages/den-db run db:push && node ee/apps/den-api/dist/server.js"]

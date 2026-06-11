@@ -68,4 +68,6 @@ VOLUME ["/workspace", "/data"]
 HEALTHCHECK --interval=10s --timeout=5s --start-period=20s --retries=12 \
   CMD /bin/sh -c 'curl -fsS "http://127.0.0.1:${OPENWORK_PORT:-8787}/health" >/dev/null || exit 1'
 
+USER node
+
 ENTRYPOINT ["/usr/local/bin/microsandbox-entrypoint.sh"]

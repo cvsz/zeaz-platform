@@ -23,4 +23,9 @@ WORKDIR /app/ee/apps/den-web
 
 EXPOSE 3005
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "const h=require('http');h.get('http://localhost:3005',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"
+
+USER node
+
 CMD ["sh", "-lc", "pnpm run build && pnpm run start"]

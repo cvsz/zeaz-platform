@@ -26,10 +26,10 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?err}
       POSTGRES_DB: zsp_aitool
     ports:
-    - 5435:5432
+    - 127.0.0.1:5435:5432
     volumes:
     - postgres_data:/var/lib/postgresql/data
 volumes:

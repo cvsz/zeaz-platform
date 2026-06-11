@@ -91,7 +91,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zdash_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-zdash}
     ports:
-      - "5436:5432"
+      - "127.0.0.1:5436:5432"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
@@ -108,7 +108,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "16379:6379"
+      - "127.0.0.1:16379:6379"
     volumes:
       - redisdata_prod:/data
     restart: unless-stopped
@@ -129,7 +129,7 @@ services:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     depends_on:
       backend:
         condition: service_healthy
