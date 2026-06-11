@@ -49,6 +49,7 @@ Options:
   --json        Output results in JSON format
   --secrets     Also run secret leak detection
   --workers     Also run worker route scanning and example checking (Phase 6)
+  --terraform   Also run terraform ownership scanning (Phase 8)
 
 If no CONFIG_FILE is specified, validates all configs under infra/cloudflare/.
 
@@ -65,6 +66,7 @@ VERBOSE=false
 CHECK=false
 CHECK_SECRETS=false
 CHECK_WORKERS=false
+CHECK_TERRAFORM=false
 TARGET_FILES=()
 
 while [[ $# -gt 0 ]]; do
@@ -75,6 +77,7 @@ while [[ $# -gt 0 ]]; do
     --json)    MODE="json" ;;
     --secrets) CHECK_SECRETS=true ;;
     --workers) CHECK_WORKERS=true ;;
+    --terraform) CHECK_TERRAFORM=true ;;
     -*)
       log_error "Unknown option: $1"
       show_help
@@ -452,6 +455,31 @@ if [[ "$CHECK_WORKERS" == true ]]; then
   total_errors=$((total_errors + worker_issues))
   example_issues=$(validate_wrangler_examples)
   total_errors=$((total_errors + example_issues))
+fi
+
+# Phase 8: Terraform ownership validation
+if [[ "$CHECK_TERRAFORM" == true ]]; then
+  log_info "Running Phase 8 terraform ownership conflict scan..."
+  tf_scanner="${SCRIPTS_DIR}/scan-terraform-cloudflare-ownership.sh"
+  
+  if [[ ! -f "$tf_scanner" ]] || [[ ! -x "$tf_scanner" ]]; then
+    errors+=("scan-terraform-cloudflare-ownership.sh: not found or not executable")
+    total_errors=$((total_errors + 1))
+  else
+    if [[ "$CHECK" == true ]]; then
+      # Run in strict mode; any conflicts cause a failure
+      if ! "$tf_scanner" --strict >/dev/null 2>&1; then
+        errors+=("Terraform ownership conflicts detected in strict mode.")
+        total_errors=$((total_errors + 1))
+      fi
+    else
+      # Run in default mode; emit warnings if conflicts exist
+      tf_output=$("$tf_scanner" 2>&1 || true)
+      if echo "$tf_output" | grep -q '\[CONFLICT\]'; then
+        warnings+=("Terraform ownership conflicts detected.")
+      fi
+    fi
+  fi
 fi
 
 # ---------- Output ----------

@@ -119,8 +119,8 @@ infra/cloudflare/scripts/check-secret-leaks.sh --strict
 # 2. Run DNS ownership scan
 infra/cloudflare/scripts/scan-dns-ownership.sh --strict
 
-# 3. Validate configs (Phase 5 + 6)
-infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers
+# 3. Validate configs (Phase 5 + 6 + 8)
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check --secrets --workers --terraform
 
 # 4. Compare against live (requires tokens)
 infra/cloudflare/scripts/compare-tunnel.sh --live
@@ -173,3 +173,4 @@ Before any Worker route deployment:
 - Phase 4: Added scanner, inventory, drift report, consolidation plan
 - Phase 5: Secret containment plan, DNS ownership matrix, secret leak detection, enhanced validator
 - Phase 6: Worker route ownership model, scanner scripts, example checker, inventory, ownership plan
+- Phase 8: Terraform and live runtime reconciliation, ownership matrix, scanner script
