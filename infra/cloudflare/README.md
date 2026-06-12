@@ -11,6 +11,7 @@ This directory contains configuration, scripts, and documentation for Cloudflare
 | `compose.yaml` | Docker Compose | Launches cloudflared container(s) for active tunnels |
 | `.gitignore` | Git config | Protects secret files from commits |
 | `config/` | Canonical config | Reserved for domain, DNS, tunnel inventories |
+| `environments/` | Environment intent | Sanitized dev/staging/prod ownership boundaries |
 | `examples/` | Examples | Example files with placeholder values |
 | `examples/creds.example.json` | Example | Fake credential template (safe for commits) |
 | `scripts/` | Tooling | Validation, scanning, and comparison scripts |
@@ -23,6 +24,7 @@ This directory contains configuration, scripts, and documentation for Cloudflare
 | `scan-dns-ownership.sh` | Phase 5 | DNS hostname ownership scanner across all sources |
 | `check-secret-leaks.sh` | Phase 5 | Detects tracked secret-like files in git |
 | `validate-cloudflare-config.sh` | Phase 5+6 | Combined offline validator |
+| `scan-cloudflare-environment-boundaries.sh` | Phase 18 | Dev/staging/prod boundary scanner (--markdown/--json/--strict) |
 | `scan-workers-routes.sh` | Phase 6 | Worker route ownership scanner (--markdown/--json/--strict) |
 | `check-wrangler-examples.sh` | Phase 6 | Wrangler example file hygiene checker |
 | `compare-tunnel.sh` | Phase 3 | Live tunnel comparison (requires tokens) |
@@ -177,6 +179,7 @@ Before any Worker route deployment:
 - Phase 8: Terraform and live runtime reconciliation, ownership matrix, scanner script
 - Phase 9: Access security governance, rule scanners, zero trust inventory
 - Phase 10: CI Enforcement, PR gates, read-only CI operations
+- Phase 18: Multi-environment separation, environment intent YAMLs, boundary scanner
 
 ## Phase 7 Usage (Runtime Governance & Binding Audits)
 
@@ -413,5 +416,38 @@ infra/cloudflare/scripts/score-cloudflare-change-risk.sh --json docs/infra/cloud
 printf 'Remove production Worker route for app.zeaz.dev with no rollback plan' | \
   infra/cloudflare/scripts/score-cloudflare-change-risk.sh --strict || \
   echo "Expected strict failure for unapproved Critical risk"
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check
+```
+
+## Phase 18 - Cloudflare Multi-Environment Separation
+
+Phase 18 defines ownership boundaries for Cloudflare dev, staging, and production
+intent. It adds sanitized intent YAML files and an offline scanner to detect
+cross-environment drift before promotion.
+
+**Safety Statement:** Phase 18 is documentation and offline validation only. It
+does not deploy Workers, apply Terraform/OpenTofu, mutate DNS, mutate tunnels, or
+call Cloudflare write APIs.
+
+### Phase 18 Documents And Intent Files
+
+| File | Purpose |
+|---|---|
+| `docs/infra/cloudflare-environment-boundaries.md` | Three-environment model and boundary rules |
+| `docs/infra/cloudflare-environment-ownership-matrix.md` | Environment by resource ownership and approval matrix |
+| `docs/infra/cloudflare-cross-environment-drift-policy.md` | Drift definition, detection, remediation, and SLA |
+| `docs/infra/cloudflare-environment-promotion-policy.md` | Dev to staging to prod promotion gates |
+| `infra/cloudflare/environments/dev.yml` | Sanitized dev environment intent |
+| `infra/cloudflare/environments/staging.yml` | Sanitized staging environment intent |
+| `infra/cloudflare/environments/prod.yml` | Sanitized production environment intent |
+
+### Phase 18 Validation
+
+```bash
+bash -n infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --help
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --json | python3 -m json.tool
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --strict
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check
 ```

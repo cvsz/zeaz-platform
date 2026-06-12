@@ -1,0 +1,26 @@
+# Phase 18 Cloudflare environment intent.
+# Documentation intent only. Not live config. Do not deploy from this file.
+environment: dev
+intent_only: true
+classification: documentation-intent
+hostnames:
+  - name: app.dev.zeaz.internal
+    purpose: application testing
+    routing_boundary: dev-only
+  - name: api.dev.zeaz.internal
+    purpose: API testing
+    routing_boundary: dev-only
+tunnel_id: "<REDACTED>"
+worker_routes:
+  - pattern: app.dev.zeaz.internal/*
+    env: dev
+    owner: edge-platform
+  - pattern: api.dev.zeaz.internal/*
+    env: dev
+    owner: edge-platform
+terraform_workspace: cloudflare-dev
+terraform_tags:
+  environment: dev
+owner: platform-engineering-dev
+review_required: peer-review
+promotion_evidence_reference: not-required-for-dev

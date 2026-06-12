@@ -41,6 +41,7 @@ Offline validation. No API calls. Checks:
   - Credential file safety
   - Worker route scanning and duplication detection
   - Wrangler example file hygiene
+  - Environment boundary intent checks (Phase 18)
 
 Options:
   --help        Show this help message and exit
@@ -402,6 +403,55 @@ validate_wrangler_examples() {
   echo "$issues"
 }
 
+# ---------- Phase 18: Environment Boundary Validation ----------
+validate_environment_boundary_files() {
+  local issues=0
+  local env_dir="${CONFIG_DIR}/environments"
+  local scanner="${SCRIPTS_DIR}/scan-cloudflare-environment-boundaries.sh"
+  local env_file
+  local required_files=("dev.yml" "staging.yml" "prod.yml")
+
+  if [[ ! -d "$env_dir" ]]; then
+    errors+=("${env_dir}: Phase 18 environment directory missing")
+    issues=$((issues + 1))
+    echo "$issues"
+    return 0
+  fi
+
+  for env_file in "${required_files[@]}"; do
+    if [[ ! -f "${env_dir}/${env_file}" ]]; then
+      errors+=("${env_dir}/${env_file}: Phase 18 environment intent file missing")
+      issues=$((issues + 1))
+    fi
+  done
+
+  if [[ ! -f "$scanner" ]]; then
+    errors+=("scan-cloudflare-environment-boundaries.sh: not found")
+    issues=$((issues + 1))
+  elif [[ ! -x "$scanner" ]]; then
+    errors+=("scan-cloudflare-environment-boundaries.sh: not executable")
+    issues=$((issues + 1))
+  fi
+
+  for env_file in "${env_dir}/dev.yml" "${env_dir}/staging.yml"; do
+    if [[ -f "$env_file" ]] && grep -Eq '(^|[^A-Za-z0-9_.-])zeaz\.dev([^A-Za-z0-9_.-]|$)|\.zeaz\.dev' "$env_file"; then
+      errors+=("${env_file}: production domain suffix appears in non-production intent")
+      issues=$((issues + 1))
+    fi
+  done
+
+  if [[ "$issues" -eq 0 ]] && [[ -x "$scanner" ]]; then
+    if ! "$scanner" --strict >/dev/null 2>&1; then
+      errors+=("scan-cloudflare-environment-boundaries.sh reported boundary violations")
+      issues=$((issues + 1))
+    else
+      log_ok "Phase 18 environment boundary scanner passed"
+    fi
+  fi
+
+  echo "$issues"
+}
+
 # ---------- Validation ----------
 if [[ ${#TARGET_FILES[@]} -eq 0 ]]; then
   while IFS= read -r -d '' file; do
@@ -456,6 +506,10 @@ fi
 # Phase 5: Canonical config presence
 canon_issues=$(validate_canonical_presence)
 total_warnings=$((total_warnings + canon_issues))
+
+# Phase 18: Environment boundary intent files and scanner
+env_boundary_issues=$(validate_environment_boundary_files)
+total_errors=$((total_errors + env_boundary_issues))
 
 # Phase 5: Required placeholders in each target file
 for file in "${TARGET_FILES[@]}"; do

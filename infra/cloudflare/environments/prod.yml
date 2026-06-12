@@ -1,0 +1,60 @@
+# Phase 18 Cloudflare environment intent.
+# Documentation intent only. Not live config. Do not deploy from this file.
+environment: prod
+intent_only: true
+classification: documentation-intent
+hostnames:
+  - name: office.zeaz.dev
+    purpose: production office
+    routing_boundary: prod-only
+  - name: zveo.zeaz.dev
+    purpose: production video platform
+    routing_boundary: prod-only
+  - name: cctv.zeaz.dev
+    purpose: production CCTV
+    routing_boundary: prod-only
+  - name: api.zveo.zeaz.dev
+    purpose: production ZVEO API
+    routing_boundary: prod-only
+  - name: app.zeaz.dev
+    purpose: production wallet application
+    routing_boundary: prod-only
+  - name: admin-wallet.zeaz.dev
+    purpose: production wallet administration
+    routing_boundary: prod-only
+  - name: zcloud.zeaz.dev
+    purpose: production cloud panel
+    routing_boundary: prod-only
+  - name: ztest.zeaz.dev
+    purpose: production test surface
+    routing_boundary: prod-only
+tunnel_id: "<REDACTED>"
+worker_routes:
+  - pattern: office.zeaz.dev/*
+    env: prod
+    owner: edge-platform
+  - pattern: zveo.zeaz.dev/*
+    env: prod
+    owner: edge-platform
+  - pattern: api.zveo.zeaz.dev/*
+    env: prod
+    owner: edge-platform
+  - pattern: app.zeaz.dev/*
+    env: prod
+    owner: edge-platform
+  - pattern: admin-wallet.zeaz.dev/*
+    env: prod
+    owner: edge-platform
+  - pattern: zcloud.zeaz.dev/*
+    env: prod
+    owner: edge-platform
+terraform_workspace: cloudflare-prod
+terraform_tags:
+  environment: prod
+owner: platform-engineering-prod
+review_required: phase-15-review-board-for-high-or-critical
+promotion_evidence_reference: docs/infra/evidence/cloudflare/index.md
+risk_scoring_required: true
+evidence_archive_required: true
+review_board_required: true
+rollback_plan_required: true

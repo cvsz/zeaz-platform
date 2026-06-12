@@ -1,0 +1,32 @@
+# Phase 18 Cloudflare environment intent.
+# Documentation intent only. Not live config. Do not deploy from this file.
+environment: staging
+intent_only: true
+classification: documentation-intent
+hostnames:
+  - name: app.staging.zeaz.internal
+    purpose: application release verification
+    routing_boundary: staging-only
+  - name: api.staging.zeaz.internal
+    purpose: API release verification
+    routing_boundary: staging-only
+  - name: zcloud.staging.zeaz.internal
+    purpose: cloud panel release verification
+    routing_boundary: staging-only
+tunnel_id: "<REDACTED>"
+worker_routes:
+  - pattern: app.staging.zeaz.internal/*
+    env: staging
+    owner: edge-platform
+  - pattern: api.staging.zeaz.internal/*
+    env: staging
+    owner: edge-platform
+  - pattern: zcloud.staging.zeaz.internal/*
+    env: staging
+    owner: edge-platform
+terraform_workspace: cloudflare-staging
+terraform_tags:
+  environment: staging
+owner: platform-engineering-staging
+review_required: platform-lead-review
+promotion_evidence_reference: staging-release-summary-required
