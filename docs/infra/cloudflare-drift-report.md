@@ -226,3 +226,40 @@ status: OPEN | IN_PROGRESS | ESCALATED | CLOSED | ACCEPTED_EXCEPTION
 - Exception register: `docs/infra/cloudflare-drift-exception-register.md`
 - Monthly evidence template: `docs/infra/cloudflare-monthly-governance-evidence.md`
 
+---
+
+## Phase 17 — Risk Scoring Fields
+
+> Added by Phase 17: Runtime Risk Scoring
+> All drift items that require remediation must carry a risk score from Phase 17 onward.
+
+### Risk Score Field Reference
+
+Each drift item requiring a change to resolve must include:
+
+```yaml
+risk_score: Low | Medium | High | Critical
+risk_approvers: <required approver roles per risk gate policy>
+risk_scorecard_link: docs/infra/evidence/cloudflare/YYYY/MM/CHANGE-ID/risk-scorecard.md
+```
+
+### Known Open Drift Items — Phase 17 Risk Classification
+
+Approver requirements are defined in `docs/infra/cloudflare-risk-gate-policy.md`.
+
+| Drift Item | SLA Class | Risk Score | Required Approvers |
+|---|---|---|---|
+| Orphaned credential file `22bd858b` | Medium | Medium | 1 Domain Owner |
+| Hardcoded tunnel name `zeaz-platform` | Low | Low | Automated check only |
+| Hardcoded tunnel name `zlinebot` | Low | Low | Automated check only |
+| Empty tunnel name / malformed cred path | Low | Low | Automated check only |
+| 20 duplicate hostnames across configs | Medium | High | Terraform Owner + Security Reviewer |
+| Live tunnel vs repo config mismatch | High | High | Terraform Owner + Security Reviewer |
+| 3 overlapping Terraform modules | High | High | Terraform Owner + Security Reviewer |
+
+### Phase 17 Documents
+
+- Risk scoring model: `docs/infra/cloudflare-runtime-risk-scoring.md`
+- Risk scorecard template: `docs/infra/cloudflare-risk-scorecard-template.md`
+- Risk gate policy: `docs/infra/cloudflare-risk-gate-policy.md`
+- Risk scoring script: `infra/cloudflare/scripts/score-cloudflare-change-risk.sh`

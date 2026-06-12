@@ -386,4 +386,32 @@ for doc in \
 done
 ```
 
+## Phase 17 — Cloudflare Runtime Risk Scoring
 
+Phase 17 adds offline risk scoring for DNS, Worker, Tunnel, Access policy, and Terraform/OpenTofu changes before production review.
+
+**Safety Statement:** Phase 17 is read-only governance. It does not deploy Workers, apply Terraform/OpenTofu, mutate DNS, mutate tunnels, call Cloudflare write APIs, or print secrets.
+
+### Phase 17 Documents and Tooling
+
+| File | Purpose |
+|---|---|
+| `docs/infra/cloudflare-runtime-risk-scoring.md` | Scoring model, dimensions, risk levels, and Phase 16 evidence archive integration |
+| `docs/infra/cloudflare-risk-scorecard-template.md` | Scorecard template for pre-merge Cloudflare-sensitive changes |
+| `docs/infra/cloudflare-risk-gate-policy.md` | Approval gates, evidence requirements, and Critical strict-mode behavior |
+| `docs/infra/cloudflare-drift-report.md` | Drift items extended with Phase 17 risk score fields |
+| `infra/cloudflare/scripts/score-cloudflare-change-risk.sh` | Offline scorer with human, markdown, JSON, and strict outputs |
+| `infra/cloudflare/scripts/validate-cloudflare-config.sh` | Validates the Phase 17 scorer and scorecard template are present |
+
+### Phase 17 Validation
+
+```bash
+bash -n infra/cloudflare/scripts/score-cloudflare-change-risk.sh
+infra/cloudflare/scripts/score-cloudflare-change-risk.sh --help
+infra/cloudflare/scripts/score-cloudflare-change-risk.sh --markdown docs/infra/cloudflare-runtime-risk-scoring.md
+infra/cloudflare/scripts/score-cloudflare-change-risk.sh --json docs/infra/cloudflare-runtime-risk-scoring.md | python3 -m json.tool
+printf 'Remove production Worker route for app.zeaz.dev with no rollback plan' | \
+  infra/cloudflare/scripts/score-cloudflare-change-risk.sh --strict || \
+  echo "Expected strict failure for unapproved Critical risk"
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check
+```
