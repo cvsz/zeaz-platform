@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZEAZ META OS",
-  description: "Godmode Control Panel",
+  title: "ZEAZ Platform — AI Automation and Software Development SaaS",
+  description:
+    "ZEAZ Platform provides AI-powered software development tools, cloud services, DevOps automation, API integrations, and SaaS subscriptions for businesses and developers.",
 };
 
 export default function RootLayout({
@@ -28,13 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-foreground min-h-screen font-sans`}
       >
-        <div className="flex h-screen overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 ml-64 h-screen overflow-y-auto relative">
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
-            {children}
-          </main>
-        </div>
+        {children}
       </body>
     </html>
   );
