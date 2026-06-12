@@ -1,0 +1,60 @@
+graph TB
+  subgraph "Authentication Layer"
+    BETTER_AUTH[Better-Auth]
+    SSO[SSO - SAML/OIDC]
+    SCIM[SCIM Provisioning]
+    API_KEYS[API Key Auth]
+    SESSION[Session Management]
+  end
+
+  subgraph "Authorization Layer"
+    RBAC[Role-Based Access Control]
+    ORG_POLICY[Organization Policy]
+    DESKTOP_POLICY[Desktop Policy]
+    MCP_POLICY[MCP Access Policy]
+  end
+
+  subgraph "Perimeter Security"
+    CF_TUNNEL[Cloudflare Tunnel]
+    ZT_ACCESS[Zero Trust Access]
+    WAF_RULES[WAF Rules]
+    RATE_LIMIT[Rate Limiting]
+  end
+
+  subgraph "Runtime Security"
+    POLICY_ENGINE[Policy Engine]
+    SEC_MIDDLEWARE[Security Middleware]
+    MUTATION_SANDBOX[Mutation Sandbox]
+    ACTION_JOURNAL[Action Journal]
+  end
+
+  subgraph "Threat Vectors"
+    XSS[XSS - CSP Headers]
+    CSRF[CSRF - Token Validation]
+    INJECTION[Prompt Injection]
+    IDOR[IDOR - Org Isolation]
+    DATA_LEAK[Data Leak - Audit Logs]
+  end
+
+  BETTER_AUTH --> SSO
+  BETTER_AUTH --> SCIM
+  BETTER_AUTH --> API_KEYS
+  BETTER_AUTH --> SESSION
+
+  RBAC --> ORG_POLICY
+  ORG_POLICY --> DESKTOP_POLICY
+  ORG_POLICY --> MCP_POLICY
+
+  POLICY_ENGINE --> MUTATION_SANDBOX
+  POLICY_ENGINE --> ACTION_JOURNAL
+  SEC_MIDDLEWARE --> POLICY_ENGINE
+
+  XSS --> CF_TUNNEL
+  CSRF --> ZT_ACCESS
+  INJECTION --> WAF_RULES
+  IDOR --> ORG_POLICY
+  DATA_LEAK --> ACTION_JOURNAL
+
+  style BETTER_AUTH fill:#f96,stroke:#333
+  style POLICY_ENGINE fill:#f96,stroke:#333
+  style CF_TUNNEL fill:#69f,stroke:#333
