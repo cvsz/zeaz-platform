@@ -10,6 +10,7 @@ routes = [
 
 [vars]
 BRAND_NAME = "ZeaZ"
-APP_URL = "https://app.zeaz.dev"
+APP_URL = "https://www.zeaz.dev"
 STATUS_TEXT_TH = "กำลังเริ่มต้นระบบ ZeaZ Cloud"
 STATUS_TEXT_EN = "Initializing ZeaZ Cloud Stack"
+TARGET_URL = "https://www.zeaz.dev"

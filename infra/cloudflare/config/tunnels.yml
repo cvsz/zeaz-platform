@@ -16,8 +16,10 @@ ingress:
     service: http://127.0.0.1:9292
   - hostname: api-zveo.zeaz.dev
     service: http://127.0.0.1:8090
-  - hostname: app.zeaz.dev
+  - hostname: www.zeaz.dev
     service: http://127.0.0.1:3003
+  - hostname: app.zeaz.dev
+    service: http://127.0.0.1:3000
   - hostname: zcloud.zeaz.dev
     service: http://127.0.0.1:3004
   - hostname: ztest.zeaz.dev
