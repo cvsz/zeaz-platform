@@ -219,15 +219,6 @@
       "api_gateway_prefix": "/v1/zsticker"
     },
     {
-      "app_id": "zcino-modern",
-      "role": "ui",
-      "path": "apps/zcino-modern",
-      "hostname": "zcino-modern.zeaz.dev",
-      "port": 3015,
-      "origin": "http://127.0.0.1:3015",
-      "status": "reserved"
-    },
-    {
       "app_id": "zcloud",
       "role": "ui",
       "path": "apps/zcloud",

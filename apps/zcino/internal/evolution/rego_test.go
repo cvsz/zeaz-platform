@@ -8,6 +8,9 @@ import (
 
 const testRegoModule = `package zeaz.evolution
 
+import future.keywords.if
+import future.keywords.contains
+
 default allow := false
 
 allow if {
@@ -33,6 +36,10 @@ deny contains "spend exceeds budget" if {
 
 deny contains "tenant id is required" if {
   not input.tenant_id
+}
+
+deny contains "tenant id is required" if {
+  input.tenant_id == ""
 }
 
 deny contains "cluster deletion is forbidden" if {
@@ -300,7 +307,9 @@ func TestEngineWithRegoBlocksProposal(t *testing.T) {
 		t.Fatalf("NewRegoEvaluatorFromModule() error = %v", err)
 	}
 
-	engine := NewEngine(DefaultPolicy(), Budget{}, StaticPatchGenerator{Patch: GeneratePatch("safe")}, fakeSimulator{score: 0.9}, nil).
+	policy := DefaultPolicy()
+	delete(policy.ForbiddenChanges, "delete_cluster")
+	engine := NewEngine(policy, Budget{}, StaticPatchGenerator{Patch: GeneratePatch("safe")}, fakeSimulator{score: 0.9}, nil).
 		WithRego(eval)
 
 	result := engine.Process(context.Background(), p)

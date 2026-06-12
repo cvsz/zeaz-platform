@@ -23,10 +23,9 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | ABTPi18n | ui | `apps/ABTPi18n` | `abtpi18n.zeaz.dev` | 3010 | `http://127.0.0.1:3010` | reserved | `` | `` |
 | ABTPi18n-api | api | `apps/ABTPi18n` | `api-abtpi18n.zeaz.dev` | 8010 | `http://127.0.0.1:8010` | reserved | `` | `/v1/abtpi18n` |
 | zwallet | api-ui | `apps/zwallet` | `zwallet.zeaz.dev` | 8011 | `http://127.0.0.1:8011` | reserved | `` | `/v1/zwallet` |
-| zlms-prod | app | `apps/zlms-prod` | `zlms.zeaz.dev` | 8012 | `http://127.0.0.1:8012` | reserved | `` | `/v1/zlms` |
+| zlms | app | `apps/zlms` | `zlms.zeaz.dev` | 8012 | `http://127.0.0.1:8012` | reserved | `` | `/v1/zlms` |
 | zAcademy | ui | `apps/zAcademy` | `academy.zeaz.dev` | 3013 | `http://127.0.0.1:3013` | reserved | `` | `` |
 | zsticker | api-ui | `apps/zsticker` | `zsticker.zeaz.dev` | 8014 | `http://127.0.0.1:8014` | reserved | `` | `/v1/zsticker` |
-| zcino-modern | ui | `apps/zcino-modern` | `zcino-modern.zeaz.dev` | 3015 | `http://127.0.0.1:3015` | reserved | `` | `` |
 | zcloud | ui | `apps/zcloud` | `zcloud.zeaz.dev` | 3004 | `http://127.0.0.1:3004` | active | `` | `` |
 | zsp-aitool | ui | `apps/zsp-aitool` | `ztest.zeaz.dev` | 3008 | `http://127.0.0.1:3008` | active | `` | `` |
 | zcfdash | ui | `apps/web` | `zcfdash.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | `web` | `` |
@@ -45,7 +44,6 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 3008 | zsp-aitool |
 | 3010 | ABTPi18n |
 | 3013 | zAcademy |
-| 3015 | zcino-modern |
 | 3016 | ztrader |
 | 5172 | release |
 | 5173 | zdash |
@@ -53,7 +51,7 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 8005 | zdash-api |
 | 8010 | ABTPi18n-api |
 | 8011 | zwallet |
-| 8012 | zlms-prod |
+| 8012 | zlms |
 | 8014 | zsticker |
 | 8016 | ztrader-api |
 | 8088 | zcfdash-api |

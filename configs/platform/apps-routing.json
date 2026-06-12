@@ -176,15 +176,6 @@
       "origin": null,
       "port": null,
       "status": "reserved"
-    },
-    {
-      "app_id": "zcino-modern",
-      "path": "apps/zcino-modern",
-      "type": "app",
-      "hostnames": ["zcino-modern.zeaz.dev"],
-      "origin": null,
-      "port": null,
-      "status": "reserved"
     }
   ]
 }

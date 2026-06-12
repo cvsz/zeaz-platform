@@ -19,4 +19,3 @@
 - `zlms.zeaz.dev` -> `reserved`
 - `academy.zeaz.dev` -> `reserved`
 - `zsticker.zeaz.dev` -> `reserved`
-- `zcino-modern.zeaz.dev` -> `reserved`
