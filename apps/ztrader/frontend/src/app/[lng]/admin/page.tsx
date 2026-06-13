@@ -1,8 +1,3 @@
-// ZeaZDev [Frontend Admin Control Panel] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Admin Control Panel) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -41,618 +36,1128 @@ interface SystemHealth {
   broker_latency_ms: Record<string, number>;
 }
 
-// ── Glassmorphism Style Helpers ──
-const glassCard: React.CSSProperties = {
-  background: 'rgba(17, 24, 39, 0.45)',
-  backdropFilter: 'blur(16px)',
-  WebkitBackdropFilter: 'blur(16px)',
-  border: '1px solid rgba(255, 255, 255, 0.04)',
-  borderRadius: '16px',
-  padding: '28px',
-  boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.25)',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-};
+type TabKey = 'overview' | 'users' | 'contracts' | 'risk';
 
-const sectionTitle: React.CSSProperties = {
-  fontSize: '18px',
-  fontWeight: '700',
-  color: '#f3f4f6',
-  fontFamily: "'Outfit', sans-serif",
-  marginBottom: '20px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-};
-
-const tableStyle: React.CSSProperties = {
-  width: '100%',
-  borderCollapse: 'collapse' as const,
-  fontFamily: "'Outfit', sans-serif",
-  fontSize: '14px',
-};
-
-const thStyle: React.CSSProperties = {
-  textAlign: 'left' as const,
-  padding: '12px 16px',
-  borderBottom: '1px solid rgba(255,255,255,0.06)',
-  color: '#9ca3af',
-  fontWeight: '600',
-  fontSize: '12px',
-  letterSpacing: '0.05em',
-  textTransform: 'uppercase' as const,
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: '12px 16px',
-  borderBottom: '1px solid rgba(255,255,255,0.03)',
-  color: '#f3f4f6',
-  verticalAlign: 'middle',
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '10px 14px',
-  backgroundColor: 'rgba(31, 41, 55, 0.45)',
-  border: '1px solid rgba(255, 255, 255, 0.08)',
-  borderRadius: '8px',
-  color: '#f3f4f6',
-  fontFamily: "'Outfit', sans-serif",
-  fontSize: '14px',
-  outline: 'none',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-};
-
-const btnPrimary: React.CSSProperties = {
-  fontFamily: "'Outfit', sans-serif",
-  fontWeight: '600',
-  fontSize: '14px',
-  padding: '10px 20px',
-  borderRadius: '8px',
-  border: '1px solid transparent',
-  cursor: 'pointer',
-  outline: 'none',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  backgroundColor: '#3B82F6',
-  color: 'white',
-  boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.35)',
-};
-
-const btnDanger: React.CSSProperties = {
-  ...btnPrimary,
-  backgroundColor: 'rgba(239, 68, 68, 0.1)',
-  color: '#EF4444',
-  border: '1px solid rgba(239, 68, 68, 0.2)',
-  boxShadow: 'none',
-};
-
-const selectStyle: React.CSSProperties = {
-  padding: '6px 12px',
-  backgroundColor: 'rgba(31, 41, 55, 0.65)',
-  border: '1px solid rgba(255, 255, 255, 0.08)',
-  borderRadius: '6px',
-  color: '#f3f4f6',
-  fontFamily: "'Outfit', sans-serif",
-  fontSize: '13px',
-  outline: 'none',
-  cursor: 'pointer',
-  transition: 'all 0.25s ease',
-};
-
-const badgeActive: React.CSSProperties = {
-  padding: '4px 12px',
-  borderRadius: '20px',
-  fontSize: '12px',
-  fontWeight: '600',
-  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-  color: '#10B981',
-  border: '1px solid rgba(16, 185, 129, 0.25)',
-};
-
-const badgeInactive: React.CSSProperties = {
-  ...badgeActive,
-  backgroundColor: 'rgba(239, 68, 68, 0.15)',
-  color: '#EF4444',
-  border: '1px solid rgba(239, 68, 68, 0.25)',
-};
-
-// ── Shimmer Loading Component ──
-function ShimmerBlock({ width = '100%', height = '16px' }: { width?: string; height?: string }) {
-  return (
-    <div style={{
-      width,
-      height,
-      borderRadius: '6px',
-      background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%)',
-      backgroundSize: '200% 100%',
-      animation: 'shimmer 1.5s infinite',
-    }} />
-  );
+function Shimmer({ w = '100%', h = '16px' }: { w?: string; h?: string }) {
+  return <div className="shimmer" style={{ width: w, height: h }} />;
 }
 
-// ── Inline Toast Component ──
-function InlineToast({ message, type }: { message: string; type: 'success' | 'error' }) {
-  const bg = type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
-  const color = type === 'success' ? '#10B981' : '#EF4444';
-  const border = type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+function Toast({
+  msg,
+  type,
+}: {
+  msg: string;
+  type: 'success' | 'error';
+}) {
+  const ok = type === 'success';
   return (
-    <div style={{
-      padding: '10px 16px',
-      borderRadius: '8px',
-      backgroundColor: bg,
-      color,
-      border: `1px solid ${border}`,
-      fontSize: '13px',
-      fontFamily: "'Outfit', sans-serif",
-      fontWeight: '500',
-      marginTop: '12px',
-      animation: 'fadeIn 0.3s ease',
-    }}>
-      {type === 'success' ? '✓' : '✕'} {message}
+    <div
+      className="animate-slide-up"
+      style={{
+        position: 'fixed',
+        bottom: '28px',
+        right: '28px',
+        zIndex: 9999,
+        padding: '14px 20px',
+        borderRadius: 'var(--radius-lg)',
+        background: ok ? 'rgba(10,26,20,0.97)' : 'rgba(26,10,10,0.97)',
+        border: `1px solid ${ok ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`,
+        color: ok ? '#10B981' : '#EF4444',
+        fontSize: '14px',
+        fontWeight: '600',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        boxShadow: `0 8px 32px ${ok ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}`,
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+      }}
+    >
+      {ok ? (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      ) : (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      )}
+      {msg}
     </div>
   );
 }
 
-export default function AdminPage(_: { params: Promise<{ lng: string }> }) {
+function StatusDot({ ok }: { ok: boolean }) {
+  return (
+    <span
+      className={`status-dot ${ok ? 'status-dot-up' : 'status-dot-down'}`}
+    />
+  );
+}
+
+function RoleBadge({ role }: { role: string }) {
+  const colors: Record<string, { cls: string }> = {
+    admin: { cls: 'badge-secondary' },
+    operator: { cls: 'badge-primary' },
+    user: { cls: 'badge-info' },
+  };
+  const c = colors[role] ?? colors.user;
+  return <span className={`badge ${c.cls}`}>{role}</span>;
+}
+
+export default function AdminPage() {
   const pathname = usePathname();
   const lng = pathname?.split('/')[1] || 'en';
   initI18n(lng);
   const { t } = useTranslation('translation');
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
-  const getAdminHeaders = useCallback((headers: HeadersInit = {}) => {
-    const token = typeof window !== 'undefined'
-      ? window.localStorage.getItem('ztrader_admin_token')
-      : null;
-    return token ? { ...headers, Authorization: `Bearer ${token}` } : headers;
-  }, []);
+  const getHeaders = useCallback(
+    (extra: HeadersInit = {}) => {
+      const token =
+        typeof window !== 'undefined'
+          ? window.localStorage.getItem('ztrader_admin_token')
+          : null;
+      return token
+        ? { ...extra, Authorization: `Bearer ${token}` }
+        : extra;
+    },
+    [],
+  );
 
-  // State
+  const [tab, setTab] = useState<TabKey>('overview');
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [contracts, setContracts] = useState<RentalContract[]>([]);
   const [riskConfig, setRiskConfig] = useState<RiskConfig | null>(null);
   const [health, setHealth] = useState<SystemHealth | null>(null);
-  const [loading, setLoading] = useState({ users: true, contracts: true, risk: true, health: true });
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [loading, setLoading] = useState({
+    users: true,
+    contracts: true,
+    risk: true,
+    health: true,
+  });
+  const [toast, setToast] = useState<{
+    msg: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
-  // Risk edit state
-  const [editMaxNotional, setEditMaxNotional] = useState<number>(100);
-  const [editAllowedSymbols, setEditAllowedSymbols] = useState<string>('');
+  const [editMaxNotional, setEditMaxNotional] = useState(100);
+  const [editAllowedSymbols, setEditAllowedSymbols] = useState('');
 
-  // Contract creation state
-  const [newContractUserId, setNewContractUserId] = useState('');
-  const [newContractEndDate, setNewContractEndDate] = useState('');
+  const [newUserId, setNewUserId] = useState('');
+  const [newEndDate, setNewEndDate] = useState('');
 
-  const showToast = useCallback((message: string, type: 'success' | 'error') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 4000);
-  }, []);
+  const showToast = useCallback(
+    (msg: string, type: 'success' | 'error') => {
+      setToast({ msg, type });
+      setTimeout(() => setToast(null), 4000);
+    },
+    [],
+  );
 
-  // ── Data Fetching ──
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/users`, {
-        headers: getAdminHeaders(),
+      const r = await fetch(`${backendUrl}/api/v1/admin/users`, {
+        headers: getHeaders(),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setUsers(data);
-      }
-    } catch (e) {
-      console.error('Failed to fetch users:', e);
+      if (r.ok) setUsers(await r.json());
+    } catch {
+      showToast('Failed to load users — check connection', 'error');
     } finally {
-      setLoading(prev => ({ ...prev, users: false }));
+      setLoading((p) => ({ ...p, users: false }));
     }
-  }, [backendUrl, getAdminHeaders]);
+  }, [backendUrl, getHeaders, showToast]);
 
   const fetchContracts = useCallback(async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/contracts`, {
-        headers: getAdminHeaders(),
+      const r = await fetch(`${backendUrl}/api/v1/admin/contracts`, {
+        headers: getHeaders(),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setContracts(data);
-      }
-    } catch (e) {
-      console.error('Failed to fetch contracts:', e);
+      if (r.ok) setContracts(await r.json());
+    } catch {
+      showToast('Failed to load contracts — check connection', 'error');
     } finally {
-      setLoading(prev => ({ ...prev, contracts: false }));
+      setLoading((p) => ({ ...p, contracts: false }));
     }
-  }, [backendUrl, getAdminHeaders]);
+  }, [backendUrl, getHeaders, showToast]);
 
-  const fetchRiskConfig = useCallback(async () => {
+  const fetchRisk = useCallback(async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/risk/config`, {
-        headers: getAdminHeaders(),
+      const r = await fetch(`${backendUrl}/api/v1/admin/risk/config`, {
+        headers: getHeaders(),
       });
-      if (res.ok) {
-        const data: RiskConfig = await res.json();
-        setRiskConfig(data);
-        setEditMaxNotional(data.max_order_notional);
-        setEditAllowedSymbols(data.allowed_symbols.join(', '));
+      if (r.ok) {
+        const d: RiskConfig = await r.json();
+        setRiskConfig(d);
+        setEditMaxNotional(d.max_order_notional);
+        setEditAllowedSymbols(d.allowed_symbols.join(', '));
       }
-    } catch (e) {
-      console.error('Failed to fetch risk config:', e);
+    } catch {
+      showToast('Failed to load risk config — check connection', 'error');
     } finally {
-      setLoading(prev => ({ ...prev, risk: false }));
+      setLoading((p) => ({ ...p, risk: false }));
     }
-  }, [backendUrl, getAdminHeaders]);
+  }, [backendUrl, getHeaders, showToast]);
 
   const fetchHealth = useCallback(async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/system/health`, {
-        headers: getAdminHeaders(),
+      const r = await fetch(`${backendUrl}/api/v1/admin/system/health`, {
+        headers: getHeaders(),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setHealth(data);
-      }
-    } catch (e) {
-      console.error('Failed to fetch health:', e);
+      if (r.ok) setHealth(await r.json());
+    } catch {
+      showToast('Failed to load system health — check connection', 'error');
     } finally {
-      setLoading(prev => ({ ...prev, health: false }));
+      setLoading((p) => ({ ...p, health: false }));
     }
-  }, [backendUrl, getAdminHeaders]);
+  }, [backendUrl, getHeaders, showToast]);
 
   useEffect(() => {
     fetchUsers();
     fetchContracts();
-    fetchRiskConfig();
+    fetchRisk();
     fetchHealth();
-
-    const healthInterval = setInterval(fetchHealth, 15000);
-    const dataInterval = setInterval(() => {
+    const h = setInterval(fetchHealth, 15000);
+    const d = setInterval(() => {
       fetchUsers();
       fetchContracts();
-      fetchRiskConfig();
+      fetchRisk();
     }, 30000);
-
     return () => {
-      clearInterval(healthInterval);
-      clearInterval(dataInterval);
+      clearInterval(h);
+      clearInterval(d);
     };
-  }, [fetchUsers, fetchContracts, fetchRiskConfig, fetchHealth]);
+  }, [fetchUsers, fetchContracts, fetchRisk, fetchHealth]);
 
-  // ── Kill Switch Toggle ──
   const toggleKillSwitch = async () => {
     if (!riskConfig) return;
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/risk/config`, {
+      const r = await fetch(`${backendUrl}/api/v1/admin/risk/config`, {
         method: 'PUT',
-        headers: getAdminHeaders({ 'Content-Type': 'application/json' }),
+        headers: getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
+          ...riskConfig,
           kill_switch_active: !riskConfig.kill_switch_active,
-          max_order_notional: riskConfig.max_order_notional,
-          allowed_symbols: riskConfig.allowed_symbols,
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setRiskConfig(data);
+      if (r.ok) {
+        const d = await r.json();
+        setRiskConfig(d);
         showToast(
-          data.kill_switch_active ? 'Kill Switch activated' : 'Kill Switch deactivated',
-          'success'
+          d.kill_switch_active
+            ? t('admin.toast_killswitch_active')
+            : t('admin.toast_killswitch_inactive'),
+          d.kill_switch_active ? 'error' : 'success',
+        );
+      } else {
+        const errBody = await r.text().catch(() => '');
+        showToast(
+          `Kill switch failed (${r.status})${errBody ? `: ${errBody.slice(0, 120)}` : ''}`,
+          'error',
         );
       }
-    } catch (e) {
-      showToast('Failed to toggle Kill Switch', 'error');
+    } catch {
+      showToast(t('admin.toast_killswitch_failed'), 'error');
     }
   };
 
-  // ── User Role Update ──
-  const updateUserRole = async (userId: string, newRole: string) => {
+  const updateUserRole = async (userId: string, role: string) => {
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/users/${userId}/role`, {
-        method: 'PUT',
-        headers: getAdminHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify({ role: newRole }),
-      });
-      if (res.ok) {
+      const r = await fetch(
+        `${backendUrl}/api/v1/admin/users/${userId}/role`,
+        {
+          method: 'PUT',
+          headers: getHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ role }),
+        },
+      );
+      if (r.ok) {
         await fetchUsers();
-        showToast(`Role updated to ${newRole}`, 'success');
+        showToast(`${t('admin.toast_role_updated')} → ${role}`, 'success');
+      } else {
+        const e = await r.json().catch(() => ({}));
+        showToast(e.detail || `Role update failed (${r.status})`, 'error');
       }
-    } catch (e) {
-      showToast('Failed to update role', 'error');
+    } catch {
+      showToast(t('admin.toast_role_failed'), 'error');
     }
   };
 
-  // ── Contract Toggle ──
-  const toggleContract = async (contractId: string) => {
+  const toggleContract = async (id: string) => {
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/contracts/${contractId}/toggle`, {
-        method: 'PUT',
-        headers: getAdminHeaders(),
-      });
-      if (res.ok) {
+      const r = await fetch(
+        `${backendUrl}/api/v1/admin/contracts/${id}/toggle`,
+        { method: 'PUT', headers: getHeaders() },
+      );
+      if (r.ok) {
         await fetchContracts();
-        showToast('Contract status toggled', 'success');
+        showToast(t('admin.toast_contract_toggled'), 'success');
+      } else {
+        const e = await r.json().catch(() => ({}));
+        showToast(e.detail || `Toggle failed (${r.status})`, 'error');
       }
-    } catch (e) {
-      showToast('Failed to toggle contract', 'error');
+    } catch {
+      showToast(t('admin.toast_contract_toggle_failed'), 'error');
     }
   };
 
-  // ── Contract Create ──
   const createContract = async () => {
-    if (!newContractUserId || !newContractEndDate) {
-      showToast('Please fill in User ID and End Date', 'error');
+    if (!newUserId || !newEndDate) {
+      showToast(t('admin.toast_fill_fields'), 'error');
       return;
     }
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/contracts`, {
+      const r = await fetch(`${backendUrl}/api/v1/admin/contracts`, {
         method: 'POST',
-        headers: getAdminHeaders({ 'Content-Type': 'application/json' }),
+        headers: getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
-          user_id: newContractUserId,
-          end_date: new Date(newContractEndDate).toISOString(),
+          user_id: newUserId,
+          end_date: new Date(newEndDate).toISOString(),
           is_active: true,
         }),
       });
-      if (res.ok) {
+      if (r.ok) {
         await fetchContracts();
-        setNewContractUserId('');
-        setNewContractEndDate('');
-        showToast('Contract created successfully', 'success');
+        setNewUserId('');
+        setNewEndDate('');
+        showToast(t('admin.toast_contract_created'), 'success');
       } else {
-        const err = await res.json();
-        showToast(err.detail || 'Failed to create contract', 'error');
+        const e = await r.json();
+        showToast(
+          e.detail || t('admin.toast_contract_create_failed'),
+          'error',
+        );
       }
-    } catch (e) {
-      showToast('Failed to create contract', 'error');
+    } catch {
+      showToast(t('admin.toast_contract_create_failed'), 'error');
     }
   };
 
-  // ── Risk Config Save ──
-  const saveRiskConfig = async () => {
+  const saveRisk = async () => {
     if (!riskConfig) return;
     try {
-      const res = await fetch(`${backendUrl}/api/v1/admin/risk/config`, {
+      const r = await fetch(`${backendUrl}/api/v1/admin/risk/config`, {
         method: 'PUT',
-        headers: getAdminHeaders({ 'Content-Type': 'application/json' }),
+        headers: getHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           kill_switch_active: riskConfig.kill_switch_active,
           max_order_notional: editMaxNotional,
-          allowed_symbols: editAllowedSymbols.split(',').map(s => s.trim()).filter(Boolean),
+          allowed_symbols: editAllowedSymbols
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        setRiskConfig(data);
-        showToast('Risk configuration saved', 'success');
+      if (r.ok) {
+        setRiskConfig(await r.json());
+        showToast(t('admin.toast_risk_saved'), 'success');
+      } else {
+        const e = await r.json().catch(() => ({}));
+        showToast(e.detail || `Risk save failed (${r.status})`, 'error');
       }
-    } catch (e) {
-      showToast('Failed to save risk config', 'error');
+    } catch {
+      showToast(t('admin.toast_risk_save_failed'), 'error');
     }
   };
 
-  // ── Latency Color Helper ──
-  const latencyColor = (ms: number) => {
-    if (ms < 50) return '#10B981';
-    if (ms <= 100) return '#F59E0B';
-    return '#EF4444';
-  };
-
-  const latencyGlow = (ms: number) => {
-    if (ms < 50) return 'rgba(16,185,129,0.2)';
-    if (ms <= 100) return 'rgba(245,158,11,0.2)';
-    return 'rgba(239,68,68,0.2)';
-  };
+  const latColor = (ms: number) =>
+    ms < 50
+      ? 'var(--color-accent)'
+      : ms <= 100
+        ? 'var(--color-warning)'
+        : 'var(--color-danger)';
 
   const killActive = riskConfig?.kill_switch_active ?? false;
 
+  const tabs: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+    {
+      key: 'overview',
+      label: t('admin.system_health'),
+      icon: (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+      ),
+    },
+    {
+      key: 'users',
+      label: t('admin.users_title'),
+      icon: (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      ),
+    },
+    {
+      key: 'contracts',
+      label: t('admin.contracts_title'),
+      icon: (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+      ),
+    },
+    {
+      key: 'risk',
+      label: t('risk.limits'),
+      icon: (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
-    <div style={{
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '24px',
-      fontFamily: "'Outfit', sans-serif",
-    }}>
-      {/* ── Shimmer Animation CSS ── */}
+    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '28px 24px' }}>
       <style>{`
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes killPulse {
-          0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
-          50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
-        }
-        @keyframes safePulse {
-          0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
-          50% { box-shadow: 0 0 35px rgba(16, 185, 129, 0.4); }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        @keyframes killPulse { 0%,100%{box-shadow:0 0 24px rgba(239,68,68,0.35)} 50%{box-shadow:0 0 48px rgba(239,68,68,0.65)} }
+        @keyframes safePulse { 0%,100%{box-shadow:0 0 16px rgba(16,185,129,0.15)} 50%{box-shadow:0 0 28px rgba(16,185,129,0.3)} }
+        .admin-tab { display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text-muted);background:transparent;border:1px solid transparent;cursor:pointer;transition:var(--transition-fast);white-space:nowrap; }
+        .admin-tab:hover { color:var(--text-secondary);background:var(--bg-surface); }
+        .admin-tab.active { color:var(--color-primary-light);background:var(--color-primary-bg);border-color:var(--color-primary-border);font-weight:600; }
+        .admin-card { background:var(--bg-card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border-card);border-radius:var(--radius-xl);padding:28px;box-shadow:var(--shadow-lg);transition:var(--transition-smooth); }
+        .admin-input { width:100%;padding:10px 14px;background:var(--bg-surface);border:1px solid var(--border-input);border-radius:var(--radius-md);color:var(--text-primary);font-size:14px;outline:none;transition:var(--transition-smooth); }
+        .admin-input:focus { border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-glow-soft); }
+        .admin-select { padding:6px 12px;background:var(--bg-surface);border:1px solid var(--border-input);border-radius:var(--radius-md);color:var(--text-primary);font-size:13px;outline:none;cursor:pointer;transition:var(--transition-fast); }
+        .admin-select:focus { border-color:var(--color-primary); }
+        .admin-th { padding:11px 16px;text-align:left;color:var(--text-muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border-subtle); }
+        .admin-td { padding:12px 16px;color:var(--text-primary);font-size:14px;border-bottom:1px solid rgba(255,255,255,0.025); }
+        .admin-tr:hover td { background:rgba(255,255,255,0.015); }
+        .stat-card { background:rgba(255,255,255,0.03);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:18px 20px;display:flex;flex-direction:column;gap:4px; }
+        .latency-row { display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-radius:var(--radius-md);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:13px; }
+        @media(max-width:768px){
+          .admin-tabs-row { overflow-x:auto; }
+          .admin-stats-row { grid-template-columns:1fr 1fr !important; }
+          .admin-two-col { grid-template-columns:1fr !important; }
         }
       `}</style>
 
       {/* ── Page Header ── */}
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{
-          fontSize: '28px',
-          fontWeight: '800',
-          color: '#f3f4f6',
-          fontFamily: "'Outfit', sans-serif",
+      <div
+        style={{
+          marginBottom: '28px',
           display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}>
-          🛡️ {t('admin.title')}
-        </h1>
-        <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '6px' }}>
-          {t('admin.system_health')} • {new Date().toLocaleString()}
-        </p>
-      </div>
-
-      {/* ── Toast ── */}
-      {toast && <InlineToast message={toast.message} type={toast.type} />}
-
-      {/* ═══ SECTION 1: GLOBAL KILL SWITCH ═══ */}
-      <div style={{
-        ...glassCard,
-        marginBottom: '28px',
-        borderColor: killActive ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.15)',
-        animation: killActive ? 'killPulse 2s infinite ease-in-out' : 'safePulse 3s infinite ease-in-out',
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: '16px',
-        }}>
-          <div>
-            <div style={sectionTitle}>
-              <span style={{ fontSize: '22px' }}>⚡</span>
-              {t('risk.killswitch')}
-            </div>
-            <p style={{
-              color: killActive ? '#EF4444' : '#10B981',
-              fontWeight: '700',
-              fontSize: '15px',
-              letterSpacing: '0.02em',
-            }}>
-              {killActive ? t('admin.kill_active') : t('admin.kill_inactive')}
-            </p>
-          </div>
-
-          {/* Toggle Switch */}
-          <button
-            onClick={toggleKillSwitch}
-            style={{
-              position: 'relative',
-              width: '72px',
-              height: '36px',
-              borderRadius: '18px',
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: killActive ? '#EF4444' : '#10B981',
-              transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: killActive
-                ? '0 0 24px rgba(239, 68, 68, 0.5)'
-                : '0 0 24px rgba(16, 185, 129, 0.4)',
-              outline: 'none',
-            }}
+        }}
+      >
+        <div className="animate-fade-in">
+          <h1
+            className="h1"
+            style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
           >
-            <div style={{
-              position: 'absolute',
-              top: '3px',
-              left: killActive ? '39px' : '3px',
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              backgroundColor: '#ffffff',
-              transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            }} />
-          </button>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-primary)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            {t('admin.title')}
+          </h1>
+          <p
+            className="text-muted"
+            style={{ fontSize: '13px', marginTop: '4px' }}
+          >
+            {new Date().toLocaleString(lng)}
+          </p>
         </div>
 
-        {/* Status Indicator Bar */}
-        <div style={{
-          marginTop: '16px',
-          height: '4px',
-          borderRadius: '2px',
-          backgroundColor: 'rgba(255,255,255,0.05)',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%',
-            width: killActive ? '100%' : '0%',
-            backgroundColor: killActive ? '#EF4444' : '#10B981',
-            borderRadius: '2px',
-            transition: 'width 0.5s ease',
-          }} />
+        <button
+          onClick={toggleKillSwitch}
+          className="animate-fade-in"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 20px',
+            borderRadius: 'var(--radius-lg)',
+            cursor: 'pointer',
+            fontWeight: '700',
+            fontSize: '13px',
+            outline: 'none',
+            letterSpacing: '0.04em',
+            background: killActive
+              ? 'rgba(239,68,68,0.15)'
+              : 'rgba(16,185,129,0.1)',
+            color: killActive ? 'var(--color-danger)' : 'var(--color-accent)',
+            animation: killActive ? 'killPulse 2s infinite' : 'safePulse 3s infinite',
+            border: `1px solid ${killActive ? 'rgba(239,68,68,0.35)' : 'rgba(16,185,129,0.25)'}`,
+          }}
+        >
+          <StatusDot ok={!killActive} />
+          {killActive ? t('admin.kill_active') : t('admin.kill_inactive')}
+          <span
+            style={{
+              display: 'inline-flex',
+              width: '40px',
+              height: '22px',
+              borderRadius: '11px',
+              background: killActive
+                ? 'var(--color-danger)'
+                : 'var(--color-accent)',
+              position: 'relative',
+              flexShrink: 0,
+              transition: 'background 0.3s',
+            }}
+          >
+            <span
+              style={{
+                position: 'absolute',
+                top: '3px',
+                left: killActive ? '21px' : '3px',
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                background: '#fff',
+                transition: 'left 0.3s cubic-bezier(0.4,0,0.2,1)',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+              }}
+            />
+          </span>
+        </button>
+      </div>
+
+      <div
+        className="admin-stats-row animate-fade-in"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '14px',
+          marginBottom: '24px',
+        }}
+      >
+        <div className="stat-card">
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: '700',
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+            }}
+          >
+            {t('admin.users_title')}
+          </div>
+          <div className="metric-value" style={{ fontSize: '28px' }}>
+            {loading.users ? '–' : users.length}
+          </div>
+          <div className="text-muted" style={{ fontSize: '12px' }}>
+            {users.filter((u) => u.role === 'admin').length} admin ·{' '}
+            {users.filter((u) => u.role === 'operator').length} operator
+          </div>
+        </div>
+        <div className="stat-card">
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: '700',
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+            }}
+          >
+            {t('admin.contracts_title')}
+          </div>
+          <div className="metric-value" style={{ fontSize: '28px' }}>
+            {loading.contracts ? '–' : contracts.length}
+          </div>
+          <div className="text-muted" style={{ fontSize: '12px' }}>
+            {contracts.filter((c) => c.is_active).length} active
+          </div>
+        </div>
+        <div className="stat-card">
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: '700',
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+            }}
+          >
+            DB / Redis
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '4px',
+            }}
+          >
+            <StatusDot ok={health?.db_connected ?? false} />
+            <span
+              style={{
+                fontSize: '13px',
+                color: health?.db_connected
+                  ? 'var(--color-accent)'
+                  : 'var(--color-danger)',
+                fontWeight: '600',
+              }}
+            >
+              DB
+            </span>
+            <StatusDot ok={health?.redis_connected ?? false} />
+            <span
+              style={{
+                fontSize: '13px',
+                color: health?.redis_connected
+                  ? 'var(--color-accent)'
+                  : 'var(--color-danger)',
+                fontWeight: '600',
+              }}
+            >
+              Redis
+            </span>
+          </div>
+          <div className="text-muted" style={{ fontSize: '12px', marginTop: '4px' }}>
+            Queue: {health?.celery_queue_depth ?? '–'} tasks
+          </div>
+        </div>
+        <div
+          className="stat-card"
+          style={{
+            borderColor: killActive
+              ? 'rgba(239,68,68,0.3)'
+              : 'rgba(16,185,129,0.2)',
+            background: killActive
+              ? 'rgba(239,68,68,0.06)'
+              : 'rgba(16,185,129,0.05)',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: '700',
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+            }}
+          >
+            {t('risk.killswitch')}
+          </div>
+          <div
+            style={{
+              fontSize: '16px',
+              fontWeight: '700',
+              color: killActive
+                ? 'var(--color-danger)'
+                : 'var(--color-accent)',
+              marginTop: '4px',
+            }}
+          >
+            {killActive ? 'ACTIVE' : 'SAFE'}
+          </div>
+          <div className="text-muted" style={{ fontSize: '12px' }}>
+            Max: ${riskConfig?.max_order_notional ?? '–'} USDT
+          </div>
         </div>
       </div>
 
-      {/* ═══ Two-Column Layout ═══ */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '28px',
-        marginBottom: '28px',
-      }}>
+      {/* ── Tabs ── */}
+      <div
+        className="admin-tabs-row"
+        style={{ display: 'flex', gap: '4px', marginBottom: '20px' }}
+      >
+        {tabs.map((tb) => (
+          <button
+            key={tb.key}
+            className={`admin-tab${tab === tb.key ? ' active' : ''}`}
+            onClick={() => setTab(tb.key)}
+          >
+            {tb.icon}
+            {tb.label}
+            {tb.key === 'users' && !loading.users && (
+              <span
+                style={{
+                  marginLeft: '2px',
+                  padding: '1px 7px',
+                  borderRadius: '10px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  background: 'rgba(255,255,255,0.07)',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {users.length}
+              </span>
+            )}
+            {tb.key === 'contracts' && !loading.contracts && (
+              <span
+                style={{
+                  marginLeft: '2px',
+                  padding: '1px 7px',
+                  borderRadius: '10px',
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  background: 'rgba(255,255,255,0.07)',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {contracts.length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
 
-        {/* ═══ SECTION 2: USER MANAGEMENT ═══ */}
-        <div style={{ ...glassCard, gridColumn: '1 / -1' }}>
-          <div style={sectionTitle}>
-            <span style={{ fontSize: '20px' }}>👥</span>
-            {t('admin.users_title')}
-            <span style={{
-              marginLeft: 'auto',
-              fontSize: '12px',
-              color: '#6b7280',
-              fontWeight: '400',
-            }}>
-              {users.length} {users.length === 1 ? 'user' : 'users'}
-            </span>
+      {/* ── OVERVIEW ── */}
+      {tab === 'overview' && (
+        <div className="animate-fade-in">
+          {loading.health ? (
+            <div
+              className="admin-card"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <Shimmer h="60px" /> <Shimmer h="60px" />{' '}
+              <Shimmer h="60px" />
+            </div>
+          ) : health ? (
+            <div
+              className="layout-2col animate-fade-in"
+              style={{ gap: '20px' }}
+            >
+              <div className="admin-card">
+                <h3
+                  className="h4"
+                  style={{
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--color-primary)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>
+                  {t('admin.services')}
+                </h3>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  <div
+                    className="health-chip"
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      background: health.db_connected
+                        ? 'rgba(16,185,129,0.08)'
+                        : 'rgba(239,68,68,0.08)',
+                      border: `1px solid ${health.db_connected ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                    }}
+                  >
+                    <StatusDot ok={health.db_connected} />
+                    <span
+                      style={{ color: 'var(--text-secondary)', flex: 1 }}
+                    >
+                      {t('admin.db_status')}
+                    </span>
+                    <span
+                      style={{
+                        color: health.db_connected
+                          ? 'var(--color-accent)'
+                          : 'var(--color-danger)',
+                        fontWeight: '600',
+                      }}
+                    >
+                      {health.db_connected
+                        ? t('admin.connected')
+                        : t('admin.disconnected')}
+                    </span>
+                  </div>
+                  <div
+                    className="health-chip"
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      background: health.redis_connected
+                        ? 'rgba(16,185,129,0.08)'
+                        : 'rgba(239,68,68,0.08)',
+                      border: `1px solid ${health.redis_connected ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                    }}
+                  >
+                    <StatusDot ok={health.redis_connected} />
+                    <span
+                      style={{ color: 'var(--text-secondary)', flex: 1 }}
+                    >
+                      {t('admin.redis_status')}
+                    </span>
+                    <span
+                      style={{
+                        color: health.redis_connected
+                          ? 'var(--color-accent)'
+                          : 'var(--color-danger)',
+                        fontWeight: '600',
+                      }}
+                    >
+                      {health.redis_connected
+                        ? t('admin.connected')
+                        : t('admin.disconnected')}
+                    </span>
+                  </div>
+                  <div
+                    className="health-chip"
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      background: 'var(--color-primary-bg)',
+                      border: '1px solid var(--color-primary-border)',
+                    }}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--color-primary-light)"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 12h18M3 6h18M3 18h18" />
+                    </svg>
+                    <span
+                      style={{ color: 'var(--text-secondary)', flex: 1 }}
+                    >
+                      {t('admin.celery_queue')}
+                    </span>
+                    <span
+                      style={{
+                        color: 'var(--color-primary-light)',
+                        fontWeight: '700',
+                      }}
+                    >
+                      {health.celery_queue_depth}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="admin-card">
+                <h3
+                  className="h4"
+                  style={{
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--color-secondary)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                  {t('admin.broker_latency')}
+                </h3>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
+                  {Object.entries(health.broker_latency_ms).map(
+                    ([ex, ms]) => (
+                      <div key={ex} className="latency-row">
+                        <span
+                          style={{
+                            color: 'var(--text-secondary)',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {ex}
+                        </span>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '60px',
+                              height: '4px',
+                              borderRadius: '2px',
+                              background: 'rgba(255,255,255,0.06)',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <div
+                              style={{
+                                height: '100%',
+                                borderRadius: '2px',
+                                width: `${Math.min(100, (ms / 200) * 100)}%`,
+                                background: latColor(ms),
+                                transition: 'width 0.5s',
+                              }}
+                            />
+                          </div>
+                          <span
+                            style={{
+                              color: latColor(ms),
+                              fontWeight: '700',
+                              fontVariantNumeric: 'tabular-nums',
+                              minWidth: '48px',
+                              textAlign: 'right',
+                            }}
+                          >
+                            {ms}ms
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )}
+                  {Object.keys(health.broker_latency_ms).length === 0 && (
+                    <div
+                      className="text-muted"
+                      style={{ fontSize: '13px', padding: '12px 0' }}
+                    >
+                      {t('admin.no_broker_data')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              className="admin-card"
+              style={{
+                color: 'var(--text-muted)',
+                textAlign: 'center',
+                padding: '48px',
+              }}
+            >
+              {t('admin.error')}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── USERS ── */}
+      {tab === 'users' && (
+        <div className="admin-card animate-fade-in">
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '20px',
+            }}
+          >
+            <h3
+              className="h4"
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--color-primary)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              {t('admin.users_title')}
+            </h3>
+            <button
+              className="btn-base btn-ghost btn-sm"
+              onClick={() => fetchUsers()}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+              {t('admin.refresh')}
+            </button>
           </div>
 
           {loading.users ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <ShimmerBlock height="40px" />
-              <ShimmerBlock height="40px" />
-              <ShimmerBlock height="40px" />
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+              }}
+            >
+              <Shimmer h="44px" />
+              <Shimmer h="44px" />
+              <Shimmer h="44px" />
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={tableStyle}>
+            <div className="table-wrapper">
+              <table className="table-base">
                 <thead>
                   <tr>
-                    <th style={thStyle}>{t('admin.email')}</th>
-                    <th style={thStyle}>{t('admin.name')}</th>
-                    <th style={thStyle}>{t('admin.role')}</th>
-                    <th style={thStyle}>{t('admin.created')}</th>
-                    <th style={thStyle}>{t('admin.actions')}</th>
+                    <th className="admin-th">{t('admin.email')}</th>
+                    <th className="admin-th">{t('admin.name')}</th>
+                    <th className="admin-th">{t('admin.role')}</th>
+                    <th className="admin-th">{t('admin.created')}</th>
+                    <th className="admin-th">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id} style={{ transition: 'background 0.2s' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      <td style={tdStyle}>
-                        <span style={{ color: '#3B82F6', fontWeight: '500' }}>{user.email}</span>
-                      </td>
-                      <td style={tdStyle}>{user.name || '—'}</td>
-                      <td style={tdStyle}>
-                        <span style={{
-                          ...badgeActive,
-                          backgroundColor: user.role === 'admin'
-                            ? 'rgba(139, 92, 246, 0.15)'
-                            : user.role === 'operator'
-                              ? 'rgba(59, 130, 246, 0.15)'
-                              : 'rgba(107, 114, 128, 0.15)',
-                          color: user.role === 'admin'
-                            ? '#8B5CF6'
-                            : user.role === 'operator'
-                              ? '#3B82F6'
-                              : '#9ca3af',
-                          border: `1px solid ${user.role === 'admin'
-                            ? 'rgba(139, 92, 246, 0.3)'
-                            : user.role === 'operator'
-                              ? 'rgba(59, 130, 246, 0.3)'
-                              : 'rgba(107, 114, 128, 0.2)'}`,
-                        }}>
-                          {user.role}
+                  {users.map((u) => (
+                    <tr key={u.id} className="admin-tr">
+                      <td className="admin-td">
+                        <span
+                          style={{
+                            color: 'var(--color-primary-light)',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {u.email}
                         </span>
                       </td>
-                      <td style={{ ...tdStyle, color: '#6b7280', fontSize: '13px' }}>
-                        {new Date(user.created_at).toLocaleString()}
+                      <td
+                        className="admin-td"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        {u.name || '—'}
                       </td>
-                      <td style={tdStyle}>
+                      <td className="admin-td">
+                        <RoleBadge role={u.role} />
+                      </td>
+                      <td
+                        className="admin-td"
+                        style={{ color: 'var(--text-muted)', fontSize: '13px' }}
+                      >
+                        {new Date(u.created_at).toLocaleDateString(lng)}
+                      </td>
+                      <td className="admin-td">
                         <select
-                          value={user.role}
-                          onChange={(e) => updateUserRole(user.id, e.target.value)}
-                          style={selectStyle}
+                          className="admin-select"
+                          value={u.role}
+                          onChange={(e) => updateUserRole(u.id, e.target.value)}
                         >
                           <option value="user">user</option>
                           <option value="operator">operator</option>
@@ -663,8 +1168,16 @@ export default function AdminPage(_: { params: Promise<{ lng: string }> }) {
                   ))}
                   {users.length === 0 && (
                     <tr>
-                      <td colSpan={5} style={{ ...tdStyle, textAlign: 'center', color: '#6b7280', padding: '32px' }}>
-                        No users found
+                      <td
+                        colSpan={5}
+                        className="admin-td"
+                        style={{
+                          textAlign: 'center',
+                          color: 'var(--text-muted)',
+                          padding: '40px',
+                        }}
+                      >
+                        {t('admin.no_users_found')}
                       </td>
                     </tr>
                   )}
@@ -673,78 +1186,143 @@ export default function AdminPage(_: { params: Promise<{ lng: string }> }) {
             </div>
           )}
         </div>
+      )}
 
-        {/* ═══ SECTION 3: RENTAL CONTRACTS ═══ */}
-        <div style={{ ...glassCard, gridColumn: '1 / -1' }}>
-          <div style={sectionTitle}>
-            <span style={{ fontSize: '20px' }}>📋</span>
-            {t('admin.contracts_title')}
-            <span style={{
-              marginLeft: 'auto',
-              fontSize: '12px',
-              color: '#6b7280',
-              fontWeight: '400',
-            }}>
-              {contracts.length} contracts
-            </span>
-          </div>
-
-          {loading.contracts ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <ShimmerBlock height="40px" />
-              <ShimmerBlock height="40px" />
+      {/* ── CONTRACTS ── */}
+      {tab === 'contracts' && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            animation: 'fadeIn 0.25s ease',
+          }}
+        >
+          <div className="admin-card">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '20px',
+              }}
+            >
+              <h3
+                className="h4"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--color-primary)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                {t('admin.contracts_title')}
+              </h3>
+              <button
+                className="btn-base btn-ghost btn-sm"
+                onClick={() => fetchContracts()}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                {t('admin.refresh')}
+              </button>
             </div>
-          ) : (
-            <>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={tableStyle}>
+
+            {loading.contracts ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <Shimmer h="44px" />
+                <Shimmer h="44px" />
+              </div>
+            ) : (
+              <div className="table-wrapper">
+                <table className="table-base">
                   <thead>
                     <tr>
-                      <th style={thStyle}>{t('admin.contract_user')}</th>
-                      <th style={thStyle}>{t('admin.contract_start')}</th>
-                      <th style={thStyle}>{t('admin.contract_end')}</th>
-                      <th style={thStyle}>{t('admin.contract_status')}</th>
-                      <th style={thStyle}>{t('admin.actions')}</th>
+                      <th className="admin-th">
+                        {t('admin.contract_user')}
+                      </th>
+                      <th className="admin-th">
+                        {t('admin.contract_start')}
+                      </th>
+                      <th className="admin-th">
+                        {t('admin.contract_end')}
+                      </th>
+                      <th className="admin-th">
+                        {t('admin.contract_status')}
+                      </th>
+                      <th className="admin-th">{t('admin.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {contracts.map((c) => (
-                      <tr key={c.id}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                      >
-                        <td style={tdStyle}>
-                          <span style={{ color: '#3B82F6', fontWeight: '500' }}>
-                            {c.user_email || c.user_id.slice(0, 8) + '...'}
-                          </span>
-                        </td>
-                        <td style={{ ...tdStyle, fontSize: '13px', color: '#9ca3af' }}>
-                          {new Date(c.start_date).toLocaleDateString()}
-                        </td>
-                        <td style={{ ...tdStyle, fontSize: '13px', color: '#9ca3af' }}>
-                          {new Date(c.end_date).toLocaleDateString()}
-                        </td>
-                        <td style={tdStyle}>
-                          <span style={c.is_active ? badgeActive : badgeInactive}>
-                            {c.is_active ? t('admin.contract_active') : t('admin.contract_inactive')}
-                          </span>
-                        </td>
-                        <td style={tdStyle}>
-                          <button
-                            onClick={() => toggleContract(c.id)}
+                      <tr key={c.id} className="admin-tr">
+                        <td className="admin-td">
+                          <span
                             style={{
-                              ...btnDanger,
-                              padding: '6px 14px',
-                              fontSize: '12px',
+                              color: 'var(--color-primary-light)',
+                              fontWeight: '500',
                             }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#EF4444';
-                              e.currentTarget.style.color = '#ffffff';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                              e.currentTarget.style.color = '#EF4444';
-                            }}
+                          >
+                            {c.user_email ||
+                              c.user_id.slice(0, 8) + '...'}
+                          </span>
+                        </td>
+                        <td
+                          className="admin-td"
+                          style={{
+                            color: 'var(--text-secondary)',
+                            fontSize: '13px',
+                          }}
+                        >
+                          {new Date(c.start_date).toLocaleDateString(lng)}
+                        </td>
+                        <td
+                          className="admin-td"
+                          style={{
+                            color: 'var(--text-secondary)',
+                            fontSize: '13px',
+                          }}
+                        >
+                          {new Date(c.end_date).toLocaleDateString(lng)}
+                        </td>
+                        <td className="admin-td">
+                          <span
+                            className={`badge ${c.is_active ? 'badge-accent' : 'badge-danger'}`}
+                          >
+                            {c.is_active
+                              ? t('admin.contract_active')
+                              : t('admin.contract_inactive')}
+                          </span>
+                        </td>
+                        <td className="admin-td">
+                          <button
+                            className="btn-base btn-danger btn-sm"
+                            onClick={() => toggleContract(c.id)}
                           >
                             {t('admin.contract_toggle')}
                           </button>
@@ -753,333 +1331,372 @@ export default function AdminPage(_: { params: Promise<{ lng: string }> }) {
                     ))}
                     {contracts.length === 0 && (
                       <tr>
-                        <td colSpan={5} style={{ ...tdStyle, textAlign: 'center', color: '#6b7280', padding: '32px' }}>
-                          No contracts found
+                        <td
+                          colSpan={5}
+                          className="admin-td"
+                          style={{
+                            textAlign: 'center',
+                            color: 'var(--text-muted)',
+                            padding: '40px',
+                          }}
+                        >
+                          {t('admin.no_contracts_found')}
                         </td>
                       </tr>
                     )}
                   </tbody>
                 </table>
               </div>
-
-              {/* Create Contract Form */}
-              <div style={{
-                marginTop: '20px',
-                padding: '20px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(31, 41, 55, 0.3)',
-                border: '1px solid rgba(255,255,255,0.04)',
-              }}>
-                <div style={{ fontSize: '14px', fontWeight: '600', color: '#9ca3af', marginBottom: '14px' }}>
-                  ＋ {t('admin.contract_create')}
-                </div>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr auto',
-                  gap: '12px',
-                  alignItems: 'end',
-                }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', marginBottom: '6px' }}>
-                      User ID
-                    </label>
-                    <input
-                      type="text"
-                      value={newContractUserId}
-                      onChange={(e) => setNewContractUserId(e.target.value)}
-                      placeholder="UUID"
-                      style={inputStyle}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = '#3B82F6';
-                        e.currentTarget.style.boxShadow = '0 0 12px rgba(59,130,246,0.35)';
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', marginBottom: '6px' }}>
-                      {t('admin.contract_end')}
-                    </label>
-                    <input
-                      type="date"
-                      value={newContractEndDate}
-                      onChange={(e) => setNewContractEndDate(e.target.value)}
-                      style={{ ...inputStyle, colorScheme: 'dark' }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = '#3B82F6';
-                        e.currentTarget.style.boxShadow = '0 0 12px rgba(59,130,246,0.35)';
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    />
-                  </div>
-                  <button
-                    onClick={createContract}
-                    style={btnPrimary}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#2563EB';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#3B82F6';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    {t('admin.contract_create')}
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* ═══ Two-Column: Risk Config + System Health ═══ */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '28px',
-      }}>
-
-        {/* ═══ SECTION 4: RISK PARAMETERS ═══ */}
-        <div style={glassCard}>
-          <div style={sectionTitle}>
-            <span style={{ fontSize: '20px' }}>⚙️</span>
-            {t('risk.limits')}
+            )}
           </div>
 
-          {loading.risk ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <ShimmerBlock height="44px" />
-              <ShimmerBlock height="44px" />
-              <ShimmerBlock width="120px" height="40px" />
-            </div>
-          ) : (
-            <>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#9ca3af', marginBottom: '8px' }}>
-                  {t('risk.max_notional')} (USDT)
+          <div
+            className="admin-card"
+            style={{ borderColor: 'var(--color-primary-border)' }}
+          >
+            <h3
+              className="h4"
+              style={{
+                color: 'var(--text-secondary)',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              {t('admin.contract_create')}
+            </h3>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr auto',
+                gap: '12px',
+                alignItems: 'end',
+              }}
+            >
+              <div>
+                <label
+                  className="form-label"
+                  style={{ fontSize: '12px', color: 'var(--text-muted)' }}
+                >
+                  {t('admin.user_id')}
                 </label>
                 <input
-                  type="number"
-                  value={editMaxNotional}
-                  onChange={(e) => setEditMaxNotional(parseFloat(e.target.value) || 0)}
-                  style={inputStyle}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#3B82F6';
-                    e.currentTarget.style.boxShadow = '0 0 12px rgba(59,130,246,0.35)';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#9ca3af', marginBottom: '8px' }}>
-                  {t('risk.allowed_symbols')}
-                </label>
-                <input
+                  className="admin-input"
                   type="text"
-                  value={editAllowedSymbols}
-                  onChange={(e) => setEditAllowedSymbols(e.target.value)}
-                  placeholder="BTC/USDT, ETH/USDT"
-                  style={inputStyle}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#3B82F6';
-                    e.currentTarget.style.boxShadow = '0 0 12px rgba(59,130,246,0.35)';
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
+                  value={newUserId}
+                  onChange={(e) => setNewUserId(e.target.value)}
+                  placeholder="UUID"
                 />
               </div>
-
+              <div>
+                <label
+                  className="form-label"
+                  style={{ fontSize: '12px', color: 'var(--text-muted)' }}
+                >
+                  {t('admin.contract_end')}
+                </label>
+                <input
+                  className="admin-input"
+                  type="date"
+                  value={newEndDate}
+                  onChange={(e) => setNewEndDate(e.target.value)}
+                />
+              </div>
               <button
-                onClick={saveRiskConfig}
-                style={btnPrimary}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#2563EB';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(59,130,246,0.5)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#3B82F6';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(59,130,246,0.35)';
+                className="btn-base btn-primary"
+                onClick={createContract}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                {t('admin.contract_create')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── RISK ── */}
+      {tab === 'risk' && (
+        <div
+          className="layout-2col animate-fade-in"
+          style={{ gap: '20px' }}
+        >
+          <div className="admin-card">
+            <h3
+              className="h4"
+              style={{
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--color-warning)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              {t('risk.limits')}
+            </h3>
+
+            {loading.risk ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
                 }}
               >
-                💾 {t('admin.save_risk')}
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* ═══ SECTION 5: SYSTEM HEALTH MONITOR ═══ */}
-        <div style={glassCard}>
-          <div style={sectionTitle}>
-            <span style={{ fontSize: '20px' }}>💓</span>
-            {t('admin.system_health')}
+                <Shimmer h="44px" />
+                <Shimmer h="44px" />
+                <Shimmer w="140px" h="40px" />
+              </div>
+            ) : (
+              <>
+                <div className="form-group">
+                  <label className="form-label">
+                    {t('risk.max_notional')} (USDT)
+                  </label>
+                  <input
+                    className="admin-input font-mono"
+                    type="number"
+                    value={editMaxNotional}
+                    onChange={(e) =>
+                      setEditMaxNotional(parseFloat(e.target.value) || 0)
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">
+                    {t('risk.allowed_symbols')}
+                  </label>
+                  <input
+                    className="admin-input"
+                    type="text"
+                    value={editAllowedSymbols}
+                    onChange={(e) => setEditAllowedSymbols(e.target.value)}
+                    placeholder="BTC/USDT, ETH/USDT"
+                  />
+                  <p
+                    className="text-muted"
+                    style={{ fontSize: '11px', marginTop: '6px' }}
+                  >
+                    {t('admin.comma_separated')}
+                  </p>
+                </div>
+                <button
+                  className="btn-base btn-primary"
+                  onClick={saveRisk}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                  </svg>
+                  {t('admin.save_risk')}
+                </button>
+              </>
+            )}
           </div>
 
-          {loading.health ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <ShimmerBlock height="60px" />
-              <ShimmerBlock height="60px" />
-            </div>
-          ) : health ? (
-            <>
-              {/* Service Status Grid */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
-                gap: '12px',
+          <div
+            className="admin-card"
+            style={{
+              borderColor: killActive
+                ? 'rgba(239,68,68,0.25)'
+                : 'rgba(16,185,129,0.15)',
+            }}
+          >
+            <h3
+              className="h4"
+              style={{
                 marginBottom: '20px',
-              }}>
-                {/* DB */}
-                <div style={{
-                  padding: '14px',
-                  borderRadius: '10px',
-                  backgroundColor: health.db_connected
-                    ? 'rgba(16, 185, 129, 0.08)'
-                    : 'rgba(239, 68, 68, 0.08)',
-                  border: `1px solid ${health.db_connected
-                    ? 'rgba(16, 185, 129, 0.2)'
-                    : 'rgba(239, 68, 68, 0.2)'}`,
-                  textAlign: 'center' as const,
-                }}>
-                  <div style={{
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '50%',
-                    backgroundColor: health.db_connected ? '#10B981' : '#EF4444',
-                    margin: '0 auto 8px',
-                    boxShadow: `0 0 8px ${health.db_connected ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)'}`,
-                  }} />
-                  <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase' as const }}>
-                    {t('admin.db_status')}
-                  </div>
-                  <div style={{
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    color: health.db_connected ? '#10B981' : '#EF4444',
-                    marginTop: '4px',
-                  }}>
-                    {health.db_connected ? t('admin.connected') : t('admin.disconnected')}
-                  </div>
-                </div>
-
-                {/* Redis */}
-                <div style={{
-                  padding: '14px',
-                  borderRadius: '10px',
-                  backgroundColor: health.redis_connected
-                    ? 'rgba(16, 185, 129, 0.08)'
-                    : 'rgba(239, 68, 68, 0.08)',
-                  border: `1px solid ${health.redis_connected
-                    ? 'rgba(16, 185, 129, 0.2)'
-                    : 'rgba(239, 68, 68, 0.2)'}`,
-                  textAlign: 'center' as const,
-                }}>
-                  <div style={{
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '50%',
-                    backgroundColor: health.redis_connected ? '#10B981' : '#EF4444',
-                    margin: '0 auto 8px',
-                    boxShadow: `0 0 8px ${health.redis_connected ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)'}`,
-                  }} />
-                  <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase' as const }}>
-                    {t('admin.redis_status')}
-                  </div>
-                  <div style={{
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    color: health.redis_connected ? '#10B981' : '#EF4444',
-                    marginTop: '4px',
-                  }}>
-                    {health.redis_connected ? t('admin.connected') : t('admin.disconnected')}
-                  </div>
-                </div>
-
-                {/* Celery */}
-                <div style={{
-                  padding: '14px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(59, 130, 246, 0.08)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
-                  textAlign: 'center' as const,
-                }}>
-                  <div style={{
-                    fontSize: '22px',
-                    fontWeight: '800',
-                    color: '#3B82F6',
-                    marginBottom: '4px',
-                  }}>
-                    {health.celery_queue_depth}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase' as const }}>
-                    {t('admin.celery_queue')}
-                  </div>
-                </div>
-              </div>
-
-              {/* Broker Latency Grid */}
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#9ca3af', marginBottom: '12px' }}>
-                📡 {t('admin.broker_latency')}
-              </div>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
+                display: 'flex',
+                alignItems: 'center',
                 gap: '8px',
-              }}>
-                {Object.entries(health.broker_latency_ms).map(([exchange, ms]) => (
-                  <div key={exchange} style={{
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(31, 41, 55, 0.4)',
-                    border: `1px solid ${latencyGlow(ms)}`,
+              }}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={
+                  killActive
+                    ? 'var(--color-danger)'
+                    : 'var(--color-accent)'
+                }
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              {t('risk.killswitch')}
+            </h3>
+
+            {riskConfig ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                }}
+              >
+                <div
+                  style={{
+                    padding: '20px',
+                    borderRadius: 'var(--radius-lg)',
+                    textAlign: 'center',
+                    background: killActive
+                      ? 'rgba(239,68,68,0.08)'
+                      : 'rgba(16,185,129,0.06)',
+                    border: `1px solid ${killActive ? 'rgba(239,68,68,0.25)' : 'rgba(16,185,129,0.2)'}`,
+                  }}
+                >
+                  <span
+                    className={`status-dot ${killActive ? 'status-dot-down' : 'status-dot-up'}`}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      marginBottom: '8px',
+                    }}
+                  />
+                  <div
+                    style={{
+                      fontSize: '16px',
+                      fontWeight: '800',
+                      color: killActive
+                        ? 'var(--color-danger)'
+                        : 'var(--color-accent)',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {killActive
+                      ? t('admin.kill_active')
+                      : t('admin.kill_inactive')}
+                  </div>
+                </div>
+
+                <div
+                  style={{
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    transition: 'all 0.2s ease',
-                  }}>
-                    <span style={{ color: '#d1d5db', fontSize: '13px', fontWeight: '500' }}>
-                      {exchange}
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
+                  <div className="latency-row">
+                    <span
+                      className="text-secondary"
+                      style={{ fontSize: '13px' }}
+                    >
+                      {t('risk.max_notional')}
                     </span>
-                    <span style={{
-                      color: latencyColor(ms),
-                      fontWeight: '700',
-                      fontSize: '13px',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}>
-                      {ms}ms
+                    <span
+                      className="font-mono"
+                      style={{ fontWeight: '600', fontSize: '13px' }}
+                    >
+                      ${riskConfig.max_order_notional} USDT
                     </span>
                   </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p style={{ color: '#6b7280', fontSize: '14px' }}>{t('admin.error')}</p>
-          )}
-        </div>
-      </div>
+                  <div
+                    style={{
+                      padding: '10px 14px',
+                      borderRadius: 'var(--radius-md)',
+                      background: 'rgba(255,255,255,0.03)',
+                    }}
+                  >
+                    <div
+                      className="text-muted"
+                      style={{ fontSize: '12px', marginBottom: '6px' }}
+                    >
+                      {t('risk.allowed_symbols')}
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '6px',
+                      }}
+                    >
+                      {riskConfig.allowed_symbols.map((s) => (
+                        <span key={s} className="badge badge-primary">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
 
-      {/* ── Responsive Media Query ── */}
-      <style>{`
-        @media (max-width: 768px) {
-          div[style*="grid-template-columns: 1fr 1fr"] {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
+                <button
+                  onClick={toggleKillSwitch}
+                  className={`btn-base ${killActive ? 'btn-accent' : 'btn-danger'} btn-full`}
+                  style={{ justifyContent: 'center' }}
+                >
+                  {killActive
+                    ? t('admin.deactivate_killswitch')
+                    : t('admin.activate_killswitch')}
+                </button>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <Shimmer h="100px" />
+                <Shimmer h="44px" />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {toast && <Toast msg={toast.msg} type={toast.type} />}
     </div>
   );
 }

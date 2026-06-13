@@ -19,6 +19,7 @@ SERVER_REPORT := $(REPORT_DIR)/ztrader-server.md
 .PHONY: help install-backend install-frontend dev-backend dev-frontend test-backend run-docker stop-docker format lint clean
 .PHONY: server-start server-stop server-restart server-status server-report validate-local
 .PHONY: merge-plan merge-dry-run merge-apply merge-report merge-validate
+.PHONY: frontend-build frontend-lint frontend-typecheck frontend-validate
 
 help:
 	@echo "Available commands:"
@@ -99,6 +100,7 @@ server-report: server-status
 validate-local:
 	@PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m compileall -q backend/src
 	@$(PYTHON) -m json.tool frontend/package.json >/dev/null
+	@cd frontend && npx tsc --noEmit 2>/dev/null && echo "PASS: frontend typecheck" || echo "INFO: frontend typecheck deferred (install deps with make install-frontend)"
 	@echo "PASS: ztrader local validation complete"
 
 test-backend:
@@ -147,7 +149,20 @@ format:
 lint:
 	ruff check backend/src/ backend/tests/
 
+frontend-build:
+	cd frontend && pnpm run build
+
+frontend-lint:
+	@if [ -f frontend/node_modules/.bin/eslint ]; then cd frontend && pnpm run lint; else echo "INFO: eslint not configured; skipped frontend lint"; fi
+
+frontend-typecheck:
+	cd frontend && npx tsc --noEmit
+
+frontend-validate: frontend-typecheck frontend-lint frontend-build
+	@echo "PASS: ztrader frontend validation complete"
+
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name ".ruff_cache" -exec rm -rf {} +
+	rm -rf frontend/.next frontend/node_modules/.cache

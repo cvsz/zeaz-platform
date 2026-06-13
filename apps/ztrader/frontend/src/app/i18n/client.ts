@@ -1,8 +1,3 @@
-// ZeaZDev [Frontend i18n Configuration] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Unified Scaffolding - Multi-language) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
 import i18n from 'i18next';
@@ -28,22 +23,14 @@ export function initI18n(locale: string) {
         ns: ['translation'],
         detection: {
           order: ['path', 'querystring', 'navigator'],
-          caches: []
+          caches: [],
         },
         resources: {
-          en: {
-            translation: enTranslation
-          },
-          th: {
-            translation: thTranslation
-          },
-          zh: {
-            translation: zhTranslation
-          },
-          ja: {
-            translation: jaTranslation
-          }
-        }
+          en: { translation: enTranslation },
+          th: { translation: thTranslation },
+          zh: { translation: zhTranslation },
+          ja: { translation: jaTranslation },
+        },
       });
     initialized = true;
   } else if (i18n.language !== locale) {

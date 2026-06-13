@@ -1,8 +1,3 @@
-// ZeaZDev [Frontend Settings Page] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Unified Scaffolding - Multi-feature Panel) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -15,254 +10,380 @@ import { NotificationPreferences } from '../../../components/settings/Notificati
 import { PromptPayTopup } from '../../../components/settings/PromptPayTopup';
 import { TradingViewConfig } from '../../../components/settings/TradingViewConfig';
 
-export default function SettingsPage(_: { params: Promise<{ lng: string }> }) {
+interface StatusMessage {
+  type: 'success' | 'error';
+  text: string;
+}
+
+interface RiskLimits {
+  max_notional: number;
+  allowed_symbols: string[];
+  live_trading: boolean;
+}
+
+export default function SettingsPage() {
   const pathname = usePathname();
   const lng = pathname?.split('/')[1] || 'en';
   initI18n(lng);
   const { t } = useTranslation('translation');
 
-  const [exchange, setExchange] = useState('binance.com');
+  const [exchange, setExchange] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
   const [passphrase, setPassphrase] = useState('');
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<StatusMessage | null>(null);
 
-  const [riskLimits, setRiskLimits] = useState<{ max_notional: number, allowed_symbols: string[], live_trading: boolean }>({
+  const [riskLimits, setRiskLimits] = useState<RiskLimits>({
     max_notional: 100.0,
     allowed_symbols: ['BTC/USDT', 'ETH/USDT'],
-    live_trading: false
+    live_trading: false,
   });
 
-  useEffect(() => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-    fetch(`${backendUrl}/health`)
-      .then(r => r.json())
-      .then(data => {
-        setRiskLimits(prev => ({
-          ...prev,
-          live_trading: data.live_trading_enabled
-        }));
-      })
-      .catch(err => console.error('Error fetching health config:', err));
-  }, []);
+  const [riskSaving, setRiskSaving] = useState(false);
+  const [riskMessage, setRiskMessage] = useState<StatusMessage | null>(null);
 
-  const handleSubmitKeys = (e: React.FormEvent) => {
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const [healthRes, limitsRes] = await Promise.all([
+          fetch(`${backendUrl}/health`),
+          fetch(`${backendUrl}/api/v1/risk/limits`).catch(() => null),
+        ]);
+
+        const healthData = healthRes.ok ? await healthRes.json() : null;
+
+        let limits: Partial<RiskLimits> = {};
+        if (limitsRes?.ok) {
+          const d = await limitsRes.json();
+          limits = {
+            max_notional: d.max_notional ?? d.max_order_notional,
+            allowed_symbols: d.allowed_symbols,
+            live_trading: d.live_trading,
+          };
+        }
+
+        setRiskLimits((prev) => ({
+          ...prev,
+          max_notional:
+            limits.max_notional ?? prev.max_notional,
+          allowed_symbols:
+            limits.allowed_symbols ?? prev.allowed_symbols,
+          live_trading:
+            limits.live_trading ??
+            healthData?.live_trading_enabled ??
+            prev.live_trading,
+        }));
+
+        const exchangeRes = await fetch(
+          `${backendUrl}/api/v1/keys/exchange`,
+        ).catch(() => null);
+        if (exchangeRes?.ok) {
+          const exData = await exchangeRes.json();
+          if (exData.exchange) setExchange(exData.exchange);
+        }
+      } catch (err) {
+        console.error('Failed to load config:', err);
+      }
+    };
+    loadConfig();
+  }, [backendUrl]);
+
+  const handleSubmitKeys = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMessage(null);
 
     if (!apiKey || !apiSecret) {
-      setStatusMessage({ type: 'error', text: 'API Key and Secret are required' });
+      setStatusMessage({
+        type: 'error',
+        text: t('settings.toast_required'),
+      });
       return;
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-    fetch(`${backendUrl}/api/v1/keys`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        exchange,
-        api_key: apiKey,
-        api_secret: apiSecret,
-        passphrase: passphrase || null
-      })
-    })
-    .then(async (res) => {
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/v1/keys`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          exchange,
+          api_key: apiKey,
+          api_secret: apiSecret,
+          passphrase: passphrase || null,
+        }),
+      });
+
       if (res.ok) {
-        setStatusMessage({ type: 'success', text: 'API Keys saved securely (AES-256 encrypted in DB).' });
+        setStatusMessage({
+          type: 'success',
+          text: t('settings.toast_saved'),
+        });
         setApiKey('');
         setApiSecret('');
         setPassphrase('');
       } else {
         const errData = await res.json().catch(() => ({}));
-        setStatusMessage({ type: 'error', text: errData.detail || 'Failed to save API Keys.' });
+        setStatusMessage({
+          type: 'error',
+          text: errData.detail || t('settings.toast_failed'),
+        });
       }
-    })
-    .catch(() => {
-      setStatusMessage({ type: 'success', text: 'API Keys saved successfully (Simulated - AES-GCM Encrypted).' });
-      setApiKey('');
-      setApiSecret('');
-      setPassphrase('');
-    });
+    } catch (err) {
+      console.error('Failed to save API keys:', err);
+      setStatusMessage({
+        type: 'error',
+        text: t('settings.toast_failed'),
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSaveRiskLimits = async () => {
+    setRiskSaving(true);
+    setRiskMessage(null);
+    try {
+      const res = await fetch(`${backendUrl}/api/v1/risk/limits`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          max_notional: riskLimits.max_notional,
+          allowed_symbols: riskLimits.allowed_symbols,
+          live_trading: riskLimits.live_trading,
+        }),
+      });
+      if (res.ok) {
+        setRiskMessage({ type: 'success', text: 'Risk limits saved' });
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setRiskMessage({
+          type: 'error',
+          text: err.detail || 'Failed to save risk limits',
+        });
+      }
+    } catch {
+      setRiskMessage({ type: 'error', text: 'Failed to save risk limits' });
+    } finally {
+      setRiskSaving(false);
+    }
+  };
+
+  const renderMessage = (msg: StatusMessage | null) => {
+    if (!msg) return null;
+    return (
+      <div
+        className={`badge ${msg.type === 'success' ? 'badge-accent' : 'badge-danger'}`}
+        style={{
+          display: 'flex',
+          marginBottom: '16px',
+          padding: '10px 14px',
+          borderRadius: 'var(--radius-md)',
+        }}
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          style={{ flexShrink: 0, marginRight: '8px' }}
+        >
+          {msg.type === 'success' ? (
+            <polyline points="20 6 9 17 4 12" />
+          ) : (
+            <>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </>
+          )}
+        </svg>
+        <span>{msg.text}</span>
+      </div>
+    );
   };
 
   return (
-    <div style={{
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '40px 24px',
-      fontFamily: "'Outfit', sans-serif",
-      color: '#f3f4f6',
-      backgroundColor: '#0b0f19',
-      minHeight: '90vh',
-    }}>
-      <h1 style={{
-        fontSize: '28px',
-        fontWeight: '700',
-        marginBottom: '32px',
-        letterSpacing: '0.03em',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-        paddingBottom: '16px',
-        color: '#f3f4f6'
-      }}>
+    <div
+      style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '40px 24px',
+        minHeight: '90vh',
+      }}
+    >
+      <h1
+        className="h1"
+        style={{
+          marginBottom: '32px',
+          paddingBottom: '16px',
+          borderBottom: '1px solid var(--border-card)',
+        }}
+      >
         {t('settings.title')}
       </h1>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-        gap: '32px',
-        alignItems: 'start',
-      }}>
-        {/* Left Column: API Credentials & PromptPay Payments */}
-        <div style={{ display: 'grid', gap: '32px' }}>
-          {/* API Keys Configuration */}
-          <div style={{
-            backgroundColor: 'rgba(17, 24, 39, 0.4)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            padding: '24px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-          }}>
-            <h3 style={{ marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>Exchange API Settings</h3>
+      <div className="layout-auto" style={{ gap: '28px' }}>
+        <div style={{ display: 'grid', gap: '28px' }}>
+          <div className="glass-card-static animate-fade-in">
+            <h3 className="h3" style={{ marginBottom: '20px' }}>
+              {t('settings.api_settings')}
+            </h3>
             <form onSubmit={handleSubmitKeys}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#9ca3af' }}>Exchange Platform</label>
+              <div className="form-group">
+                <label className="form-label">
+                  {t('settings.exchange_platform')}
+                </label>
                 <select
                   value={exchange}
                   onChange={(e) => setExchange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'rgba(31, 41, 55, 0.5)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '6px',
-                    color: '#f3f4f6',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
-                  >
-                    <option value="binance.com" style={{ backgroundColor: '#1f2937' }}>Binance.com</option>
-                    <option value="binance.th" style={{ backgroundColor: '#1f2937' }}>Binance.th</option>
-                    <option value="okx" style={{ backgroundColor: '#1f2937' }}>OKX</option>
-                    <option value="bybit" style={{ backgroundColor: '#1f2937' }}>Bybit</option>
-                    <option value="kucoin" style={{ backgroundColor: '#1f2937' }}>KuCoin</option>
-                    <option value="MT5" style={{ backgroundColor: '#1f2937' }}>MetaTrader 5 (MT5)</option>
-                  </select>
-                </div>
+                  className="input-field"
+                >
+                  <option value="binance.com">Binance.com</option>
+                  <option value="binance.th">Binance.th</option>
+                  <option value="okx">OKX</option>
+                  <option value="bybit">Bybit</option>
+                  <option value="kucoin">KuCoin</option>
+                  <option value="MT5">MetaTrader 5 (MT5)</option>
+                </select>
+              </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#9ca3af' }}>API Key</label>
+              <div className="form-group">
+                <label className="form-label">
+                  {t('settings.api_key')}
+                </label>
                 <input
                   type="text"
-                  placeholder="Enter API Key"
+                  placeholder={t('settings.enter_api_key')}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'rgba(31, 41, 55, 0.5)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '6px',
-                    color: '#f3f4f6',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="input-field"
                 />
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#9ca3af' }}>API Secret</label>
+              <div className="form-group">
+                <label className="form-label">
+                  {t('settings.api_secret')}
+                </label>
                 <input
                   type="password"
-                  placeholder="Enter API Secret"
+                  placeholder={t('settings.enter_api_secret')}
                   value={apiSecret}
                   onChange={(e) => setApiSecret(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'rgba(31, 41, 55, 0.5)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '6px',
-                    color: '#f3f4f6',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="input-field"
                 />
               </div>
 
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: '#9ca3af' }}>Passphrase (optional)</label>
+              <div className="form-group">
+                <label className="form-label">
+                  {t('settings.passphrase')}
+                </label>
                 <input
-                  type="text"
-                  placeholder="Exchange passphrase if required"
+                  type="password"
+                  placeholder={t('settings.enter_passphrase')}
                   value={passphrase}
                   onChange={(e) => setPassphrase(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    backgroundColor: 'rgba(31, 41, 55, 0.5)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '6px',
-                    color: '#f3f4f6',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="input-field"
+                  autoComplete="off"
                 />
               </div>
 
-              {statusMessage && (
-                <div style={{
-                  padding: '12px',
-                  borderRadius: '6px',
-                  marginBottom: '16px',
-                  fontSize: '14px',
-                  backgroundColor: statusMessage.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                  color: statusMessage.type === 'success' ? '#10B981' : '#EF4444',
-                  border: statusMessage.type === 'success' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)'
-                }}>
-                  {statusMessage.text}
-                </div>
-              )}
+              {renderMessage(statusMessage)}
 
               <button
                 type="submit"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  backgroundColor: '#3B82F6',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  fontSize: '15px',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2563EB'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3B82F6'}
+                disabled={submitting}
+                className="btn-base btn-primary btn-full"
               >
-                {t('settings.submit')}
+                {submitting ? 'Saving...' : t('settings.submit')}
               </button>
             </form>
           </div>
 
-          {/* PromptPay Topup Payment Option */}
+          <div className="glass-card-static animate-fade-in">
+            <h3 className="h3" style={{ marginBottom: '20px' }}>
+              Risk Limits
+            </h3>
+            <div className="form-group">
+              <label className="form-label">Max Order Notional (USD)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={riskLimits.max_notional}
+                onChange={(e) =>
+                  setRiskLimits((prev) => ({
+                    ...prev,
+                    max_notional: parseFloat(e.target.value) || 0,
+                  }))
+                }
+                className="input-field"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">
+                Allowed Symbols (comma-separated)
+              </label>
+              <input
+                type="text"
+                value={riskLimits.allowed_symbols.join(', ')}
+                onChange={(e) =>
+                  setRiskLimits((prev) => ({
+                    ...prev,
+                    allowed_symbols: e.target.value
+                      .split(',')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  }))
+                }
+                className="input-field"
+              />
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '20px',
+              }}
+            >
+              <input
+                type="checkbox"
+                id="live-trading"
+                checked={riskLimits.live_trading}
+                onChange={(e) =>
+                  setRiskLimits((prev) => ({
+                    ...prev,
+                    live_trading: e.target.checked,
+                  }))
+                }
+                style={{ accentColor: 'var(--color-danger)' }}
+              />
+              <label htmlFor="live-trading" style={{ fontSize: '14px' }}>
+                Enable Live Trading
+              </label>
+            </div>
+            {renderMessage(riskMessage)}
+            <button
+              onClick={handleSaveRiskLimits}
+              disabled={riskSaving}
+              className="btn-base btn-primary btn-full"
+            >
+              {riskSaving ? 'Saving...' : 'Save Risk Limits'}
+            </button>
+          </div>
+
           <PromptPayTopup />
         </div>
 
-        {/* Right Column: Telegram Links, Alert Toggles & Colors */}
-        <div style={{ display: 'grid', gap: '32px' }}>
-          {/* TradingView webhook config */}
+        <div style={{ display: 'grid', gap: '28px' }}>
           <TradingViewConfig />
-
-          {/* Telegram link integration */}
           <TelegramLink />
-
-          {/* Notification toggles */}
           <NotificationPreferences />
-
-          {/* Theme Customizer component */}
           <ThemeCustomizer />
         </div>
       </div>

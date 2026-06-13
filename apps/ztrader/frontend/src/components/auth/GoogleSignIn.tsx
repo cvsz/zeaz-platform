@@ -1,15 +1,10 @@
-// ZeaZDev [Google Sign-In Component] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Unified Scaffolding) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GoogleSignInProps {
-  onSuccess?: (user: any) => void;
+  onSuccess?: (user: unknown) => void;
   onError?: (error: string) => void;
 }
 
@@ -19,22 +14,33 @@ export function GoogleSignIn({ onSuccess, onError }: GoogleSignInProps) {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-
-      const response = await fetch(`${backendUrl}/auth/google/authorize`);
-      const data = await response.json();
-
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+      const response = await fetch(
+        `${backendUrl}/auth/google/authorize`,
+      );
+      if (!response.ok) {
+        throw new Error(`Authorization service returned ${response.status}`);
+      }
+      const text = await response.text();
+      let data: { authorization_url?: string };
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error('Backend did not return JSON — check auth service URL');
+      }
       if (data.authorization_url) {
         window.location.href = data.authorization_url;
       } else {
-        throw new Error('Failed to get authorization URL');
+        throw new Error('Response missing authorization URL');
       }
     } catch (error) {
       console.error('Google Sign-In error:', error);
       if (onError) {
-        onError(error instanceof Error ? error.message : 'Sign-in failed');
+        onError(
+          error instanceof Error ? error.message : 'Sign-in failed',
+        );
       }
       setLoading(false);
     }
@@ -44,7 +50,6 @@ export function GoogleSignIn({ onSuccess, onError }: GoogleSignInProps) {
     <button
       onClick={handleGoogleSignIn}
       disabled={loading}
-      className="google-signin-button"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -52,28 +57,28 @@ export function GoogleSignIn({ onSuccess, onError }: GoogleSignInProps) {
         gap: '12px',
         width: '100%',
         padding: '12px 24px',
-        backgroundColor: '#1f2937',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '8px',
-        color: '#f3f4f6',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-input)',
+        borderRadius: 'var(--radius-md)',
+        color: 'var(--text-primary)',
         fontSize: '16px',
         fontWeight: '600',
         cursor: loading ? 'not-allowed' : 'pointer',
         opacity: loading ? 0.6 : 1,
-        fontFamily: "'Outfit', sans-serif",
-        transition: 'all 0.25s ease-in-out',
+        transition: 'var(--transition-smooth)',
       }}
       onMouseEnter={(e) => {
         if (!loading) {
-          e.currentTarget.style.backgroundColor = '#374151';
-          e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-          e.currentTarget.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.2)';
+          e.currentTarget.style.background = 'var(--bg-surface-hover)';
+          e.currentTarget.style.borderColor =
+            'var(--color-primary-border)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-glow-primary)';
         }
       }}
       onMouseLeave={(e) => {
         if (!loading) {
-          e.currentTarget.style.backgroundColor = '#1f2937';
-          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          e.currentTarget.style.background = 'var(--bg-surface)';
+          e.currentTarget.style.borderColor = 'var(--border-input)';
           e.currentTarget.style.boxShadow = 'none';
         }
       }}
