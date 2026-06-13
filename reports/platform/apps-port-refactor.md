@@ -5,10 +5,9 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 
 | App | Role | Path | Hostname | Port | Origin | Status | Alias | API Gateway |
 |---|---|---|---|---:|---|---|---|---|
-| root | landing | `.` | `zeaz.dev` | 8787 | `http://127.0.0.1:8787` | active | `` | `` |
-| root-www | landing | `.` | `www.zeaz.dev` | 8787 | `http://127.0.0.1:8787` | active | `` | `` |
+| web-root | ui | `apps/web` | `zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | `` | `` |
+| web-www | ui | `apps/web` | `www.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | `` | `` |
 | ssh | tcp | `system/ssh` | `ssh.zeaz.dev` | 22022 | `ssh://127.0.0.1:22022` | active | `` | `` |
-| web | ui | `apps/web` | `app.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | `` | `` |
 | studio | ui | `apps/web` | `studio.zeaz.dev` | 3001 | `http://127.0.0.1:3001` | active | `` | `` |
 | zdash | ui | `apps/zdash` | `zdash.zeaz.dev` | 5173 | `http://127.0.0.1:5173` | active | `` | `` |
 | zdash-api | api | `apps/zdash` | `api-zdash.zeaz.dev` | 8005 | `http://127.0.0.1:8005` | active | `` | `/v1/zdash` |
@@ -40,7 +39,7 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 3000 | zcino |
 | 3001 | studio |
 | 3002 | zveo |
-| 3003 | web, zcfdash |
+| 3003 | web-root, web-www, zcfdash |
 | 3004 | zcloud |
 | 3008 | zsp-aitool |
 | 3010 | ABTPi18n |
@@ -59,6 +58,5 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 8088 | zcfdash-api |
 | 8090 | zveo-api |
 | 8091 | zoffice |
-| 8787 | root, root-www |
 | 9292 | cctv |
 | 22022 | ssh |

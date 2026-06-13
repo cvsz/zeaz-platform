@@ -19,21 +19,21 @@
   },
   "routes": [
     {
-      "app_id": "root",
-      "role": "landing",
-      "path": ".",
+      "app_id": "web-root",
+      "role": "ui",
+      "path": "apps/web",
       "hostname": "zeaz.dev",
-      "port": 8787,
-      "origin": "http://127.0.0.1:8787",
+      "port": 3003,
+      "origin": "http://127.0.0.1:3003",
       "status": "active"
     },
     {
-      "app_id": "root-www",
-      "role": "landing",
-      "path": ".",
+      "app_id": "web-www",
+      "role": "ui",
+      "path": "apps/web",
       "hostname": "www.zeaz.dev",
-      "port": 8787,
-      "origin": "http://127.0.0.1:8787",
+      "port": 3003,
+      "origin": "http://127.0.0.1:3003",
       "status": "active"
     },
     {
@@ -43,15 +43,6 @@
       "hostname": "ssh.zeaz.dev",
       "port": 22022,
       "origin": "ssh://127.0.0.1:22022",
-      "status": "active"
-    },
-    {
-      "app_id": "web",
-      "role": "ui",
-      "path": "apps/web",
-      "hostname": "app.zeaz.dev",
-      "port": 3003,
-      "origin": "http://127.0.0.1:3003",
       "status": "active"
     },
     {
