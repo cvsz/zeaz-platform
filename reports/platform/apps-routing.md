@@ -17,7 +17,7 @@
 | zoffice | `apps/zoffice` | app | `zoffice.zeaz.dev` | `http://127.0.0.1:8090` | `8090` | needs-review | `/v1/zoffice` |
 | ABTPi18n | `apps/ABTPi18n` | app | `abtpi18n.zeaz.dev` | `http://127.0.0.1:3001` | `3001` | reserved | `` |
 | zwallet | `apps/zwallet` | app | `zwallet.zeaz.dev` | `` | `` | reserved | `/v1/zwallet` |
-| zlms-prod | `apps/zlms-prod` | app | `zlms.zeaz.dev` | `` | `` | reserved | `/v1/zlms` |
+| zlms | `apps/zlms` | app | `zlms.zeaz.dev` | `` | `` | reserved | `/v1/zlms` |
 | zAcademy | `apps/zAcademy` | app | `academy.zeaz.dev` | `` | `` | reserved | `` |
 | zsticker | `apps/zsticker` | app | `zsticker.zeaz.dev` | `` | `` | reserved | `` |
 | zcino-modern | `apps/zcino-modern` | app | `zcino-modern.zeaz.dev` | `` | `` | reserved | `` |
