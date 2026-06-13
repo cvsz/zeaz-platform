@@ -41,7 +41,7 @@ export default function Services() {
   }, []);
 
   return (
-    <div className="p-8 space-y-8 pb-20">
+    <div className="p-4 md:p-8 space-y-8 pb-20">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
           <Server className="w-8 h-8 text-primary" />
