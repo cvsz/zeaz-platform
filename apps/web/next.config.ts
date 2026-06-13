@@ -8,6 +8,17 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "www.zeaz.dev",
+          },
+        ],
+        destination: "https://zeaz.dev/:path*",
+        permanent: true,
+      },
+      {
         source: "/",
         has: [
           {
