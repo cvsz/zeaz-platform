@@ -7,9 +7,9 @@ import { TerminalSquare, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const NAV_LINKS = [
-  { name: "Home", href: "/" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Contact", href: "/contact" },
+  { name: "Home", href: "/marketing" },
+  { name: "Pricing", href: "/marketing/pricing" },
+  { name: "Contact", href: "/marketing/contact" },
 ];
 
 export default function MarketingLayout({
@@ -25,7 +25,7 @@ export default function MarketingLayout({
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5">
+            <Link href="/marketing" className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-200 font-bold">
                 <TerminalSquare className="h-5 w-5" />
               </div>
@@ -106,12 +106,12 @@ export default function MarketingLayout({
               <h3 className="text-sm font-semibold text-white mb-4">Pages</h3>
               <ul className="space-y-3">
                 {[
-                  { name: "Home", href: "/" },
-                  { name: "Pricing", href: "/pricing" },
-                  { name: "Terms of Service", href: "/terms" },
-                  { name: "Privacy Policy", href: "/privacy" },
-                  { name: "Refund Policy", href: "/refund" },
-                  { name: "Contact", href: "/contact" },
+                  { name: "Home", href: "/marketing" },
+                  { name: "Pricing", href: "/marketing/pricing" },
+                  { name: "Terms of Service", href: "/marketing/terms" },
+                  { name: "Privacy Policy", href: "/marketing/privacy" },
+                  { name: "Refund Policy", href: "/marketing/refund" },
+                  { name: "Contact", href: "/marketing/contact" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link

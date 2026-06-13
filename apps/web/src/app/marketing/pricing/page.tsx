@@ -142,7 +142,7 @@ export default function PricingPage() {
                 <strong className="text-white">Cancellation:</strong> You may cancel your
                 subscription at any time. Access continues through the end of the current
                 billing period. See our{" "}
-                <Link href="/refund" className="text-cyan-400 hover:underline">
+                <Link href="/marketing/refund" className="text-cyan-400 hover:underline">
                   Refund Policy
                 </Link>{" "}
                 for details.

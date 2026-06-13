@@ -83,13 +83,13 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 pt-4">
             <Link
-              href="/pricing"
+              href="/marketing/pricing"
               className="inline-flex items-center gap-2 rounded-2xl bg-cyan-500 hover:bg-cyan-600 px-6 py-3 font-semibold text-black transition shadow-lg shadow-cyan-500/20"
             >
               View Pricing
             </Link>
             <Link
-              href="/contact"
+              href="/marketing/contact"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 px-6 py-3 font-semibold transition"
             >
               Contact Support
@@ -197,13 +197,13 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/pricing"
+              href="/marketing/pricing"
               className="inline-flex items-center gap-2 rounded-2xl bg-cyan-500 hover:bg-cyan-600 px-6 py-3 font-semibold text-black transition shadow-lg shadow-cyan-500/20"
             >
               View Plans & Pricing
             </Link>
             <Link
-              href="/contact"
+              href="/marketing/contact"
               className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 px-6 py-3 font-semibold transition"
             >
               Contact Us
