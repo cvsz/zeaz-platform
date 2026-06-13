@@ -1,8 +1,34 @@
 # AGENTS.md — Cloudflare Platform Codex Operating Guide
 
+# ZeaZ Platform Project Instructions
+
+## Language and Coding Standards
+- **Communication**: Always talk in Thai when interacting with users.
+- **Code & Technical Assets**: All code, comments, documentation, and technical definitions must be in English.
+
+## Git Workflow
+
+### Allowed Commands
+| Operation   | Command                            |
+|-------------|------------------------------------|
+| Stage files | `git add <files>`                  |
+| Commit      | `make gpg-commit COMMIT_MSG="..."` |
+| Push        | `make gpg-push`                    |
+| Pull        | `make gpg-pull`                    |
+| All-in-one  | `make gpg-finalize COMMIT_MSG="..."` |
+
+### Forbidden Commands
+- **Never use** `git commit` directly
+- **Never use** `git push` directly
+- **Never use** `git pull` directly
+- **Never use** `gh` CLI for commit/push/pull operations
+
+### Branching
+- Follow the established branch naming conventions (e.g., `fix/`, `feat/`).
+
 This file is the authoritative operating guide for Codex and other automated coding agents working in this repository.
 
-Repository: `cvsz/cloudflare-platform`
+Repository: `cvsz/zeaz-platform`
 Organization: `ZeazDev`
 Primary domain: `zeaz.dev`
 Primary objective: build and maintain a production-grade, GitOps-ready Cloudflare Zero Trust platform without committing secrets, fake production identifiers, or unsafe automation.
@@ -95,25 +121,36 @@ When in doubt, externalize values through environment variables, GitHub secrets,
 The repository must converge toward this structure:
 
 ```text
-cloudflare-platform/
-├── bootstrap/
+zeaz-platform/
+├── .github/
+├── apps/
+│   ├── api/
+│   ├── openwork/
+│   ├── web/
+│   ├── zAcademy/
+│   ├── zLinebot/
+│   ├── zcfdash/
+│   ├── zcino/
+│   ├── zcino-modern/
+│   ├── zcloud/
+│   ├── zdash/
+│   ├── zdev/
+│   ├── zlms/
+│   ├── zoffice/
+│   ├── zsp-aitool/
+│   ├── zsticker/
+│   ├── ztrader/
+│   ├── zveo/
+│   └── zwallet/
+├── configs/
+├── infrastructure/
+├── docs/
+├── scripts/
 ├── terraform/
 ├── opentofu/
-├── scripts/
-├── python/
 ├── workers/
 ├── workers-ai/
-├── tunnels/
 ├── zero-trust/
-├── waf/
-├── dns/
-├── policies/
-├── monitoring/
-├── security/
-├── backups/
-├── tests/
-├── docs/
-├── .github/
 ├── Makefile
 └── README.md
 ```
@@ -143,6 +180,24 @@ Financial platform:
 - `treasury.zeaz.dev`
 - `admin-wallet.zeaz.dev`
 
+Developer Tools & Cockpits:
+
+- `cloud.zeaz.dev` (zcloud)
+- `dash.zeaz.dev` (zdash)
+- `cfdash.zeaz.dev` (zcfdash)
+
+Algo Trading & Game Services:
+
+- `trader.zeaz.dev` (ztrader)
+- `cino.zeaz.dev` (zcino)
+
+Educational & Workspace Portals:
+
+- `academy.zeaz.dev` (zAcademy)
+- `lms.zeaz.dev` (zlms)
+- `office.zeaz.dev` (zoffice)
+- `openwork.zeaz.dev` (openwork)
+
 AI capabilities:
 
 - AI content generation
@@ -158,6 +213,12 @@ Finance capabilities:
 - treasury access controls
 - compliance/audit access controls
 - Web3 and crypto operation guardrails
+
+Other Platform capabilities:
+
+- SaaS automation (zsp-aitool)
+- Developer APIs (api)
+- Daemon & Bot triggers (zLinebot, zsticker)
 
 ---
 
