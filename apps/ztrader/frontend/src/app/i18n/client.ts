@@ -46,7 +46,7 @@ export function initI18n(locale: string) {
         }
       });
     initialized = true;
-  } else {
+  } else if (i18n.language !== locale) {
     i18n.changeLanguage(locale);
   }
   return i18n;
