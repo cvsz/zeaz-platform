@@ -1,0 +1,19 @@
+# Cloudflare Environment Intent: staging
+# This file is for DOCUMENTATION of intent only. NOT a live config.
+
+environment: staging
+owner: Dev Team
+review_required: true
+
+hostnames:
+  - staging.zeaz.dev
+  - staging-wallet.zeaz.dev
+
+tunnel_id: <REDACTED_STAGING_TUNNEL_ID>
+
+worker_routes:
+  - pattern: "staging-api.zeaz.dev/*"
+    env: staging
+    script: api-worker
+
+terraform_workspace: cloudflare-staging
