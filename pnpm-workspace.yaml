@@ -1,0 +1,22 @@
+packages:
+  # Included apps
+  - 'apps/web'
+  - 'apps/openwork'
+  - 'apps/zAcademy'
+  - 'apps/zcloud'
+  - 'apps/zdev'
+  - 'apps/zLinebot'
+  - 'apps/zlms'
+  - 'apps/zsp-aitool'
+  - 'apps/zwallet'
+  # Sub-directories that might contain Node.js projects
+  - 'apps/zdash/frontend'
+  - 'apps/zdash/backend'
+  - 'apps/ztrader/frontend'
+  - 'apps/zveo/frontend'
+
+  # Exclude non-Node.js applications explicitly
+  - '!apps/api'
+  - '!apps/zcino'
+  - '!apps/zcino-modern'
+  - '!apps/zsticker'
