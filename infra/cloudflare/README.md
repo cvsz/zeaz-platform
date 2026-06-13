@@ -433,3 +433,38 @@ grep -RInE '(token|secret|password|credential|api[_-]?key)' \
   docs/infra/cloudflare-recovery-ownership-matrix.md || echo "No secrets found"
 ```
 
+## Phase 16 — Cloudflare Change Evidence Archive
+
+Phase 16 adds an immutable change evidence archive, retention policy, index template, release approval template, and incident review template.
+
+**Safety Statement:** Phase 16 is documentation-only and does not authorize deploy/apply/destroy.
+
+### Phase 16 Documents
+
+| Document | Purpose |
+|---|---|
+| [cloudflare-change-evidence-archive.md](file:///home/zeazdev/zeaz-platform/docs/infra/cloudflare-change-evidence-archive.md) | Archive model overview and usage guide |
+| [cloudflare-evidence-retention-policy.md](file:///home/zeazdev/zeaz-platform/docs/infra/cloudflare-evidence-retention-policy.md) | Retention periods and storage policies for evidence |
+| [cloudflare-evidence-index-template.md](file:///home/zeazdev/zeaz-platform/docs/infra/cloudflare-evidence-index-template.md) | Template and examples for the master index |
+| [cloudflare-release-approval-template.md](file:///home/zeazdev/zeaz-platform/docs/infra/cloudflare-release-approval-template.md) | Formal release approval document template |
+| [cloudflare-incident-review-template.md](file:///home/zeazdev/zeaz-platform/docs/infra/cloudflare-incident-review-template.md) | Outage and service incident review template |
+| [README.md (evidence)](file:///home/zeazdev/zeaz-platform/docs/infra/evidence/cloudflare/README.md) | Directory guide for the evidence archive |
+| [index.md (evidence)](file:///home/zeazdev/zeaz-platform/docs/infra/evidence/cloudflare/index.md) | Main running index of change records |
+
+### Phase 16 Validation
+
+```bash
+# Verify all Phase 16 docs exist
+for doc in \
+  docs/infra/cloudflare-change-evidence-archive.md \
+  docs/infra/cloudflare-evidence-retention-policy.md \
+  docs/infra/cloudflare-evidence-index-template.md \
+  docs/infra/cloudflare-release-approval-template.md \
+  docs/infra/cloudflare-incident-review-template.md \
+  docs/infra/evidence/cloudflare/README.md \
+  docs/infra/evidence/cloudflare/index.md; do
+  [ -f "$doc" ] && echo "EXISTS: $doc" || echo "MISSING: $doc"
+done
+```
+
+
