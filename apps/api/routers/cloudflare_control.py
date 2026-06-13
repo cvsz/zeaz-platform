@@ -66,7 +66,7 @@ def _zcfdash_routes() -> list[dict[str, Any]]:
     ]
 
 
-@router.get("/health", dependencies=[Depends(require_auth)])
+@router.get("/health")
 def health() -> dict[str, Any]:
     routes = _zcfdash_routes()
     return {
@@ -85,7 +85,7 @@ def health() -> dict[str, Any]:
     }
 
 
-@router.get("/routes", dependencies=[Depends(require_auth)])
+@router.get("/routes")
 def routes() -> dict[str, Any]:
     return {
         "zone": "zeaz.dev",
@@ -95,7 +95,7 @@ def routes() -> dict[str, Any]:
     }
 
 
-@router.get("/terraform", dependencies=[Depends(require_auth)])
+@router.get("/terraform")
 def terraform_assets() -> dict[str, Any]:
     tfvars = _read_json(TFVARS_PATH, {"app_routes": {}})
     app_routes = tfvars.get("app_routes", {}) if isinstance(tfvars, dict) else {}
@@ -111,7 +111,7 @@ def terraform_assets() -> dict[str, Any]:
     }
 
 
-@router.get("/ingress", dependencies=[Depends(require_auth)])
+@router.get("/ingress")
 def ingress() -> dict[str, Any]:
     text = _read_text_tail(INGRESS_PATH)
     lines = [line for line in text.splitlines() if "zcfdash.zeaz.dev" in line or "api-zcfdash.zeaz.dev" in line]
@@ -122,7 +122,7 @@ def ingress() -> dict[str, Any]:
     }
 
 
-@router.get("/reports", dependencies=[Depends(require_auth)])
+@router.get("/reports")
 def reports() -> dict[str, Any]:
     return {
         "port_report": {
@@ -143,7 +143,7 @@ def reports() -> dict[str, Any]:
     }
 
 
-@router.get("/summary", dependencies=[Depends(require_auth)])
+@router.get("/summary")
 def summary() -> dict[str, Any]:
     return {
         "title": "ZeaZ Cloudflare Control Panel",
