@@ -6,7 +6,7 @@
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from logging import getLogger
 from typing import Any, Optional
 
@@ -171,7 +171,7 @@ async def tradingview_webhook(
             "interval": alert.interval,
             "volume": alert.volume,
             "message": alert.message,
-            "receivedAt": datetime.utcnow(),
+            "receivedAt": datetime.now(timezone.utc),
             "rawPayload": json.dumps(payload, default=str),
         }
 
@@ -182,7 +182,7 @@ async def tradingview_webhook(
                 "status": "success",
                 "alert_id": alert_record.id,
                 "message": f"Alert received: {action} {alert.ticker}",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
         async with get_db_connection() as db:
