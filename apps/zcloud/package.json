@@ -10,7 +10,7 @@
     "start": "next start -p 3004",
     "start:static": "python3 -m http.server 4177 --directory .",
     "validate": "node scripts/validate-zcloud.mjs",
-    "lint": "eslint ."
+    "lint": "next lint"
   },
   "dependencies": {
     "pg": "^8.13.0",
