@@ -1,4 +1,4 @@
-import { TypedDataEncoder, Wallet, keccak256 } from "ethers";
+import { TypedDataEncoder, Wallet } from "ethers";
 import { z } from "zod";
 
 const SignInput = z.object({
