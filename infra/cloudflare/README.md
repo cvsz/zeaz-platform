@@ -352,3 +352,40 @@ grep -RInE '(token|secret|password|credential|api[_-]?key)' \
 
 **Safety Statement:** Phase 15 is governance documentation only. It does not deploy, apply Terraform/OpenTofu, restart services, or mutate Cloudflare.
 
+---
+
+## Phase 18 — Cloudflare Multi-Environment Separation
+
+Phase 18 defines and enforces ownership boundaries between dev, staging, and production Cloudflare environments. It prevents cross-environment drift, credential sharing, and misconfigured hostname routing.
+
+**Phase 18 is documentation and validation only. It does not deploy or mutate Cloudflare.**
+
+### Phase 18 Documents
+
+| Document | Purpose |
+|---|---|
+| `docs/infra/cloudflare-environment-boundaries.md` | Rules for dev, staging, and prod environment separation |
+| `docs/infra/cloudflare-environment-ownership-matrix.md` | Matrix of environment × resource × owner × approval |
+| `docs/infra/cloudflare-cross-environment-drift-policy.md` | Policy for detecting and remediating cross-env drift |
+| `docs/infra/cloudflare-environment-promotion-policy.md` | Gates and requirements for promotion between environments |
+
+### Phase 18 Environment Intent Files
+
+- `infra/cloudflare/environments/dev.yml` (Redacted intent)
+- `infra/cloudflare/environments/staging.yml` (Redacted intent)
+- `infra/cloudflare/environments/prod.yml` (Redacted intent)
+
+### Phase 18 Scripts
+
+- `infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh` (Offline scanner)
+
+### Phase 18 Validation
+
+```bash
+# Run environment boundary scan
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
+
+# Validate using the master validator
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check
+```
+

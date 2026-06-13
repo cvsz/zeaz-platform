@@ -1,0 +1,28 @@
+# Cloudflare Environment Intent: prod
+# This file is for DOCUMENTATION of intent only. NOT a live config.
+
+environment: prod
+owner: DevOps Team
+review_required: true
+risk_scoring_required: true
+evidence_archive_required: true
+review_board_required: true
+
+hostnames:
+  - office.zeaz.dev
+  - zveo.zeaz.dev
+  - cctv.zeaz.dev
+  - api.zveo.zeaz.dev
+  - app.zeaz.dev
+  - admin-wallet.zeaz.dev
+  - zcloud.zeaz.dev
+  - ztest.zeaz.dev
+
+tunnel_id: <REDACTED_PROD_TUNNEL_ID>
+
+worker_routes:
+  - pattern: "api.zeaz.dev/*"
+    env: prod
+    script: api-worker
+
+terraform_workspace: cloudflare-prod
