@@ -16,10 +16,10 @@ FRONTEND_LOG := $(RUNTIME_DIR)/ztrader-frontend-$(FRONTEND_PORT).log
 BACKEND_LOG := $(RUNTIME_DIR)/ztrader-backend-$(BACKEND_PORT).log
 SERVER_REPORT := $(REPORT_DIR)/ztrader-server.md
 
-.PHONY: help install-backend install-frontend dev-backend dev-frontend test-backend run-docker stop-docker format lint clean
+.PHONY: help install-backend install-frontend dev-backend dev-frontend test-backend test-e2e run-docker stop-docker format lint clean
 .PHONY: server-start server-stop server-restart server-status server-report validate-local
 .PHONY: merge-plan merge-dry-run merge-apply merge-report merge-validate
-.PHONY: frontend-build frontend-lint frontend-typecheck frontend-validate
+.PHONY: frontend-build frontend-lint frontend-typecheck frontend-validate frontend-test-e2e
 
 help:
 	@echo "Available commands:"
@@ -31,7 +31,8 @@ help:
 	@echo "  server-stop       - Stop backend + frontend started by server-start"
 	@echo "  server-status     - Show backend + frontend origin status"
 	@echo "  validate-local    - Compile backend and validate frontend package metadata"
-	@echo "  test-backend      - Run backend unit tests with pytest"
+ 	@echo "  test-backend      - Run backend unit tests with pytest"
+	@echo "  test-e2e          - Run frontend E2E tests with Playwright"
 	@echo "  run-docker        - Orchestrate all services using docker-compose"
 	@echo "  stop-docker       - Stop and tear down docker-compose containers"
 	@echo "  merge-plan        - Show zTrader merge plan path"
@@ -105,6 +106,9 @@ validate-local:
 
 test-backend:
 	PYTHONPATH=$(PYTHONPATH) $(PYTEST) backend/tests/ -v
+
+test-e2e:
+	cd frontend && pnpm run test:e2e
 
 merge-plan:
 	@echo "reports/merge/ztrader-source-merge-report.md"

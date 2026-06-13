@@ -5,25 +5,50 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from routers import runtime, agents, healing, observability, auth, llm, scheduler, swarm, cloudflare_control
 
-app = FastAPI(title="Zeaz Meta OS API", version="1.0.0")
+import os
+import logging
+from contextlib import asynccontextmanager
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Background task reference
+bg_tasks = set()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(stream_docker_stats())
+    bg_tasks.add(task)
+    task.add_done_callback(bg_tasks.discard)
+    yield
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
+
+app = FastAPI(title="Zeaz Meta OS API", version="1.0.0", lifespan=lifespan)
+
+origins = os.getenv("ALLOWED_ORIGINS", "")
+allowed_origins = origins.split(",") if origins else []
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins or ["http://localhost"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(runtime.router, prefix="/api/runtime")
-app.include_router(agents.router, prefix="/api/runtime/agents")
-app.include_router(healing.router, prefix="/api/runtime/healing")
-app.include_router(observability.router, prefix="/api/runtime/observability")
-app.include_router(auth.router, prefix="/api/runtime/auth")
-app.include_router(llm.router, prefix="/api/runtime/llm")
-app.include_router(scheduler.router, prefix="/api/runtime/scheduler")
-app.include_router(swarm.router, prefix="/api/runtime/swarm")
-app.include_router(cloudflare_control.router, prefix="/api/runtime/cloudflare")
+app.include_router(runtime.router, prefix="/api/runtime", tags=["runtime"])
+app.include_router(agents.router, prefix="/api/runtime/agents", tags=["agents"])
+app.include_router(healing.router, prefix="/api/runtime/healing", tags=["healing"])
+app.include_router(observability.router, prefix="/api/runtime/observability", tags=["observability"])
+app.include_router(auth.router, prefix="/api/runtime/auth", tags=["auth"])
+app.include_router(llm.router, prefix="/api/runtime/llm", tags=["llm"])
+app.include_router(scheduler.router, prefix="/api/runtime/scheduler", tags=["scheduler"])
+app.include_router(swarm.router, prefix="/api/runtime/swarm", tags=["swarm"])
+app.include_router(cloudflare_control.router, prefix="/api/runtime/cloudflare", tags=["cloudflare"])
 
 class ConnectionManager:
     def __init__(self):
@@ -37,8 +62,12 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
+        for connection in list(self.active_connections):
+            try:
+                await connection.send_text(message)
+            except Exception as e:
+                logger.error("Error broadcasting to connection", exc_info=True)
+                self.disconnect(connection)
 
 manager = ConnectionManager()
 
@@ -66,9 +95,6 @@ async def stream_docker_stats():
                 })
             await manager.broadcast(json.dumps({"type": "docker_stats", "data": stats}))
         except Exception as e:
-            print(f"Error streaming stats: {e}")
+            logger.error("Error streaming stats", exc_info=True)
         await asyncio.sleep(2)
 
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(stream_docker_stats())

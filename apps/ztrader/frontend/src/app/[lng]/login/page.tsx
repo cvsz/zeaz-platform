@@ -20,17 +20,15 @@ export default function LoginPage() {
     const token = params.get('token');
     const error = params.get('error');
     if (token) {
+      window.history.replaceState(null, '', pathname.replace(/\?.*$/, ''));
       localStorage.setItem('ztrader_admin_token', token);
-      const clean = pathname.replace(/\?.*$/, '');
-      router.replace(clean);
       router.push(`/${lng}/dashboard`);
     } else if (error) {
-      console.error('OAuth error:', error);
+      console.error('OAuth error:', error); // eslint-disable-line
     }
   }, [lng, pathname, router]);
 
-  const handleSuccess = (user: unknown) => {
-    console.log('Login successful:', user);
+  const handleSuccess = (_user: unknown) => {
     router.push(`/${lng}/dashboard`);
   };
 
@@ -50,10 +48,11 @@ export default function LoginPage() {
       }}
     >
       <div
+        className="bg-orb"
         style={{
-          position: 'absolute',
-          top: '-20%',
-          left: '-10%',
+          position: 'fixed',
+          top: '-25%',
+          right: '-15%',
           width: '700px',
           height: '700px',
           background:
@@ -63,10 +62,11 @@ export default function LoginPage() {
         }}
       />
       <div
+        className="bg-orb"
         style={{
-          position: 'absolute',
-          bottom: '-20%',
-          right: '-10%',
+          position: 'fixed',
+          bottom: '-25%',
+          left: '-15%',
           width: '600px',
           height: '600px',
           background:
@@ -82,8 +82,8 @@ export default function LoginPage() {
           maxWidth: '440px',
           width: '100%',
           textAlign: 'center',
-          padding: '48px 36px',
-          margin: '0 20px',
+        padding: 'clamp(28px, 8vw, 48px) clamp(20px, 6vw, 36px)',
+        margin: '0 clamp(12px, 4vw, 20px)',
           position: 'relative',
         }}
       >

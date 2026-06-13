@@ -35,5 +35,8 @@ ingress:
   - hostname: admin-wallet.${PRIMARY_DOMAIN}
     service_from_origin_hosts: admin-wallet
 
+  - hostname: ztrader.${PRIMARY_DOMAIN}
+    service: http://localhost:3016
+
   # Catch-all rule
   - service: http_status:404

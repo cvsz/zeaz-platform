@@ -5,7 +5,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from ztrader.api.v1 import admin, health, trading, webhooks
+from ztrader.api.v1 import admin, health, platform, trading, webhooks
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ztrader.main")
@@ -38,3 +38,4 @@ app.include_router(health.router)
 app.include_router(trading.router)
 app.include_router(webhooks.router)
 app.include_router(admin.router)
+app.include_router(platform.router)

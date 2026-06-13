@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { initI18n } from '../../i18n/client';
 import { useTranslation } from 'react-i18next';
+import { Toast } from '../../../components/Toast';
 
 interface AdminUser {
   id: string;
@@ -40,71 +41,6 @@ type TabKey = 'overview' | 'users' | 'contracts' | 'risk';
 
 function Shimmer({ w = '100%', h = '16px' }: { w?: string; h?: string }) {
   return <div className="shimmer" style={{ width: w, height: h }} />;
-}
-
-function Toast({
-  msg,
-  type,
-}: {
-  msg: string;
-  type: 'success' | 'error';
-}) {
-  const ok = type === 'success';
-  return (
-    <div
-      className="animate-slide-up"
-      style={{
-        position: 'fixed',
-        bottom: '28px',
-        right: '28px',
-        zIndex: 9999,
-        padding: '14px 20px',
-        borderRadius: 'var(--radius-lg)',
-        background: ok ? 'rgba(10,26,20,0.97)' : 'rgba(26,10,10,0.97)',
-        border: `1px solid ${ok ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'}`,
-        color: ok ? '#10B981' : '#EF4444',
-        fontSize: '14px',
-        fontWeight: '600',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        boxShadow: `0 8px 32px ${ok ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}`,
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-      }}
-    >
-      {ok ? (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      ) : (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
-        </svg>
-      )}
-      {msg}
-    </div>
-  );
 }
 
 function StatusDot({ ok }: { ok: boolean }) {
@@ -168,6 +104,37 @@ export default function AdminPage() {
 
   const [newUserId, setNewUserId] = useState('');
   const [newEndDate, setNewEndDate] = useState('');
+
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const tabListRef = useRef<HTMLDivElement>(null);
+  const tabKeys: TabKey[] = React.useMemo(() => ['overview', 'users', 'contracts', 'risk'], []);
+
+  const handleTabKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const idx = tabKeys.indexOf(tab);
+      let next = idx;
+      switch (e.key) {
+        case 'ArrowRight': next = (idx + 1) % tabKeys.length; break;
+        case 'ArrowLeft': next = (idx - 1 + tabKeys.length) % tabKeys.length; break;
+        case 'Home': next = 0; break;
+        case 'End': next = tabKeys.length - 1; break;
+        default: return;
+      }
+      e.preventDefault();
+      if (next !== idx) {
+        setTab(tabKeys[next]);
+        document.getElementById(`admin-tab-${tabKeys[next]}`)?.focus();
+      }
+    },
+    [tab, tabKeys],
+  );
+
+  useEffect(() => {
+    if (toast) {
+      const el = document.querySelector('[role="alert"].animate-slide-up') as HTMLElement | null;
+      el?.focus();
+    }
+  }, [toast]);
 
   const showToast = useCallback(
     (msg: string, type: 'success' | 'error') => {
@@ -235,6 +202,7 @@ export default function AdminPage() {
   }, [backendUrl, getHeaders, showToast]);
 
   useEffect(() => {
+    headingRef.current?.focus();
     fetchUsers();
     fetchContracts();
     fetchRisk();
@@ -272,9 +240,8 @@ export default function AdminPage() {
           d.kill_switch_active ? 'error' : 'success',
         );
       } else {
-        const errBody = await r.text().catch(() => '');
         showToast(
-          `Kill switch failed (${r.status})${errBody ? `: ${errBody.slice(0, 120)}` : ''}`,
+          `Kill switch failed (${r.status})`,
           'error',
         );
       }
@@ -493,6 +460,14 @@ export default function AdminPage() {
           .admin-tabs-row { overflow-x:auto; }
           .admin-stats-row { grid-template-columns:1fr 1fr !important; }
           .admin-two-col { grid-template-columns:1fr !important; }
+          .admin-three-col { grid-template-columns:1fr !important; }
+        }
+        @media(max-width:440px){
+          .admin-stats-row { grid-template-columns:1fr 1fr !important; }
+          .stat-card { padding:14px 12px; }
+        }
+        @media(max-width:360px){
+          .admin-stats-row { grid-template-columns:1fr !important; }
         }
       `}</style>
 
@@ -509,6 +484,8 @@ export default function AdminPage() {
       >
         <div className="animate-fade-in">
           <h1
+            ref={headingRef}
+            tabIndex={-1}
             className="h1"
             style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
           >
@@ -729,11 +706,20 @@ export default function AdminPage() {
       {/* ── Tabs ── */}
       <div
         className="admin-tabs-row"
+        role="tablist"
+        aria-orientation="horizontal"
+        onKeyDown={handleTabKeyDown}
+        ref={tabListRef}
         style={{ display: 'flex', gap: '4px', marginBottom: '20px' }}
       >
         {tabs.map((tb) => (
           <button
             key={tb.key}
+            role="tab"
+            id={`admin-tab-${tb.key}`}
+            aria-selected={tab === tb.key}
+            aria-controls={`admin-panel-${tb.key}`}
+            tabIndex={tab === tb.key ? 0 : -1}
             className={`admin-tab${tab === tb.key ? ' active' : ''}`}
             onClick={() => setTab(tb.key)}
           >
@@ -775,7 +761,12 @@ export default function AdminPage() {
 
       {/* ── OVERVIEW ── */}
       {tab === 'overview' && (
-        <div className="animate-fade-in">
+        <div
+          role="tabpanel"
+          id="admin-panel-overview"
+          aria-labelledby="admin-tab-overview"
+          className="animate-fade-in"
+        >
           {loading.health ? (
             <div
               className="admin-card"
@@ -1050,7 +1041,12 @@ export default function AdminPage() {
 
       {/* ── USERS ── */}
       {tab === 'users' && (
-        <div className="admin-card animate-fade-in">
+        <div
+          role="tabpanel"
+          id="admin-panel-users"
+          aria-labelledby="admin-tab-users"
+          className="admin-card animate-fade-in"
+        >
           <div
             style={{
               display: 'flex',
@@ -1116,19 +1112,20 @@ export default function AdminPage() {
           ) : (
             <div className="table-wrapper">
               <table className="table-base">
+                <caption className="visually-hidden">{t('admin.users_title')}</caption>
                 <thead>
                   <tr>
-                    <th className="admin-th">{t('admin.email')}</th>
-                    <th className="admin-th">{t('admin.name')}</th>
-                    <th className="admin-th">{t('admin.role')}</th>
-                    <th className="admin-th">{t('admin.created')}</th>
-                    <th className="admin-th">{t('admin.actions')}</th>
+                    <th scope="col" className="admin-th">{t('admin.email')}</th>
+                    <th scope="col" className="admin-th">{t('admin.name')}</th>
+                    <th scope="col" className="admin-th">{t('admin.role')}</th>
+                    <th scope="col" className="admin-th">{t('admin.created')}</th>
+                    <th scope="col" className="admin-th">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => (
+                    {users.map((u) => (
                     <tr key={u.id} className="admin-tr">
-                      <td className="admin-td">
+                      <td className="admin-td" data-label={t('admin.email')}>
                         <span
                           style={{
                             color: 'var(--color-primary-light)',
@@ -1141,27 +1138,29 @@ export default function AdminPage() {
                       <td
                         className="admin-td"
                         style={{ color: 'var(--text-secondary)' }}
+                        data-label={t('admin.name')}
                       >
                         {u.name || '—'}
                       </td>
-                      <td className="admin-td">
+                      <td className="admin-td" data-label={t('admin.role')}>
                         <RoleBadge role={u.role} />
                       </td>
                       <td
                         className="admin-td"
                         style={{ color: 'var(--text-muted)', fontSize: '13px' }}
+                        data-label={t('admin.created')}
                       >
                         {new Date(u.created_at).toLocaleDateString(lng)}
                       </td>
-                      <td className="admin-td">
+                      <td className="admin-td" data-label={t('admin.actions')}>
                         <select
                           className="admin-select"
                           value={u.role}
                           onChange={(e) => updateUserRole(u.id, e.target.value)}
                         >
-                          <option value="user">user</option>
-                          <option value="operator">operator</option>
-                          <option value="admin">admin</option>
+                          <option value="user">{t('admin.role_user')}</option>
+                          <option value="operator">{t('admin.role_operator')}</option>
+                          <option value="admin">{t('admin.role_admin')}</option>
                         </select>
                       </td>
                     </tr>
@@ -1191,6 +1190,9 @@ export default function AdminPage() {
       {/* ── CONTRACTS ── */}
       {tab === 'contracts' && (
         <div
+          role="tabpanel"
+          id="admin-panel-contracts"
+          aria-labelledby="admin-tab-contracts"
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -1261,27 +1263,28 @@ export default function AdminPage() {
             ) : (
               <div className="table-wrapper">
                 <table className="table-base">
+                  <caption className="visually-hidden">{t('admin.contracts_title')}</caption>
                   <thead>
                     <tr>
-                      <th className="admin-th">
+                      <th scope="col" className="admin-th">
                         {t('admin.contract_user')}
                       </th>
-                      <th className="admin-th">
+                      <th scope="col" className="admin-th">
                         {t('admin.contract_start')}
                       </th>
-                      <th className="admin-th">
+                      <th scope="col" className="admin-th">
                         {t('admin.contract_end')}
                       </th>
-                      <th className="admin-th">
+                      <th scope="col" className="admin-th">
                         {t('admin.contract_status')}
                       </th>
-                      <th className="admin-th">{t('admin.actions')}</th>
+                      <th scope="col" className="admin-th">{t('admin.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {contracts.map((c) => (
                       <tr key={c.id} className="admin-tr">
-                        <td className="admin-td">
+                        <td className="admin-td" data-label={t('admin.contract_user')}>
                           <span
                             style={{
                               color: 'var(--color-primary-light)',
@@ -1298,6 +1301,7 @@ export default function AdminPage() {
                             color: 'var(--text-secondary)',
                             fontSize: '13px',
                           }}
+                          data-label={t('admin.contract_start')}
                         >
                           {new Date(c.start_date).toLocaleDateString(lng)}
                         </td>
@@ -1307,10 +1311,11 @@ export default function AdminPage() {
                             color: 'var(--text-secondary)',
                             fontSize: '13px',
                           }}
+                          data-label={t('admin.contract_end')}
                         >
                           {new Date(c.end_date).toLocaleDateString(lng)}
                         </td>
-                        <td className="admin-td">
+                        <td className="admin-td" data-label={t('admin.contract_status')}>
                           <span
                             className={`badge ${c.is_active ? 'badge-accent' : 'badge-danger'}`}
                           >
@@ -1319,7 +1324,7 @@ export default function AdminPage() {
                               : t('admin.contract_inactive')}
                           </span>
                         </td>
-                        <td className="admin-td">
+                        <td className="admin-td" data-label={t('admin.actions')}>
                           <button
                             className="btn-base btn-danger btn-sm"
                             onClick={() => toggleContract(c.id)}
@@ -1379,7 +1384,9 @@ export default function AdminPage() {
               </svg>
               {t('admin.contract_create')}
             </h3>
-            <div
+            <form
+              onSubmit={(e) => { e.preventDefault(); createContract(); }}
+              className="admin-three-col"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr auto',
@@ -1417,8 +1424,8 @@ export default function AdminPage() {
                 />
               </div>
               <button
+                type="submit"
                 className="btn-base btn-primary"
-                onClick={createContract}
               >
                 <svg
                   width="14"
@@ -1435,7 +1442,7 @@ export default function AdminPage() {
                 </svg>
                 {t('admin.contract_create')}
               </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
@@ -1443,6 +1450,9 @@ export default function AdminPage() {
       {/* ── RISK ── */}
       {tab === 'risk' && (
         <div
+          role="tabpanel"
+          id="admin-panel-risk"
+          aria-labelledby="admin-tab-risk"
           className="layout-2col animate-fade-in"
           style={{ gap: '20px' }}
         >
@@ -1485,7 +1495,7 @@ export default function AdminPage() {
                 <Shimmer w="140px" h="40px" />
               </div>
             ) : (
-              <>
+              <form onSubmit={(e) => { e.preventDefault(); saveRisk(); }}>
                 <div className="form-group">
                   <label className="form-label">
                     {t('risk.max_notional')} (USDT)
@@ -1518,8 +1528,8 @@ export default function AdminPage() {
                   </p>
                 </div>
                 <button
+                  type="submit"
                   className="btn-base btn-primary"
-                  onClick={saveRisk}
                 >
                   <svg
                     width="14"
@@ -1537,7 +1547,7 @@ export default function AdminPage() {
                   </svg>
                   {t('admin.save_risk')}
                 </button>
-              </>
+              </form>
             )}
           </div>
 

@@ -1,19 +1,26 @@
 services:
   api:
-    image: python:3.12-slim
-    working_dir: /app
+    build: .
     volumes:
       - .:/app
-    command: sh -c "pip install -r requirements.txt -q && uvicorn main:app --host 0.0.0.0 --port 8000"
+      - /var/run/docker.sock:/var/run/docker.sock
     expose:
       - "8000"
     networks:
       - proxy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/runtime/services"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.zeaz-api.rule=Host(`api.zeaz.dev`)"
-      - "traefik.http.routers.zeaz-api.entrypoints=web"
+      - "traefik.http.routers.zeaz-api.entrypoints=websecure"
+      - "traefik.http.routers.zeaz-api.tls=true"
+      - "traefik.http.routers.zeaz-api.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
       - "traefik.http.services.zeaz-api.loadbalancer.server.port=8000"
     restart: unless-stopped
 

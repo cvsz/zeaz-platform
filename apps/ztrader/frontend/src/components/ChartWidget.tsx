@@ -34,6 +34,35 @@ export const ChartWidget: React.FC<ChartWidgetProps> = memo(
     const chartRef = useRef<IChartApi | null>(null);
     const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
 
+    if (data.length === 0) {
+      return (
+        <div
+          ref={chartContainerRef}
+          role="img"
+          aria-label="Price chart — no data available"
+          style={{
+            width: '100%',
+            height: '300px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-muted)',
+            fontSize: '14px',
+            background: 'var(--bg-surface)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-subtle)',
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ marginRight: '10px', opacity: 0.4 }}>
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <polyline points="17 8 12 3 7 8" />
+            <polyline points="7 16 12 21 17 16" />
+          </svg>
+          No chart data available
+        </div>
+      );
+    }
+
     useEffect(() => {
       if (!chartContainerRef.current) return;
 
@@ -119,8 +148,36 @@ export const ChartWidget: React.FC<ChartWidgetProps> = memo(
     return (
       <div
         ref={chartContainerRef}
+        role="img"
+        aria-label={`Price chart with ${data.length} candles`}
         style={{ width: '100%', height: '300px' }}
-      />
+      >
+        <div className="visually-hidden">
+          <table aria-label="Candlestick data">
+            <caption>Candlestick data for the price chart. Last {Math.min(data.length, 20)} candles shown.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Open</th>
+                <th scope="col">High</th>
+                <th scope="col">Low</th>
+                <th scope="col">Close</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.slice(-20).map((d) => (
+                <tr key={d.timestamp}>
+                  <td>{new Date(d.timestamp).toLocaleDateString()}</td>
+                  <td>{d.open}</td>
+                  <td>{d.high}</td>
+                  <td>{d.low}</td>
+                  <td>{d.close}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   },
 );

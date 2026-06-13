@@ -1,20 +1,27 @@
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Depends
 from typing import Dict, Any, List
 import json
-import redis
+import redis.asyncio as aioredis
 import asyncio
+import os
+from .auth import require_auth
 
 router = APIRouter()
-redis_client = redis.from_url("redis://localhost:6379/0")
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+redis_client = aioredis.from_url(REDIS_URL)
 
 @router.get("/agents")
 async def get_active_agents():
-    agent_ids = redis_client.smembers("swarm:active_agents")
+    agent_ids = await redis_client.smembers("swarm:active_agents")
     agents = []
     for aid in agent_ids:
-        data = redis_client.get(f"swarm:agent:{aid.decode()}")
-        if data:
-            agents.append(json.loads(data.decode()))
+        try:
+            decoded_aid = aid.decode()
+            data = await redis_client.get(f"swarm:agent:{decoded_aid}")
+            if data:
+                agents.append(json.loads(data.decode()))
+        except Exception:
+            continue
     return agents
 
 @router.get("/marketplace")

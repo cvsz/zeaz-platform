@@ -105,13 +105,13 @@ export function PromptPayTopup() {
         const data: PaymentSession = await res.json();
         if (data.status === 'paid') {
           setPaymentStatus('success');
-          setMessage({ type: 'success', text: `${METHOD_META[method].label}: ฿${data.amount.toFixed(2)} received!` });
+          setMessage({ type: 'success', text: t('topup.received', { method: METHOD_META[method].label, amount: data.amount.toFixed(2) }) });
           return true;
         }
         if (data.status === 'expired' || data.status === 'failed') {
           setPaymentStatus('expired');
           setSession(null);
-          setMessage({ type: 'error', text: 'Payment expired or failed. Please try again.' });
+          setMessage({ type: 'error', text: t('topup.expired_or_failed') });
           return true;
         }
       }
@@ -143,13 +143,13 @@ export function PromptPayTopup() {
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (amount <= 0) {
-      setMessage({ type: 'error', text: 'Please enter a valid amount' });
+      setMessage({ type: 'error', text: t('topup.enter_valid_amount') });
       return;
     }
 
     if (method === 'zpoint') {
       if (zpointBalance !== null && amount > zpointBalance) {
-        setMessage({ type: 'error', text: `Insufficient Z Point balance. Available: ${zpointBalance.toFixed(0)} pts` });
+        setMessage({ type: 'error', text: t('topup.insufficient_zpoint', { balance: zpointBalance.toFixed(0) }) });
         return;
       }
     }
@@ -169,14 +169,14 @@ export function PromptPayTopup() {
         setCountdown(method === 'linepay' ? 300 : 120);
         if (method === 'zpoint' && zpointBalance !== null) {
           setZpointBalance(zpointBalance - amount);
-          setMessage({ type: 'success', text: `${amount} Z Points deducted. Remaining: ${(zpointBalance - amount).toFixed(0)} pts` });
+          setMessage({ type: 'success', text: t('topup.zpoint_deducted', { amount, balance: (zpointBalance - amount).toFixed(0) }) });
         }
       } else {
         const err = await res.json().catch(() => ({}));
-        setMessage({ type: 'error', text: err.detail || 'Payment request failed' });
+        setMessage({ type: 'error', text: err.detail || t('topup.payment_request_failed') });
       }
     } catch {
-      setMessage({ type: 'error', text: 'Failed to connect to payment service' });
+      setMessage({ type: 'error', text: t('topup.connect_failed') });
     } finally {
       setLoading(false);
     }
@@ -203,10 +203,12 @@ export function PromptPayTopup() {
             {t('topup.desc')}
           </p>
 
-          <label className="form-label" style={{ marginBottom: '10px' }}>
-            Payment Method
+          <label className="form-label" style={{ marginBottom: '10px' }} id="payment-method-label">
+            {t('topup.payment_method')}
           </label>
           <div
+            role="radiogroup"
+            aria-labelledby="payment-method-label"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
@@ -217,10 +219,29 @@ export function PromptPayTopup() {
             {(Object.keys(METHOD_META) as PaymentMethod[]).map((pm) => {
               const m = METHOD_META[pm];
               const active = pm === method;
+              const handleKeyDown = (e: React.KeyboardEvent) => {
+                const keys = Object.keys(METHOD_META) as PaymentMethod[];
+                const idx = keys.indexOf(pm);
+                let next = idx;
+                if (e.key === 'ArrowRight') next = (idx + 1) % keys.length;
+                else if (e.key === 'ArrowLeft') next = (idx - 1 + keys.length) % keys.length;
+                else if (e.key === 'Home') next = 0;
+                else if (e.key === 'End') next = keys.length - 1;
+                else return;
+                e.preventDefault();
+                setMethod(keys[next]);
+                document.getElementById(`payment-method-${keys[next]}`)?.focus();
+              };
               return (
                 <button
                   key={pm}
+                  id={`payment-method-${pm}`}
+                  role="radio"
+                  aria-checked={active}
+                  aria-label={m.label}
+                  tabIndex={active ? 0 : -1}
                   type="button"
+                  onKeyDown={handleKeyDown}
                   onClick={() => {
                     setMethod(pm);
                     setMessage(null);
@@ -251,7 +272,7 @@ export function PromptPayTopup() {
 
           <div className="form-group">
             <label className="form-label">
-              {method === 'zpoint' ? 'Amount (Z Points)' : t('topup.select_amount')}
+              {method === 'zpoint' ? t('topup.amount_zpoints') : t('topup.select_amount')}
             </label>
             {method !== 'zpoint' && (
               <div
@@ -301,9 +322,9 @@ export function PromptPayTopup() {
             >
               <span style={{ fontSize: '16px' }}>⭐</span>
               <span>
-                Available balance:{' '}
+                {t('topup.available_balance')}{' '}
                 <strong style={{ color: '#F59E0B' }}>
-                  {zpointBalance !== null ? `${zpointBalance.toFixed(0)} pts` : '—'}
+                  {zpointBalance !== null ? `${zpointBalance.toFixed(0)} ${t('topup.points_unit')}` : '—'}
                 </strong>
               </span>
             </div>
@@ -329,10 +350,10 @@ export function PromptPayTopup() {
             className="btn-base btn-primary btn-full"
           >
             {loading
-              ? 'Processing...'
+              ? t('topup.processing')
               : method === 'zpoint'
-                ? 'Deduct Z Points'
-                : `Pay with ${meta.label}`}
+                ? t('topup.deduct_zpoints')
+                : t('topup.pay_with', { method: meta.label })}
           </button>
         </form>
       )}
@@ -357,10 +378,10 @@ export function PromptPayTopup() {
                 {meta.icon}
               </div>
               <h4 className="h4" style={{ marginBottom: '8px' }}>
-                Redirecting to {meta.label}
+                {t('topup.redirecting_to', { method: meta.label })}
               </h4>
               <p className="text-secondary" style={{ fontSize: '14px', marginBottom: '20px', lineHeight: '1.5' }}>
-                You will be redirected to complete the payment.
+                {t('topup.redirect_desc')}
               </p>
               <a
                 href={session.redirect_url}
@@ -369,11 +390,11 @@ export function PromptPayTopup() {
                 className="btn-base btn-primary"
                 style={{ textDecoration: 'none', marginBottom: '12px' }}
               >
-                Open {meta.label}
+                {t('topup.open_method', { method: meta.label })}
               </a>
               <span className="text-muted" style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="status-dot status-dot-info animate-pulse" />
-                Waiting for confirmation ({countdown}s)
+                {t('topup.waiting_confirmation', { seconds: countdown })}
               </span>
               <button onClick={handleReset} className="btn-base btn-ghost btn-sm" style={{ marginTop: '12px' }}>
                 {t('topup.cancel')}
@@ -409,7 +430,7 @@ export function PromptPayTopup() {
                 </div>
                 <img
                   src={`data:image/png;base64,${session.qr_image_base64}`}
-                  alt={`${meta.label} QR Code`}
+                  alt={t('topup.qr_code_alt', { method: meta.label })}
                   style={{ width: '200px', height: '200px', borderRadius: '6px', display: 'block' }}
                 />
               </div>
@@ -450,11 +471,11 @@ export function PromptPayTopup() {
             ✓
           </div>
           <h4 className="h4" style={{ color: 'var(--color-accent)', marginBottom: '8px' }}>
-            {method === 'zpoint' ? 'Points Deducted!' : t('topup.success_title')}
+            {method === 'zpoint' ? t('topup.points_deducted_title') : t('topup.success_title')}
           </h4>
           <p className="text-secondary" style={{ fontSize: '14px', marginBottom: '20px', lineHeight: '1.5' }}>
             {method === 'zpoint'
-              ? `${amount} Z Points deducted successfully.`
+              ? t('topup.points_deducted_desc', { amount })
               : t('topup.success_desc', { amount })}
           </p>
           <button onClick={handleReset} className="btn-base btn-primary">

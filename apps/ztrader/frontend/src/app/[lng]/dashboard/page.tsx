@@ -241,6 +241,29 @@ export default function DashboardPage() {
 
   const handleStartBot = async (e: React.FormEvent) => {
     e.preventDefault();
+    const n = Number(notional);
+    const fp = Number(fastPeriod);
+    const sp = Number(slowPeriod);
+    if (!n || n <= 0 || !Number.isFinite(n)) {
+      showToast('Invalid notional amount', 'error');
+      return;
+    }
+    if (!Number.isInteger(fp) || fp < 1) {
+      showToast('Fast period must be a positive integer', 'error');
+      return;
+    }
+    if (!Number.isInteger(sp) || sp < 1) {
+      showToast('Slow period must be a positive integer', 'error');
+      return;
+    }
+    if (fp >= sp) {
+      showToast('Fast period must be less than slow period', 'error');
+      return;
+    }
+    if (!selectedSymbol || !selectedSymbol.includes('/')) {
+      showToast('Invalid trading symbol', 'error');
+      return;
+    }
     setLoading((prev) => ({ ...prev, startBot: true }));
     try {
       const res = await fetch(`${backendUrl}/api/v1/bot/start`, {
@@ -249,17 +272,16 @@ export default function DashboardPage() {
         body: JSON.stringify({
           strategy_name: selectedStrategy,
           symbol: selectedSymbol,
-          notional: Number(notional),
-          fast_period: Number(fastPeriod),
-          slow_period: Number(slowPeriod),
+          notional: n,
+          fast_period: fp,
+          slow_period: sp,
         }),
       });
       if (res.ok) {
         showToast(`${selectedStrategy} bot started on ${selectedSymbol}`, 'success');
         await fetchData();
       } else {
-        const errBody = await res.text().catch(() => '');
-        showToast(`Bot start failed (${res.status})${errBody ? `: ${errBody.slice(0, 120)}` : ''}`, 'error');
+        showToast(`Bot start failed (${res.status})`, 'error');
       }
     } catch (err) {
       console.error(err);
@@ -316,9 +338,8 @@ export default function DashboardPage() {
         );
         await fetchData();
       } else {
-        const errBody = await res.text().catch(() => '');
         showToast(
-          `Kill switch failed (${res.status})${errBody ? `: ${errBody.slice(0, 120)}` : ''}`,
+          `Kill switch failed (${res.status})`,
           'error',
         );
       }
@@ -381,8 +402,7 @@ export default function DashboardPage() {
         });
         setBtChartData(candles);
       } else {
-        const errBody = await res.text().catch(() => '');
-        setBtError(`Backend returned ${res.status}${errBody ? `: ${errBody.slice(0, 200)}` : ''}`);
+        setBtError(`Backend returned ${res.status}`);
       }
     } catch (err) {
       console.error(err);
@@ -402,12 +422,13 @@ export default function DashboardPage() {
       style={{
         maxWidth: '1280px',
         margin: '0 auto',
-        padding: '40px 24px',
+        padding: 'clamp(16px, 4vw, 40px) clamp(12px, 3vw, 24px)',
         position: 'relative',
       }}
     >
       {/* ── Premium Background Orbs ── */}
       <div
+        className="bg-orb"
         style={{
           position: 'fixed',
           top: '-15%',
@@ -422,6 +443,7 @@ export default function DashboardPage() {
         }}
       />
       <div
+        className="bg-orb"
         style={{
           position: 'fixed',
           bottom: '-10%',
@@ -436,6 +458,7 @@ export default function DashboardPage() {
         }}
       />
       <div
+        className="bg-orb"
         style={{
           position: 'fixed',
           top: '40%',
@@ -450,9 +473,12 @@ export default function DashboardPage() {
         }}
       />
 
+      <h1 className="visually-hidden">{t('dashboard.title')}</h1>
+
       {/* ── Ticker Tape ── */}
       <div
         className="ticker-tape"
+        aria-live="polite"
         style={{
           marginBottom: '28px',
           background: 'var(--bg-card)',
@@ -631,10 +657,10 @@ export default function DashboardPage() {
                   onChange={(e) => setSelectedStrategy(e.target.value)}
                   className="input-field"
                 >
-                  <option value="ma-crossover">MA Crossover</option>
-                  <option value="scalp">Scalp Strategy</option>
-                  <option value="swing">Swing Strategy</option>
-                  <option value="position">Position Strategy</option>
+                  <option value="ma-crossover">{t('strategy.ma_crossover')}</option>
+                  <option value="scalp">{t('strategy.scalp')}</option>
+                  <option value="swing">{t('strategy.swing')}</option>
+                  <option value="position">{t('strategy.position')}</option>
                 </select>
               </div>
 
@@ -858,16 +884,16 @@ export default function DashboardPage() {
             </h3>
             <form onSubmit={handleRunBacktest}>
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label className="form-label">Strategy</label>
+                <label className="form-label">{t('dashboard.strategy_label')}</label>
                 <select
                   value={btStrategy}
                   onChange={(e) => setBtStrategy(e.target.value)}
                   className="input-field"
                 >
-                  <option value="ma-crossover">MA Crossover</option>
-                  <option value="scalp">Scalp Strategy</option>
-                  <option value="swing">Swing Strategy</option>
-                  <option value="position">Position Strategy</option>
+                  <option value="ma-crossover">{t('strategy.ma_crossover')}</option>
+                  <option value="scalp">{t('strategy.scalp')}</option>
+                  <option value="swing">{t('strategy.swing')}</option>
+                  <option value="position">{t('strategy.position')}</option>
                 </select>
               </div>
 
@@ -1219,35 +1245,38 @@ export default function DashboardPage() {
         </h3>
 
         <div className="table-wrapper">
-          <table className="table-base">
-            <thead>
-              <tr>
-                <th className="table-th">Timestamp</th>
-                <th className="table-th">Event Type</th>
-                <th className="table-th">Actor</th>
-                <th className="table-th">Severity</th>
-                <th className="table-th">Message</th>
-              </tr>
-            </thead>
-            <tbody>
+    <table className="table-base">
+      <caption className="visually-hidden">{t('dashboard.audit_log')}</caption>
+      <thead>
+        <tr>
+          <th scope="col" className="table-th">Timestamp</th>
+          <th scope="col" className="table-th">Event Type</th>
+          <th scope="col" className="table-th">Actor</th>
+          <th scope="col" className="table-th">Severity</th>
+          <th scope="col" className="table-th">Message</th>
+        </tr>
+      </thead>
+      <tbody>
               {auditLogs.map((log) => (
                 <tr key={log.id} className="table-tr">
                   <td
                     className="table-td"
                     style={{ color: 'var(--text-secondary)' }}
+                    data-label={t('dashboard.audit_timestamp')}
                   >
                     {new Date(log.created_at).toLocaleTimeString()}
                   </td>
-                  <td className="table-td" style={{ fontWeight: '500' }}>
+                  <td className="table-td" style={{ fontWeight: '500' }} data-label={t('dashboard.audit_event_type')}>
                     {log.event_type}
                   </td>
                   <td
                     className="table-td"
                     style={{ color: 'var(--text-secondary)' }}
+                    data-label={t('dashboard.audit_actor')}
                   >
                     {log.actor}
                   </td>
-                  <td className="table-td">
+                  <td className="table-td" data-label={t('dashboard.audit_severity')}>
                     <span
                       className={`badge ${log.severity === 'critical' ? 'badge-danger' : log.severity === 'warning' ? 'badge-warning' : 'badge-info'}`}
                     >
@@ -1257,6 +1286,7 @@ export default function DashboardPage() {
                   <td
                     className="table-td"
                     style={{ color: 'var(--text-muted)' }}
+                    data-label={t('dashboard.audit_message')}
                   >
                     {log.message}
                   </td>
@@ -1268,7 +1298,7 @@ export default function DashboardPage() {
                     colSpan={5}
                     style={{
                       textAlign: 'center',
-                      padding: '40px',
+                      padding: 'clamp(16px, 6vw, 40px)',
                       color: 'var(--text-muted)',
                       fontStyle: 'italic',
                     }}
@@ -1284,7 +1314,9 @@ export default function DashboardPage() {
 
       {toast && (
         <div
-          className="animate-slide-up"
+          className="toast-container animate-slide-up"
+          role="alert"
+          aria-live="assertive"
           style={{
             position: 'fixed',
             bottom: '28px',

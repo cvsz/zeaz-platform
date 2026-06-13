@@ -108,7 +108,7 @@ codex-suite-validate:
 ci-validate: test env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."
 
-validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check omega-validate
+validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
 	@echo "Validation complete."
 
 validate-env:

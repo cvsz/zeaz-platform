@@ -1,0 +1,50 @@
+name: SBOM Generation
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: sbom-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  sbom:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
+
+      - name: Generate SBOM
+        run: make sbom
+
+      - name: Sign SBOM with Cosign keyless
+        run: make cosign-sign
+
+      - name: Upload SBOM artifacts
+        if: ${{ hashFiles('artifacts.sbom.spdx.json', '**/*.sig', '**/*.att') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: sbom-artifacts
+          path: |
+            artifacts.sbom.spdx.json
+            **/*.sig
+            **/*.att
+          if-no-files-found: warn

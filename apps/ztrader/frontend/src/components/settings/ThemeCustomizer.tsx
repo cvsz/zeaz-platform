@@ -35,24 +35,24 @@ export function ThemeCustomizer() {
       <h3 className="h3" style={{ marginBottom: '20px' }}>{t('theme.customize')}</h3>
 
       <div className="form-group">
-        <label className="form-label">Theme Mode</label>
+        <label className="form-label">{t('theme.mode')}</label>
         <div style={{ display: 'flex', gap: '10px' }}>
           {(['light', 'dark', 'auto'] as const).map((mode) => (
             <button key={mode} onClick={() => setTheme(mode)}
               className={`btn-base btn-sm ${theme === mode ? 'btn-primary' : 'btn-ghost'}`}
               style={{ flex: 1, justifyContent: 'center' }}>
-              {mode === 'light' ? 'Light' : mode === 'dark' ? 'Dark' : 'Auto'}
+              {mode === 'light' ? t('theme.light') : mode === 'dark' ? t('theme.dark') : t('theme.auto')}
             </button>
           ))}
         </div>
       </div>
 
       <div className="form-group">
-        <h4 className="h4" style={{ marginBottom: '16px' }}>Custom Colors</h4>
+        <h4 className="h4" style={{ marginBottom: '16px' }}>{t('theme.custom_colors')}</h4>
         {[
-          { label: 'Primary Color', state: tempPrimaryColor, setState: setTempPrimaryColor },
-          { label: 'Secondary Color', state: tempSecondaryColor, setState: setTempSecondaryColor },
-          { label: 'Accent Color', state: tempAccentColor, setState: setTempAccentColor },
+          { label: t('theme.primary_color'), state: tempPrimaryColor, setState: setTempPrimaryColor },
+          { label: t('theme.secondary_color'), state: tempSecondaryColor, setState: setTempSecondaryColor },
+          { label: t('theme.accent_color'), state: tempAccentColor, setState: setTempAccentColor },
         ].map((item, idx) => (
           <div key={idx} style={{ marginBottom: '12px' }}>
             <label className="form-label">{item.label}</label>
@@ -66,21 +66,21 @@ export function ThemeCustomizer() {
         ))}
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
           <button onClick={handleApplyColors} className="btn-base btn-primary btn-sm" style={{ flex: 1 }}>
-            Apply Colors
+            {t('theme.apply_colors')}
           </button>
           <button onClick={handleResetColors} className="btn-base btn-ghost btn-sm">
-            Reset
+            {t('theme.reset')}
           </button>
         </div>
       </div>
 
       <div style={{ padding: '16px', background: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-        <h4 className="form-label" style={{ marginBottom: '12px' }}>Theme Preview</h4>
+        <h4 className="form-label" style={{ marginBottom: '12px' }}>{t('theme.preview')}</h4>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
-            { label: 'Primary', color: tempPrimaryColor },
-            { label: 'Secondary', color: tempSecondaryColor },
-            { label: 'Accent', color: tempAccentColor },
+            { label: t('theme.primary'), color: tempPrimaryColor },
+            { label: t('theme.secondary'), color: tempSecondaryColor },
+            { label: t('theme.accent'), color: tempAccentColor },
           ].map((c, idx) => (
             <div key={idx} style={{
               width: '74px', height: '74px', backgroundColor: c.color,

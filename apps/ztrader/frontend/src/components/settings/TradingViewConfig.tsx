@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TVAlert {
@@ -22,31 +22,34 @@ export function TradingViewConfig() {
     'http://localhost:8000/api/v1/tradingview/webhook',
   );
   const [copied, setCopied] = useState(false);
+  const [alertsError, setAlertsError] = useState(false);
 
   const backendUrl =
     process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
+  const fetchAlerts = useCallback(async () => {
+    try {
+      setAlertsError(false);
+      const res = await fetch(
+        `${backendUrl}/api/v1/tradingview/alerts?limit=10`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAlerts(data);
+      } else {
+        setAlertsError(true);
+      }
+    } catch {
+      setAlertsError(true);
+    }
+  }, [backendUrl]);
+
   useEffect(() => {
     setWebhookUrl(`${backendUrl}/api/v1/tradingview/webhook`);
-
-    const fetchAlerts = async () => {
-      try {
-        const res = await fetch(
-          `${backendUrl}/api/v1/tradingview/alerts?limit=10`,
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setAlerts(data);
-        }
-      } catch (err) {
-        console.error('Failed to load TradingView alerts:', err);
-      }
-    };
-
     fetchAlerts();
     const interval = setInterval(fetchAlerts, 5000);
     return () => clearInterval(interval);
-  }, [backendUrl]);
+  }, [backendUrl, fetchAlerts]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(webhookUrl);
@@ -57,7 +60,7 @@ export function TradingViewConfig() {
   return (
     <div className="glass-card-static animate-fade-in">
       <h3 className="h3" style={{ marginBottom: '16px' }}>
-        TradingView Webhook
+        {t('tradingview.title')}
       </h3>
 
       <p
@@ -68,13 +71,12 @@ export function TradingViewConfig() {
           marginBottom: '20px',
         }}
       >
-        Connect TradingView indicators or strategy alerts directly to
-        ztrader execution gates.
+        {t('tradingview.desc')}
       </p>
 
       <div style={{ marginBottom: '24px' }}>
         <div className="form-group">
-          <label className="form-label">Webhook URL</label>
+          <label className="form-label">{t('tradingview.webhook_url')}</label>
           <div
             style={{
               display: 'flex',
@@ -107,7 +109,7 @@ export function TradingViewConfig() {
                   : 'var(--color-primary)',
               }}
             >
-              {copied ? 'Copied!' : 'Copy'}
+              {copied ? t('tradingview.copied') : t('tradingview.copy')}
             </button>
           </div>
         </div>
@@ -123,7 +125,7 @@ export function TradingViewConfig() {
             color: 'var(--color-warning)',
           }}
         >
-          <strong>Required Custom Header:</strong>
+          <strong>{t('tradingview.required_header')}</strong>
           <code
             className="font-mono"
             style={{
@@ -142,9 +144,10 @@ export function TradingViewConfig() {
 
       <div>
         <h4 className="h4" style={{ marginBottom: '12px' }}>
-          Recent Webhook Signals
+          {t('tradingview.recent_signals')}
         </h4>
         <div
+          aria-live="polite"
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -191,7 +194,7 @@ export function TradingViewConfig() {
               </span>
             </div>
           ))}
-          {alerts.length === 0 && (
+          {alerts.length === 0 && !alertsError && (
             <div
               className="text-muted"
               style={{
@@ -200,7 +203,27 @@ export function TradingViewConfig() {
                 fontSize: '13px',
               }}
             >
-              No webhook alerts captured yet.
+              {t('tradingview.no_alerts')}
+            </div>
+          )}
+          {alertsError && (
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '16px',
+                fontSize: '13px',
+              }}
+            >
+              <span className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>
+                Failed to load alerts
+              </span>
+              <button
+                onClick={fetchAlerts}
+                className="btn-base btn-sm"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                Retry
+              </button>
             </div>
           )}
         </div>

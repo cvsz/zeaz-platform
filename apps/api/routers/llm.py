@@ -1,8 +1,10 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from typing import Dict, Any, List
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
+from pydantic import BaseModel
+from typing import Dict, Any, List, Optional
 import json
 import asyncio
 import uuid
+from .auth import require_auth
 from runtime.llm.provider_registry import ProviderRegistry
 from runtime.llm.token_budget_engine import TokenBudgetEngine
 from runtime.llm.router.health_router import HealthRouter
@@ -18,18 +20,23 @@ llm_router = HealthRouter(registry, budget_engine)
 backpressure = StreamBackpressure()
 delta_encoder = DeltaEncoder()
 
-@router.post("/completion")
-async def completion(data: Dict[str, Any]):
-    tenant_id = data.get("tenant_id", "default")
-    prompt = data.get("prompt", "")
-    
-    provider_id = await llm_router.route(prompt, tenant_id, **data)
-    provider = registry.get_provider(provider_id)
-    
-    result = await provider.complete(prompt, **data.get("options", {}))
-    budget_engine.record_usage(tenant_id, provider_id, result["usage"]["total_tokens"])
-    
-    return result
+class CompletionRequest(BaseModel):
+    tenant_id: str = "default"
+    prompt: str
+    options: dict = {}
+
+@router.post("/completion", dependencies=[Depends(require_auth)])
+async def completion(data: CompletionRequest):
+    try:
+        provider_id = await llm_router.route(data.prompt, data.tenant_id, **data.model_dump())
+        provider = registry.get_provider(provider_id)
+        
+        result = await provider.complete(data.prompt, **data.options)
+        budget_engine.record_usage(data.tenant_id, provider_id, result.get("usage", {}).get("total_tokens", 0))
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={"error": "Completion failed", "message": str(e)})
 
 @router.get("/health")
 async def health():
@@ -53,7 +60,7 @@ async def topology_ws(websocket: WebSocket):
             state = {
                 "topology": statuses,
                 "metrics": metrics,
-                "timestamp": asyncio.get_event_loop().time()
+                "timestamp": asyncio.get_running_loop().time()
             }
             
             # Use delta encoding to reduce traffic

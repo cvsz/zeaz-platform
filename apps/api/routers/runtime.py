@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Path
 import docker
+from .auth import require_auth
 
 router = APIRouter()
 client = docker.from_env()
@@ -13,13 +14,13 @@ def get_services():
             "name": c.name,
             "status": c.status,
             "image": c.image.tags[0] if c.image.tags else "unknown",
-            "state": c.attrs["State"]
+            "state": c.attrs.get("State", {})
         }
         for c in containers
     ]
 
-@router.post("/services/{container_id}/restart")
-def restart_service(container_id: str):
+@router.post("/services/{container_id}/restart", dependencies=[Depends(require_auth)])
+def restart_service(container_id: str = Path(..., pattern=r"^[a-zA-Z0-9_.-]+$")):
     container = client.containers.get(container_id)
     container.restart()
     return {"status": "restarted", "container": container_id}

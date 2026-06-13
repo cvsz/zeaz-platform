@@ -5,13 +5,14 @@ import os
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from .auth import require_auth
 
 router = APIRouter(tags=["cloudflare-control"])
 
-ROOT = Path(os.getenv("ZEAZ_PLATFORM_ROOT", "/home/zeazdev/zeaz-platform"))
+ROOT = Path(os.getenv("ZEAZ_PLATFORM_ROOT", "/home/zeazdev/zeaz-platform")).resolve()
 if not ROOT.exists():
-    ROOT = Path.cwd()
+    raise RuntimeError(f"ZEAZ_PLATFORM_ROOT={ROOT} does not exist")
 
 PLAN_PATH = ROOT / "configs/platform/apps-port-plan.json"
 OVERLAY_PATH = ROOT / "configs/platform/zcfdash-route-overlay.json"
@@ -24,7 +25,10 @@ AUDIT_REPORT_PATH = ROOT / "docs/reports/generated/full-repo-audit-report.md"
 
 def _read_json(path: Path, default: Any) -> Any:
     try:
-        if not path.exists():
+        resolved_path = path.resolve()
+        if not resolved_path.is_relative_to(ROOT):
+            raise ValueError(f"Path {path} is not within ROOT")
+        if not resolved_path.exists():
             return default
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:  # pragma: no cover - endpoint returns diagnostics
@@ -33,7 +37,10 @@ def _read_json(path: Path, default: Any) -> Any:
 
 def _read_text_tail(path: Path, limit: int = 12000) -> str:
     try:
-        if not path.exists():
+        resolved_path = path.resolve()
+        if not resolved_path.is_relative_to(ROOT):
+            raise ValueError(f"Path {path} is not within ROOT")
+        if not resolved_path.exists():
             return ""
         text = path.read_text(encoding="utf-8", errors="replace")
         return text[-limit:]
@@ -59,7 +66,7 @@ def _zcfdash_routes() -> list[dict[str, Any]]:
     ]
 
 
-@router.get("/health")
+@router.get("/health", dependencies=[Depends(require_auth)])
 def health() -> dict[str, Any]:
     routes = _zcfdash_routes()
     return {
@@ -78,7 +85,7 @@ def health() -> dict[str, Any]:
     }
 
 
-@router.get("/routes")
+@router.get("/routes", dependencies=[Depends(require_auth)])
 def routes() -> dict[str, Any]:
     return {
         "zone": "zeaz.dev",
@@ -88,7 +95,7 @@ def routes() -> dict[str, Any]:
     }
 
 
-@router.get("/terraform")
+@router.get("/terraform", dependencies=[Depends(require_auth)])
 def terraform_assets() -> dict[str, Any]:
     tfvars = _read_json(TFVARS_PATH, {"app_routes": {}})
     app_routes = tfvars.get("app_routes", {}) if isinstance(tfvars, dict) else {}
@@ -104,7 +111,7 @@ def terraform_assets() -> dict[str, Any]:
     }
 
 
-@router.get("/ingress")
+@router.get("/ingress", dependencies=[Depends(require_auth)])
 def ingress() -> dict[str, Any]:
     text = _read_text_tail(INGRESS_PATH)
     lines = [line for line in text.splitlines() if "zcfdash.zeaz.dev" in line or "api-zcfdash.zeaz.dev" in line]
@@ -115,7 +122,7 @@ def ingress() -> dict[str, Any]:
     }
 
 
-@router.get("/reports")
+@router.get("/reports", dependencies=[Depends(require_auth)])
 def reports() -> dict[str, Any]:
     return {
         "port_report": {
@@ -136,7 +143,7 @@ def reports() -> dict[str, Any]:
     }
 
 
-@router.get("/summary")
+@router.get("/summary", dependencies=[Depends(require_auth)])
 def summary() -> dict[str, Any]:
     return {
         "title": "ZeaZ Cloudflare Control Panel",

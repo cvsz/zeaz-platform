@@ -176,6 +176,8 @@ export default function SettingsPage() {
     if (!msg) return null;
     return (
       <div
+        role="alert"
+        aria-live="polite"
         className={`badge ${msg.type === 'success' ? 'badge-accent' : 'badge-danger'}`}
         style={{
           display: 'flex',
@@ -213,7 +215,7 @@ export default function SettingsPage() {
       style={{
         maxWidth: '1280px',
         margin: '0 auto',
-        padding: '40px 24px',
+        padding: 'clamp(16px, 4vw, 40px) clamp(12px, 3vw, 24px)',
         minHeight: '90vh',
       }}
     >
@@ -244,12 +246,12 @@ export default function SettingsPage() {
                   onChange={(e) => setExchange(e.target.value)}
                   className="input-field"
                 >
-                  <option value="binance.com">Binance.com</option>
-                  <option value="binance.th">Binance.th</option>
-                  <option value="okx">OKX</option>
-                  <option value="bybit">Bybit</option>
-                  <option value="kucoin">KuCoin</option>
-                  <option value="MT5">MetaTrader 5 (MT5)</option>
+                  <option value="binance.com">{t('exchange.binance_com')}</option>
+                  <option value="binance.th">{t('exchange.binance_th')}</option>
+                  <option value="okx">{t('exchange.okx')}</option>
+                  <option value="bybit">{t('exchange.bybit')}</option>
+                  <option value="kucoin">{t('exchange.kucoin')}</option>
+                  <option value="MT5">{t('exchange.mt5')}</option>
                 </select>
               </div>
 
@@ -309,72 +311,77 @@ export default function SettingsPage() {
             <h3 className="h3" style={{ marginBottom: '20px' }}>
               Risk Limits
             </h3>
-            <div className="form-group">
-              <label className="form-label">Max Order Notional (USD)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={riskLimits.max_notional}
-                onChange={(e) =>
-                  setRiskLimits((prev) => ({
-                    ...prev,
-                    max_notional: parseFloat(e.target.value) || 0,
-                  }))
-                }
-                className="input-field"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">
-                Allowed Symbols (comma-separated)
-              </label>
-              <input
-                type="text"
-                value={riskLimits.allowed_symbols.join(', ')}
-                onChange={(e) =>
-                  setRiskLimits((prev) => ({
-                    ...prev,
-                    allowed_symbols: e.target.value
-                      .split(',')
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                  }))
-                }
-                className="input-field"
-              />
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                marginBottom: '20px',
-              }}
-            >
-              <input
-                type="checkbox"
-                id="live-trading"
-                checked={riskLimits.live_trading}
-                onChange={(e) =>
-                  setRiskLimits((prev) => ({
-                    ...prev,
-                    live_trading: e.target.checked,
-                  }))
-                }
-                style={{ accentColor: 'var(--color-danger)' }}
-              />
-              <label htmlFor="live-trading" style={{ fontSize: '14px' }}>
-                Enable Live Trading
-              </label>
-            </div>
-            {renderMessage(riskMessage)}
-            <button
-              onClick={handleSaveRiskLimits}
-              disabled={riskSaving}
-              className="btn-base btn-primary btn-full"
-            >
-              {riskSaving ? 'Saving...' : 'Save Risk Limits'}
-            </button>
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveRiskLimits(); }}>
+              <div className="form-group">
+                <label className="form-label">Max Order Notional (USD)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={riskLimits.max_notional}
+                  onChange={(e) =>
+                    setRiskLimits((prev) => ({
+                      ...prev,
+                      max_notional: parseFloat(e.target.value) || 0,
+                    }))
+                  }
+                  className="input-field"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">
+                  Allowed Symbols (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={riskLimits.allowed_symbols.join(', ')}
+                  onChange={(e) =>
+                    setRiskLimits((prev) => ({
+                      ...prev,
+                      allowed_symbols: e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter(Boolean),
+                    }))
+                  }
+                  className="input-field"
+                />
+              </div>
+              <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                <legend className="visually-hidden">Live Trading Toggle</legend>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    marginBottom: '20px',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="live-trading"
+                    checked={riskLimits.live_trading}
+                    onChange={(e) =>
+                      setRiskLimits((prev) => ({
+                        ...prev,
+                        live_trading: e.target.checked,
+                      }))
+                    }
+                    style={{ accentColor: 'var(--color-danger)' }}
+                  />
+                  <label htmlFor="live-trading" style={{ fontSize: '14px' }}>
+                    Enable Live Trading
+                  </label>
+                </div>
+              </fieldset>
+              {renderMessage(riskMessage)}
+              <button
+                type="submit"
+                disabled={riskSaving}
+                className="btn-base btn-primary btn-full"
+              >
+                {riskSaving ? 'Saving...' : 'Save Risk Limits'}
+              </button>
+            </form>
           </div>
 
           <PromptPayTopup />

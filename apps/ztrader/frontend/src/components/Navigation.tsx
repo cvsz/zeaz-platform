@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
@@ -120,6 +120,43 @@ export function Navigation({ lng }: NavigationProps) {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [mobileOpen]);
+
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mobileOpen || !drawerRef.current) return;
+    const firstFocusable = drawerRef.current.querySelector<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
+    firstFocusable?.focus();
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !drawerRef.current) return;
+      const focusable = drawerRef.current.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [mobileOpen]);
 
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -322,6 +359,7 @@ export function Navigation({ lng }: NavigationProps) {
                     key={item.key}
                     href={`/${lng}/${item.path}`}
                     className={`nav-link${isActive(item.path) ? ' active' : ''}`}
+                    {...(isActive(item.path) ? { 'aria-current': 'page' as const } : {})}
                   >
                     <span className="nav-link-icon">{item.icon}</span>
                     {t(item.i18nKey)}
@@ -382,6 +420,8 @@ export function Navigation({ lng }: NavigationProps) {
             className={`nav-hamburger${mobileOpen ? ' open' : ''}`}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            aria-controls="nav-drawer"
           >
             <div className="nav-hamburger-bar" />
             <div className="nav-hamburger-bar" />
@@ -390,7 +430,15 @@ export function Navigation({ lng }: NavigationProps) {
         </div>
       </nav>
 
-      <div className={`nav-mobile-drawer${mobileOpen ? ' open' : ''}`}>
+      <div
+        id="nav-drawer"
+        ref={drawerRef}
+        role="dialog"
+        aria-modal={mobileOpen}
+        aria-hidden={!mobileOpen}
+        aria-label="Navigation menu"
+        className={`nav-mobile-drawer${mobileOpen ? ' open' : ''}`}
+      >
         {isLoggedIn ? (
           <>
             {menuConfig.map((item) => (
@@ -398,6 +446,7 @@ export function Navigation({ lng }: NavigationProps) {
                 key={item.key}
                 href={`/${lng}/${item.path}`}
                 className={`nav-mobile-link${isActive(item.path) ? ' active' : ''}`}
+                {...(isActive(item.path) ? { 'aria-current': 'page' as const } : {})}
               >
                 <span style={{ opacity: 0.8 }}>{item.icon}</span>
                 {t(item.i18nKey)}
@@ -446,6 +495,7 @@ export function Navigation({ lng }: NavigationProps) {
           <Link
             href={`/${lng}/login`}
             className={`nav-mobile-link${isActive('login') ? ' active' : ''}`}
+            {...(isActive('login') ? { 'aria-current': 'page' as const } : {})}
           >
             <span style={{ opacity: 0.8 }}>
               <svg

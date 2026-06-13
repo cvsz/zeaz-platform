@@ -25,8 +25,12 @@ lease_manager = LeaseManager()
 journal = ExecutionJournal()
 policy_engine = PolicyEngine()
 
+import os
+
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
 scheduler = SchedulerEngine(
-    "redis://localhost:6379/0",
+    REDIS_URL,
     lease_manager,
     journal,
     balancer,
@@ -48,7 +52,8 @@ async def submit_task(task_data: Dict[str, Any]):
         await scheduler.submit_task(task)
         return {"task_id": task.task_id, "status": "QUEUED"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # In a real app we'd log the exception using a logger
+        raise HTTPException(status_code=500, detail="Task submission failed")
 
 @router.get("/tasks/{task_id}/lineage")
 async def get_task_lineage(task_id: str):

@@ -74,3 +74,19 @@ applications:
     allowed_idps: [zeazdev-finance-saml]
     service_tokens_enabled: true
     security: {mfa: required, webauthn: required, step_up_auth: true}
+  - key: ztrader
+    name: zeazdev-${ENVIRONMENT}-ztrader
+    domain: ztrader.${PRIMARY_DOMAIN}
+    type: self_hosted
+    session_duration: 4h
+    allowed_idps: [zeazdev-finance-saml]
+    service_tokens_enabled: true
+    security: {mfa: required, webauthn: required, step_up_auth: true}
+  - key: ztrader-api
+    name: zeazdev-${ENVIRONMENT}-ztrader-api
+    domain: api-ztrader.${PRIMARY_DOMAIN}
+    type: self_hosted
+    session_duration: 4h
+    allowed_idps: [zeazdev-finance-saml]
+    service_tokens_enabled: true
+    security: {mfa: required, webauthn: required}

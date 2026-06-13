@@ -30,17 +30,22 @@ export function TelegramLink({
   const backendUrl =
     process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
+  const [statusError, setStatusError] = useState(false);
+
   const loadStatus = useCallback(async () => {
     try {
+      setStatusError(false);
       const response = await fetch(
         `${backendUrl}/api/v1/telegram/status/${userId}`,
       );
       if (response.ok) {
         const data = await response.json();
         setStatus(data);
+      } else {
+        setStatusError(true);
       }
-    } catch (error) {
-      console.error('Failed to load Telegram status:', error);
+    } catch {
+      setStatusError(true);
     }
   }, [backendUrl, userId]);
 
@@ -52,7 +57,7 @@ export function TelegramLink({
     if (!chatId.trim()) {
       setMessage({
         type: 'error',
-        text: 'Please enter your Telegram Chat ID',
+        text: t('telegram.enter_chat_id'),
       });
       return;
     }
@@ -71,7 +76,7 @@ export function TelegramLink({
       if (response.ok) {
         setMessage({
           type: 'success',
-          text: 'Telegram account linked successfully!',
+          text: t('telegram.linked_success'),
         });
         setChatId('');
         setUsername('');
@@ -80,14 +85,14 @@ export function TelegramLink({
         const err = await response.json();
         setMessage({
           type: 'error',
-          text: err.detail || 'Failed to link Telegram account',
+          text: err.detail || t('telegram.link_failed'),
         });
       }
     } catch (error) {
       console.error('Telegram link error:', error);
       setMessage({
         type: 'error',
-        text: 'Failed to link Telegram account. Please try again.',
+        text: t('telegram.link_failed_try'),
       });
     } finally {
       setLoading(false);
@@ -96,7 +101,7 @@ export function TelegramLink({
 
   const handleUnlink = async () => {
     if (
-      !confirm('Are you sure you want to unlink your Telegram account?')
+      !confirm(t('telegram.unlink_confirm'))
     )
       return;
     setLoading(true);
@@ -113,21 +118,21 @@ export function TelegramLink({
       if (response.ok) {
         setMessage({
           type: 'success',
-          text: 'Telegram account unlinked successfully',
+          text: t('telegram.unlinked_success'),
         });
         await loadStatus();
       } else {
         const err = await response.json();
         setMessage({
           type: 'error',
-          text: err.detail || 'Failed to unlink Telegram account',
+          text: err.detail || t('telegram.unlink_failed'),
         });
       }
     } catch (error) {
       console.error('Telegram unlink error:', error);
       setMessage({
         type: 'error',
-        text: 'Failed to unlink Telegram account',
+        text: t('telegram.unlink_failed'),
       });
     } finally {
       setLoading(false);
@@ -149,20 +154,20 @@ export function TelegramLink({
       if (response.ok) {
         setMessage({
           type: 'success',
-          text: 'Test notification sent! Check your Telegram.',
+          text: t('telegram.test_sent'),
         });
       } else {
         const err = await response.json();
         setMessage({
           type: 'error',
-          text: err.detail || 'Failed to send notification',
+          text: err.detail || t('telegram.notify_failed'),
         });
       }
     } catch (error) {
       console.error('Telegram test notification error:', error);
       setMessage({
         type: 'error',
-        text: 'Failed to send test notification',
+        text: t('telegram.test_failed'),
       });
     } finally {
       setLoading(false);
@@ -172,7 +177,7 @@ export function TelegramLink({
   return (
     <div className="glass-card-static animate-fade-in">
       <h3 className="h3" style={{ marginBottom: '16px' }}>
-        Telegram Integration
+        {t('telegram.title')}
       </h3>
 
       {status.linked ? (
@@ -187,14 +192,14 @@ export function TelegramLink({
             }}
           >
             <p style={{ marginBottom: '8px', fontSize: '14px' }}>
-              <strong>Status:</strong>{' '}
+              <strong>{t('telegram.status')}</strong>{' '}
               <span className="text-accent" style={{ fontWeight: '600' }}>
                 {t('telegram.linked')}
               </span>
             </p>
             {status.username && (
               <p style={{ marginBottom: '8px', fontSize: '14px' }}>
-                <strong>Username:</strong> @{status.username}
+                <strong>{t('telegram.username')}</strong> @{status.username}
               </p>
             )}
             <p
@@ -203,7 +208,7 @@ export function TelegramLink({
                 color: 'var(--text-secondary)',
               }}
             >
-              <strong>Chat ID:</strong> {status.chatId}
+              <strong>{t('telegram.chat_id')}</strong> {status.chatId}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
@@ -234,61 +239,87 @@ export function TelegramLink({
               lineHeight: '1.5',
             }}
           >
-            Receive real-time trade signals, security events, and risk
-            alerts directly on your Telegram app.
+            {t('telegram.desc')}
           </p>
-          <div className="form-group">
-            <label className="form-label">Telegram Chat ID *</label>
-            <input
-              type="text"
-              value={chatId}
-              onChange={(e) => setChatId(e.target.value)}
-              placeholder="Enter Telegram Chat ID (e.g. 12345678)"
-              className="input-field"
-            />
-            <small
-              className="text-muted"
-              style={{ fontSize: '11px', display: 'block', marginTop: '4px' }}
-            >
-              Send a message to{' '}
-              <a
-                href="https://t.me/userinfobot"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: 'var(--color-primary)',
-                  textDecoration: 'none',
-                }}
+          <form onSubmit={(e) => { e.preventDefault(); handleLink(); }}>
+            <div className="form-group">
+              <label className="form-label">{t('telegram.chat_id_label')}</label>
+              <input
+                type="text"
+                value={chatId}
+                onChange={(e) => setChatId(e.target.value)}
+                placeholder={t('telegram.chat_id_placeholder')}
+                className="input-field"
+              />
+              <small
+                className="text-muted"
+                style={{ fontSize: '11px', display: 'block', marginTop: '4px' }}
               >
-                @userinfobot
-              </a>{' '}
-              to find your Chat ID.
-            </small>
-          </div>
-          <div className="form-group">
-            <label className="form-label">
-              Telegram Username (optional)
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. your_telegram_username"
-              className="input-field"
-            />
-          </div>
+                {t('telegram.send_message_hint')}{' '}
+                <a
+                  href="https://t.me/userinfobot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: 'var(--color-primary)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  @userinfobot
+                </a>{' '}
+                {t('telegram.find_chat_id_hint')}
+              </small>
+            </div>
+            <div className="form-group">
+              <label className="form-label">
+                {t('telegram.username_label')}
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t('telegram.username_placeholder')}
+                className="input-field"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-base btn-primary btn-full"
+            >
+              {loading ? t('telegram.linking') : t('telegram.link')}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {statusError && !status.linked && (
+        <div
+          role="alert"
+          className="badge badge-danger"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            marginTop: '16px',
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-md)',
+          }}
+        >
+          <span>Failed to load Telegram status</span>
           <button
-            onClick={handleLink}
-            disabled={loading}
-            className="btn-base btn-primary btn-full"
+            onClick={loadStatus}
+            className="btn-base btn-sm"
+            style={{ color: 'var(--color-primary)', marginLeft: 'auto' }}
           >
-            {loading ? 'Linking Account...' : t('telegram.link')}
+            Retry
           </button>
         </div>
       )}
 
       {message && (
         <div
+          role="alert"
           className={`badge ${message.type === 'success' ? 'badge-accent' : 'badge-danger'}`}
           style={{
             display: 'flex',

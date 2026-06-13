@@ -50,6 +50,7 @@ export function GoogleSignIn({ onSuccess, onError }: GoogleSignInProps) {
     <button
       onClick={handleGoogleSignIn}
       disabled={loading}
+      aria-label={loading ? 'Connecting...' : t('auth.google_signin')}
       style={{
         display: 'flex',
         alignItems: 'center',
