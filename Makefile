@@ -843,3 +843,6 @@ omega-validate:
 
 package:
 	./installer/release/package.sh
+
+harness-audit:
+	@node scripts/harness-audit.js repo --format text
