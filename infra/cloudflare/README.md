@@ -389,3 +389,47 @@ infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check
 ```
 
+---
+
+## Phase 19 — Cloudflare Disaster Recovery Governance
+
+Phase 19 adds disaster recovery tabletop exercise templates, recovery ownership assignments, restore evidence requirements, and a manual recovery checklist for Cloudflare runtime failures.
+
+**Phase 19 is governance documentation only. It does not deploy or mutate Cloudflare.**
+
+### Phase 19 Documents
+
+| Document | Purpose |
+|---|---|
+| `docs/infra/cloudflare-disaster-recovery-governance.md` | DR governance model and scenario overview |
+| `docs/infra/cloudflare-dr-tabletop-template.md` | Template for conducting DR simulation exercises |
+| `docs/infra/cloudflare-manual-recovery-checklist.md` | Human-executable steps for 8 major DR scenarios |
+| `docs/infra/cloudflare-restore-evidence-template.md` | Evidence capture requirements after a recovery action |
+| `docs/infra/cloudflare-recovery-ownership-matrix.md` | Scenario × Owner × Backup × SLA mapping |
+
+### DR Scenarios Covered
+
+1. DNS misroute
+2. Worker route collision
+3. Tunnel outage
+4. Credential leak
+5. Terraform state drift
+6. Access policy lockout
+7. Production rollback (Phase 13 link)
+8. Evidence archive unavailable
+
+### Phase 19 Validation
+
+```bash
+# Verify all steps labeled MANUAL or READ-ONLY in recovery checklist
+grep -c "\[MANUAL\]\|\[READ-ONLY" docs/infra/cloudflare-manual-recovery-checklist.md
+
+# Secret check on Phase 19 docs
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-disaster-recovery-governance.md \
+  docs/infra/cloudflare-dr-tabletop-template.md \
+  docs/infra/cloudflare-manual-recovery-checklist.md \
+  docs/infra/cloudflare-restore-evidence-template.md \
+  docs/infra/cloudflare-recovery-ownership-matrix.md || echo "No secrets found"
+```
+
