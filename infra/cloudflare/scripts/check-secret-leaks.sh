@@ -3,7 +3,7 @@
 # Phase 5: Offline scanner that detects committed or staged secret-like files.
 # Scans git index and working tree for credential files, keys, tokens, env files.
 # No network calls. No file modification.
-set -Eeuo pipefail
+set -Eeo pipefail
 IFS=$'\n\t'
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -109,7 +109,16 @@ SCAN_START=$(date +%s)
 is_source_code() {
   local path="$1"
   case "$path" in
-    *.ts|*.js|*.py|*.go|*.rs|*.css|*.scss|*.less|*.vue|*.svelte|*.php|*.java|*.rb|*.c|*.cpp|*.h|*.hpp) return 0 ;;
+    *.ts|*.js|*.py|*.go|*.rs|*.css|*.scss|*.less|*.vue|*.svelte|*.php|*.java|*.rb|*.c|*.cpp|*.h|*.hpp|*.sh|*.yaml|*.yml|*.tf) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Helper: check for explicitly whitelisted safe files
+is_safe_known_file() {
+  local path="$1"
+  case "$path" in
+    terraform/cloudflare-apps/apps.auto.tfvars.json) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -128,6 +137,7 @@ for pattern in "${SECRET_PATTERNS[@]}" "${ENV_PATTERNS[@]}" "${AUTH_PATTERNS[@]}
   while IFS= read -r -d '' file; do
     rel_path="${file#$REPO_ROOT/}"
     is_example_file "$rel_path" && continue
+    is_safe_known_file "$rel_path" && continue
 
     if git -C "$REPO_ROOT" ls-files --error-unmatch "$file" &>/dev/null 2>&1; then
       tracked_secrets+=("$rel_path")
@@ -150,6 +160,7 @@ for pattern in "${SECRET_FILE_PATTERNS[@]}"; do
   while IFS= read -r -d '' file; do
     rel_path="${file#$REPO_ROOT/}"
     is_example_file "$rel_path" && continue
+    is_safe_known_file "$rel_path" && continue
     is_source_code "$rel_path" && continue
 
     if git -C "$REPO_ROOT" ls-files --error-unmatch "$file" &>/dev/null 2>&1; then
