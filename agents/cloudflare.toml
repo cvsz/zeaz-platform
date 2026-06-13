@@ -1,0 +1,12 @@
+[agent]
+name = "cloudflare"
+role = "Network and Security Controller"
+description = "Manages DNS, Tunnels, Access, and WAF."
+capabilities = ["Self-Heal", "Self-Audit"]
+loop_interval = "10m"
+
+[tools]
+enabled = ["cloudflare-cli", "terraform"]
+
+[observability]
+metrics = ["prometheus"]

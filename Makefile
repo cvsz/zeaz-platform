@@ -108,7 +108,7 @@ codex-suite-validate:
 ci-validate: test env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."
 
-validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
+validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check omega-validate
 	@echo "Validation complete."
 
 validate-env:
@@ -274,6 +274,9 @@ gpg-commit:
 
 gpg-push:
 	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push $(GIT_REMOTE) "$$branch"
+
+gpg-pull:
+	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git pull $(GIT_REMOTE) "$$branch"
 
 gpg-finalize: validate
 	@$(MAKE) git-status
@@ -830,3 +833,13 @@ all-apps-build: ## Run build across all apps
 
 # Include Zeaz Cloudflare routing ops Makefile
 -include ops/zeaz-cloudflare/Makefile.zeaz-cloudflare.mk
+
+# OMEGA Platform Installer Targets
+install:
+	sudo ./installer/install.sh
+
+omega-validate:
+	sudo ./installer/validate.sh
+
+package:
+	./installer/release/package.sh
