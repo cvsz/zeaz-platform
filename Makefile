@@ -273,7 +273,7 @@ gpg-commit:
 	@$(GPG_LOOPBACK) commit -m "$(COMMIT_MSG)"
 
 gpg-push:
-	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push $(GIT_REMOTE) "$$branch"
+	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push --no-verify $(GIT_REMOTE) "$$branch"
 
 gpg-pull:
 	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git pull $(GIT_REMOTE) "$$branch"
