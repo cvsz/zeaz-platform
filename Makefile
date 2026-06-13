@@ -108,7 +108,7 @@ codex-suite-validate:
 ci-validate: test env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
 	@echo "CI validation complete."
 
-validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
+validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check omega-validate
 	@echo "Validation complete."
 
 validate-env:
@@ -833,3 +833,13 @@ all-apps-build: ## Run build across all apps
 
 # Include Zeaz Cloudflare routing ops Makefile
 -include ops/zeaz-cloudflare/Makefile.zeaz-cloudflare.mk
+
+# OMEGA Platform Installer Targets
+install:
+	sudo ./installer/install.sh
+
+omega-validate:
+	sudo ./installer/validate.sh
+
+package:
+	./installer/release/package.sh
