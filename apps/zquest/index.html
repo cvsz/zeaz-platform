@@ -836,7 +836,7 @@
       const pointsDelta = Math.max(0, Math.floor(scoreDelta / 100));
       if (scoreDelta <= 0 && !completed && !force) return user;
 
-      user.lastScore = Math.max(user.lastScore, Math.floor(player.score));
+      user.lastScore = Math.max(0, Math.floor(player.score));
       user.bestScore = Math.max(user.bestScore, Math.floor(player.score));
       user.totalScore += scoreDelta;
       user.points += pointsDelta;
@@ -1192,6 +1192,7 @@
       player.dashUnlocked = false;
       player.dashReady = false;
       runStartedAt = performance.now();
+      setRunBaseline(0);
       parseLevel(0);
       state = "playing";
       sound("win");
