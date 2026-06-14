@@ -5,7 +5,7 @@ import { ShieldCheck, Users, Key } from "lucide-react";
 
 export default function Auth() {
   return (
-    <div className="p-8 space-y-8 pb-20">
+    <div className="p-4 md:p-8 space-y-8 pb-20">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
           <ShieldCheck className="w-8 h-8 text-primary" />

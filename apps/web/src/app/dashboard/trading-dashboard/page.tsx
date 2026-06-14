@@ -1,6 +1,6 @@
 export default function TradingDashboard() {
   return (
-    <div className="p-8 font-sans">
+    <div className="p-4 md:p-8 font-sans">
       <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">AI Auto Trader - Control Center</h1>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">

@@ -47,7 +47,7 @@ export default function LLMRuntimePage() {
   }, []);
 
   return (
-    <div className="p-8 space-y-8 bg-slate-950 min-h-screen text-slate-100">
+    <div className="p-4 md:p-8 space-y-8 bg-slate-950 min-h-screen text-slate-100">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">Cognitive Fabric Runtime</h1>

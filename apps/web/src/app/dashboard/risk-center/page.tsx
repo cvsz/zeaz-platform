@@ -1,6 +1,6 @@
 export default function RiskCenter() {
   return (
-    <div className="p-8 font-sans">
+    <div className="p-4 md:p-8 font-sans">
       <h1 className="text-3xl font-bold mb-6 text-red-600 dark:text-red-400">Risk Center & Kill Switches</h1>
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-semibold mb-4 text-red-800 dark:text-red-300">EMERGENCY CONTROLS</h2>

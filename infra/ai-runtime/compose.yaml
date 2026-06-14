@@ -4,15 +4,15 @@ services:
     image: ankane/pgvector:v0.5.1
     restart: unless-stopped
     environment:
-      POSTGRES_USER: $${DB_USER:-ai_user}
-      POSTGRES_PASSWORD: $${DB_PASS:-ai_pass}
-      POSTGRES_DB: $${DB_NAME:-ai_runtime}
+      POSTGRES_USER: ${DB_USER:-ai_user}
+      POSTGRES_PASSWORD: ${DB_PASS:-ai_pass}
+      POSTGRES_DB: ${DB_NAME:-ai_runtime}
     volumes:
       - pgvector_data:/var/lib/postgresql/data
     networks:
       - ai_internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${DB_NAME} -U $${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,8 +35,8 @@ services:
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: $${MINIO_ROOT_USER:-admin}
-      MINIO_ROOT_PASSWORD: $${MINIO_ROOT_PASSWORD:-admin12345}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-admin12345}
     volumes:
       - minio_data:/data
     networks:
@@ -70,9 +70,9 @@ services:
     volumes:
       - ./app:/app
     environment:
-      - DATABASE_URL=postgresql://$${DB_USER:-ai_user}:$${DB_PASS:-ai_pass}@pgvector:5432/$${DB_NAME:-ai_runtime}
+      - DATABASE_URL=postgresql://${DB_USER:-ai_user}:${DB_PASS:-ai_pass}@pgvector:5432/${DB_NAME:-ai_runtime}
       - REDIS_URL=redis://ai-redis:6379/0
-      - OPENAI_API_KEY=$${OPENAI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks:
       - ai_internal
       - proxy
@@ -99,7 +99,7 @@ services:
     volumes:
       - ./app:/app
     environment:
-      - DATABASE_URL=postgresql://$${DB_USER:-ai_user}:$${DB_PASS:-ai_pass}@pgvector:5432/$${DB_NAME:-ai_runtime}
+      - DATABASE_URL=postgresql://${DB_USER:-ai_user}:${DB_PASS:-ai_pass}@pgvector:5432/${DB_NAME:-ai_runtime}
       - REDIS_URL=redis://ai-redis:6379/0
     networks:
       - ai_internal

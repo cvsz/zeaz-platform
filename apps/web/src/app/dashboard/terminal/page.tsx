@@ -5,7 +5,7 @@ import { TerminalSquare } from "lucide-react";
 
 export default function Terminal() {
   return (
-    <div className="p-8 space-y-8 pb-20 h-full flex flex-col">
+    <div className="p-4 md:p-8 space-y-8 pb-20 h-full flex flex-col">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
           <TerminalSquare className="w-8 h-8 text-primary" />

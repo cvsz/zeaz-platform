@@ -1,11 +1,11 @@
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
-- '@opencode-ai/sdk'
+  - '@opencode-ai/sdk'
 packages:
-- apps/*
-- packages/*
-- ee/apps/*
-- ee/packages/*
+  - apps/*
+  - packages/*
+  - ee/apps/*
+  - ee/packages/*
 catalog:
   react: 19.2.4
   react-dom: 19.2.4
@@ -20,7 +20,7 @@ allowBuilds:
   better-sqlite3: true
   electron: true
   esbuild: true
-  msgpackr-extract: set this to true or false
+  msgpackr-extract: true
   msw: false
   node-pty: true
   protobufjs: true

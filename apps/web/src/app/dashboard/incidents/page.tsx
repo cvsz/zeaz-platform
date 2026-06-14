@@ -1,6 +1,6 @@
 export default function IncidentsPage() {
   return (
-    <div className="p-8 font-sans">
+    <div className="p-4 md:p-8 font-sans">
       <h1 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">AI-Generated Incident Reports</h1>
       <div className="grid gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
