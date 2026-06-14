@@ -3,13 +3,17 @@ services:
     build: .
     volumes:
       - .:/app
+      - ../../runtime:/app/runtime:ro
+      - ../../:/home/zeazdev/zeaz-platform:ro
       - /var/run/docker.sock:/var/run/docker.sock
     expose:
       - "8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
     networks:
       - proxy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/runtime/services"]
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/runtime/services')"]
       interval: 30s
       timeout: 10s
       retries: 3

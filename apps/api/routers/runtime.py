@@ -8,16 +8,20 @@ client = docker.from_env()
 @router.get("/services")
 def get_services():
     containers = client.containers.list(all=True)
-    return [
-        {
+    result = []
+    for c in containers:
+        try:
+            image_name = c.attrs.get("Config", {}).get("Image", "unknown")
+        except Exception:
+            image_name = "unknown"
+        result.append({
             "id": c.short_id,
             "name": c.name,
             "status": c.status,
-            "image": c.image.tags[0] if c.image.tags else "unknown",
+            "image": image_name,
             "state": c.attrs.get("State", {})
-        }
-        for c in containers
-    ]
+        })
+    return result
 
 @router.post("/services/{container_id}/restart", dependencies=[Depends(require_auth)])
 def restart_service(container_id: str = Path(..., pattern=r"^[a-zA-Z0-9_.-]+$")):

@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     ports:
-      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:26379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -41,7 +41,16 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    networks:
+      default:
+      proxy:
+        aliases:
+          - redis
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  proxy:
+    external: true
