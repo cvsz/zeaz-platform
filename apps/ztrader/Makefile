@@ -31,7 +31,7 @@ help:
 	@echo "  server-stop       - Stop backend + frontend started by server-start"
 	@echo "  server-status     - Show backend + frontend origin status"
 	@echo "  validate-local    - Compile backend and validate frontend package metadata"
- 	@echo "  test-backend      - Run backend unit tests with pytest"
+	@echo "  test-backend      - Run backend unit tests with pytest"
 	@echo "  test-e2e          - Run frontend E2E tests with Playwright"
 	@echo "  run-docker        - Orchestrate all services using docker-compose"
 	@echo "  stop-docker       - Stop and tear down docker-compose containers"

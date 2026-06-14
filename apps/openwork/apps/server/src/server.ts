@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile, rm, readdir, rename, stat, appendFile, mkdir } from "node:fs/promises";
 import { homedir, hostname } from "node:os";
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { createOpencodeClient } from "@opencode-ai/sdk/v2/client";
+import { createOpencodeClient, type Message, type Part } from "@opencode-ai/sdk/v2/client";
 import type { ApprovalRequest, Capabilities, ServerConfig, WorkspaceInfo, Actor, ReloadReason, ReloadTrigger, TokenScope } from "./types.js";
 import { ApprovalService } from "./approvals.js";
 import { addPlugin, listPlugins, normalizePluginSpec, removePlugin } from "./plugins.js";
@@ -4458,13 +4458,13 @@ async function readWorkspaceSessionSnapshot(
         .then((result) => unwrapOpencodeResult(result, `/session/${encodeURIComponent(sessionId)}`)),
       opencode.session
         .messages({ sessionID: sessionId, limit: input.limit })
-        .then((result) => unwrapOpencodeResult(result, `/session/${encodeURIComponent(sessionId)}/message`)),
+        .then((result) => unwrapOpencodeResult(result as any, `/session/${encodeURIComponent(sessionId)}/message`)),
       opencode.session
         .todo({ sessionID: sessionId })
         .then((result) => unwrapOpencodeResult(result, `/session/${encodeURIComponent(sessionId)}/todo`)),
       opencode.session.status().then((result) => unwrapOpencodeResult(result, "/session/status")),
     ]);
-    return buildSessionSnapshot({ session, messages, todos, statuses });
+    return buildSessionSnapshot({ session, messages: messages as any, todos, statuses });
   } catch (error) {
     remapSessionReadError(error);
   }

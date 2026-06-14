@@ -113,7 +113,7 @@ export function buildSession(value: SessionGetResponse): SessionInfoReadModel {
   return parseOrThrow(sessionInfoSchema, value, "session");
 }
 
-export function buildSessionMessages(value: SessionMessagesResponse): SessionMessageReadModel[] {
+export function buildSessionMessages(value: any): SessionMessageReadModel[] {
   return parseOrThrow(sessionMessagesSchema, value, "session messages");
 }
 

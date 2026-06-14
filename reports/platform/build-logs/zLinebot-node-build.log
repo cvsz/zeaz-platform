@@ -1,0 +1,5 @@
+$ cd 'apps/zLinebot' && npm run build
+
+> @zeaz/zlinebot@0.1.0 build
+> exit 0
+

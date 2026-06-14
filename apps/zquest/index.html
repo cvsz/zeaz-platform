@@ -297,6 +297,16 @@
       font-size: 18px;
     }
 
+    .db-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .db-actions button {
+      flex: 1 1 140px;
+    }
+
     .db-leaderboard {
       display: flex;
       flex-direction: column;
@@ -328,11 +338,23 @@
       box-shadow: 0 0 0 2px rgba(126,227,91,.12);
     }
 
-    .db-user button {
+    .db-row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+
+    .db-row-actions button {
       padding: 4px 8px;
       min-width: 0;
       font-size: 11px;
       border-radius: 8px;
+    }
+
+    .db-import-input {
+      display: none;
     }
 
     .db-user-title {
@@ -447,7 +469,7 @@
     </section>
 
     <p class="notice">
-      Single-file 4K HTML5 Canvas game. ไม่มี external libraries, ไม่มี network request, ไม่มี API key, ไม่มี secret, ไม่มี token, ไม่มี .env — พร้อม deploy บน GitHub Pages, Vercel, Netlify หรือ itch.io
+      Single-file 4K HTML5 Canvas game with an optional API-backed player database. It can run offline with local storage, or sync to the platform API when served from the ZeaZ stack.
     </p>
 
     <section class="db-shell" aria-label="Player database and leaderboard">
@@ -465,6 +487,7 @@
           <label for="usernameInput">User name</label>
           <input id="usernameInput" name="username" maxlength="24" autocomplete="nickname" placeholder="Enter player name" />
           <button type="submit">Register User</button>
+          <input id="importDbInput" class="db-import-input" type="file" accept="application/json,.json" />
           <div class="db-empty">Your user, points, score history, and VIP status are saved locally in this browser.</div>
         </form>
 
@@ -476,6 +499,11 @@
             <div class="db-stat"><span>Total Points</span><strong id="activePoints">0</strong></div>
             <div class="db-stat"><span>Runs</span><strong id="activeRuns">0</strong></div>
             <div class="db-stat"><span>VIP</span><strong id="activeVip">No</strong></div>
+          </div>
+          <div class="db-actions">
+            <button type="button" id="exportDbBtn">Export Database</button>
+            <button type="button" id="importDbBtn">Import Database</button>
+            <button type="button" id="deleteActiveUserBtn">Delete Active User</button>
           </div>
           <button type="button" id="resetDbBtn">Reset Local Database</button>
         </div>
@@ -566,6 +594,11 @@
     let highScore = store.get("codexQuestOmegaHighScore", 0);
     const DB_KEY = "codexQuestOmegaDatabaseV1";
     const VIP_THRESHOLD = 100;
+    const API_BASE = window.ZQUEST_API_BASE || (
+      window.location.origin && window.location.origin !== "null"
+        ? `${window.location.origin}/api/runtime/zquest`
+        : ""
+    );
     const dbSummaryEl = document.getElementById("dbSummary");
     const activeUserCardEl = document.getElementById("activeUserCard");
     const activeBestScoreEl = document.getElementById("activeBestScore");
@@ -576,11 +609,21 @@
     const registerFormEl = document.getElementById("registerForm");
     const usernameInputEl = document.getElementById("usernameInput");
     const resetDbBtnEl = document.getElementById("resetDbBtn");
+    const exportDbBtnEl = document.getElementById("exportDbBtn");
+    const importDbBtnEl = document.getElementById("importDbBtn");
+    const importDbInputEl = document.getElementById("importDbInput");
+    const deleteActiveUserBtnEl = document.getElementById("deleteActiveUserBtn");
     let db = null;
     let savedRunScore = 0;
+    let backendState = API_BASE ? "checking" : "offline";
 
     function nowIso() {
       return new Date().toISOString();
+    }
+
+    function getApiUrl(path) {
+      if (!API_BASE) return "";
+      return `${API_BASE}${path}`;
     }
 
     function slugify(value) {
@@ -637,7 +680,7 @@
     }
 
     function normalizeDatabase(raw) {
-      const base = { activeUserId: "", users: [] };
+      const base = { version: 1, activeUserId: "", users: [], updatedAt: nowIso() };
       if (!raw || typeof raw !== "object") {
         const guest = createUser("Guest");
         base.activeUserId = guest.id;
@@ -666,17 +709,51 @@
       const activeUserId = typeof raw.activeUserId === "string" ? raw.activeUserId : "";
       const activeUser = deduped.find(user => user.id === activeUserId) || deduped[0];
       return {
+        version: Number.isFinite(raw.version) && raw.version > 0 ? Math.floor(raw.version) : 1,
         activeUserId: activeUser.id,
-        users: deduped
+        users: deduped,
+        updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : nowIso()
       };
     }
 
-    function loadDatabase() {
+    function loadLocalDatabase() {
       return normalizeDatabase(store.get(DB_KEY, null));
     }
 
-    function saveDatabase() {
+    function saveLocalDatabase() {
       store.set(DB_KEY, db);
+    }
+
+    async function fetchRemoteDatabase() {
+      if (!API_BASE) return null;
+      const response = await fetch(getApiUrl("/database"), {
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) {
+        throw new Error(`Database load failed with ${response.status}`);
+      }
+      const payload = await response.json();
+      if (!payload || typeof payload !== "object" || !payload.database) return null;
+      return {
+        initialized: Boolean(payload.initialized),
+        database: normalizeDatabase(payload.database)
+      };
+    }
+
+    async function saveRemoteDatabase() {
+      if (!API_BASE) return false;
+      const response = await fetch(getApiUrl("/database"), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(db)
+      });
+      if (!response.ok) {
+        throw new Error(`Database save failed with ${response.status}`);
+      }
+      return true;
     }
 
     function getActiveUser() {
@@ -692,6 +769,47 @@
       );
     }
 
+    function isDefaultDatabase(database) {
+      if (!database || !Array.isArray(database.users) || database.users.length !== 1) return false;
+      const [user] = database.users;
+      return Boolean(user)
+        && user.id === "guest"
+        && user.username === "Guest"
+        && user.points === 0
+        && user.bestScore === 0
+        && user.lastScore === 0
+        && user.totalScore === 0
+        && user.runs === 0
+        && user.wins === 0;
+    }
+
+    function chooseDatabaseSnapshot(localSnapshot, remoteSnapshot) {
+      if (!remoteSnapshot) return localSnapshot;
+      if (!remoteSnapshot.initialized) return localSnapshot;
+      if (isDefaultDatabase(localSnapshot.database) && !isDefaultDatabase(remoteSnapshot.database)) {
+        return remoteSnapshot.database;
+      }
+      const localTime = Date.parse(localSnapshot.database.updatedAt || "") || 0;
+      const remoteTime = Date.parse(remoteSnapshot.database.updatedAt || "") || 0;
+      return remoteTime >= localTime ? remoteSnapshot.database : localSnapshot.database;
+    }
+
+    function touchDatabase() {
+      db.updatedAt = nowIso();
+    }
+
+    function persistDatabase() {
+      touchDatabase();
+      saveLocalDatabase();
+      refreshDatabaseUI();
+      if (backendState === "online") {
+        void saveRemoteDatabase().catch(() => {
+          backendState = "offline";
+          refreshDatabaseUI();
+        });
+      }
+    }
+
     function applyVipStatus(user) {
       user.vip = user.points >= VIP_THRESHOLD;
       return user.vip;
@@ -700,9 +818,10 @@
     function refreshDatabaseUI() {
       const user = getActiveUser();
       const leaderboard = getLeaderboard();
+      const backendLabel = backendState === "online" ? "Backend DB" : backendState === "checking" ? "Syncing backend..." : "Local DB";
 
       if (dbSummaryEl) {
-        dbSummaryEl.textContent = `${db.users.length} users • ${leaderboard[0]?.username || "Guest"} leads`;
+        dbSummaryEl.textContent = `${db.users.length} users • ${leaderboard[0]?.username || "Guest"} leads • ${backendLabel}`;
       }
 
       if (activeUserCardEl) {
@@ -771,7 +890,18 @@
               setActiveUser(entry.id);
             });
 
-            row.append(left, action);
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.textContent = "Delete";
+            remove.addEventListener("click", () => {
+              deleteUser(entry.id);
+            });
+
+            const actions = document.createElement("div");
+            actions.className = "db-row-actions";
+            actions.append(action, remove);
+
+            row.append(left, actions);
             leaderboardListEl.append(row);
           });
         }
@@ -779,7 +909,7 @@
     }
 
     function syncDatabase() {
-      saveDatabase();
+      persistDatabase();
       refreshDatabaseUI();
     }
 
@@ -790,6 +920,7 @@
       target.lastLoginAt = nowIso();
       target.runSavedScore = 0;
       savedRunScore = 0;
+      touchDatabase();
       syncDatabase();
       return target;
     }
@@ -806,6 +937,7 @@
         db.activeUserId = existing.id;
         existing.runSavedScore = 0;
         savedRunScore = 0;
+        touchDatabase();
         syncDatabase();
         return existing;
       }
@@ -814,6 +946,7 @@
       db.users.unshift(user);
       db.activeUserId = user.id;
       savedRunScore = 0;
+      touchDatabase();
       syncDatabase();
       return user;
     }
@@ -824,7 +957,8 @@
       user.runSavedScore = Math.max(0, Math.floor(score));
       user.updatedAt = nowIso();
       savedRunScore = user.runSavedScore;
-      saveDatabase();
+      touchDatabase();
+      persistDatabase();
       return user;
     }
 
@@ -850,11 +984,100 @@
       return user;
     }
 
-    db = loadDatabase();
-    syncDatabase();
-    if (usernameInputEl && getActiveUser()) {
-      usernameInputEl.value = getActiveUser().username;
+    function deleteUser(userId) {
+      const target = db.users.find(user => user.id === userId) || null;
+      if (!target) return null;
+      if (db.users.length === 1) {
+        db = normalizeDatabase(null);
+        savedRunScore = 0;
+        syncDatabase();
+        if (usernameInputEl) usernameInputEl.value = getActiveUser()?.username || "";
+        return target;
+      }
+
+      const wasActive = db.activeUserId === userId;
+      db.users = db.users.filter(user => user.id !== userId);
+      if (wasActive) {
+        db.activeUserId = db.users[0].id;
+      }
+
+      const active = getActiveUser();
+      if (active && wasActive) {
+        active.lastLoginAt = nowIso();
+        active.runSavedScore = Math.max(0, Math.floor(player.score));
+        savedRunScore = active.runSavedScore;
+      }
+
+      touchDatabase();
+      syncDatabase();
+      if (usernameInputEl) usernameInputEl.value = getActiveUser()?.username || "";
+      return target;
     }
+
+    function exportDatabase() {
+      const snapshot = normalizeDatabase(db);
+      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      anchor.href = url;
+      anchor.download = `zquest-database-${stamp}.json`;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function importDatabaseFile(file) {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      db = normalizeDatabase(parsed);
+      const active = getActiveUser();
+      if (active) {
+        active.lastLoginAt = nowIso();
+        active.runSavedScore = Math.max(0, Math.floor(player.score));
+        savedRunScore = active.runSavedScore;
+      }
+      touchDatabase();
+      syncDatabase();
+      if (usernameInputEl) usernameInputEl.value = active?.username || "";
+      return db;
+    }
+
+    async function bootstrapDatabase() {
+      const local = loadLocalDatabase();
+      db = local;
+      refreshDatabaseUI();
+
+      if (!API_BASE) {
+        backendState = "offline";
+        refreshDatabaseUI();
+        if (usernameInputEl && getActiveUser()) {
+          usernameInputEl.value = getActiveUser().username;
+        }
+        return;
+      }
+
+      try {
+        const remote = await fetchRemoteDatabase();
+        backendState = "online";
+        if (remote && remote.database) {
+          db = chooseDatabaseSnapshot(local, remote);
+        }
+        syncDatabase();
+      } catch {
+        backendState = "offline";
+        refreshDatabaseUI();
+      }
+
+      if (usernameInputEl && getActiveUser()) {
+        usernameInputEl.value = getActiveUser().username;
+      }
+    }
+
+    db = loadLocalDatabase();
+    refreshDatabaseUI();
+    void bootstrapDatabase();
 
     function resizeCanvas() {
       const shell = canvas.parentElement;
@@ -2254,9 +2477,46 @@
       });
     }
 
+    if (exportDbBtnEl) {
+      exportDbBtnEl.addEventListener("click", () => {
+        exportDatabase();
+        sound("pickup");
+      });
+    }
+
+    if (importDbBtnEl && importDbInputEl) {
+      importDbBtnEl.addEventListener("click", () => {
+        importDbInputEl.click();
+      });
+      importDbInputEl.addEventListener("change", async e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          await importDatabaseFile(file);
+          sound("pickup");
+        } catch (error) {
+          console.error(error);
+          window.alert("Failed to import database JSON.");
+        } finally {
+          e.target.value = "";
+        }
+      });
+    }
+
+    if (deleteActiveUserBtnEl) {
+      deleteActiveUserBtnEl.addEventListener("click", () => {
+        const active = getActiveUser();
+        if (!active) return;
+        const confirmed = window.confirm(`Delete user \"${active.username}\" from the local database?`);
+        if (!confirmed) return;
+        deleteUser(active.id);
+        sound("hurt");
+      });
+    }
+
     if (resetDbBtnEl) {
       resetDbBtnEl.addEventListener("click", () => {
-        const confirmed = window.confirm("Reset the local ZQuest database? This removes all users, points, and leaderboard entries in this browser.");
+        const confirmed = window.confirm("Reset the ZQuest database? This removes all users, points, and leaderboard entries in this browser and backend snapshot.");
         if (!confirmed) return;
         db = normalizeDatabase(null);
         savedRunScore = 0;

@@ -1,6 +1,6 @@
 # Build all stacks report
 
-Generated: 2026-06-13T19:22:03Z
+Generated: 2026-06-14T21:13:55Z
 
 Mode: `safe`
 
@@ -10,11 +10,13 @@ Mode: `safe`
 | api | docker | RUN_DOCKER_BUILD=false | SKIP |
 | openwork | node-build | `cd 'apps/openwork' && pnpm run build` | FAIL:1 |
 | openwork | docker | RUN_DOCKER_BUILD=false | SKIP |
-| web | node-build | `cd 'apps/web' && pnpm run build` | PASS |
+| web | node-build | `cd 'apps/web' && pnpm run build` | FAIL:1 |
 | web | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zAcademy | node | no build script | SKIP |
+| zAcademy | node-build | `cd 'apps/zAcademy' && npm run build` | PASS |
 | zAcademy | python-compile | `cd 'apps/zAcademy' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | zAcademy | docker | RUN_DOCKER_BUILD=false | SKIP |
+| zai-factory | node | no build script | SKIP |
+| zai-factory | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zcfdash | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zcino | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zcino-modern | docker | RUN_DOCKER_BUILD=false | SKIP |
@@ -22,15 +24,16 @@ Mode: `safe`
 | zcloud | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zdash | python-compile | `cd 'apps/zdash' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | zdash | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zdev | node | no build script | SKIP |
+| zdev | node-build | `cd 'apps/zdev' && npm run build` | PASS |
 | zdev | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zLinebot | node | no build script | SKIP |
+| zLinebot | node-build | `cd 'apps/zLinebot' && npm run build` | PASS |
 | zLinebot | docker | RUN_DOCKER_BUILD=false | SKIP |
-| zlms | node | no build script | SKIP |
+| zlms | node-build | `cd 'apps/zlms' && pnpm run build` | PASS |
 | zlms | python-compile | `cd 'apps/zlms' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | zlms | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zoffice | python-compile | `cd 'apps/zoffice' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | zoffice | docker | RUN_DOCKER_BUILD=false | SKIP |
+| zquest | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zsp-aitool | node-build | `cd 'apps/zsp-aitool' && npm run build` | FAIL:1 |
 | zsp-aitool | docker | RUN_DOCKER_BUILD=false | SKIP |
 | zsticker | python-compile | `cd 'apps/zsticker' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |

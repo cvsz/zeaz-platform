@@ -1,0 +1,5 @@
+$ cd 'apps/zAcademy' && npm run build
+
+> build
+> exit 0
+

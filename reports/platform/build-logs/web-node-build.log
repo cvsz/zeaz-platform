@@ -1,49 +1,40 @@
 $ cd 'apps/web' && pnpm run build
-$ next build
+$ NODE_ENV=production next build
+⨯ Failed to load env from /home/zeazdev/zeaz-platform/apps/web/.env RangeError: Maximum call stack size exceeded
+    at RegExpStringIterator.next (<anonymous>)
+    at Array.from (<anonymous>)
 ▲ Next.js 16.2.9 (Turbopack)
+- Environments: .env
 
   Creating an optimized production build ...
-✓ Compiled successfully in 22.0s
-  Running TypeScript ...
-  Finished TypeScript in 13.7s ...
-  Collecting page data using 7 workers ...
-  Generating static pages using 7 workers (0/30) ...
-  Generating static pages using 7 workers (7/30) 
-  Generating static pages using 7 workers (14/30) 
-  Generating static pages using 7 workers (22/30) 
-✓ Generating static pages using 7 workers (30/30) in 3.1s
-  Finalizing page optimization ...
 
-Route (app)
-┌ ○ /
-├ ○ /_not-found
-├ ○ /agents
-├ ○ /auth
-├ ○ /autonomous-actions
-├ ○ /contact
-├ ○ /dashboard
-├ ○ /deployments
-├ ○ /edge
-├ ○ /healing
-├ ○ /incidents
-├ ○ /llm-runtime
-├ ○ /observability
-├ ○ /pricing
-├ ○ /privacy
-├ ○ /refund
-├ ○ /releases
-├ ○ /reports
-├ ○ /risk-analysis
-├ ○ /risk-center
-├ ○ /runtime-memory
-├ ○ /services
-├ ○ /swarm-runtime
-├ ○ /system-convergence
-├ ○ /terminal
-├ ○ /terms
-├ ○ /trading-dashboard
-└ ○ /vault
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./apps/web/src/app/dashboard/page.tsx:6:1
+Module not found: Can't resolve '@/components/dashboard-widgets'
+  [90m4 |[0m [36mimport[0m { useEffect, useMemo, useState } [36mfrom[0m [32m"react"[0m;
+  [90m5 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"@/components/ui/card"[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mReadinessScorecard[0m, [33mDeploymentStatusWidget[0m } [36mfrom[0m [32m"@/components/dashboard-widgets"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m [36mimport[0m {
+  [90m8 |[0m   [33mActivity[0m,
+  [90m9 |[0m   [33mAlertTriangle[0m,
+
+Import map: aliased to relative './src/components/dashboard-widgets' inside of [project]/apps/web
 
 
-○  (Static)  prerendered as static content
+Import traces:
+  Client Component Browser:
+    ./apps/web/src/app/dashboard/page.tsx [Client Component Browser]
+    ./apps/web/src/app/dashboard/page.tsx [Server Component]
 
+  Client Component SSR:
+    ./apps/web/src/app/dashboard/page.tsx [Client Component SSR]
+    ./apps/web/src/app/dashboard/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (./apps/web/src/app/dashboard/page.tsx:6:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[ELIFECYCLE] Command failed with exit code 1.

@@ -3,7 +3,7 @@ import json
 import docker
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from routers import runtime, agents, healing, observability, auth, llm, scheduler, swarm, cloudflare_control
+from routers import runtime, agents, healing, observability, auth, llm, scheduler, swarm, cloudflare_control, zquest
 
 import os
 import logging
@@ -49,6 +49,7 @@ app.include_router(llm.router, prefix="/api/runtime/llm", tags=["llm"])
 app.include_router(scheduler.router, prefix="/api/runtime/scheduler", tags=["scheduler"])
 app.include_router(swarm.router, prefix="/api/runtime/swarm", tags=["swarm"])
 app.include_router(cloudflare_control.router, prefix="/api/runtime/cloudflare", tags=["cloudflare"])
+app.include_router(zquest.router, prefix="/api/runtime/zquest", tags=["zquest"])
 
 class ConnectionManager:
     def __init__(self):
@@ -97,4 +98,3 @@ async def stream_docker_stats():
         except Exception as e:
             logger.error("Error streaming stats", exc_info=True)
         await asyncio.sleep(2)
-

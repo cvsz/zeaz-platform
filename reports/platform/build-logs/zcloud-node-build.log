@@ -1,7 +1,7 @@
 $ cd 'apps/zcloud' && npm run build
 
 > @zeaz/zcloud@1.0.0 build
-> next build
+> NODE_ENV=production next build
 
 ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
  We detected multiple lockfiles and selected the directory of /home/zeazdev/pnpm-lock.yaml as the root directory.
@@ -13,25 +13,15 @@ $ cd 'apps/zcloud' && npm run build
 ▲ Next.js 16.2.9 (Turbopack)
 
   Creating an optimized production build ...
-✓ Compiled successfully in 10.1s
+✓ Compiled successfully in 10.9s
   Running TypeScript ...
-
-  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
-  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
-
-  	- include was updated to add '.next/dev/types/**/*.ts'
-
-  The following mandatory changes were made to your tsconfig.json:
-
-  	- jsx was set to react-jsx (next.js uses the React automatic runtime)
-
-  Finished TypeScript in 12.3s ...
+  Finished TypeScript in 13.1s ...
   Collecting page data using 6 workers ...
   Generating static pages using 6 workers (0/5) ...
   Generating static pages using 6 workers (1/5) 
   Generating static pages using 6 workers (2/5) 
   Generating static pages using 6 workers (3/5) 
-✓ Generating static pages using 6 workers (5/5) in 1477ms
+✓ Generating static pages using 6 workers (5/5) in 1741ms
   Finalizing page optimization ...
 
 Route (app)

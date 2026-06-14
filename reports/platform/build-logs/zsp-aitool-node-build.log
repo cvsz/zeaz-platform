@@ -15,7 +15,7 @@ $ cd 'apps/zsp-aitool' && npm run build
    - Environments: .env
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 85s
+ ✓ Compiled successfully in 69s
    Linting and checking validity of types ...
 Failed to compile.
 

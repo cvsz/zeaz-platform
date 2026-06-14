@@ -57,7 +57,7 @@
 
 ## 5. Frontend UI/UX Structure (การจัดวางโครงสร้างเว็บแอปพลิเคชัน)
 
-ฝั่ง Frontend พัฒนาโดย Next.js App Router ภายใต้โฟลเดอร์ [apps/ztrader/frontend](file:///home/zeazdev/zeaz-platform/apps/ztrader/frontend) โดยใช้ชุดสไตล์ **Zeaz Unified Design System** (Outfit Font, Glassmorphism Aesthetics, Dark Theme):
+ฝั่ง Frontend พัฒนาโดย Next.js App Router ภายใต้โฟลเดอร์ [apps/ztrader/frontend](file:///home/zeazdev/zeaz-platform/apps/ztrader/frontend) โดยใช้ชุดสไตล์ **ZEAZ Platform System** (Outfit Font, Glassmorphism Aesthetics, Dark Theme):
 * **Multi-Language (i18n) Locales**: รองรับการเปลี่ยนภาษาหลัก 4 ภาษา:
   * อังกฤษ (EN)
   * ไทย (TH)

@@ -586,7 +586,7 @@ Standard public error shape:
 
 ## 15. Frontend and UI/UX Standards
 
-All web interfaces must adhere to the **Zeaz Unified Design System**.
+All web interfaces must adhere to the **ZEAZ Platform System**.
 
 ### Core Requirements:
 - **Rich Aesthetics**: Use Glassmorphism, backdrop blurs, and premium color palettes (as defined in `ui/design-system/tokens.css`).

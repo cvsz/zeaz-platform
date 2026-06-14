@@ -27,6 +27,7 @@ import { useSystemStatus } from "../hooks/useSystemStatus";
 import { formatDateTime, formatPercent } from "../utils/format";
 import { getSeverityFromStatus } from "../utils/status";
 import TeamRoster from "./TeamRoster";
+import { AiSkillsSection } from "../components/dashboard/ai-skills-section";
 
 function readBoolean(value: unknown, fallback = false): boolean {
   return typeof value === "boolean" ? value : fallback;
@@ -259,6 +260,8 @@ export default function Dashboard() {
         version="2.0.1"
         canExecute={false}
       />
+
+      <AiSkillsSection />
 
       {/* Agent chain */}
       <GlassCard className="p-4">
