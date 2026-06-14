@@ -156,6 +156,221 @@
       line-height: 1.5;
     }
 
+    .db-shell {
+      margin-top: 12px;
+      border: 2px solid #253b99;
+      background: rgba(5, 7, 25, .88);
+      box-shadow: inset 0 0 18px rgba(24,216,255,.06);
+      padding: 14px;
+    }
+
+    .db-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .db-header h2 {
+      margin: 0;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+    }
+
+    .db-header p {
+      margin: 0 0 4px;
+      color: #d7e7ff;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .db-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(191,238,255,.4);
+      border-radius: 999px;
+      background: rgba(24,216,255,.08);
+      color: #e9fbff;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .db-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr 1.1fr;
+      gap: 10px;
+    }
+
+    .db-card {
+      border: 1px solid rgba(103,217,255,.35);
+      border-radius: 14px;
+      background: rgba(10, 14, 48, .82);
+      padding: 12px;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .db-card label,
+    .db-card .label {
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .db-card input {
+      width: 100%;
+      border: 1px solid rgba(155,92,255,.55);
+      border-radius: 10px;
+      background: rgba(4, 8, 28, .9);
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    .db-card input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(24,216,255,.15);
+    }
+
+    .db-card button {
+      border: 2px solid #3949aa;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #243ea8, #121a4e);
+      color: #fff;
+      padding: 10px 12px;
+      font: inherit;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      cursor: pointer;
+      transition: transform .2s ease, filter .2s ease, border-color .2s ease;
+    }
+
+    .db-card button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+      border-color: var(--cyan);
+    }
+
+    .db-card button:active {
+      transform: translateY(1px);
+    }
+
+    .db-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .db-stat {
+      border: 1px solid rgba(191,238,255,.15);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      padding: 8px 10px;
+    }
+
+    .db-stat span {
+      display: block;
+      font-size: 11px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .db-stat strong {
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .db-leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .db-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+      max-height: 210px;
+      padding-right: 4px;
+    }
+
+    .db-user {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 10px;
+      border: 1px solid rgba(191,238,255,.14);
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+    }
+
+    .db-user.active {
+      border-color: rgba(126,227,91,.6);
+      box-shadow: 0 0 0 2px rgba(126,227,91,.12);
+    }
+
+    .db-user button {
+      padding: 4px 8px;
+      min-width: 0;
+      font-size: 11px;
+      border-radius: 8px;
+    }
+
+    .db-user-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .db-user-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .db-vip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(255,213,31,.18);
+      border: 1px solid rgba(255,213,31,.55);
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .db-empty {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 6px 0;
+    }
+
     .touch-controls {
       display: none;
       position: fixed;
@@ -234,6 +449,43 @@
     <p class="notice">
       Single-file 4K HTML5 Canvas game. ไม่มี external libraries, ไม่มี network request, ไม่มี API key, ไม่มี secret, ไม่มี token, ไม่มี .env — พร้อม deploy บน GitHub Pages, Vercel, Netlify หรือ itch.io
     </p>
+
+    <section class="db-shell" aria-label="Player database and leaderboard">
+      <div class="db-header">
+        <div>
+          <p>Database</p>
+          <h2>Users • Score • Leaderboard • VIP • Points • Register</h2>
+        </div>
+        <div class="db-badge" id="dbSummary">Loading player database...</div>
+      </div>
+
+      <div class="db-grid">
+        <form class="db-card" id="registerForm">
+          <div class="label">Register / Switch User</div>
+          <label for="usernameInput">User name</label>
+          <input id="usernameInput" name="username" maxlength="24" autocomplete="nickname" placeholder="Enter player name" />
+          <button type="submit">Register User</button>
+          <div class="db-empty">Your user, points, score history, and VIP status are saved locally in this browser.</div>
+        </form>
+
+        <div class="db-card">
+          <div class="label">Active Player</div>
+          <div id="activeUserCard" class="db-empty">No user loaded.</div>
+          <div class="db-meta">
+            <div class="db-stat"><span>Best Score</span><strong id="activeBestScore">0</strong></div>
+            <div class="db-stat"><span>Total Points</span><strong id="activePoints">0</strong></div>
+            <div class="db-stat"><span>Runs</span><strong id="activeRuns">0</strong></div>
+            <div class="db-stat"><span>VIP</span><strong id="activeVip">No</strong></div>
+          </div>
+          <button type="button" id="resetDbBtn">Reset Local Database</button>
+        </div>
+
+        <div class="db-card db-leaderboard">
+          <div class="label">Leaderboard</div>
+          <div class="db-list" id="leaderboardList"></div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div class="touch-controls" aria-hidden="true">
@@ -312,6 +564,297 @@
     };
 
     let highScore = store.get("codexQuestOmegaHighScore", 0);
+    const DB_KEY = "codexQuestOmegaDatabaseV1";
+    const VIP_THRESHOLD = 100;
+    const dbSummaryEl = document.getElementById("dbSummary");
+    const activeUserCardEl = document.getElementById("activeUserCard");
+    const activeBestScoreEl = document.getElementById("activeBestScore");
+    const activePointsEl = document.getElementById("activePoints");
+    const activeRunsEl = document.getElementById("activeRuns");
+    const activeVipEl = document.getElementById("activeVip");
+    const leaderboardListEl = document.getElementById("leaderboardList");
+    const registerFormEl = document.getElementById("registerForm");
+    const usernameInputEl = document.getElementById("usernameInput");
+    const resetDbBtnEl = document.getElementById("resetDbBtn");
+    let db = null;
+    let savedRunScore = 0;
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function slugify(value) {
+      return String(value)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        || "player";
+    }
+
+    function createUser(username) {
+      const safeName = String(username || "Player").trim().replace(/\s+/g, " ").slice(0, 24) || "Player";
+      const stamp = nowIso();
+      return {
+        id: slugify(safeName),
+        username: safeName,
+        points: 0,
+        bestScore: 0,
+        lastScore: 0,
+        totalScore: 0,
+        runs: 0,
+        wins: 0,
+        vip: false,
+        createdAt: stamp,
+        lastLoginAt: stamp,
+        updatedAt: stamp,
+        runSavedScore: 0
+      };
+    }
+
+    function normalizeUser(user) {
+      if (!user || typeof user !== "object") return null;
+      const createdAt = typeof user.createdAt === "string" ? user.createdAt : nowIso();
+      const lastLoginAt = typeof user.lastLoginAt === "string" ? user.lastLoginAt : createdAt;
+      const updatedAt = typeof user.updatedAt === "string" ? user.updatedAt : lastLoginAt;
+      const username = String(user.username || "Player").trim().replace(/\s+/g, " ").slice(0, 24) || "Player";
+      const id = String(user.id || "").trim() || slugify(username);
+      return {
+        id,
+        username,
+        points: Number.isFinite(user.points) ? Math.max(0, Math.floor(user.points)) : 0,
+        bestScore: Number.isFinite(user.bestScore) ? Math.max(0, Math.floor(user.bestScore)) : 0,
+        lastScore: Number.isFinite(user.lastScore) ? Math.max(0, Math.floor(user.lastScore)) : 0,
+        totalScore: Number.isFinite(user.totalScore) ? Math.max(0, Math.floor(user.totalScore)) : 0,
+        runs: Number.isFinite(user.runs) ? Math.max(0, Math.floor(user.runs)) : 0,
+        wins: Number.isFinite(user.wins) ? Math.max(0, Math.floor(user.wins)) : 0,
+        vip: Boolean(user.vip),
+        createdAt,
+        lastLoginAt,
+        updatedAt,
+        runSavedScore: Number.isFinite(user.runSavedScore) ? Math.max(0, Math.floor(user.runSavedScore)) : 0
+      };
+    }
+
+    function normalizeDatabase(raw) {
+      const base = { activeUserId: "", users: [] };
+      if (!raw || typeof raw !== "object") {
+        const guest = createUser("Guest");
+        base.activeUserId = guest.id;
+        base.users = [guest];
+        return base;
+      }
+
+      const users = Array.isArray(raw.users)
+        ? raw.users.map(normalizeUser).filter(Boolean)
+        : [];
+      const deduped = [];
+      const seen = new Set();
+      for (const user of users) {
+        if (seen.has(user.id)) continue;
+        seen.add(user.id);
+        deduped.push(user);
+      }
+
+      if (!deduped.length) {
+        const guest = createUser("Guest");
+        base.activeUserId = guest.id;
+        base.users = [guest];
+        return base;
+      }
+
+      const activeUserId = typeof raw.activeUserId === "string" ? raw.activeUserId : "";
+      const activeUser = deduped.find(user => user.id === activeUserId) || deduped[0];
+      return {
+        activeUserId: activeUser.id,
+        users: deduped
+      };
+    }
+
+    function loadDatabase() {
+      return normalizeDatabase(store.get(DB_KEY, null));
+    }
+
+    function saveDatabase() {
+      store.set(DB_KEY, db);
+    }
+
+    function getActiveUser() {
+      return db.users.find(user => user.id === db.activeUserId) || db.users[0] || null;
+    }
+
+    function getLeaderboard() {
+      return [...db.users].sort((a, b) =>
+        b.points - a.points ||
+        b.bestScore - a.bestScore ||
+        b.totalScore - a.totalScore ||
+        a.username.localeCompare(b.username)
+      );
+    }
+
+    function applyVipStatus(user) {
+      user.vip = user.points >= VIP_THRESHOLD;
+      return user.vip;
+    }
+
+    function refreshDatabaseUI() {
+      const user = getActiveUser();
+      const leaderboard = getLeaderboard();
+
+      if (dbSummaryEl) {
+        dbSummaryEl.textContent = `${db.users.length} users • ${leaderboard[0]?.username || "Guest"} leads`;
+      }
+
+      if (activeUserCardEl) {
+        if (user) {
+          activeUserCardEl.innerHTML = "";
+          const title = document.createElement("div");
+          title.className = "db-user-title";
+          title.append(document.createTextNode(user.username));
+          if (user.vip) {
+            const badge = document.createElement("span");
+            badge.className = "db-vip";
+            badge.textContent = "VIP";
+            title.append(badge);
+          }
+
+          const sub = document.createElement("div");
+          sub.className = "db-user-sub";
+          sub.textContent = `Last score ${user.lastScore} • Total score ${user.totalScore} • Runs ${user.runs}`;
+
+          activeUserCardEl.append(title, sub);
+        } else {
+          activeUserCardEl.textContent = "No user loaded.";
+        }
+      }
+
+      if (activeBestScoreEl) activeBestScoreEl.textContent = String(user?.bestScore || 0);
+      if (activePointsEl) activePointsEl.textContent = String(user?.points || 0);
+      if (activeRunsEl) activeRunsEl.textContent = String(user?.runs || 0);
+      if (activeVipEl) activeVipEl.textContent = user?.vip ? "Yes" : "No";
+
+      if (leaderboardListEl) {
+        leaderboardListEl.innerHTML = "";
+        if (!leaderboard.length) {
+          const empty = document.createElement("div");
+          empty.className = "db-empty";
+          empty.textContent = "No registered users yet.";
+          leaderboardListEl.append(empty);
+        } else {
+          leaderboard.slice(0, 8).forEach((entry, index) => {
+            const row = document.createElement("div");
+            row.className = `db-user${entry.id === db.activeUserId ? " active" : ""}`;
+
+            const left = document.createElement("div");
+
+            const title = document.createElement("div");
+            title.className = "db-user-title";
+            title.append(document.createTextNode(`#${index + 1} ${entry.username}`));
+            if (entry.vip) {
+              const badge = document.createElement("span");
+              badge.className = "db-vip";
+              badge.textContent = "VIP";
+              title.append(badge);
+            }
+
+            const sub = document.createElement("div");
+            sub.className = "db-user-sub";
+            sub.textContent = `${entry.points} points • best ${entry.bestScore} • runs ${entry.runs}`;
+
+            left.append(title, sub);
+
+            const action = document.createElement("button");
+            action.type = "button";
+            action.textContent = entry.id === db.activeUserId ? "Active" : "Switch";
+            action.disabled = entry.id === db.activeUserId;
+            action.addEventListener("click", () => {
+              setActiveUser(entry.id);
+            });
+
+            row.append(left, action);
+            leaderboardListEl.append(row);
+          });
+        }
+      }
+    }
+
+    function syncDatabase() {
+      saveDatabase();
+      refreshDatabaseUI();
+    }
+
+    function setActiveUser(userId) {
+      const target = db.users.find(user => user.id === userId) || null;
+      if (!target) return null;
+      db.activeUserId = target.id;
+      target.lastLoginAt = nowIso();
+      target.runSavedScore = 0;
+      savedRunScore = 0;
+      syncDatabase();
+      return target;
+    }
+
+    function registerUser(username) {
+      const safeName = String(username || "").trim().replace(/\s+/g, " ").slice(0, 24);
+      if (!safeName) return null;
+      const normalizedId = slugify(safeName);
+      const existing = db.users.find(user => user.id === normalizedId || user.username.toLowerCase() === safeName.toLowerCase());
+      if (existing) {
+        existing.username = safeName;
+        existing.lastLoginAt = nowIso();
+        existing.updatedAt = existing.lastLoginAt;
+        db.activeUserId = existing.id;
+        existing.runSavedScore = 0;
+        savedRunScore = 0;
+        syncDatabase();
+        return existing;
+      }
+
+      const user = createUser(safeName);
+      db.users.unshift(user);
+      db.activeUserId = user.id;
+      savedRunScore = 0;
+      syncDatabase();
+      return user;
+    }
+
+    function setRunBaseline(score = player.score) {
+      const user = getActiveUser();
+      if (!user) return null;
+      user.runSavedScore = Math.max(0, Math.floor(score));
+      user.updatedAt = nowIso();
+      savedRunScore = user.runSavedScore;
+      saveDatabase();
+      return user;
+    }
+
+    function recordRunProgress({ completed = false, force = false } = {}) {
+      const user = getActiveUser();
+      if (!user) return null;
+
+      const scoreDelta = Math.max(0, Math.floor(player.score - (user.runSavedScore || 0)));
+      const pointsDelta = Math.max(0, Math.floor(scoreDelta / 100));
+      if (scoreDelta <= 0 && !completed && !force) return user;
+
+      user.lastScore = Math.max(user.lastScore, Math.floor(player.score));
+      user.bestScore = Math.max(user.bestScore, Math.floor(player.score));
+      user.totalScore += scoreDelta;
+      user.points += pointsDelta;
+      user.runs += 1;
+      if (completed) user.wins += 1;
+      user.updatedAt = nowIso();
+      user.runSavedScore = Math.max(user.runSavedScore || 0, Math.floor(player.score));
+      applyVipStatus(user);
+      savedRunScore = user.runSavedScore;
+      syncDatabase();
+      return user;
+    }
+
+    db = loadDatabase();
+    syncDatabase();
+    if (usernameInputEl && getActiveUser()) {
+      usernameInputEl.value = getActiveUser().username;
+    }
 
     function resizeCanvas() {
       const shell = canvas.parentElement;
@@ -656,11 +1199,13 @@
     }
 
     function restartLevel() {
+      recordRunProgress({ force: true });
       const savedScore = Math.max(0, player.score - player.levelCoins * 100);
       const savedCoins = player.totalCoins - player.levelCoins;
       player.score = savedScore;
       player.totalCoins = Math.max(0, savedCoins);
       parseLevel(world.index);
+      setRunBaseline(player.score);
       state = "playing";
     }
 
@@ -670,7 +1215,9 @@
         return;
       }
       player.score += 500 + player.hp * 50;
+      recordRunProgress({ force: true });
       parseLevel(world.index + 1);
+      setRunBaseline(player.score);
       state = "playing";
       sound("win");
       unlockAchievement(`world${world.index + 1}`, `Reached ${world.name}`);
@@ -679,6 +1226,7 @@
     function winGame() {
       state = "win";
       player.score += Math.max(0, Math.floor(10000 - (performance.now() - runStartedAt) / 100));
+      recordRunProgress({ completed: true, force: true });
       highScore = Math.max(highScore, player.score);
       store.set("codexQuestOmegaHighScore", highScore);
       unlockAchievement("complete", "Omega Clear");
@@ -764,6 +1312,7 @@
 
     function gameOver() {
       state = "gameover";
+      recordRunProgress({ force: true });
       highScore = Math.max(highScore, player.score);
       store.set("codexQuestOmegaHighScore", highScore);
       sound("boss");
@@ -1547,6 +2096,7 @@
       drawOverlay("CODEX QUEST OMEGA", [
         "Master Omega Advanced Professional Final Release",
         "3 worlds, boss battle, checkpoints, dash core, particles, achievements, mobile controls.",
+        "Register a user to save scores, points, VIP status, and the local leaderboard.",
         "Choose difficulty: [1] Easy  [2] Normal  [3] Hard",
         "Current difficulty: " + difficulty.toUpperCase(),
         "Controls: Move A/D, Jump Space, Attack J, Dash K, Pause P, Mute M.",
@@ -1688,6 +2238,30 @@
       btn.addEventListener("pointerup", up);
       btn.addEventListener("pointercancel", up);
       btn.addEventListener("pointerleave", up);
+    }
+
+    if (registerFormEl) {
+      registerFormEl.addEventListener("submit", e => {
+        e.preventDefault();
+        const user = registerUser(usernameInputEl ? usernameInputEl.value : "");
+        if (!user) {
+          if (usernameInputEl) usernameInputEl.focus();
+          return;
+        }
+        if (usernameInputEl) usernameInputEl.value = user.username;
+        sound("pickup");
+      });
+    }
+
+    if (resetDbBtnEl) {
+      resetDbBtnEl.addEventListener("click", () => {
+        const confirmed = window.confirm("Reset the local ZQuest database? This removes all users, points, and leaderboard entries in this browser.");
+        if (!confirmed) return;
+        db = normalizeDatabase(null);
+        savedRunScore = 0;
+        syncDatabase();
+        if (usernameInputEl) usernameInputEl.value = getActiveUser()?.username || "";
+      });
     }
 
     window.addEventListener("resize", resizeCanvas);

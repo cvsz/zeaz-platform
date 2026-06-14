@@ -27,6 +27,7 @@
 - Difficulty selection: Easy / Normal / Hard
 - Mobile touch controls
 - High score saved in localStorage
+- Local player database with register, users, points, VIP status, and leaderboard
 - Achievements/toasts
 - Fullscreen support
 - No external libraries
@@ -62,6 +63,15 @@ Then open:
 ```text
 http://localhost:8080
 ```
+
+## Player Database
+
+Use the on-page database panel to register a local player name, switch active users, and view the leaderboard.
+
+- Users and scores are stored only in this browser's `localStorage`
+- Points accumulate from run score progression
+- VIP status unlocks automatically after enough points
+- Resetting the local database clears users, points, and leaderboard entries for this browser only
 
 ## Deploy
 

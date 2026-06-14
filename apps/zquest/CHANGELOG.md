@@ -17,5 +17,8 @@ Added:
 - Procedural sound
 - Achievements
 - High-score persistence
+- Local player database with register/switch flow
+- Leaderboard with points and VIP status
+- LocalStorage-backed score and player state
 - Better HUD
 - Deployment docs
