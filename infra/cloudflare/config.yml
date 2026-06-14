@@ -1,5 +1,5 @@
-tunnel: eebf6c99-b37e-450b-851b-0bc8e427280d
-credentials-file: /etc/cloudflared/eebf6c99-b37e-450b-851b-0bc8e427280d.json
+tunnel: 6fc5dc60-812e-479c-8f2b-a9e62b568aeb
+protocol: http2
 
 originRequest:
   connectTimeout: 30s

@@ -3,7 +3,7 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:2024.4.1
     restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
+    command: tunnel --config /etc/cloudflared/config.yml --protocol http2 run
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     volumes:
