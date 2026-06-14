@@ -7,7 +7,7 @@
 - Confirm controls work
 - Confirm no console errors
 - Confirm no secrets/API keys exist
-- Confirm file is public-static only
+- Confirm deployment mode: offline static or platform API sync
 
 ## GitHub Pages
 
@@ -34,6 +34,14 @@ No build command required.
 ## Netlify
 
 Drag the folder into Netlify deploy UI or connect GitHub repo.
+
+## Platform API Sync
+
+If the game is served from the Zeaz stack, the player database can sync to SQLite through `/api/runtime/zquest/database`.
+
+- Static deployments can stay offline and use `localStorage`
+- API-backed deployments should make the API base reachable from the game origin
+- You can override the API base by setting `window.ZQUEST_API_BASE` before the game script runs
 
 ## itch.io
 

@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 
@@ -148,7 +148,7 @@ def load_state() -> tuple[dict[str, Any], bool]:
     with connect() as conn:
         row = conn.execute("SELECT snapshot FROM zquest_state WHERE id = 1").fetchone()
     if not row:
-      return default_database(), False
+        return default_database(), False
     try:
         return normalize_database(json.loads(row["snapshot"])), True
     except Exception:
@@ -205,4 +205,3 @@ def reset_database() -> dict[str, Any]:
         "backend": "sqlite",
         "database": database,
     }
-

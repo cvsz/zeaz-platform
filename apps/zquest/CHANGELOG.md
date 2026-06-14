@@ -20,5 +20,8 @@ Added:
 - Local player database with register/switch flow
 - Leaderboard with points and VIP status
 - LocalStorage-backed score and player state
+- Database export and import
+- Delete individual users from the leaderboard
+- Optional SQLite-backed backend sync through the platform API
 - Better HUD
 - Deployment docs

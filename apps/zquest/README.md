@@ -27,11 +27,11 @@
 - Difficulty selection: Easy / Normal / Hard
 - Mobile touch controls
 - High score saved in localStorage
-- Local player database with register, users, points, VIP status, and leaderboard
+- Local player database with register, users, points, VIP status, leaderboard, export/import, and delete
+- Optional backend sync through the platform API
 - Achievements/toasts
 - Fullscreen support
 - No external libraries
-- No network requests
 - No API keys, secrets, tokens, or `.env`
 
 ## Controls
@@ -66,12 +66,13 @@ http://localhost:8080
 
 ## Player Database
 
-Use the on-page database panel to register a local player name, switch active users, and view the leaderboard.
+Use the on-page database panel to register a player name, switch active users, export or import a database snapshot, delete an individual user, and view the leaderboard.
 
-- Users and scores are stored only in this browser's `localStorage`
+- The browser keeps a local cache in `localStorage`
+- When the platform API is available, the database syncs to SQLite through `/api/runtime/zquest/database`
 - Points accumulate from run score progression
 - VIP status unlocks automatically after enough points
-- Resetting the local database clears users, points, and leaderboard entries for this browser only
+- Resetting the database clears users, points, and leaderboard entries in the active browser and backend snapshot
 
 ## Deploy
 
@@ -98,10 +99,10 @@ Use default static deployment settings.
 This game is self-contained and safe for public static hosting.
 
 - No external libraries
-- No network requests
+- No required network requests in offline mode
 - No telemetry
 - No login
-- No backend
+- Optional backend sync only when the platform API is available
 - No API key
 - No secret
 - No token

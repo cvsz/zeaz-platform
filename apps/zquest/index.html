@@ -488,7 +488,7 @@
           <input id="usernameInput" name="username" maxlength="24" autocomplete="nickname" placeholder="Enter player name" />
           <button type="submit">Register User</button>
           <input id="importDbInput" class="db-import-input" type="file" accept="application/json,.json" />
-          <div class="db-empty">Your user, points, score history, and VIP status are saved locally in this browser.</div>
+          <div class="db-empty">Your user, points, score history, and VIP status are saved locally and synced to the backend when available.</div>
         </form>
 
         <div class="db-card">
@@ -505,7 +505,7 @@
             <button type="button" id="importDbBtn">Import Database</button>
             <button type="button" id="deleteActiveUserBtn">Delete Active User</button>
           </div>
-          <button type="button" id="resetDbBtn">Reset Local Database</button>
+          <button type="button" id="resetDbBtn">Reset Database</button>
         </div>
 
         <div class="db-card db-leaderboard">
@@ -783,15 +783,16 @@
         && user.wins === 0;
     }
 
-    function chooseDatabaseSnapshot(localSnapshot, remoteSnapshot) {
-      if (!remoteSnapshot) return localSnapshot;
-      if (!remoteSnapshot.initialized) return localSnapshot;
-      if (isDefaultDatabase(localSnapshot.database) && !isDefaultDatabase(remoteSnapshot.database)) {
-        return remoteSnapshot.database;
+    function chooseDatabaseSnapshot(localDatabase, remoteSnapshot) {
+      if (!remoteSnapshot) return localDatabase;
+      const remoteDatabase = remoteSnapshot.database;
+      if (!remoteSnapshot.initialized || !remoteDatabase) return localDatabase;
+      if (isDefaultDatabase(localDatabase) && !isDefaultDatabase(remoteDatabase)) {
+        return remoteDatabase;
       }
-      const localTime = Date.parse(localSnapshot.database.updatedAt || "") || 0;
-      const remoteTime = Date.parse(remoteSnapshot.database.updatedAt || "") || 0;
-      return remoteTime >= localTime ? remoteSnapshot.database : localSnapshot.database;
+      const localTime = Date.parse(localDatabase.updatedAt || "") || 0;
+      const remoteTime = Date.parse(remoteDatabase.updatedAt || "") || 0;
+      return remoteTime >= localTime ? remoteDatabase : localDatabase;
     }
 
     function touchDatabase() {
@@ -2320,11 +2321,11 @@
       drawOverlay("CODEX QUEST OMEGA", [
         "Master Omega Advanced Professional Final Release",
         "3 worlds, boss battle, checkpoints, dash core, particles, achievements, mobile controls.",
-        "Register a user to save scores, points, VIP status, and the local leaderboard.",
+        "Register a user to save scores, points, VIP status, and the leaderboard. Export, import, and delete are available from the database panel.",
         "Choose difficulty: [1] Easy  [2] Normal  [3] Hard",
         "Current difficulty: " + difficulty.toUpperCase(),
         "Controls: Move A/D, Jump Space, Attack J, Dash K, Pause P, Mute M.",
-        "No external libraries. No network. No API keys. No secrets."
+        "No external libraries. Offline mode requires no network. No API keys. No secrets."
       ], "Press ENTER or tap canvas to start");
     }
 
@@ -2507,7 +2508,7 @@
       deleteActiveUserBtnEl.addEventListener("click", () => {
         const active = getActiveUser();
         if (!active) return;
-        const confirmed = window.confirm(`Delete user \"${active.username}\" from the local database?`);
+        const confirmed = window.confirm(`Delete user \"${active.username}\" from the database?`);
         if (!confirmed) return;
         deleteUser(active.id);
         sound("hurt");

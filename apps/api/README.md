@@ -13,6 +13,7 @@ Last updated: 2026-06-10
 | Routers | `routers/` |
 | Dependencies | `requirements.txt` |
 | Route intent | `api.zeaz.dev` |
+| ZQuest database | `api/runtime/zquest` backed by SQLite |
 
 ## Scope rule
 
@@ -39,7 +40,17 @@ python main.py
 main.py
 requirements.txt
 routers/
+data/
 ```
+
+## ZQuest backend
+
+`apps/zquest` can sync player state through the API router at `/api/runtime/zquest/database`.
+
+- `GET /api/runtime/zquest/database` reads the current SQLite snapshot
+- `PUT /api/runtime/zquest/database` stores a normalized database snapshot
+- `POST /api/runtime/zquest/database/reset` restores the default guest snapshot
+- Set `ZQUEST_DATABASE_PATH` to move the SQLite file if needed
 
 ## Notes
 
