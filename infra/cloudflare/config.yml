@@ -7,6 +7,8 @@ originRequest:
   keepAliveTimeout: 90s
 
 ingress:
+  - hostname: auth.zeaz.dev
+    service: http://traefik:80
   - hostname: zcfdash.zeaz.dev
     service: http://traefik:80
   - hostname: openwork.zeaz.dev

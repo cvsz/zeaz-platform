@@ -46,15 +46,6 @@
       "status": "active"
     },
     {
-      "app_id": "studio",
-      "role": "ui",
-      "path": "apps/web",
-      "hostname": "studio.zeaz.dev",
-      "port": 3001,
-      "origin": "http://127.0.0.1:3001",
-      "status": "active"
-    },
-    {
       "app_id": "zdash",
       "role": "ui",
       "path": "apps/zdash",
@@ -102,16 +93,6 @@
       "api_gateway_prefix": "/v1/zveo"
     },
     {
-      "app_id": "zkbtrader",
-      "role": "api-ui",
-      "path": "apps/zkbtrader",
-      "hostname": "zkbtrader.zeaz.dev",
-      "port": 8004,
-      "origin": "http://127.0.0.1:8004",
-      "status": "active",
-      "api_gateway_prefix": "/v1/zkbtrader"
-    },
-    {
       "app_id": "ztrader",
       "role": "ui",
       "path": "apps/ztrader",
@@ -132,16 +113,6 @@
       "api_gateway_prefix": "/v1/zcino"
     },
     {
-      "app_id": "cctv",
-      "role": "ui",
-      "path": "apps/cctv",
-      "hostname": "cctv.zeaz.dev",
-      "port": 9292,
-      "origin": "http://127.0.0.1:9292",
-      "status": "active",
-      "api_gateway_prefix": "/v1/cctv"
-    },
-    {
       "app_id": "zoffice",
       "role": "api-ui",
       "path": "apps/zoffice",
@@ -150,25 +121,6 @@
       "origin": "http://127.0.0.1:8091",
       "status": "refactor-from-8090",
       "api_gateway_prefix": "/v1/zoffice"
-    },
-    {
-      "app_id": "ABTPi18n",
-      "role": "ui",
-      "path": "apps/ABTPi18n",
-      "hostname": "abtpi18n.zeaz.dev",
-      "port": 3010,
-      "origin": "http://127.0.0.1:3010",
-      "status": "reserved"
-    },
-    {
-      "app_id": "ABTPi18n-api",
-      "role": "api",
-      "path": "apps/ABTPi18n",
-      "hostname": "api-abtpi18n.zeaz.dev",
-      "port": 8010,
-      "origin": "http://127.0.0.1:8010",
-      "status": "reserved",
-      "api_gateway_prefix": "/v1/abtpi18n"
     },
     {
       "app_id": "zwallet",
@@ -210,15 +162,6 @@
       "api_gateway_prefix": "/v1/zsticker"
     },
     {
-      "app_id": "zcino-modern",
-      "role": "ui",
-      "path": "apps/zcino-modern",
-      "hostname": "zcino-modern.zeaz.dev",
-      "port": 3015,
-      "origin": "http://127.0.0.1:3015",
-      "status": "reserved"
-    },
-    {
       "app_id": "zcloud",
       "role": "ui",
       "path": "apps/zcloud",
@@ -234,6 +177,15 @@
       "hostname": "ztest.zeaz.dev",
       "port": 3008,
       "origin": "http://127.0.0.1:3008",
+      "status": "active"
+    },
+    {
+      "app_id": "auth",
+      "role": "auth",
+      "path": "apps/auth",
+      "hostname": "auth.zeaz.dev",
+      "port": 9443,
+      "origin": "http://127.0.0.1:9443",
       "status": "active"
     }
   ]

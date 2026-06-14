@@ -1,14 +1,14 @@
 # zcfdash Cloudflare control panel server report
 
-Generated: 2026-06-13T19:25:23Z
+Generated: 2026-06-14T07:40:50Z
 Port source: app route list + route overlays
 Base plan: configs/platform/apps-port-plan.json
 Overlay glob: configs/platform/*-route-overlay.json
 
 | Service | Public hostname | App path | Local origin | Status |
 |---|---|---|---|---|
-| UI | https://zcfdash.zeaz.dev | apps/web | http://127.0.0.1:3003 | RUNNING external |
-| API | https://api-zcfdash.zeaz.dev | apps/api | http://127.0.0.1:8088 | RUNNING external |
+| UI | https://zcfdash.zeaz.dev | apps/web | http://127.0.0.1:3003 | STOPPED |
+| API | https://api-zcfdash.zeaz.dev | apps/api | http://127.0.0.1:8088 | RUNNING pid=219959 |
 
 ## Commands
 
