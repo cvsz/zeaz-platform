@@ -187,6 +187,16 @@
       "port": 9443,
       "origin": "http://127.0.0.1:9443",
       "status": "active"
+    },
+    {
+      "app_id": "zai-factory",
+      "role": "ops",
+      "path": "apps/zai-factory",
+      "hostname": "factory.zeaz.dev",
+      "port": 8710,
+      "origin": "http://127.0.0.1:8710",
+      "status": "reserved",
+      "api_gateway_prefix": "/v1/factory"
     }
   ]
 }

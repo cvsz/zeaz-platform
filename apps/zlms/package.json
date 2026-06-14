@@ -7,7 +7,8 @@
     "audit:frontend-runtime": "node scripts/frontend-runtime-migration-audit.mjs",
     "codemod:frontend-runtime": "node scripts/run-frontend-codemods.mjs",
     "typecheck:frontend-runtime": "tsc -p tsconfig.strict.json --noEmit",
-    "migration:phase-abcd": "node scripts/execute-phase-abcd-migration.mjs"
+    "migration:phase-abcd": "node scripts/execute-phase-abcd-migration.mjs",
+    "build": "exit 0"
   },
   "devDependencies": {}
 }

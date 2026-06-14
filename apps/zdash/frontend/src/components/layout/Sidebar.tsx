@@ -40,6 +40,7 @@ const navItems: NavItem[] = [
   { to: "/system/health", labelKey: "nav.system", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/zfinance", labelKey: "nav.zfinance", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/notifications", labelKey: "nav.notifications", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/subagents", labelKey: "nav.subagents", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace/live", labelKey: "sidebar.workspace_live", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace/timeline", labelKey: "sidebar.workspace_timeline", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace/notes", labelKey: "sidebar.workspace_notes", roles: ["admin", "operator", "analyst", "viewer"] },

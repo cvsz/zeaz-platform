@@ -1,7 +1,9 @@
 "use client";
+import { ApiTerminal } from "@/components/api-terminal";
 
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ReadinessScorecard, DeploymentStatusWidget } from "@/components/dashboard-widgets";
 import {
   Activity,
   AlertTriangle,
@@ -67,9 +69,10 @@ type ConsoleResult = {
   body: string;
 };
 
-const CONTROL_API_HOST = "api-zcfdash.zeaz.dev";
-const CONTROL_UI_HOST = "zcfdash.zeaz.dev";
+const CONTROL_API_HOST = "api.zeaz.dev";
+const CONTROL_UI_HOST = "zeaz.dev";
 const API_PREFIX = "/api/runtime/cloudflare";
+const OBSERVABILITY_PREFIX = "/api/runtime/observability";
 
 const REPORT_LABELS: Record<keyof ReportPayload, string> = {
   port_report: "Port / tunnel assets",
@@ -89,10 +92,10 @@ const API_ENDPOINTS = [
 const LOCAL_COMMANDS = [
   "cd /home/zeazdev/zeaz-platform",
   "git pull --ff-only origin main",
-  "chmod +x scripts/platform/zcfdash-control-panel.sh scripts/platform/apps-server-control.sh",
+  "chmod +x scripts/platform/apps-server-control.sh",
   "python3 scripts/platform/generate-port-refactor-assets.py",
-  "make -f Makefile -f Makefile.app-servers zcfdash-control-start",
-  "make -f Makefile -f Makefile.app-servers zcfdash-control-status",
+  "make -f Makefile -f Makefile.app-servers apps-server-start",
+  "make -f Makefile -f Makefile.app-servers apps-server-status",
   "bash scripts/platform/final-go-live-complete.sh",
 ];
 
@@ -104,8 +107,22 @@ function controlApiBase() {
   return API_PREFIX;
 }
 
+function observabilityApiBase() {
+  if (typeof window === "undefined") return OBSERVABILITY_PREFIX;
+  if (window.location.hostname === CONTROL_UI_HOST) {
+    return `https://${CONTROL_API_HOST}${OBSERVABILITY_PREFIX}`;
+  }
+  return OBSERVABILITY_PREFIX;
+}
+
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${controlApiBase()}${path}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json();
+}
+
+async function getObservabilityJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${observabilityApiBase()}${path}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
@@ -146,6 +163,9 @@ function safeJson(value: unknown) {
 export default function Dashboard() {
   const [summary, setSummary] = useState<ControlSummary | null>(null);
   const [reports, setReports] = useState<ReportPayload | null>(null);
+  const [metrics, setMetrics] = useState<any>(null);
+  const [securityScan, setSecurityScan] = useState<any>(null);
+  const [deploymentStatus, setDeploymentStatus] = useState<any>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string>("");
@@ -184,12 +204,18 @@ export default function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const [summaryPayload, reportPayload] = await Promise.all([
+      const [summaryPayload, reportPayload, metricsPayload, securityScanPayload, deploymentPayload] = await Promise.all([
         getJson<ControlSummary>("/summary"),
         getJson<ReportPayload>("/reports"),
+        getObservabilityJson<any>("/metrics"),
+        getObservabilityJson<any>("/security_scan"),
+        getJson<any>("/deployment_status"),
       ]);
       setSummary(summaryPayload);
       setReports(reportPayload);
+      setMetrics(metricsPayload);
+      setSecurityScan(securityScanPayload);
+      setDeploymentStatus(deploymentPayload);
       setLastUpdated(new Date().toLocaleString());
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -234,10 +260,39 @@ export default function Dashboard() {
 
         {error ? <ErrorBanner message={error} /> : null}
 
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <Card className="border-white/10 bg-white/[0.04] backdrop-blur">
+            <CardHeader><CardTitle className="flex items-center gap-2"><Activity className="h-5 w-5 text-cyan-300" /> Platform Health</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                <p className="text-sm text-slate-400">CPU Usage</p>
+                <p className="text-2xl font-bold">{metrics?.cpu_usage ?? "N/A"}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                <p className="text-sm text-slate-400">Memory Usage</p>
+                <p className="text-2xl font-bold">{metrics?.memory_usage ?? "N/A"}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-white/10 bg-white/[0.04] backdrop-blur">
+            <CardHeader><CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-emerald-300" /> Security Scan Summary</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                <p className="text-sm text-slate-400">Last Scan</p>
+                <p className="font-mono text-sm">{securityScan?.last_scan ? new Date(securityScan.last_scan).toLocaleString() : "N/A"}</p>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                <p className="text-sm text-slate-400">Vulnerabilities</p>
+                <p className="text-2xl font-bold text-red-300">{securityScan?.vulnerabilities ?? "N/A"}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
         <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard title="Control API" value={healthStatus} subtitle={CONTROL_API_HOST} icon={<Activity className="h-5 w-5" />} tone={statusTone(healthStatus)} />
-          <MetricCard title="Routes online" value={`${routes.length}`} subtitle="zcfdash route overlay" icon={<Route className="h-5 w-5" />} tone={routes.length >= 2 ? "success" : "danger"} />
-          <MetricCard title="Release posture" value={releaseBlocked ? "blocked" : "ready"} subtitle="based on local reports" icon={<ShieldCheck className="h-5 w-5" />} tone={releaseBlocked ? "danger" : "success"} />
+          <MetricCard title="Platform API" value={healthStatus} subtitle={CONTROL_API_HOST} icon={<Activity className="h-5 w-5" />} tone={statusTone(healthStatus)} />
+          <MetricCard title="Routes online" value={`${routes.length}`} subtitle="platform port plan" icon={<Route className="h-5 w-5" />} tone={routes.length >= 5 ? "success" : "danger"} />
+          <MetricCard title="Deployment posture" value={releaseBlocked ? "blocked" : "ready"} subtitle="based on local reports" icon={<ShieldCheck className="h-5 w-5" />} tone={releaseBlocked ? "danger" : "success"} />
           <MetricCard title="Origin policy" value="localhost only" subtitle="127.0.0.1 tunnel origins" icon={<Lock className="h-5 w-5" />} tone="success" />
         </section>
 
@@ -249,6 +304,11 @@ export default function Dashboard() {
         <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.6fr]">
           <RoutesPanel routes={filteredRoutes} total={routes.length} query={routeQuery} onQuery={setRouteQuery} />
           <TopologyPanel routes={routes} />
+        </section>
+
+        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <ReadinessScorecard score={readinessScore} />
+          <DeploymentStatusWidget statusData={deploymentStatus} />
         </section>
 
         <section className="grid grid-cols-1 gap-6 xl:grid-cols-[0.9fr_1.1fr]">
@@ -265,6 +325,7 @@ export default function Dashboard() {
           <FeatureMatrix />
           <ReleaseChecklist releaseBlocked={releaseBlocked} />
           <SourceMap />
+          <ApiTerminal />
         </section>
       </div>
     </main>
@@ -295,16 +356,16 @@ function Hero({
           </div>
           <div className="space-y-3">
             <h1 className="max-w-5xl text-4xl font-black tracking-tight md:text-6xl">
-              zcfdash Cloudflare Master Control Panel
+              ZeaZ Platform Master Control Panel
             </h1>
             <p className="max-w-3xl text-base leading-7 text-slate-300 md:text-lg">
-              Professional read-only Cloudflare operations cockpit for zcfdash. It unifies public route evidence,
-              tunnel/origin posture, Terraform assets, go-live reports, audit status, and server startup commands.
+              Professional platform-wide operations cockpit for ZeaZ. It unifies all application routes,
+              tunnel origins, Terraform state evidence, and deployment reports across the entire monorepo.
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm font-mono text-slate-300">
-            <Badge icon={<Globe className="h-4 w-4" />} text="zcfdash.zeaz.dev" tone="blue" />
-            <Badge icon={<RadioTower className="h-4 w-4" />} text="api-zcfdash.zeaz.dev" tone="emerald" />
+            <Badge icon={<Globe className="h-4 w-4" />} text="zeaz.dev" tone="blue" />
+            <Badge icon={<RadioTower className="h-4 w-4" />} text="api.zeaz.dev" tone="emerald" />
             <Badge icon={<Lock className="h-4 w-4" />} text="safe read-only mode" tone="neutral" />
           </div>
         </div>
@@ -347,7 +408,7 @@ function ErrorBanner({ message }: { message: string }) {
             <p className="font-semibold text-red-100">Control API unavailable</p>
             <p className="font-mono text-sm text-red-200/80">{message}</p>
             <p className="mt-1 text-sm text-slate-300">
-              Start apps/api on the api-zcfdash origin and regenerate route assets before public cutover.
+              Start apps/api and ensure the API gateway is correctly configured in the port plan.
             </p>
           </div>
         </div>
@@ -667,7 +728,7 @@ function FeatureMatrix() {
 function ReleaseChecklist({ releaseBlocked }: { releaseBlocked: boolean }) {
   const items = [
     { label: "Generate route assets", done: true },
-    { label: "Start zcfdash UI + API origins", done: true },
+    { label: "Start Platform UI + API origins", done: true },
     { label: "Verify Cloudflare tunnel routes", done: false },
     { label: "Run final go-live verifier", done: !releaseBlocked },
     { label: "Review warnings and blockers", done: !releaseBlocked },
@@ -691,9 +752,9 @@ function SourceMap() {
   const sources = [
     ["UI", "apps/web/src/app/dashboard/page.tsx"],
     ["API", "apps/api/routers/cloudflare_control.py"],
-    ["Routes", "configs/platform/zcfdash-route-overlay.json"],
+    ["Routes", "configs/platform/apps-port-plan.json"],
     ["Generator", "scripts/platform/generate-port-refactor-assets.py"],
-    ["Runtime", "scripts/platform/zcfdash-control-panel.sh"],
+    ["Runtime", "scripts/platform/apps-server-control.sh"],
   ];
   return (
     <Card className="border-white/10 bg-white/[0.04] backdrop-blur">

@@ -11,3 +11,8 @@ def get_metrics():
 def get_logs(service: str = None):
     # Placeholder for Loki queries
     return {"logs": ["Log line 1", "Log line 2"]}
+
+@router.get("/security_scan")
+def get_security_scan():
+    # Placeholder for security scan result
+    return {"status": "ok", "last_scan": "2026-06-09T10:00:00Z", "vulnerabilities": 0}

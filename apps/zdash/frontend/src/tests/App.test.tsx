@@ -53,6 +53,14 @@ describe("App routing", () => {
     expect((await screen.findAllByText("Social Dry Run")).length).toBeGreaterThan(0);
   });
 
+  it("renders sub-agent results route", async () => {
+    renderAt("/subagents");
+    await waitForStableUi();
+    expect(await screen.findByRole("heading", { name: "Sub-agent Results", level: 2 })).toBeTruthy();
+    expect(await screen.findByText("Mailbox Records")).toBeTruthy();
+    expect(await screen.findByText("Selected Result")).toBeTruthy();
+  });
+
   it("renders not-found route", async () => {
     renderAt("/does-not-exist");
     await waitForStableUi();

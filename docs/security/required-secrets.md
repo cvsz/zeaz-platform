@@ -39,6 +39,7 @@ Identity integration for SAML and Single Sign-On (SSO).
 * `SOPS_AGE_KEY`: Local decrypter key for age-encrypted YAML variables.
 * `JWT_SECRET`: Signing token for Edge Rate Limiting middleware and API Gateways.
 * `SECRET_ROTATION_INTERVAL`: Default duration before automated token rotation scripts trigger (e.g., `90d`).
+* `SNYK_TOKEN`: Required when running `make agent-scan` or `ENABLE_AGENT_SCAN=true make security-scan`.
 
 ---
 

@@ -59,6 +59,20 @@ export type Agent = {
   mock?: boolean;
 };
 
+export type SubagentResult = {
+  agent_id: string;
+  nickname?: string;
+  agent_name?: string;
+  status: string;
+  role?: string;
+  source: string;
+  created_at: string;
+  summary: string;
+  details?: string;
+  artifacts: string[];
+  metadata?: Record<string, unknown>;
+};
+
 export type EventLog = {
   id: string;
   type?: string;

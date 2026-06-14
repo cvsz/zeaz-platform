@@ -21,6 +21,7 @@ INGRESS_PATH = ROOT / "reports/platform/cloudflare-tunnel-ingress.generated.yml"
 PORT_REPORT_PATH = ROOT / "reports/platform/apps-port-refactor.md"
 GO_LIVE_REPORT_PATH = ROOT / "reports/platform/final-go-live-complete.md"
 AUDIT_REPORT_PATH = ROOT / "docs/reports/generated/full-repo-audit-report.md"
+DEPLOYMENT_REPORT_PATH = ROOT / "reports/platform/apps-server-control.md"
 
 
 def _read_json(path: Path, default: Any) -> Any:
@@ -57,21 +58,17 @@ def _combined_routes() -> list[dict[str, Any]]:
     return routes
 
 
-def _zcfdash_routes() -> list[dict[str, Any]]:
-    return [
-        route
-        for route in _combined_routes()
-        if route.get("hostname") in {"zcfdash.zeaz.dev", "api-zcfdash.zeaz.dev"}
-        or route.get("app_id") in {"zcfdash", "zcfdash-api"}
-    ]
+def _platform_routes() -> list[dict[str, Any]]:
+    """Returns all routes defined in the port plan and overlay."""
+    return _combined_routes()
 
 
 @router.get("/health")
 def health() -> dict[str, Any]:
-    routes = _zcfdash_routes()
+    routes = _platform_routes()
     return {
         "status": "ok",
-        "service": "api-zcfdash.zeaz.dev",
+        "service": "api.zeaz.dev",
         "mode": "read-only",
         "root": str(ROOT),
         "route_count": len(routes),
@@ -90,8 +87,8 @@ def routes() -> dict[str, Any]:
     return {
         "zone": "zeaz.dev",
         "control_panel": "zcfdash.zeaz.dev",
-        "api": "api-zcfdash.zeaz.dev",
-        "routes": _zcfdash_routes(),
+        "api": "api.zeaz.dev",
+        "routes": _platform_routes(),
     }
 
 
@@ -99,26 +96,29 @@ def routes() -> dict[str, Any]:
 def terraform_assets() -> dict[str, Any]:
     tfvars = _read_json(TFVARS_PATH, {"app_routes": {}})
     app_routes = tfvars.get("app_routes", {}) if isinstance(tfvars, dict) else {}
-    selected = {
-        host: config
-        for host, config in app_routes.items()
-        if host in {"zcfdash.zeaz.dev", "api-zcfdash.zeaz.dev"}
-    }
     return {
         "path": str(TFVARS_PATH),
         "exists": TFVARS_PATH.exists(),
-        "routes": selected,
+        "routes": app_routes,
     }
 
 
 @router.get("/ingress")
 def ingress() -> dict[str, Any]:
     text = _read_text_tail(INGRESS_PATH)
-    lines = [line for line in text.splitlines() if "zcfdash.zeaz.dev" in line or "api-zcfdash.zeaz.dev" in line]
     return {
         "path": str(INGRESS_PATH),
         "exists": INGRESS_PATH.exists(),
-        "matching_lines": lines,
+        "matching_lines": text.splitlines() if INGRESS_PATH.exists() else [],
+    }
+
+
+@router.get("/deployment_status")
+def deployment_status() -> dict[str, Any]:
+    return {
+        "path": str(DEPLOYMENT_REPORT_PATH),
+        "exists": DEPLOYMENT_REPORT_PATH.exists(),
+        "tail": _read_text_tail(DEPLOYMENT_REPORT_PATH, 12000),
     }
 
 
@@ -146,11 +146,11 @@ def reports() -> dict[str, Any]:
 @router.get("/summary")
 def summary() -> dict[str, Any]:
     return {
-        "title": "ZeaZ Cloudflare Control Panel",
-        "ui_hostname": "zcfdash.zeaz.dev",
-        "api_hostname": "api-zcfdash.zeaz.dev",
-        "mode": "read-only control and evidence API",
-        "routes": _zcfdash_routes(),
+        "title": "ZeaZ Platform Master Control Panel",
+        "ui_hostname": "zeaz.dev",
+        "api_hostname": "api.zeaz.dev",
+        "mode": "platform-wide read-only control and evidence API",
+        "routes": _platform_routes(),
         "health": health(),
         "next_local_commands": [
             "python3 scripts/platform/generate-port-refactor-assets.py",

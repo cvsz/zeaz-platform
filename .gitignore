@@ -66,6 +66,12 @@ package-lock.json
 .idea/
 .agent/
 .agents/
+!.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/agent-scan/
+!.agents/skills/agent-scan/**
 .gemini/
 .codex/
 .cursor/
@@ -74,6 +80,16 @@ package-lock.json
 .joycode/
 .zed/
 apps/zdash/*
+!apps/zdash/backend/
+!apps/zdash/backend/app/
+!apps/zdash/backend/app/api/
+!apps/zdash/backend/app/api/subagent_results.py
+!apps/zdash/backend/app/tests/
+!apps/zdash/backend/app/tests/test_subagent_results_api.py
+!apps/zdash/frontend/
+!apps/zdash/frontend/src/
+!apps/zdash/frontend/src/pages/
+!apps/zdash/frontend/src/pages/SubagentResults.tsx
 
 # Backups and generated repair artifacts
 .backup/
