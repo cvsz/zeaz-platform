@@ -48,6 +48,7 @@ export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 .PHONY: zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate
 .PHONY: git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai
 .PHONY: zaiz-deps-check
+.PHONY: zquest-start zquest-stop zquest-status zquest-restart zquest-smoke
 
 help:
 	@bash scripts/make-help.sh
@@ -833,6 +834,20 @@ all-apps-build: ## Run build across all apps
 			$(MAKE) -C "$$app" build; \
 		fi; \
 	done
+
+zquest-start: ## Start the zQuest frontend plus backend-backed database server
+	@bash scripts/zquest-control.sh start
+
+zquest-stop: ## Stop the zQuest frontend plus backend-backed database server
+	@bash scripts/zquest-control.sh stop
+
+zquest-status: ## Show zQuest server status
+	@bash scripts/zquest-control.sh status
+
+zquest-restart: zquest-stop zquest-start ## Restart zQuest server
+
+zquest-smoke: ## Run zQuest smoke tests against the local server
+	@bash scripts/zquest-control.sh smoke
 
 # Include Zeaz Cloudflare routing ops Makefile
 -include ops/zeaz-cloudflare/Makefile.zeaz-cloudflare.mk

@@ -6,9 +6,9 @@
     "start": "node src/server/server.js"
   },
   "dependencies": {
+    "dotenv": "^16.4.0",
+    "geoip-lite": "^2.0.2",
     "pg": "^8.11.0",
-    "uuid": "^9.0.0",
-    "geoip-lite": "^1.4.7",
-    "dotenv": "^16.4.0"
+    "uuid": "^14.0.0"
   }
 }
