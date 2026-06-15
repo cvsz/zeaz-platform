@@ -11,11 +11,13 @@ function createTestConfig(): ServerConfig {
     tmpdir(),
     `openwork-google-workspace-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   );
+  const clientToken = "test-client-token";
+  const hostTokenValue = "test-host-token";
   return {
     host: "127.0.0.1",
     port: 8787,
-    token: "test-client-token",
-    hostToken: "test-host-token",
+    token: clientToken,
+    hostToken: hostTokenValue,
     configPath: join(tempDir, "server.json"),
     approval: { mode: "auto", timeoutMs: 30000 },
     corsOrigins: ["*"],

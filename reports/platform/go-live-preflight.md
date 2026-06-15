@@ -1,6 +1,6 @@
 # Go live preflight report
 
-Generated: 2026-06-05T18:03:53Z
+Generated: 2026-06-15T12:27:24Z
 
 Read-only gate. No deploy, no Terraform apply, no Cloudflare mutation, no token rotation, no live trading/social automation.
 
@@ -8,7 +8,6 @@ Read-only gate. No deploy, no Terraform apply, no Cloudflare mutation, no token 
 ## git diff check
 
 ```text
-Makefile:772: new blank line at EOF.
 ```
 
 ## apps source review strict
@@ -17,9 +16,8 @@ Makefile:772: new blank line at EOF.
 make[1]: Entering directory '/home/zeazdev/zeaz-platform'
 PASS: wrote reports/platform/apps-source-review.json
 PASS: wrote reports/platform/apps-source-review.md
-Apps scanned: 13
-Critical findings: 2
-make[1]: *** [Makefile:768: apps-source-review-strict] Error 1
+Apps scanned: 19
+Critical findings: 0
 make[1]: Leaving directory '/home/zeazdev/zeaz-platform'
 ```
 
@@ -46,6 +44,9 @@ PASS: wrote /home/zeazdev/zeaz-platform/reports/platform/cloudflare-tunnel-ingre
 
 [0m[1mInitializing the backend...[0m
 
+[0m[1mInitializing provider plugins found in the state...[0m
+- Reusing previous version of cloudflare/cloudflare
+- Using previously-installed cloudflare/cloudflare v5.19.1
 
 
 [0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
@@ -67,26 +68,44 @@ make[1]: Leaving directory '/home/zeazdev/zeaz-platform'
 ```text
 make[1]: Entering directory '/home/zeazdev/zeaz-platform'
 Scanning apps/*
-=== ABTPi18n :: python-compile ===
-PASS: ABTPi18n python-compile
 === api :: python-compile ===
 PASS: api python-compile
 === openwork :: node-build ===
-FAIL: openwork node-build rc=1
+PASS: openwork node-build
 === web :: node-build ===
-PASS: web node-build
+FAIL: web node-build rc=1
+=== zAcademy :: node-build ===
+PASS: zAcademy node-build
 === zAcademy :: python-compile ===
 PASS: zAcademy python-compile
+=== zLinebot :: node-build ===
+PASS: zLinebot node-build
+=== zLinebot :: python-compile ===
+PASS: zLinebot python-compile
+=== zcloud :: node-build ===
+PASS: zcloud node-build
 === zdash :: python-compile ===
 PASS: zdash python-compile
-=== zkbtrader :: python-compile ===
-PASS: zkbtrader python-compile
-=== zlms-prod :: python-compile ===
-PASS: zlms-prod python-compile
+=== zdev :: node-build ===
+PASS: zdev node-build
+=== zlms :: node-build ===
+PASS: zlms node-build
+=== zlms :: python-compile ===
+PASS: zlms python-compile
 === zoffice :: python-compile ===
-FAIL: zoffice python-compile rc=1
+PASS: zoffice python-compile
+=== zsp-aitool :: node-build ===
+FAIL: zsp-aitool node-build rc=1
 === zsticker :: python-compile ===
 PASS: zsticker python-compile
+=== ztrader :: python-compile ===
+PASS: ztrader python-compile
+=== zveo :: node-build ===
+FAIL: zveo node-build rc=1
+=== zveo :: python-compile ===
+PASS: zveo python-compile
+=== zwallet :: node-build ===
+PASS: zwallet node-build
 === zwallet :: python-compile ===
 PASS: zwallet python-compile
 
@@ -104,76 +123,97 @@ PASS: wrote /home/zeazdev/zeaz-platform/terraform/cloudflare-apps/apps.auto.tfva
 PASS: wrote /home/zeazdev/zeaz-platform/reports/platform/cloudflare-tunnel-ingress.generated.yml
 # Apps port origin check
 
-Generated: 2026-06-05T18:06:25Z
+Generated: 2026-06-15T12:36:26Z
 
 | App | Hostname | Origin | Port | Status | Result |
 |---|---|---|---:|---|---|
-| root | `zeaz.dev` | `http://127.0.0.1:8787` | 8787 | active | FAIL:000 |
-| root-www | `www.zeaz.dev` | `http://127.0.0.1:8787` | 8787 | active | FAIL:000 |
+| web-root | `zeaz.dev` | `http://127.0.0.1:3003` | 3003 | active | FAIL:000 |
+| web-www | `www.zeaz.dev` | `http://127.0.0.1:3003` | 3003 | active | FAIL:000 |
 | ssh | `ssh.zeaz.dev` | `ssh://127.0.0.1:22022` | 22022 | active | PASS |
-| web | `app.zeaz.dev` | `http://127.0.0.1:3003` | 3003 | active | FAIL:000 |
-| studio | `studio.zeaz.dev` | `http://127.0.0.1:3001` | 3001 | active | PASS:200 |
-| zdash | `zdash.zeaz.dev` | `http://127.0.0.1:5173` | 5173 | active | FAIL:000 |
-| zdash-api | `api-zdash.zeaz.dev` | `http://127.0.0.1:8005` | 8005 | active | FAIL:000 |
+| zdash | `zdash.zeaz.dev` | `http://127.0.0.1:5173` | 5173 | active | PASS:200 |
+| zdash-api | `api-zdash.zeaz.dev` | `http://127.0.0.1:8005` | 8005 | active | PASS:404 |
 | release | `release.zeaz.dev` | `http://127.0.0.1:5172` | 5172 | active | FAIL:000 |
-| zveo | `zveo.zeaz.dev` | `http://127.0.0.1:3002` | 3002 | active | PASS:307 |
-| zveo-api | `api-zveo.zeaz.dev` | `http://127.0.0.1:8090` | 8090 | active | PASS:404 |
-| zkbtrader | `zkbtrader.zeaz.dev` | `http://127.0.0.1:8004` | 8004 | active | FAIL:000 |
+| zveo | `zveo.zeaz.dev` | `http://127.0.0.1:3002` | 3002 | active | FAIL:000 |
+| zveo-api | `api-zveo.zeaz.dev` | `http://127.0.0.1:8090` | 8090 | active | FAIL:000 |
+| ztrader | `ztrader.zeaz.dev` | `http://127.0.0.1:3016` | 3016 | active | PASS:307 |
 | zcino | `zcino.zeaz.dev` | `http://127.0.0.1:3000` | 3000 | active | FAIL:000 |
-| cctv | `cctv.zeaz.dev` | `http://127.0.0.1:9292` | 9292 | active | PASS:200 |
-| zoffice | `zoffice.zeaz.dev` | `http://127.0.0.1:8091` | 8091 | refactor-from-8090 | FAIL:000 |
+| zoffice | `zoffice.zeaz.dev` | `http://127.0.0.1:8091` | 8091 | refactor-from-8090 | PASS:404 |
+| zcloud | `zcloud.zeaz.dev` | `http://127.0.0.1:3004` | 3004 | active | FAIL:000 |
+| zsp-aitool | `ztest.zeaz.dev` | `http://127.0.0.1:3008` | 3008 | active | FAIL:000 |
+| auth | `auth.zeaz.dev` | `http://127.0.0.1:9443` | 9443 | active | FAIL:000 |
 ERROR: active/refactor origins are not reachable
-make[1]: *** [Makefile:721: apps-port-origin-check] Error 1
+make[1]: *** [Makefile:737: apps-port-origin-check] Error 1
 make[1]: Leaving directory '/home/zeazdev/zeaz-platform'
 ```
 
 ## forbidden tracked files
 
 ```text
-.runtime/logs/full-zeaz-platform-zdash-validate.log
-workers/zeaz-loading/.wrangler/state/v3/cache/miniflare-CacheObject/metadata.sqlite
-FAIL: forbidden tracked files
+PASS: no forbidden tracked files
 ```
 
 ## git status
 
 ```text
- M Makefile
- M apps/api/routers/scheduler.py
- M apps/zdash/.env.example
- M apps/zdash/CODE-OF-CONDUCT.md
- M apps/zdash/COMMUNITY.md
- M apps/zdash/CONTRIBUTING.md
- M apps/zdash/IMPORT_SOURCE.md
- M apps/zdash/Makefile
- M apps/zdash/README.md
- M apps/zdash/SECURITY.md
- M apps/zdash/docs/ops/SIGNED_RELEASE_ATTESTATION.md
- M apps/zdash/docs/releases/FINAL_RELEASE_NOTES.md
- M apps/zdash/docs/releases/v0.42.0-rc1.md
- M apps/zdash/docs/releases/v2.0.1.md
- M apps/zdash/docs/releases/v2.0.2.md
- M apps/zdash/docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md
- M apps/zdash/docs/runbooks/INSTALLATION.md
- M apps/zdash/docs/runbooks/REALTIME_GATEWAY.md
- M apps/zdash/frontend/src/tests/useCollaboration.test.ts
- M apps/zdash/infra/cloudflare/tunnel-config.example.yml
- M apps/zdash/infra/k8s/configmap.yaml
- M apps/zdash/infra/k8s/nginx-ingress.yaml
- M apps/zdash/infra/scripts/cloudflare-dry-run.sh
- M apps/zdash/infra/terraform/variables.tf
- M apps/zoffice/app/gateway_presence.py
- M scripts/platform/review-apps-source.py
-?? apps/ABTPi18n/.env.example
-?? apps/openwork/
-?? apps/zkbtrader/.env.example
-?? apps/zoffice/.env.example
-?? apps/zsticker/.env.example
-?? reports/platform/apps-port-origin-check.md
-?? reports/platform/apps-source-review.json
-?? reports/platform/apps-source-review.md
-?? reports/platform/build-all-stacks.md
-?? reports/platform/go-live-preflight.md
-?? scripts/platform/build-all-stacks.sh
-?? scripts/platform/go-live-preflight.sh
+ M .gitignore
+M  apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts
+M  apps/openwork/apps/opencode-router/test/telegram.test.js
+M  apps/openwork/apps/server/src/artifact-files.e2e.test.ts
+M  apps/openwork/apps/server/src/env-routes.e2e.test.ts
+M  apps/openwork/apps/server/src/extensions/google-workspace.test.ts
+M  apps/openwork/apps/server/src/portable-opencode.test.ts
+M  apps/openwork/apps/server/src/reload-events.e2e.test.ts
+M  apps/openwork/apps/server/src/session-read-model.e2e.test.ts
+M  apps/openwork/apps/server/src/tokens.test.ts
+M  apps/openwork/apps/server/src/workspace-activate.e2e.test.ts
+M  apps/openwork/apps/server/src/workspace-export-safety.test.ts
+M  apps/openwork/apps/server/src/workspace-import-preview.test.ts
+M  apps/openwork/ee/apps/den-api/src/session.ts
+M  apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts
+M  apps/openwork/ee/packages/den-db/drizzle.config.ts
+M  apps/openwork/pnpm-lock.yaml
+M  apps/openwork/scripts/harness/agents/code-reviewer.md
+M  apps/openwork/scripts/harness/commands/kotlin-test.md
+M  apps/openwork/scripts/harness/commands/rust-test.md
+M  apps/web/pnpm-lock.yaml
+M  apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh
+M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py
+M  apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md
+M  apps/zsp-aitool/next-env.d.ts
+M  apps/zsp-aitool/prisma/seed.ts
+M  apps/zsp-aitool/scripts/plugins/plugin-validate.sh
+M  apps/zsp-aitool/tests/api/auth-routes.test.ts
+M  apps/zsp-aitool/tsconfig.json
+M  apps/zwallet/pnpm-lock.yaml
+M  configs/platform/apps-routing.json
+MM reports/platform/apps-port-origin-check.md
+M  reports/platform/apps-port-refactor.md
+M  reports/platform/apps-routing.md
+MM reports/platform/apps-source-review.json
+MM reports/platform/apps-source-review.md
+MM reports/platform/build-all-stacks.md
+D  reports/platform/build-logs/ABTPi18n-python-compile.log
+D  reports/platform/build-logs/api-python-compile.log
+D  reports/platform/build-logs/openwork-node-build.log
+D  reports/platform/build-logs/web-node-build.log
+D  reports/platform/build-logs/zAcademy-node-build.log
+D  reports/platform/build-logs/zAcademy-python-compile.log
+D  reports/platform/build-logs/zLinebot-node-build.log
+D  reports/platform/build-logs/zcloud-node-build.log
+D  reports/platform/build-logs/zdash-python-compile.log
+D  reports/platform/build-logs/zdev-node-build.log
+D  reports/platform/build-logs/zkbtrader-python-compile.log
+D  reports/platform/build-logs/zlms-node-build.log
+D  reports/platform/build-logs/zlms-prod-python-compile.log
+D  reports/platform/build-logs/zlms-python-compile.log
+D  reports/platform/build-logs/zoffice-python-compile.log
+D  reports/platform/build-logs/zsp-aitool-node-build.log
+D  reports/platform/build-logs/zsticker-python-compile.log
+D  reports/platform/build-logs/ztrader-python-compile.log
+D  reports/platform/build-logs/zveo-node-build.log
+D  reports/platform/build-logs/zveo-python-compile.log
+D  reports/platform/build-logs/zwallet-python-compile.log
+M  reports/platform/cloudflare-tunnel-ingress.md
+MM reports/platform/go-live-preflight.md
+M  terraform/cloudflare-apps/apps.auto.tfvars.json
 ```

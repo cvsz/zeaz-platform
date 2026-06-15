@@ -114,11 +114,13 @@ function startMockRemoteOpenwork() {
 }
 
 async function startOpenworkServer(input: { workspaceRoot: string; opencodeBaseUrl: string }) {
+  const clientToken = "owt_test_token";
+  const hostTokenValue = "owt_host_token";
   const config: ServerConfig = {
     host: "127.0.0.1",
     port: 0,
-    token: "owt_test_token",
-    hostToken: "owt_host_token",
+    token: clientToken,
+    hostToken: hostTokenValue,
     approval: { mode: "auto", timeoutMs: 1000 },
     corsOrigins: ["*"],
     workspaces: [
@@ -155,8 +157,8 @@ async function startOpenworkServerWithWorkspaces(input: {
   const config: ServerConfig = {
     host: "127.0.0.1",
     port: 0,
-    token: "owt_test_token",
-    hostToken: "owt_host_token",
+    token: clientToken,
+    hostToken: hostTokenValue,
     configPath: input.configPath,
     approval: { mode: "auto", timeoutMs: 1000 },
     corsOrigins: ["*"],

@@ -1,1 +1,0 @@
-$ cd 'apps/ztrader' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'

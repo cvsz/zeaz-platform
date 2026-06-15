@@ -1,7 +1,7 @@
 # Apps source review
 
-Generated: `2026-06-13T19:21:57Z`
-Apps scanned: `18`
+Generated: `2026-06-15T12:52:59Z`
+Apps scanned: `19`
 
 This report is read-only. It excludes dependency, cache, build, runtime, vendor, and local tooling directories.
 
@@ -9,33 +9,34 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 | App | Stack | Files | Source | Ports | Domains | Critical | Warnings |
 |---|---|---:|---:|---|---|---:|---:|
-| api | `docker, python` | 14 | 14 | `6379, 8000` | `api-zcfdash.zeaz.dev, api.zeaz.dev, zcfdash.zeaz.dev` | 0 | 0 |
-| openwork | `docker, node, pnpm` | 1763 | 1282 | `443, 587, 1234, 3000, 3001, 3005, 3306, 3333, 3978, 4096, 4321, 5173, 5432, 6000, 6080, 6379, 8000, 8080, 8090, 8787, 8788, 8789, 8790, 8791, 8799, 9222, 9223, 9823, 9825, 9830, 11434, 18801, 19876, 48123, 49999, 52431, 54235, 59673, 59674, 59675` | `mcp.zeaz.dev, openwork.zeaz.dev` | 1 | 6 |
-| web | `node, pnpm` | 58 | 47 | `8000` | `api-zcfdash.zeaz.dev, api-zdash.zeaz.dev, app.zeaz.dev, ssh.zeaz.dev, www.zeaz.dev, zcfdash.zeaz.dev, zcino.zeaz.dev, zdash.zeaz.dev, zveo.zeaz.dev` | 0 | 0 |
+| api | `docker, python` | 16 | 15 | `6379, 8000` | `api.zeaz.dev, zcfdash.zeaz.dev` | 0 | 0 |
+| openwork | `docker, node, pnpm` | 1766 | 1283 | `443, 587, 1234, 3000, 3001, 3005, 3306, 3333, 3978, 4096, 4321, 5173, 5432, 6000, 6080, 6379, 8000, 8080, 8090, 8787, 8788, 8789, 8790, 8791, 8799, 9222, 9223, 9823, 9825, 9830, 11434, 18801, 19876, 48123, 49999, 52431, 54235, 59673, 59674, 59675` | `mcp.zeaz.dev, openwork.zeaz.dev` | 0 | 6 |
+| web | `node, pnpm` | 60 | 49 | `4101, 4102, 4103, 4104, 4105, 4106, 4107, 4108, 4109, 4110, 4111, 4112, 4113, 5432, 8000` | `api-zcfdash.zeaz.dev, api-zdash.zeaz.dev, api.zeaz.dev, app.zeaz.dev, auth.zeaz.dev, release.zeaz.dev, ssh.zeaz.dev, www.zeaz.dev, zcfdash.zeaz.dev, zcino.zeaz.dev, zdash.zeaz.dev, zveo.zeaz.dev` | 0 | 1 |
 | zAcademy | `node, terraform` | 133 | 65 | `443, 3009, 4317, 8084, 8443, 9090` | `auth.zeaz.dev` | 0 | 4 |
-| zLinebot | `node` | 18 | 17 | `3000, 4113` | `zlinebot.zeaz.dev` | 0 | 1 |
+| zLinebot | `docker, node, python, terraform` | 977 | 937 | `587, 3000, 3001, 3002, 3100, 5173, 5432, 6333, 6379, 8000, 8080, 9090, 9092, 9100, 9300, 9400, 9500, 9600, 9700, 26257` | `admin.zeaz.dev, admin.zlttbots.zeaz.dev, ai.zeaz.dev, api.zeaz.dev, api.zlttbots.zeaz.dev, arb.zlttbots.zeaz.dev, asia.zeaz.dev, auth.zeaz.dev, backup.zlinebot.zeaz.dev, crawl.zeaz.dev, crawler.zlttbots.zeaz.dev, eu.zeaz.dev, gpu.zeaz.dev, grafana.zeaz.dev, grafana.zlinebot.zeaz.dev, jaeger.zlinebot.zeaz.dev, kafka.zeaz.dev, logs.zlinebot.zeaz.dev, predict.zeaz.dev, us.zeaz.dev, video.zlttbots.zeaz.dev, worker.zeaz.dev, zlinebot.zeaz.dev, zlttbots.zeaz.dev` | 0 | 1 |
+| zai-factory | `npm` | 1 | 1 | `-` | `-` | 0 | 0 |
 | zcfdash | `docker` | 2 | 2 | `-` | `api-zdash.zeaz.dev, api-zveo.zeaz.dev, api.zeaz.dev, app.zeaz.dev, openwork.zeaz.dev, www.zeaz.dev, zaiz.zeaz.dev, zcfdash.zeaz.dev, zcino.zeaz.dev, zdash.zeaz.dev, zlms.zeaz.dev, zoffice.zeaz.dev, zsticker.zeaz.dev, ztrader.zeaz.dev, zveo.zeaz.dev` | 0 | 0 |
-| zcino | `docker` | 3147 | 361 | `3000, 3020, 4222, 4225, 5432, 5437, 6379, 6383, 6443, 8000, 8080, 8082, 8086, 8087, 8090, 8123, 8125, 8222, 8225, 9007` | `zcino.zeaz.dev` | 0 | 1 |
-| zcino-modern | `docker` | 208 | 93 | `3000, 4222, 5432, 6379, 6443, 8080, 8082, 8090, 8123, 8222, 9000` | `zcino.zeaz.dev` | 0 | 0 |
+| zcino | `docker` | 3150 | 364 | `3000, 4222, 5432, 6379, 6443, 8000, 8080, 8082, 8090, 8123, 8222, 9000` | `zcino.zeaz.dev` | 0 | 1 |
 | zcloud | `node, npm` | 28 | 25 | `4177, 5000, 11434, 18789` | `-` | 0 | 0 |
-| zdash | `docker, python, terraform` | 1109 | 1020 | `443, 587, 3000, 5173, 5432, 5436, 6379, 8000, 8005, 9009, 9090, 16379, 16380` | `api-zdash.zeaz.dev, release.zeaz.dev, zdash.zeaz.dev` | 0 | 3 |
+| zdash | `docker, python, terraform` | 1116 | 1025 | `443, 587, 3000, 5173, 5432, 5436, 6379, 8000, 8005, 9009, 9090, 16379, 16380` | `api-zdash.zeaz.dev, release.zeaz.dev, zdash.zeaz.dev` | 0 | 3 |
 | zdev | `node` | 7 | 6 | `4181` | `-` | 0 | 0 |
 | zlms | `docker, node, pnpm` | 28475 | 11599 | `131, 135, 155, 443, 3000, 4318, 5432, 6379, 8000, 8080, 8888, 9000, 9080, 9102, 11211` | `pgadmin.zeaz.dev, zlms.zeaz.dev` | 0 | 0 |
 | zoffice | `docker` | 189 | 175 | `6901, 6902, 8087, 8090, 8091, 8092, 8093, 8099, 9222, 18090, 18091, 18789` | `zoffice.zeaz.dev` | 0 | 1 |
-| zsp-aitool | `docker, node, npm` | 813 | 757 | `3000, 3001, 5173, 5174, 5175, 5432, 5433, 5435, 8005` | `api-zdash.zeaz.dev, api-zveo.zeaz.dev, app.zeaz.dev, release.zeaz.dev, studio.zeaz.dev, tunnel.zeaz.dev, www.zeaz.dev, zaiz.zeaz.dev, zdash-api.zeaz.dev, zdash.zeaz.dev, zveo.zeaz.dev` | 4 | 5 |
+| zquest | `unknown` | 5 | 5 | `8080` | `-` | 0 | 0 |
+| zsp-aitool | `docker, node, npm` | 813 | 757 | `3000, 3001, 5173, 5174, 5175, 5432, 5433, 5435, 8005` | `api-zdash.zeaz.dev, api-zveo.zeaz.dev, app.zeaz.dev, release.zeaz.dev, studio.zeaz.dev, tunnel.zeaz.dev, www.zeaz.dev, zaiz.zeaz.dev, zdash.zeaz.dev, zveo.zeaz.dev` | 0 | 5 |
 | zsticker | `docker, python` | 94 | 71 | `3008, 8000, 8007, 8080` | `zsticker.zeaz.dev` | 0 | 1 |
 | ztrader | `docker, python` | 376 | 362 | `375, 768, 1920, 3000, 3001, 3016, 3017, 5432, 6379, 8000, 8016` | `api-ztrader.zeaz.dev, ztrader.zeaz.dev` | 0 | 1 |
-| zveo | `docker, node, pnpm, python, terraform` | 244 | 217 | `443, 3000, 3019, 3100, 3200, 4317, 4318, 4319, 5432, 5436, 6379, 6382, 8000, 8080, 9000, 9005, 9006, 9090, 9093, 9095, 9100, 9464, 13133` | `zveo.zeaz.dev` | 1 | 4 |
-| zwallet | `docker, node, pnpm, python, terraform` | 472 | 396 | `3000, 3002, 4173, 4222, 5432, 5601, 6379, 8080, 8090, 8091, 8092, 8093, 8094, 8095, 8096, 8097, 8098, 8099, 8100, 8200, 8332, 8545, 8546, 8899, 9090, 9092, 9200` | `app.zeaz.dev` | 0 | 3 |
+| zveo | `docker, node, pnpm, python, terraform` | 244 | 217 | `443, 3000, 3019, 3100, 3200, 4317, 4318, 4319, 5432, 5436, 6379, 6382, 8000, 8080, 9000, 9005, 9006, 9090, 9093, 9095, 9100, 9464, 13133` | `zveo.zeaz.dev` | 0 | 4 |
+| zwallet | `docker, node, pnpm, python, terraform` | 473 | 397 | `3000, 3002, 4173, 4222, 5432, 5601, 6379, 8080, 8090, 8091, 8092, 8093, 8094, 8095, 8096, 8097, 8098, 8099, 8100, 8200, 8332, 8545, 8546, 8899, 9090, 9092, 9200, 25432, 26380` | `app.zeaz.dev` | 0 | 3 |
 
 ## `api`
 
 - Path: `apps/api`
 - Stack: `docker, python`
-- Root tracked files: `14`
+- Root tracked files: `16`
 - Nested git: `False`
-- Files scanned: `14`
-- Source-like files scanned: `14`
+- Files scanned: `16`
+- Source-like files scanned: `15`
 
 ### Ports
 
@@ -44,8 +45,7 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 ### Domains
 
-- `api-zcfdash.zeaz.dev` from `apps/api/routers/cloudflare_control.py`
-- `api.zeaz.dev` from `apps/api/README.md, apps/api/docker-compose.yml`
+- `api.zeaz.dev` from `apps/api/README.md, apps/api/docker-compose.yml, apps/api/routers/cloudflare_control.py`
 - `zcfdash.zeaz.dev` from `apps/api/routers/cloudflare_control.py`
 
 ### Env files
@@ -58,8 +58,8 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 - Stack: `docker, node, pnpm`
 - Root tracked files: `1737`
 - Nested git: `False`
-- Files scanned: `1763`
-- Source-like files scanned: `1282`
+- Files scanned: `1766`
+- Source-like files scanned: `1283`
 
 ### Package
 
@@ -139,46 +139,6 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 - `warn` `local_env_file`: Local env file exists: apps/openwork/ee/packages/den-db/.env
 - `warn` `local_env_file`: Local env file exists: apps/openwork/apps/opencode-router/.env
 - `warn` `local_env_file`: Local env file exists: apps/openwork/packaging/systemd/openwork.env
-- `critical` `secret_like_hits`: 35 secret-like hit(s) found; review redacted report before commit
-
-### Secret-like hits
-
-Values are redacted. Review source before commit.
-- `apps/openwork/ee/apps/den-api/src/session.ts:116` `      token=<redacted>,`
-- `apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts:49` `          return new Response(JSON.stringify({ token=<redacted> }), { status: 201 })`
-- `apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts:104` `      secret=<redacted>,`
-- `apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts:109` `    expect(verifyGithubInstallStateToken({ now: new Date("2026-04-21T19:05:00.000Z"), secret=<redacted>, token })).toMatchObject({`
-- `apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts:114` `    expect(verifyGithubInstallStateToken({ now: new Date("2026-04-21T19:05:00.000Z"), secret=<redacted>, token })).toBeNull()`
-- `apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts:151` `          return new Response(JSON.stringify({ token=<redacted> }), { status: 201 })`
-- `apps/openwork/ee/packages/den-db/drizzle.config.ts:17` `        password=<redacted>,`
-- `apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts:31` `    token=<redacted>,`
-- `apps/openwork/apps/opencode-router/test/telegram.test.js:99` `      token=<redacted>,`
-- `apps/openwork/apps/opencode-router/test/telegram.test.js:145` `        token=<redacted>,`
-- `apps/openwork/apps/opencode-router/test/telegram.test.js:181` `      token=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:30` `            apiKey=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:34` `          demo: { token=<redacted>, enabled: true, key: "AbCDef1234567890+/token" },`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:38` `        { path: ".opencode/plugins/demo/index.ts", content: "const apiKey=<redacted>;" },`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:67` `              apiKey=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:87` `            token=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:93` `            apiKey=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-export-safety.test.ts:100` `        { path: ".opencode/plugins/demo/index.ts", content: "const token=<redacted>;" },`
-- `apps/openwork/apps/server/src/workspace-activate.e2e.test.ts:120` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-activate.e2e.test.ts:158` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/env-routes.e2e.test.ts:26` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/session-read-model.e2e.test.ts:128` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/reload-events.e2e.test.ts:29` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/tokens.test.ts:15` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/artifact-files.e2e.test.ts:35` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/workspace-import-preview.test.ts:49` `    token=<redacted>,`
-- `apps/openwork/apps/server/src/portable-opencode.test.ts:9` `      provider: { openai: { options: { apiKey=<redacted> } } },`
-- `apps/openwork/apps/server/src/extensions/google-workspace.test.ts:17` `    token=<redacted>,`
-- `apps/openwork/scripts/harness/agents/code-reviewer.md:274` `  const apiKey=<redacted>;           // BAD`
-- `apps/openwork/scripts/harness/commands/kotlin-test.md:85` `            password=<redacted>,`
-- `apps/openwork/scripts/harness/commands/kotlin-test.md:97` `            password=<redacted>,`
-- `apps/openwork/scripts/harness/commands/kotlin-test.md:110` `            password=<redacted>,`
-- `apps/openwork/scripts/harness/commands/rust-test.md:80` `            password=<redacted>.into(),`
-- `apps/openwork/scripts/harness/commands/rust-test.md:90` `            password=<redacted>.into(),`
-- `apps/openwork/scripts/harness/commands/rust-test.md:105` `            password=<redacted>.into(),`
 
 ### TODO/FIXME/HACK hits
 
@@ -237,9 +197,9 @@ Values are redacted. Review source before commit.
 
 - `apps/openwork/apps/desktop/resources/sidecars/opencode-x86_64-unknown-linux-gnu` `145238144` bytes
 - `apps/openwork/apps/desktop/resources/sidecars/opencode` `145238144` bytes
-- `apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator-bun-linux-x64-baseline` `102754432` bytes
-- `apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator` `102754432` bytes
-- `apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator-x86_64-unknown-linux-gnu` `102754432` bytes
+- `apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator-bun-linux-x64-baseline` `102770816` bytes
+- `apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator` `102770816` bytes
+- `apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator-x86_64-unknown-linux-gnu` `102770816` bytes
 - `apps/openwork/packages/docs/images/improved-skills-march11th.gif` `4250321` bytes
 - `apps/openwork/ee/apps/landing/public/enterprise-showcase-bg.png` `3145631` bytes
 - `apps/openwork/ee/apps/inference/src/models/base.json` `3110941` bytes
@@ -256,14 +216,38 @@ Values are redacted. Review source before commit.
 - `apps/openwork/ee/apps/landing/public/enterprise-showcase-bg.jpg` `1108255` bytes
 - `apps/openwork/packages/docs/images/exa-search-toggle.png` `1042555` bytes
 
+### Git status
+
+```text
+M  apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts
+M  apps/openwork/apps/opencode-router/test/telegram.test.js
+M  apps/openwork/apps/server/src/artifact-files.e2e.test.ts
+M  apps/openwork/apps/server/src/env-routes.e2e.test.ts
+M  apps/openwork/apps/server/src/extensions/google-workspace.test.ts
+M  apps/openwork/apps/server/src/portable-opencode.test.ts
+M  apps/openwork/apps/server/src/reload-events.e2e.test.ts
+M  apps/openwork/apps/server/src/session-read-model.e2e.test.ts
+M  apps/openwork/apps/server/src/tokens.test.ts
+M  apps/openwork/apps/server/src/workspace-activate.e2e.test.ts
+M  apps/openwork/apps/server/src/workspace-export-safety.test.ts
+M  apps/openwork/apps/server/src/workspace-import-preview.test.ts
+M  apps/openwork/ee/apps/den-api/src/session.ts
+M  apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts
+M  apps/openwork/ee/packages/den-db/drizzle.config.ts
+M  apps/openwork/pnpm-lock.yaml
+M  apps/openwork/scripts/harness/agents/code-reviewer.md
+M  apps/openwork/scripts/harness/commands/kotlin-test.md
+M  apps/openwork/scripts/harness/commands/rust-test.md
+```
+
 ## `web`
 
 - Path: `apps/web`
 - Stack: `node, pnpm`
-- Root tracked files: `56`
+- Root tracked files: `57`
 - Nested git: `False`
-- Files scanned: `58`
-- Source-like files scanned: `47`
+- Files scanned: `60`
+- Source-like files scanned: `49`
 
 ### Package
 
@@ -273,34 +257,51 @@ Values are redacted. Review source before commit.
 
 ### Ports
 
-- `8000` from `apps/web/src/app/(dashboard)/swarm-runtime/page.tsx, apps/web/src/lib/api.ts`
+- `4101` from `apps/web/.env`
+- `4102` from `apps/web/.env`
+- `4103` from `apps/web/.env`
+- `4104` from `apps/web/.env`
+- `4105` from `apps/web/.env`
+- `4106` from `apps/web/.env`
+- `4107` from `apps/web/.env`
+- `4108` from `apps/web/.env`
+- `4109` from `apps/web/.env`
+- `4110` from `apps/web/.env`
+- `4111` from `apps/web/.env`
+- `4112` from `apps/web/.env`
+- `4113` from `apps/web/.env`
+- `5432` from `apps/web/.env`
+- `8000` from `apps/web/src/app/dashboard/swarm-runtime/page.tsx, apps/web/src/lib/api.ts`
 
 ### Domains
 
-- `api-zcfdash.zeaz.dev` from `apps/web/src/app/(dashboard)/dashboard/page.tsx`
-- `api-zdash.zeaz.dev` from `apps/web/src/app/(dashboard)/reports/page.tsx`
-- `app.zeaz.dev` from `apps/web/src/app/(dashboard)/loading.tsx, apps/web/src/app/(dashboard)/reports/page.tsx`
-- `ssh.zeaz.dev` from `apps/web/src/app/(dashboard)/reports/page.tsx`
-- `www.zeaz.dev` from `apps/web/README.md, apps/web/src/app/(dashboard)/reports/page.tsx, apps/web/src/app/(marketing)/contact/page.tsx, apps/web/src/app/(marketing)/layout.tsx`
-- `zcfdash.zeaz.dev` from `apps/web/src/app/(dashboard)/dashboard/page.tsx`
-- `zcino.zeaz.dev` from `apps/web/src/app/(dashboard)/reports/page.tsx`
-- `zdash.zeaz.dev` from `apps/web/src/app/(dashboard)/reports/page.tsx`
-- `zveo.zeaz.dev` from `apps/web/src/app/(dashboard)/reports/page.tsx`
+- `api-zcfdash.zeaz.dev` from `apps/web/src/app/dashboard/agents/page.tsx, apps/web/src/app/dashboard/deployments/page.tsx, apps/web/src/app/dashboard/services/page.tsx`
+- `api-zdash.zeaz.dev` from `apps/web/.env, apps/web/src/app/dashboard/reports/page.tsx`
+- `api.zeaz.dev` from `apps/web/src/app/dashboard/page.tsx, apps/web/src/app/dashboard/services/page.tsx`
+- `app.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
+- `auth.zeaz.dev` from `apps/web/.env`
+- `release.zeaz.dev` from `apps/web/.env`
+- `ssh.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
+- `www.zeaz.dev` from `apps/web/README.md, apps/web/next.config.ts, apps/web/src/app/dashboard/reports/page.tsx, apps/web/src/app/marketing/contact/page.tsx, apps/web/src/app/marketing/layout.tsx`
+- `zcfdash.zeaz.dev` from `apps/web/next.config.ts`
+- `zcino.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
+- `zdash.zeaz.dev` from `apps/web/.env, apps/web/src/app/dashboard/reports/page.tsx`
+- `zveo.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
 
 ### Env files
 
-- none detected
+- `apps/web/.env` `local-only` keys=106: `ALLOW_ADVANCED_WAF, ALLOW_LOAD_BALANCING, ALLOW_LOGPUSH, ALLOW_PAID_CLOUDFLARE_FEATURES, ALLOW_R2_WRITE, ALLOW_WORKERS_DEPLOY, API_PORT, AUTHENTIK_SECRET_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_GATEWAY_SLUG, CLOUDFLARE_API_TOKEN, CLOUDFLARE_BOOTSTRAP_TOKEN, CLOUDFLARE_D1_TOKEN, CLOUDFLARE_DNS_TOKEN, CLOUDFLARE_PAGES_TOKEN, CLOUDFLARE_PLAN_TIER, CLOUDFLARE_R2_TOKEN, CLOUDFLARE_TUNNEL_ID, CLOUDFLARE_TUNNEL_NAME, CLOUDFLARE_TUNNEL_TOKEN, CLOUDFLARE_WAF_TOKEN, CLOUDFLARE_WORKERS_TOKEN, CLOUDFLARE_ZONE_ID, CLOUDFLARE_ZT_TOKEN, CONFIRM_TOKEN_DELETE, COST_LOCK, DATABASE_URL, DB_NAME, DB_PASS, DB_USER, DOCKER_API_KEY, DOCKER_LOCATION, DOCKER_REGISTRY_URL, DOCKER_USERNAME, ENVIRONMENT, GH_PAT_KEY, GPG_PASSPHRASE, GRAFANA_PASSWORD, HOSTNAME, IDENTITY_PROVIDER_METADATA_URL, IDENTITY_PROVIDER_TYPE, IDENTITY_PROVIDER_VENDOR, INCLUDE_RESERVED, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_WEBHOOK_SECRET, MINIO_ROOT_PASSWORD, MINIO_ROOT_USER, NODE_ENV, NVIDIA_NIM_API_KEY`
 
 ### Findings
 
+- `warn` `local_env_file`: Local env file exists: apps/web/.env
 - `info` `expected_port_not_detected`: Expected port 3003 from apps-port-plan not detected in source text
+- `info` `expected_hostname_not_detected`: Expected hostname zeaz.dev from apps-port-plan not detected in source text
 
 ### Git status
 
 ```text
-M apps/web/next.config.ts
- M apps/web/package.json
- M apps/web/tsconfig.json
+M  apps/web/pnpm-lock.yaml
 ```
 
 ## `zAcademy`
@@ -316,7 +317,7 @@ M apps/web/next.config.ts
 
 - Name: `None`
 - Version: `None`
-- Scripts: `-`
+- Scripts: `build`
 
 ### Ports
 
@@ -357,35 +358,115 @@ M apps/web/next.config.ts
 ## `zLinebot`
 
 - Path: `apps/zLinebot`
-- Stack: `node`
-- Root tracked files: `13`
+- Stack: `docker, node, python, terraform`
+- Root tracked files: `961`
 - Nested git: `False`
-- Files scanned: `18`
-- Source-like files scanned: `17`
+- Files scanned: `977`
+- Source-like files scanned: `937`
 
 ### Package
 
 - Name: `@zeaz/zlinebot`
 - Version: `0.1.0`
-- Scripts: `dev, health, start`
+- Scripts: `build, dev, health, start`
 
 ### Ports
 
-- `3000` from `apps/zLinebot/.env`
-- `4113` from `apps/zLinebot/.env.example`
+- `587` from `apps/zLinebot/.env.example`
+- `3000` from `apps/zLinebot/.env, apps/zLinebot/.env.example, apps/zLinebot/CONTRIBUTING.md, apps/zLinebot/app/src/dr/health.ts, apps/zLinebot/app/src/utils/env.ts, apps/zLinebot/apps/api/src/server.ts, apps/zLinebot/docs/CONTRIBUTING_th.md, apps/zLinebot/docs/INSTALL_FULL.md, apps/zLinebot/docs/MANUAL.md, apps/zLinebot/docs/README_th.md, apps/zLinebot/docs/install_manual_en.md, apps/zLinebot/docs/install_manual_th.md`
+- `3001` from `apps/zLinebot/deploy.sh, apps/zLinebot/nginx/default.conf`
+- `3002` from `apps/zLinebot/deploy.sh`
+- `3100` from `apps/zLinebot/k8s/observability.yaml`
+- `5173` from `apps/zLinebot/app/src/services/stripe.ts, apps/zLinebot/docs/INSTALL_FULL.md`
+- `5432` from `apps/zLinebot/k8s/postgres.yaml, apps/zLinebot/scripts/legacy_zltt/install-zlttbots-platform.sh, apps/zLinebot/zlinebot-master.sh`
+- `6333` from `apps/zLinebot/app/src/services/vector.search.ts, apps/zLinebot/app/src/services/vector.ts`
+- `6379` from `apps/zLinebot/app/src/queue/producer.ts, apps/zLinebot/app/src/utils/env.ts, apps/zLinebot/k8s/redis.yaml, apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh, apps/zLinebot/scripts/legacy_zltt/install-zlttbots-platform.sh, apps/zLinebot/services/ai-orchestrator/src/main.py, apps/zLinebot/services/gpu-renderer/src/api/server.py, apps/zLinebot/services/gpu-renderer/src/core/queue.py, apps/zLinebot/services/market-crawler/src/api/server.py, apps/zLinebot/services/market-crawler/src/core/queue.py, apps/zLinebot/zlinebot-master.sh`
+- `8000` from `apps/zLinebot/cloud/worker/consumer.py, apps/zLinebot/services/billing-service/src/main.py, apps/zLinebot/services/budget-allocator/src/main.py, apps/zLinebot/services/capital-allocator/src/main.py, apps/zLinebot/services/feature-store/src/main.py, apps/zLinebot/services/federation/src/main.py, apps/zLinebot/services/landing-service/src/main.py, apps/zLinebot/services/market-orchestrator/src/main.py, apps/zLinebot/services/model-registry/src/main.py, apps/zLinebot/services/model-service/src/main.py, apps/zLinebot/services/payment/main.py, apps/zLinebot/services/product-generator/src/main.py`
+- `8080` from `apps/zLinebot/k8s/cockroach.yaml, apps/zLinebot/k8s/deploy.yaml, apps/zLinebot/tests/test_network_egress_client.py`
+- `9090` from `apps/zLinebot/k8s/prometheus.yaml`
+- `9092` from `apps/zLinebot/docker-compose.yml, apps/zLinebot/k8s/redpanda.yaml`
+- `9100` from `apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh, apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh`
+- `9300` from `apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh, apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh, apps/zLinebot/services/gpu-renderer/src/main.py`
+- `9400` from `apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh, apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh, apps/zLinebot/services/market-crawler/src/main.py`
+- `9500` from `apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh, apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh`
+- `9600` from `apps/zLinebot/services/execution-engine/src/main.py`
+- `9700` from `apps/zLinebot/services/affiliate-webhook/src/main.py`
+- `26257` from `apps/zLinebot/k8s/cockroach.yaml`
 
 ### Domains
 
-- `zlinebot.zeaz.dev` from `apps/zLinebot/.env, apps/zLinebot/cloudflared/config.yml`
+- `admin.zeaz.dev` from `apps/zLinebot/services/admin-panel/app/page.js, apps/zLinebot/tests/test_safe_edge_pack.py`
+- `admin.zlttbots.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh, apps/zLinebot/scripts/legacy_zltt/repair-platform.sh`
+- `ai.zeaz.dev` from `apps/zLinebot/tests/test_safe_edge_pack.py`
+- `api.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh, apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh, apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh, apps/zLinebot/services/admin-panel/app/page.js, apps/zLinebot/tests/test_safe_edge_pack.py`
+- `api.zlttbots.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh, apps/zLinebot/scripts/legacy_zltt/repair-platform.sh`
+- `arb.zlttbots.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh`
+- `asia.zeaz.dev` from `apps/zLinebot/services/edge-worker/index.js`
+- `auth.zeaz.dev` from `apps/zLinebot/tests/test_safe_edge_pack.py`
+- `backup.zlinebot.zeaz.dev` from `apps/zLinebot/infra/cloudflare.yaml`
+- `crawl.zeaz.dev` from `apps/zLinebot/tests/test_safe_edge_pack.py`
+- `crawler.zlttbots.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh`
+- `eu.zeaz.dev` from `apps/zLinebot/services/edge-worker/index.js`
+- `gpu.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh, apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh, apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh`
+- `grafana.zeaz.dev` from `apps/zLinebot/services/admin-panel/app/page.js, apps/zLinebot/tests/test_safe_edge_pack.py`
+- `grafana.zlinebot.zeaz.dev` from `apps/zLinebot/k8s/grafana-ingress.yaml`
+- `jaeger.zlinebot.zeaz.dev` from `apps/zLinebot/k8s/observability-ingress.yaml`
+- `kafka.zeaz.dev` from `apps/zLinebot/tests/test_safe_edge_pack.py`
+- `logs.zlinebot.zeaz.dev` from `apps/zLinebot/k8s/observability-ingress.yaml`
+- `predict.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh, apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh, apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh, apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh, apps/zLinebot/services/admin-panel/app/page.js, apps/zLinebot/tests/test_safe_edge_pack.py`
+- `us.zeaz.dev` from `apps/zLinebot/services/edge-worker/index.js`
+- `video.zlttbots.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh`
+- `worker.zeaz.dev` from `apps/zLinebot/app/src/ai/edge.ts`
+- `zlinebot.zeaz.dev` from `apps/zLinebot/.env, apps/zLinebot/.env.example, apps/zLinebot/README.md, apps/zLinebot/app/src/security/secret-validator.ts, apps/zLinebot/bootstrap.sh, apps/zLinebot/cloudflared/config.yml, apps/zLinebot/docker/nginx/default.conf, apps/zLinebot/infra/cloudflare.yaml, apps/zLinebot/infra/cloudflare_dns.yaml, apps/zLinebot/infra/cloudflare_lb.yaml, apps/zLinebot/k8s/ingress.yaml, apps/zLinebot/k8s/zlinebot-config.yaml`
+- `zlttbots.zeaz.dev` from `apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh, apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh, apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh, apps/zLinebot/scripts/legacy_zltt/repair-platform.sh`
 
 ### Env files
 
-- `apps/zLinebot/.env` `local-only` keys=38: `APP_URL, AUTOMATION_WORKER_MODE, CF_API_TOKEN, CF_ZONE_ID, CLOUDFLARE_TUNNEL_TOKEN, CORS_ORIGIN, DATABASE_URL, DOMAIN, ENCRYPTION_KEY, JWT_SECRET, KAFKA_PASSWORD, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_DEFAULT_TENANT_ID, LINE_WEBHOOK_URL, ML_GRPC_SECRET, NODE_ENV, PORT, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, QDRANT_URL, QUEUE_CONCURRENCY, RATE_LIMIT, REDIS_PASSWORD, REDIS_URL, SESSION_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, TENANT_API_KEY, TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REDIRECT_URI, TIKTOK_SCOPE, TIKTOK_SHOP_ACCESS_TOKEN, TIKTOK_SHOP_API_BASE_URL, TIKTOK_WEBHOOK_SECRET, TIKTOK_WEBHOOK_URL`
-- `apps/zLinebot/.env.example` `example` keys=9: `APP_BASE_URL, APP_DOMAIN, APP_NAME, DATABASE_URL, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_WEBHOOK_SECRET, NODE_ENV, PORT`
+- `apps/zLinebot/.env` `local-only` keys=38: `APP_URL, AUTOMATION_WORKER_MODE, CLOUDFLARE_API_TOKEN, CLOUDFLARE_TUNNEL_TOKEN, CLOUDFLARE_ZONE_ID, CORS_ORIGIN, DATABASE_URL, DOMAIN, ENCRYPTION_KEY, JWT_SECRET, KAFKA_PASSWORD, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_DEFAULT_TENANT_ID, LINE_WEBHOOK_URL, ML_GRPC_SECRET, NODE_ENV, PORT, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, QDRANT_URL, QUEUE_CONCURRENCY, RATE_LIMIT, REDIS_PASSWORD, REDIS_URL, SESSION_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, TENANT_API_KEY, TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REDIRECT_URI, TIKTOK_SCOPE, TIKTOK_SHOP_ACCESS_TOKEN, TIKTOK_SHOP_API_BASE_URL, TIKTOK_WEBHOOK_SECRET, TIKTOK_WEBHOOK_URL`
+- `apps/zLinebot/.env.example` `example` keys=46: `AI_MODE, APP_URL, AUTOMATION_WORKER_MODE, BACKEND_WEBHOOK_URL, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, CLOUDFLARE_BASE_DOMAIN, CLOUDFLARE_TUNNEL_ID, CLOUDFLARE_TUNNEL_TOKEN, CLOUDFLARE_ZONE_ID, CORS_ORIGIN, DATABASE_URL, ENCRYPTION_KEY, FEATURE_SYNC_ENABLED, GPU_BURST, JWT_SECRET, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_DEFAULT_TENANT_ID, MAX_BUDGET, NODE_ENV, OLLAMA_URL, OPENAI_API_KEY, OPENAI_MODEL, PORT, PROMPTPAY_ID, QDRANT_URL, QUEUE_CONCURRENCY, RATE_LIMIT, REDIS_URL, SESSION_SECRET, SMTP_HOST, SMTP_PASS, SMTP_PORT, SMTP_USER, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, TENANT_API_KEY, TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REDIRECT_URI, TIKTOK_SCOPE, TIKTOK_SHOP_ACCESS_TOKEN, TIKTOK_SHOP_API_BASE_URL, TIKTOK_WEBHOOK_SECRET, VECTOR_MODE`
 
 ### Findings
 
 - `warn` `local_env_file`: Local env file exists: apps/zLinebot/.env
+
+### TODO/FIXME/HACK hits
+
+- `apps/zLinebot/CONTRIBUTING.md:16` `- Bug fixes`
+- `apps/zLinebot/.github/DISCUSSION_GUIDELINES.md:21` `| Bug Reports | Q&A | Runtime/configuration defects and behavior validation before opening an Issue. | For confirmed code bugs, open an Issue and link it in the discussion. |`
+- `apps/zLinebot/scripts/configure_discussions.sh:61` `4. 🐛 Bug Reports             → Answerable`
+
+### Git status
+
+```text
+M  apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh
+M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py
+```
+
+## `zai-factory`
+
+- Path: `apps/zai-factory`
+- Stack: `npm`
+- Root tracked files: `0`
+- Nested git: `False`
+- Files scanned: `1`
+- Source-like files scanned: `1`
+
+### Ports
+
+- none detected
+
+### Domains
+
+- none detected
+
+### Env files
+
+- none detected
+
+### Findings
+
+- `info` `expected_port_not_detected`: Expected port 8710 from apps-port-plan not detected in source text
+- `info` `expected_hostname_not_detected`: Expected hostname factory.zeaz.dev from apps-port-plan not detected in source text
 
 ## `zcfdash`
 
@@ -426,37 +507,29 @@ M apps/web/next.config.ts
 
 - Path: `apps/zcino`
 - Stack: `docker`
-- Root tracked files: `3142`
+- Root tracked files: `3145`
 - Nested git: `False`
-- Files scanned: `3147`
-- Source-like files scanned: `361`
+- Files scanned: `3150`
+- Source-like files scanned: `364`
 
 ### Ports
 
-- `3000` from `apps/zcino/frontend/Dockerfile`
-- `3020` from `apps/zcino/frontend/start_next.sh`
-- `4222` from `apps/zcino/docs/source-checklist.md, apps/zcino/infra/nats.conf, apps/zcino/k8s/baseline/network-policies.yaml`
-- `4225` from `apps/zcino/infra/docker-compose.yml`
-- `5432` from `apps/zcino/docs/source-checklist.md, apps/zcino/k8s/baseline/network-policies.yaml`
-- `5437` from `apps/zcino/infra/docker-compose.yml`
-- `6379` from `apps/zcino/docs/operations.md, apps/zcino/docs/source-checklist.md, apps/zcino/k8s/baseline/network-policies.yaml`
-- `6383` from `apps/zcino/infra/docker-compose.yml`
+- `3000` from `apps/zcino/README.md, apps/zcino/frontend/Dockerfile, apps/zcino/frontend/start_next.sh`
+- `4222` from `apps/zcino/docs/source-checklist.md, apps/zcino/infra/docker-compose.yml, apps/zcino/infra/nats.conf, apps/zcino/k8s/baseline/network-policies.yaml`
+- `5432` from `apps/zcino/README.md, apps/zcino/docs/source-checklist.md, apps/zcino/infra/docker-compose.yml, apps/zcino/k8s/baseline/network-policies.yaml`
+- `6379` from `apps/zcino/README.md, apps/zcino/docs/operations.md, apps/zcino/docs/source-checklist.md, apps/zcino/infra/docker-compose.yml, apps/zcino/k8s/baseline/network-policies.yaml`
 - `6443` from `apps/zcino/release/zeaz_release_v2.sh`
 - `8000` from `apps/zcino/Makefile`
-- `8080` from `apps/zcino/docs/api.md, apps/zcino/docs/operations.md, apps/zcino/infra/docker-compose.yml, apps/zcino/k8s/game-service.yaml`
-- `8082` from `apps/zcino/infra/docker-compose.yml`
-- `8086` from `apps/zcino/frontend/start_next.sh, apps/zcino/infra/docker-compose.yml`
-- `8087` from `apps/zcino/infra/docker-compose.yml`
-- `8090` from `apps/zcino/docker-compose.yml, apps/zcino/docs/source-checklist.md, apps/zcino/k8s/zeaz-testnet/zeaz-node.yaml`
+- `8080` from `apps/zcino/README.md, apps/zcino/docs/api.md, apps/zcino/docs/operations.md, apps/zcino/infra/docker-compose.yml, apps/zcino/k8s/game-service.yaml`
+- `8082` from `apps/zcino/README.md, apps/zcino/infra/docker-compose.yml`
+- `8090` from `apps/zcino/README.md, apps/zcino/docker-compose.yml, apps/zcino/docs/source-checklist.md, apps/zcino/k8s/zeaz-testnet/zeaz-node.yaml`
 - `8123` from `apps/zcino/infra/docker-compose.yml, apps/zcino/k8s/baseline/network-policies.yaml`
-- `8125` from `apps/zcino/infra/docker-compose.yml`
 - `8222` from `apps/zcino/infra/docker-compose.yml, apps/zcino/infra/nats.conf`
-- `8225` from `apps/zcino/infra/docker-compose.yml`
-- `9007` from `apps/zcino/infra/docker-compose.yml`
+- `9000` from `apps/zcino/infra/docker-compose.yml`
 
 ### Domains
 
-- `zcino.zeaz.dev` from `apps/zcino/README.md, apps/zcino/docker-compose.yml`
+- `zcino.zeaz.dev` from `apps/zcino/INACTIVE_AFTER_MERGE.md, apps/zcino/docker-compose.yml`
 
 ### Env files
 
@@ -512,53 +585,13 @@ M apps/web/next.config.ts
 
 ### Large files
 
+- `apps/zcino/game-catalog-service` `22640674` bytes
 - `apps/zcino/legacy/php/template_files11/Banner-Header.psd` `13148120` bytes
 - `apps/zcino/images/slider/slider.psd` `9913234` bytes
 - `apps/zcino/legacy/php/resources/games_flash/CWS_OTHER_EUROPEAN_ROULETTE_3D/Roulette.swf` `7214262` bytes
 - `apps/zcino/administrator/includes/resources/tools/dictionary-import/sample-words-en.txt` `2312631` bytes
 - `apps/zcino/legacy/php/template_files11/Banner-Top3.psd` `2237781` bytes
 - `apps/zcino/legacy/php/template_files11/Banner-Top2.psd` `1088772` bytes
-
-## `zcino-modern`
-
-- Path: `apps/zcino-modern`
-- Stack: `docker`
-- Root tracked files: `208`
-- Nested git: `False`
-- Files scanned: `208`
-- Source-like files scanned: `93`
-
-### Ports
-
-- `3000` from `apps/zcino-modern/README.md, apps/zcino-modern/frontend/Dockerfile, apps/zcino-modern/frontend/start_next.sh`
-- `4222` from `apps/zcino-modern/docs/source-checklist.md, apps/zcino-modern/infra/docker-compose.yml, apps/zcino-modern/infra/nats.conf, apps/zcino-modern/k8s/baseline/network-policies.yaml`
-- `5432` from `apps/zcino-modern/README.md, apps/zcino-modern/docs/source-checklist.md, apps/zcino-modern/infra/docker-compose.yml, apps/zcino-modern/k8s/baseline/network-policies.yaml`
-- `6379` from `apps/zcino-modern/README.md, apps/zcino-modern/docs/operations.md, apps/zcino-modern/docs/source-checklist.md, apps/zcino-modern/infra/docker-compose.yml, apps/zcino-modern/k8s/baseline/network-policies.yaml`
-- `6443` from `apps/zcino-modern/release/zeaz_release_v2.sh`
-- `8080` from `apps/zcino-modern/README.md, apps/zcino-modern/docs/api.md, apps/zcino-modern/docs/operations.md, apps/zcino-modern/infra/docker-compose.yml, apps/zcino-modern/k8s/game-service.yaml`
-- `8082` from `apps/zcino-modern/README.md, apps/zcino-modern/infra/docker-compose.yml`
-- `8090` from `apps/zcino-modern/README.md, apps/zcino-modern/docs/source-checklist.md, apps/zcino-modern/k8s/zeaz-testnet/zeaz-node.yaml`
-- `8123` from `apps/zcino-modern/infra/docker-compose.yml, apps/zcino-modern/k8s/baseline/network-policies.yaml`
-- `8222` from `apps/zcino-modern/infra/docker-compose.yml, apps/zcino-modern/infra/nats.conf`
-- `9000` from `apps/zcino-modern/infra/docker-compose.yml`
-
-### Domains
-
-- `zcino.zeaz.dev` from `apps/zcino-modern/INACTIVE_AFTER_MERGE.md`
-
-### Env files
-
-- none detected
-
-### Findings
-
-- `info` `expected_port_not_detected`: Expected port 3015 from apps-port-plan not detected in source text
-- `info` `expected_hostname_not_detected`: Expected hostname zcino-modern.zeaz.dev from apps-port-plan not detected in source text
-
-### TODO/FIXME/HACK hits
-
-- `apps/zcino-modern/docs/zeaz-protocol.md:11` `- Major versions may break wire compatibility; minor versions may add optional fields; patch versions are bug-fix compatible.`
-- `apps/zcino-modern/docs/protocol/v1.0.0/spec.md:41` `- Patch versions contain clarifications or bug fixes. During negotiation, a node MAY downgrade a requested patch to its current patch.`
 
 ## `zcloud`
 
@@ -599,10 +632,10 @@ M apps/web/next.config.ts
 
 - Path: `apps/zdash`
 - Stack: `docker, python, terraform`
-- Root tracked files: `1123`
+- Root tracked files: `1128`
 - Nested git: `False`
-- Files scanned: `1109`
-- Source-like files scanned: `1020`
+- Files scanned: `1116`
+- Source-like files scanned: `1025`
 
 ### Ports
 
@@ -628,10 +661,9 @@ M apps/web/next.config.ts
 
 ### Env files
 
-- `apps/zdash/.env` `local-only` keys=258: `AIOPS_ENABLED, AI_PROVIDER, AI_TRADING_ANALYSIS_ENABLED, AI_TRADING_PROVIDER, ALERT_RULES_ENABLED, ALLOWED_DATA_REGIONS, ALLOW_MANUAL_RESUME, ALLOW_STRATEGY_PROMOTION, API_KEY_DEFAULT_EXPIRES_DAYS, API_KEY_HASH_PEPPER, API_KEY_PREFIX, APP_ENV, APP_NAME, AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION, AUTH_ENABLED, BACKEND_HOST, BACKEND_PORT, BACKTESTING_ENABLED, BACKTEST_COMMISSION_PER_TRADE, BACKTEST_DATASET_SOURCE, BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT, BACKTEST_DEFAULT_SYMBOL, BACKTEST_DEFAULT_TIMEFRAME, BACKTEST_INITIAL_BALANCE, BACKTEST_SLIPPAGE_POINTS, BACKTEST_SPREAD_POINTS, BILLING_CURRENCY, BILLING_ENABLED, BILLING_FAIL_CLOSED, BILLING_GRACE_PERIOD_DAYS, BILLING_PROVIDER, BILLING_TRIAL_DAYS, BILLING_WEBHOOK_SECRET, BLAST_RADIUS_ANALYSIS_ENABLED, BOOTSTRAP_ADMIN_PASSWORD, BOOTSTRAP_ADMIN_USERNAME, CLAUDE_API_KEY, CLAUDE_MODEL, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, CLOUDFLARE_DRY_RUN, CLOUDFLARE_ENABLED, CLOUDFLARE_HOSTNAME, CLOUDFLARE_OPERATOR_REPO, CLOUDFLARE_TUNNEL_NAME, CLOUDFLARE_ZONE_ID, COMPLIANCE_ENABLED, CONTENT_DEFAULT_BRAND, CONTENT_DEFAULT_LANGUAGE, CONTENT_DEFAULT_TONE`
+- `apps/zdash/.env` `local-only` keys=259: `AIOPS_ENABLED, AI_PROVIDER, AI_TRADING_ANALYSIS_ENABLED, AI_TRADING_PROVIDER, ALERT_RULES_ENABLED, ALLOWED_DATA_REGIONS, ALLOW_MANUAL_RESUME, ALLOW_STRATEGY_PROMOTION, API_KEY_DEFAULT_EXPIRES_DAYS, API_KEY_HASH_PEPPER, API_KEY_PREFIX, APP_ENV, APP_NAME, AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION, AUTH_ENABLED, BACKEND_HOST, BACKEND_PORT, BACKTESTING_ENABLED, BACKTEST_COMMISSION_PER_TRADE, BACKTEST_DATASET_SOURCE, BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT, BACKTEST_DEFAULT_SYMBOL, BACKTEST_DEFAULT_TIMEFRAME, BACKTEST_INITIAL_BALANCE, BACKTEST_SLIPPAGE_POINTS, BACKTEST_SPREAD_POINTS, BILLING_CURRENCY, BILLING_ENABLED, BILLING_FAIL_CLOSED, BILLING_GRACE_PERIOD_DAYS, BILLING_PROVIDER, BILLING_TRIAL_DAYS, BILLING_WEBHOOK_SECRET, BLAST_RADIUS_ANALYSIS_ENABLED, BOOTSTRAP_ADMIN_PASSWORD, BOOTSTRAP_ADMIN_USERNAME, CLAUDE_API_KEY, CLAUDE_MODEL, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, CLOUDFLARE_DRY_RUN, CLOUDFLARE_ENABLED, CLOUDFLARE_HOSTNAME, CLOUDFLARE_OPERATOR_REPO, CLOUDFLARE_TUNNEL_NAME, CLOUDFLARE_ZONE_ID, COMPLIANCE_ENABLED, CONTENT_DEFAULT_BRAND, CONTENT_DEFAULT_LANGUAGE, CONTENT_DEFAULT_TONE`
 - `apps/zdash/.env.example` `example` keys=257: `AIOPS_ENABLED, AI_PROVIDER, AI_TRADING_ANALYSIS_ENABLED, AI_TRADING_PROVIDER, ALERT_RULES_ENABLED, ALLOWED_DATA_REGIONS, ALLOW_MANUAL_RESUME, ALLOW_STRATEGY_PROMOTION, API_KEY_DEFAULT_EXPIRES_DAYS, API_KEY_HASH_PEPPER, API_KEY_PREFIX, APP_ENV, APP_NAME, AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION, AUTH_ENABLED, BACKEND_HOST, BACKEND_PORT, BACKTESTING_ENABLED, BACKTEST_COMMISSION_PER_TRADE, BACKTEST_DATASET_SOURCE, BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT, BACKTEST_DEFAULT_SYMBOL, BACKTEST_DEFAULT_TIMEFRAME, BACKTEST_INITIAL_BALANCE, BACKTEST_SLIPPAGE_POINTS, BACKTEST_SPREAD_POINTS, BILLING_CURRENCY, BILLING_ENABLED, BILLING_FAIL_CLOSED, BILLING_GRACE_PERIOD_DAYS, BILLING_PROVIDER, BILLING_TRIAL_DAYS, BILLING_WEBHOOK_SECRET, BLAST_RADIUS_ANALYSIS_ENABLED, BOOTSTRAP_ADMIN_PASSWORD, BOOTSTRAP_ADMIN_USERNAME, CLAUDE_API_KEY, CLAUDE_MODEL, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, CLOUDFLARE_DRY_RUN, CLOUDFLARE_ENABLED, CLOUDFLARE_HOSTNAME, CLOUDFLARE_OPERATOR_REPO, CLOUDFLARE_TUNNEL_NAME, CLOUDFLARE_ZONE_ID, COMPLIANCE_ENABLED, CONTENT_DEFAULT_BRAND, CONTENT_DEFAULT_LANGUAGE, CONTENT_DEFAULT_TONE`
 - `apps/zdash/.env.production` `local-only` keys=19: `APP_ENV, AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION, AUTH_ENABLED, BOOTSTRAP_ADMIN_PASSWORD, BOOTSTRAP_ADMIN_USERNAME, DATABASE_URL, DEFAULT_ADMIN_PASSWORD, DRY_RUN, JWT_ALGORITHM, JWT_SECRET_KEY, LIVE_TRADING_ACK, METRICS_ALLOW_UNAUTHENTICATED_DEV, METRICS_AUTH_REQUIRED, MT5_ENABLED, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, PRODUCTION_ALLOW_LIVE_ACTIONS, PRODUCTION_SAFETY_LOCK`
-- `apps/zdash/frontend/.env.example` `example` keys=11: `VITE_API_BASE_URL, VITE_APP_ENV, VITE_APP_VERSION, VITE_AUTH_ENABLED, VITE_BUILD_SHA, VITE_BUILD_TIME, VITE_ENABLE_MOCK_FALLBACK, VITE_POLL_INTERVAL_MS, VITE_REALTIME_ENABLED, VITE_SHOW_SAFETY_BANNERS, VITE_WS_BASE_URL`
 
 ### Findings
 
@@ -653,6 +685,10 @@ M apps/web/next.config.ts
 - `apps/zdash/tools/zdash-audit/zdash-audit/scripts/deep-scan-zdash.sh:108` `| TODO | TODO | make validate | TODO | TODO |`
 - `apps/zdash/tools/zdash-audit/zdash-audit/scripts/deep-scan-zdash.sh:109` `| TODO | TODO | docker compose config | TODO | TODO |`
 - `apps/zdash/config/ecc/codex/agents/reviewer.toml:8` `Lead with concrete findings and avoid style-only feedback unless it hides a real bug.`
+- `apps/zdash/docs/zai-e2e.md:218` `| **Regression Test Agent**    | bug prevention, release checks         | regression suite          |`
+- `apps/zdash/docs/zai-e2e.md:224` `| **Bug Triage Agent**         | severity, reproduction, prioritization | bug list                  |`
+- `apps/zdash/docs/zai-e2e.md:276` `| **Post-Release Agent**      | verification, monitoring, bug capture | post-release report |`
+- `apps/zdash/docs/zai-e2e.md:770` `Bug Triage Agent`
 - `apps/zdash/docs/releases/final-release-notes-template.md:17` `## Bug fixes`
 - `apps/zdash/docs/runbooks/INCIDENT_RESPONSE.md:9` `| **SEV3** | Minor issue with workaround available | UI bug, non-critical error, documentation issue | 4 hours | < 24 hours |`
 - `apps/zdash/scripts/deep-scan-zdash.sh:106` `| TODO | TODO | make safety-scan | TODO | TODO |`
@@ -685,7 +721,7 @@ M apps/web/next.config.ts
 
 - Name: `@zeaz/zdev`
 - Version: `1.0.0`
-- Scripts: `start, validate`
+- Scripts: `build, start, validate`
 
 ### Ports
 
@@ -712,7 +748,7 @@ M apps/web/next.config.ts
 
 - Name: `zlms-frontend-runtime-migration`
 - Version: `0.1.0`
-- Scripts: `audit:frontend-runtime, codemod:frontend-runtime, migration:phase-abcd, typecheck:frontend-runtime`
+- Scripts: `audit:frontend-runtime, build, codemod:frontend-runtime, migration:phase-abcd, typecheck:frontend-runtime`
 
 ### Ports
 
@@ -893,12 +929,33 @@ M apps/web/next.config.ts
 - `apps/zoffice/video-thumbnail.png` `2152086` bytes
 - `apps/zoffice/thumbnail.png` `1701109` bytes
 
+## `zquest`
+
+- Path: `apps/zquest`
+- Stack: `unknown`
+- Root tracked files: `5`
+- Nested git: `False`
+- Files scanned: `5`
+- Source-like files scanned: `5`
+
+### Ports
+
+- `8080` from `apps/zquest/README.md`
+
+### Domains
+
+- none detected
+
+### Env files
+
+- none detected
+
 ## `zsp-aitool`
 
 - Path: `apps/zsp-aitool`
 - Stack: `docker, node, npm`
 - Root tracked files: `766`
-- Nested git: `True`
+- Nested git: `False`
 - Files scanned: `813`
 - Source-like files scanned: `757`
 
@@ -922,7 +979,7 @@ M apps/web/next.config.ts
 
 ### Domains
 
-- `api-zdash.zeaz.dev` from `apps/zsp-aitool/configs/plugins/repositories.example.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml.example, apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml`
+- `api-zdash.zeaz.dev` from `apps/zsp-aitool/configs/plugins/repositories.example.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml.example, apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml, apps/zsp-aitool/scripts/plugins/plugin-validate.sh`
 - `api-zveo.zeaz.dev` from `apps/zsp-aitool/docker-compose.yml`
 - `app.zeaz.dev` from `apps/zsp-aitool/configs/plugins/repositories.example.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml.example, apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml`
 - `release.zeaz.dev` from `apps/zsp-aitool/configs/plugins/repositories.example.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml.example, apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml`
@@ -930,7 +987,6 @@ M apps/web/next.config.ts
 - `tunnel.zeaz.dev` from `apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/scripts/plugins/plugin-render-cloudflare.sh`
 - `www.zeaz.dev` from `apps/zsp-aitool/docs/ZEAZ_PLATFORM_DESIGN.md`
 - `zaiz.zeaz.dev` from `apps/zsp-aitool/README.md, apps/zsp-aitool/docker-compose.yml`
-- `zdash-api.zeaz.dev` from `apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md, apps/zsp-aitool/scripts/plugins/plugin-validate.sh`
 - `zdash.zeaz.dev` from `apps/zsp-aitool/configs/plugins/repositories.example.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml.example, apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml, apps/zsp-aitool/src/app/zdash/page.tsx`
 - `zveo.zeaz.dev` from `apps/zsp-aitool/configs/plugins/repositories.example.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml, apps/zsp-aitool/configs/plugins/repositories.yaml.example, apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md, apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml, apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml`
 
@@ -941,23 +997,13 @@ M apps/web/next.config.ts
 
 ### Findings
 
-- `critical` `nested_git`: Nested .git directory exists under app path
 - `warn` `local_tooling_or_vendor_dir`: .agent exists; excluded from review and should not be committed
 - `warn` `local_tooling_or_vendor_dir`: .codex exists; excluded from review and should not be committed
 - `warn` `local_tooling_or_vendor_dir`: .gemini exists; excluded from review and should not be committed
 - `warn` `local_tooling_or_vendor_dir`: .claude exists; excluded from review and should not be committed
 - `warn` `local_env_file`: Local env file exists: apps/zsp-aitool/.env
-- `critical` `stale_zdash_domain`: zdash-api.zeaz.dev found in apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md; use api-zdash.zeaz.dev
-- `critical` `stale_zdash_domain`: zdash-api.zeaz.dev found in apps/zsp-aitool/scripts/plugins/plugin-validate.sh; use api-zdash.zeaz.dev
 - `info` `expected_port_not_detected`: Expected port 3008 from apps-port-plan not detected in source text
 - `info` `expected_hostname_not_detected`: Expected hostname ztest.zeaz.dev from apps-port-plan not detected in source text
-- `critical` `secret_like_hits`: 2 secret-like hit(s) found; review redacted report before commit
-
-### Secret-like hits
-
-Values are redacted. Review source before commit.
-- `apps/zsp-aitool/prisma/seed.ts:12` `      password=<redacted>`
-- `apps/zsp-aitool/tests/api/auth-routes.test.ts:23` `    const res = await loginPost(new Request("http://x", { method: "POST", body: JSON.stringify({ email: "a@b.com", password=<redacted> }) }));`
 
 ### TODO/FIXME/HACK hits
 
@@ -969,6 +1015,17 @@ Values are redacted. Review source before commit.
 - `apps/zsp-aitool/docs/prompts/017-first-100-users-growth-loop.prompt.md:124` `- bug report template`
 - `apps/zsp-aitool/docs/prompts/zsp-aitool-full-source-en.md:64` `- Do not leave TODO comments in core features.`
 - `apps/zsp-aitool/docs/runbooks/user-feedback-playbook.md:28` `## Bug report template`
+
+### Git status
+
+```text
+M  apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md
+M  apps/zsp-aitool/next-env.d.ts
+M  apps/zsp-aitool/prisma/seed.ts
+M  apps/zsp-aitool/scripts/plugins/plugin-validate.sh
+M  apps/zsp-aitool/tests/api/auth-routes.test.ts
+M  apps/zsp-aitool/tsconfig.json
+```
 
 ## `zsticker`
 
@@ -1075,7 +1132,7 @@ Values are redacted. Review source before commit.
 - Path: `apps/zveo`
 - Stack: `docker, node, pnpm, python, terraform`
 - Root tracked files: `241`
-- Nested git: `True`
+- Nested git: `False`
 - Files scanned: `244`
 - Source-like files scanned: `217`
 
@@ -1124,7 +1181,6 @@ Values are redacted. Review source before commit.
 
 ### Findings
 
-- `critical` `nested_git`: Nested .git directory exists under app path
 - `warn` `local_tooling_or_vendor_dir`: .agent exists; excluded from review and should not be committed
 - `warn` `local_tooling_or_vendor_dir`: .gemini exists; excluded from review and should not be committed
 - `warn` `local_env_file`: Local env file exists: apps/zveo/.env.node
@@ -1141,14 +1197,14 @@ Values are redacted. Review source before commit.
 - Stack: `docker, node, pnpm, python, terraform`
 - Root tracked files: `456`
 - Nested git: `False`
-- Files scanned: `472`
-- Source-like files scanned: `396`
+- Files scanned: `473`
+- Source-like files scanned: `397`
 
 ### Package
 
 - Name: `zwallet`
 - Version: `None`
-- Scripts: `check:circular, generate:releases, lint, setup:auto, typecheck`
+- Scripts: `build, check:circular, generate:releases, lint, setup:auto, typecheck`
 
 ### Ports
 
@@ -1156,7 +1212,7 @@ Values are redacted. Review source before commit.
 - `3002` from `apps/zwallet/deploy-zveo-services.sh`
 - `4173` from `apps/zwallet/apps/world/README.md`
 - `4222` from `apps/zwallet/docker-compose.yml`
-- `5432` from `apps/zwallet/.env, apps/zwallet/.env.example, apps/zwallet/docker-compose.yml, apps/zwallet/infra/k8s/postgres.yaml`
+- `5432` from `apps/zwallet/.env, apps/zwallet/.env.example, apps/zwallet/infra/k8s/postgres.yaml`
 - `5601` from `apps/zwallet/dashboard/README.md, apps/zwallet/infra/docker/docker-compose.devops.yml, apps/zwallet/infra/docker/docker-compose.prod.yml, apps/zwallet/infra/k8s/base/logging-elk.yaml, apps/zwallet/infra/observability/docker-compose.siem.yml, apps/zwallet/k8s/logging/elk-stack.yaml`
 - `6379` from `apps/zwallet/.env, apps/zwallet/.env.example, apps/zwallet/admin/panel/enterprise/audit_store.py, apps/zwallet/admin/panel/enterprise/main.py, apps/zwallet/admin/panel/main.py, apps/zwallet/api/app/middleware/security_advanced.py, apps/zwallet/api/app/middleware/security_distributed.py, apps/zwallet/api/app/security/adaptive_rate_limiter.py, apps/zwallet/api/app/security/anomaly_detector.py, apps/zwallet/api/app/security/circuit_breaker.py, apps/zwallet/api/app/security/risk_engine.py, apps/zwallet/api/app/security/shadow_ban.py`
 - `8080` from `apps/zwallet/backend/.env, apps/zwallet/backend/.env.example, apps/zwallet/backend/services/gateway/Dockerfile, apps/zwallet/docker-compose.yml, apps/zwallet/infra/docker/docker-compose.devops.yml, apps/zwallet/infra/docker/docker-compose.prod.yml, apps/zwallet/infra/k8s/base/services-apps.yaml, apps/zwallet/infra/k8s/helm/zwallet/templates/deployment.yaml, apps/zwallet/infra/k8s/helm/zwallet/values.yaml, apps/zwallet/k8s/base/gateway-deployment.yaml, apps/zwallet/k8s/base/gateway-service.yaml, apps/zwallet/k8s/deployment.yaml`
@@ -1179,6 +1235,8 @@ Values are redacted. Review source before commit.
 - `9090` from `apps/zwallet/infra/docker/docker-compose.devops.yml, apps/zwallet/infra/docker/docker-compose.prod.yml, apps/zwallet/infra/k8s/base/monitoring.yaml, apps/zwallet/infra/k8s/monitoring.yaml`
 - `9092` from `apps/zwallet/api/src/infrastructure/kafka.producer.ts, apps/zwallet/infra/k8s/kafka-cluster.yaml, apps/zwallet/infra/k8s/kafka.yaml`
 - `9200` from `apps/zwallet/dashboard/README.md, apps/zwallet/infra/docker/docker-compose.devops.yml, apps/zwallet/infra/docker/docker-compose.prod.yml, apps/zwallet/infra/k8s/base/logging-elk.yaml, apps/zwallet/infra/observability/docker-compose.siem.yml, apps/zwallet/k8s/logging/elk-stack.yaml`
+- `25432` from `apps/zwallet/docker-compose.yml`
+- `26380` from `apps/zwallet/docker-compose.yml`
 
 ### Domains
 
@@ -1214,3 +1272,9 @@ Values are redacted. Review source before commit.
 - `apps/zwallet/docs/REPO_MASTER_META_REVIEW_2026-05-05.md:60` `- No placeholders/TODO in production runtime: **Partial/Fail**`
 - `apps/zwallet/docs/REPO_MASTER_META_REVIEW_2026-05-05.md:77` `7. Add CI policies: critical-folder `any` budget, forbidden TODO/placeholders, mandatory tx-stage telemetry assertions.`
 - `apps/zwallet/docs/releases/RELEASE_NOTES.md:42` `- docs: add gateway bug review findings (cc8cca8, @CVSz)`
+
+### Git status
+
+```text
+M  apps/zwallet/pnpm-lock.yaml
+```

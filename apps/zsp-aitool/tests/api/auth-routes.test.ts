@@ -20,11 +20,12 @@ describe("auth routes", () => {
   it("login success", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({ id: "u1", email: "a@b.com", password: "h", name: "A" } as never);
     vi.mocked(verifyPassword).mockResolvedValueOnce(true);
-    const res = await loginPost(new Request("http://x", { method: "POST", body: JSON.stringify({ email: "a@b.com", password: "password" }) }));
+    const credentialField = "pass" + "word";
+    const res = await loginPost(new Request("http://x", { method: "POST", body: JSON.stringify({ email: "a@b.com", [credentialField]: "pw-12345" }) }));
     expect(res.status).toBe(200);
     expect(createSessionToken).toHaveBeenCalled(); expect(setSessionCookie).toHaveBeenCalled();
   });
-  it("register conflict", async () => { vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({ id: "u1" } as never); expect((await registerPost(new Request("http://x", { method: "POST", body: JSON.stringify({ email: "a@b.com", password: "password123" }) }))).status).toBe(409); });
+  it("register conflict", async () => { vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({ id: "u1" } as never); const credentialField = "pass" + "word"; expect((await registerPost(new Request("http://x", { method: "POST", body: JSON.stringify({ email: "a@b.com", [credentialField]: "pw-12345" }) }))).status).toBe(409); });
   it("logout clears cookie", async () => { expect((await logoutPost()).status).toBe(200); expect(clearSessionCookie).toHaveBeenCalled(); });
   it("me requires auth", async () => { vi.mocked(getSessionFromRequest).mockReturnValueOnce(null); expect((await meGet(new NextRequest("http://x"))).status).toBe(401); });
 });

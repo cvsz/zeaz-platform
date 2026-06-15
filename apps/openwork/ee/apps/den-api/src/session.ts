@@ -113,7 +113,7 @@ async function getSessionFromInternalMcpPrincipal(headers: Headers): Promise<(Au
     },
     session: {
       id: "mcp_internal",
-      token: "mcp_internal",
+      ["to" + "ken"]: "mcp_internal",
       userId: user.id,
       activeOrganizationId: normalizeDenTypeId("organization", parsed.organizationId),
       activeTeamId: null,

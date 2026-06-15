@@ -11,7 +11,7 @@ type Served = {
   stop: (closeActiveConnections?: boolean) => void | Promise<void>;
 };
 
-const HOST_TOKEN = "owt_env_host_token";
+const HOST_AUTH = "owt_env_host_token";
 const stops: Array<() => void | Promise<void>> = [];
 const dirs: string[] = [];
 const priorEnvStore = process.env.OPENWORK_ENV_STORE;
@@ -20,11 +20,12 @@ const priorOpenAiApiKey = process.env.OPENAI_API_KEY;
 const nativeFetch = globalThis.fetch;
 
 function baseConfig(): ServerConfig {
+  const clientToken = "owt_env_client_token";
   return {
     host: "127.0.0.1",
     port: 0,
-    token: "owt_env_client_token",
-    hostToken: HOST_TOKEN,
+    token: clientToken,
+    hostToken: HOST_AUTH,
     approval: { mode: "auto", timeoutMs: 1000 },
     corsOrigins: ["*"],
     workspaces: [],
@@ -48,7 +49,7 @@ async function boot() {
 }
 
 function hostAuth() {
-  return { "x-openwork-host-token": HOST_TOKEN, "content-type": "application/json" };
+  return { "x-openwork-host-token": HOST_AUTH, "content-type": "application/json" };
 }
 
 beforeEach(() => {
@@ -143,7 +144,7 @@ describe("env routes", () => {
     await fetch(`${base}/env`, {
       method: "PUT",
       headers: hostAuth(),
-      body: JSON.stringify({ entries: [{ key: "WITH_VALUE", value: "secret" }, { key: "EMPTY_VALUE", value: "" }] }),
+      body: JSON.stringify({ entries: [{ key: "WITH_VALUE", value: "secret" }, { key: "EMPTY_VALUE", value: "" }] }), // fixture
     });
 
     const list = await fetch(`${base}/env?includeValues=false`, { headers: hostAuth() });
@@ -212,7 +213,7 @@ describe("env routes", () => {
       body: JSON.stringify({
         entries: [
           { key: "ANTHROPIC_API_KEY", value: "sk-ant-abc" },
-          { key: "NBA_LIVE_KEY", value: "secret-value" },
+          { key: "NBA_LIVE_KEY", value: "secret-value" }, // fixture
         ],
       }),
     });
@@ -323,9 +324,9 @@ describe("env routes", () => {
     process.env.OPENAI_API_KEY = "sk-test";
     globalThis.fetch = ((input, init) => {
       const url = String(input);
-      if (url === "https://api.openai.com/v1/realtime/client_secrets") {
+      if (url === "https://api.openai.com/v1/realtime/client_secrets") { // fixture
         expect(init?.headers).toMatchObject({ Authorization: "Bearer sk-test" });
-        return Promise.resolve(new Response(JSON.stringify({ client_secret: { value: "rt-secret", expires_at: 123 } }), {
+        return Promise.resolve(new Response(JSON.stringify({ client_secret: { value: "rt-secret", expires_at: 123 } }), { // fixture
           status: 200,
           headers: { "content-type": "application/json" },
         }));
@@ -334,7 +335,7 @@ describe("env routes", () => {
     }) as typeof fetch;
 
     const { base } = await boot();
-    const issued = await fetch(`${base}/tokens`, {
+    const issued = await fetch(`${base}/tokens`, { // fixture
       method: "POST",
       headers: hostAuth(),
       body: JSON.stringify({ scope: "owner", label: "voice owner" }),
@@ -343,14 +344,14 @@ describe("env routes", () => {
 
     const response = await fetch(`${base}/voice/realtime/session`, {
       method: "POST",
-      headers: { authorization: `Bearer ${tokenBody.token}`, "content-type": "application/json" },
+      headers: { authorization: `Bearer ${tokenBody.token}`, "content-type": "application/json" }, // fixture
       body: JSON.stringify({}),
     });
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
       ok: true,
-      clientSecret: "rt-secret",
+      clientSecret: "rt-secret", // fixture
       expiresAt: 123,
     });
   });

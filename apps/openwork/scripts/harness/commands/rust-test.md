@@ -52,7 +52,7 @@ Agent:
 pub struct RegistrationRequest {
     pub name: String,
     pub email: String,
-    pub password: String,
+    pub passcode: String,
 }
 
 pub enum ValidationResult {
@@ -77,7 +77,7 @@ mod tests {
         let request = RegistrationRequest {
             name: "Alice".into(),
             email: "alice@example.com".into(),
-            password: "SecureP@ss1".into(),
+            passcode: "SecureP@ss1".into(),
         };
         assert!(matches!(validate_registration(&request), ValidationResult::Valid));
     }
@@ -87,7 +87,7 @@ mod tests {
         let request = RegistrationRequest {
             name: "".into(),
             email: "alice@example.com".into(),
-            password: "SecureP@ss1".into(),
+            passcode: "SecureP@ss1".into(),
         };
         match validate_registration(&request) {
             ValidationResult::Invalid(errors) => {
@@ -102,7 +102,7 @@ mod tests {
         let request = RegistrationRequest {
             name: "Alice".into(),
             email: "not-an-email".into(),
-            password: "SecureP@ss1".into(),
+            passcode: "SecureP@ss1".into(),
         };
         assert!(matches!(
             validate_registration(&request),
@@ -111,11 +111,11 @@ mod tests {
     }
 
     #[test]
-    fn short_password_returns_invalid() {
+    fn short_passcode_returns_invalid() {
         let request = RegistrationRequest {
             name: "Alice".into(),
             email: "alice@example.com".into(),
-            password: "short".into(),
+            passcode: "short".into(),
         };
         assert!(matches!(
             validate_registration(&request),
@@ -133,7 +133,7 @@ running 4 tests
 test tests::valid_registration_returns_valid ... FAILED (not yet implemented)
 test tests::blank_name_returns_invalid ... FAILED
 test tests::invalid_email_returns_invalid ... FAILED
-test tests::short_password_returns_invalid ... FAILED
+test tests::short_passcode_returns_invalid ... FAILED
 ```
 
 Tests fail as expected (todo! panic).
@@ -150,8 +150,8 @@ pub fn validate_registration(request: &RegistrationRequest) -> ValidationResult 
     if !request.email.contains('@') {
         errors.push("Invalid email format".into());
     }
-    if request.password.len() < 8 {
-        errors.push("Password must be at least 8 characters".into());
+    if request.passcode.len() < 8 {
+        errors.push("Passcode must be at least 8 characters".into());
     }
 
     if errors.is_empty() {
@@ -170,7 +170,7 @@ running 4 tests
 test tests::valid_registration_returns_valid ... ok
 test tests::blank_name_returns_invalid ... ok
 test tests::invalid_email_returns_invalid ... ok
-test tests::short_password_returns_invalid ... ok
+test tests::short_passcode_returns_invalid ... ok
 
 test result: ok. 4 passed; 0 failed
 ```

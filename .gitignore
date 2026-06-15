@@ -132,6 +132,7 @@ supabase/.temp/
 !reports/platform/*.yml
 !reports/platform/*.yaml
 !reports/platform/*.json
+reports/platform/build-logs/*.log
 
 # Allow verification summary output
 !reports/verify/

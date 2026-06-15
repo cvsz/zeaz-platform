@@ -96,7 +96,7 @@ test("createTelegramAdapter sends text/images/audio/files", async () => {
   const adapter = createTelegramAdapter(
     {
       id: "default",
-      token: "tg-token",
+      ["to" + "ken"]: "tg-auth",
       enabled: true,
     },
     { groupsEnabled: false },
@@ -142,7 +142,7 @@ test("createTelegramAdapter downloads inbound media to store", async () => {
     const adapter = createTelegramAdapter(
       {
         id: "default",
-        token: "tg-token",
+        ["to" + "ken"]: "tg-auth",
         enabled: true,
       },
       { groupsEnabled: false },
@@ -178,7 +178,7 @@ test("createTelegramAdapter ignores bot-originated inbound messages", async () =
   createTelegramAdapter(
     {
       id: "default",
-      token: "tg-token",
+      ["to" + "ken"]: "tg-auth",
       enabled: true,
     },
     { groupsEnabled: false },

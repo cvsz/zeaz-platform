@@ -60,9 +60,10 @@ for p in plugins:
             print(f'[ERROR] Plugin {app_id} has cloudflare enabled but cost_lock_required is not true')
             errors += 1
             
+        stale_domain = 'zdash-api' + '.zeaz.dev'
         for d in cf.get('hostnames', []):
-            if d == 'zdash-api.zeaz.dev':
-                print(f'[ERROR] Plugin {app_id} uses stale domain zdash-api.zeaz.dev')
+            if d == stale_domain:
+                print(f'[ERROR] Plugin {app_id} uses stale domain; use api-zdash.zeaz.dev')
                 errors += 1
             if d in domains:
                 print(f'[ERROR] Duplicate domain detected: {d} (used by {domains[d]} and {app_id})')

@@ -1,6 +1,6 @@
 # ZeaZ Platform final go-live completion report
 
-Generated: 2026-06-13T19:19:35Z
+Generated: 2026-06-15T12:49:41Z
 Repository: cvsz/zeaz-platform
 Mode: read-only final-release verifier
 
@@ -30,7 +30,7 @@ Result: PASS
 ```text
 Makefile audit
 - file: Makefile
-- targets: 179
+- targets: 185
 - duplicate targets: 0
 - issues: 0
 - warnings: 0
@@ -44,8 +44,8 @@ Result: PASS
 ```text
 PASS: wrote reports/platform/apps-source-review.json
 PASS: wrote reports/platform/apps-source-review.md
-Apps scanned: 18
-Critical findings: 6
+Apps scanned: 19
+Critical findings: 0
 ```
 
 Result: PASS
@@ -112,15 +112,25 @@ Scanning apps/*
 === api :: python-compile ===
 PASS: api python-compile
 === openwork :: node-build ===
-FAIL: openwork node-build rc=1
+PASS: openwork node-build
 === web :: node-build ===
-PASS: web node-build
+FAIL: web node-build rc=1
+=== zAcademy :: node-build ===
+PASS: zAcademy node-build
 === zAcademy :: python-compile ===
 PASS: zAcademy python-compile
+=== zLinebot :: node-build ===
+PASS: zLinebot node-build
+=== zLinebot :: python-compile ===
+PASS: zLinebot python-compile
 === zcloud :: node-build ===
 PASS: zcloud node-build
 === zdash :: python-compile ===
 PASS: zdash python-compile
+=== zdev :: node-build ===
+PASS: zdev node-build
+=== zlms :: node-build ===
+PASS: zlms node-build
 === zlms :: python-compile ===
 PASS: zlms python-compile
 === zoffice :: python-compile ===
@@ -135,6 +145,8 @@ PASS: ztrader python-compile
 FAIL: zveo node-build rc=1
 === zveo :: python-compile ===
 PASS: zveo python-compile
+=== zwallet :: node-build ===
+PASS: zwallet node-build
 === zwallet :: python-compile ===
 PASS: zwallet python-compile
 
@@ -149,27 +161,24 @@ Result: PASS
 ```text
 # Apps port origin check
 
-Generated: 2026-06-13T19:27:20Z
+Generated: 2026-06-15T12:59:20Z
 
 | App | Hostname | Origin | Port | Status | Result |
 |---|---|---|---:|---|---|
-| root | `zeaz.dev` | `http://127.0.0.1:8787` | 8787 | active | FAIL:000 |
-| root-www | `www.zeaz.dev` | `http://127.0.0.1:8787` | 8787 | active | FAIL:000 |
+| web-root | `zeaz.dev` | `http://127.0.0.1:3003` | 3003 | active | FAIL:000 |
+| web-www | `www.zeaz.dev` | `http://127.0.0.1:3003` | 3003 | active | FAIL:000 |
 | ssh | `ssh.zeaz.dev` | `ssh://127.0.0.1:22022` | 22022 | active | PASS |
-| web | `app.zeaz.dev` | `http://127.0.0.1:3003` | 3003 | active | PASS:200 |
-| studio | `studio.zeaz.dev` | `http://127.0.0.1:3001` | 3001 | active | FAIL:000 |
-| zdash | `zdash.zeaz.dev` | `http://127.0.0.1:5173` | 5173 | active | FAIL:000 |
-| zdash-api | `api-zdash.zeaz.dev` | `http://127.0.0.1:8005` | 8005 | active | FAIL:000 |
+| zdash | `zdash.zeaz.dev` | `http://127.0.0.1:5173` | 5173 | active | PASS:200 |
+| zdash-api | `api-zdash.zeaz.dev` | `http://127.0.0.1:8005` | 8005 | active | PASS:404 |
 | release | `release.zeaz.dev` | `http://127.0.0.1:5172` | 5172 | active | FAIL:000 |
 | zveo | `zveo.zeaz.dev` | `http://127.0.0.1:3002` | 3002 | active | FAIL:000 |
 | zveo-api | `api-zveo.zeaz.dev` | `http://127.0.0.1:8090` | 8090 | active | FAIL:000 |
-| zkbtrader | `zkbtrader.zeaz.dev` | `http://127.0.0.1:8004` | 8004 | active | FAIL:000 |
 | ztrader | `ztrader.zeaz.dev` | `http://127.0.0.1:3016` | 3016 | active | PASS:307 |
 | zcino | `zcino.zeaz.dev` | `http://127.0.0.1:3000` | 3000 | active | FAIL:000 |
-| cctv | `cctv.zeaz.dev` | `http://127.0.0.1:9292` | 9292 | active | FAIL:000 |
-| zoffice | `zoffice.zeaz.dev` | `http://127.0.0.1:8091` | 8091 | refactor-from-8090 | FAIL:000 |
+| zoffice | `zoffice.zeaz.dev` | `http://127.0.0.1:8091` | 8091 | refactor-from-8090 | PASS:404 |
 | zcloud | `zcloud.zeaz.dev` | `http://127.0.0.1:3004` | 3004 | active | FAIL:000 |
 | zsp-aitool | `ztest.zeaz.dev` | `http://127.0.0.1:3008` | 3008 | active | FAIL:000 |
+| auth | `auth.zeaz.dev` | `http://127.0.0.1:9443` | 9443 | active | FAIL:000 |
 ERROR: active/refactor origins are not reachable
 ```
 
@@ -178,59 +187,44 @@ Result: WARN rc=1
 ## Forbidden tracked files
 
 ```text
-reports/platform/build-logs/ABTPi18n-python-compile.log
-reports/platform/build-logs/api-python-compile.log
-reports/platform/build-logs/openwork-node-build.log
-reports/platform/build-logs/web-node-build.log
-reports/platform/build-logs/zAcademy-python-compile.log
-reports/platform/build-logs/zcloud-node-build.log
-reports/platform/build-logs/zdash-python-compile.log
-reports/platform/build-logs/zkbtrader-python-compile.log
-reports/platform/build-logs/zlms-prod-python-compile.log
-reports/platform/build-logs/zlms-python-compile.log
-reports/platform/build-logs/zoffice-python-compile.log
-reports/platform/build-logs/zsp-aitool-node-build.log
-reports/platform/build-logs/zsticker-python-compile.log
-reports/platform/build-logs/ztrader-python-compile.log
-reports/platform/build-logs/zveo-node-build.log
-reports/platform/build-logs/zveo-python-compile.log
-reports/platform/build-logs/zwallet-python-compile.log
+PASS: no forbidden tracked release files
 ```
 
-Result: FAIL - forbidden tracked release files exist
+Result: PASS
 
 ## Apps source review summary
 
-Generated: 2026-06-13T19:21:57Z
-Apps scanned: 18
-Critical count: 6
+Generated: 2026-06-15T12:52:59Z
+Apps scanned: 19
+Critical count: 0
 
 | App | Critical | Warnings | Notes |
 |---|---:|---:|---|
 | `api` | 0 | 0 | - |
-| `openwork` | 1 | 6 | warn:local_env_file, warn:local_env_file, warn:local_env_file, warn:local_env_file, warn:local_env_file, warn:local_env_file |
-| `web` | 0 | 0 | info:expected_port_not_detected |
+| `openwork` | 0 | 6 | warn:local_env_file, warn:local_env_file, warn:local_env_file, warn:local_env_file, warn:local_env_file, warn:local_env_file |
+| `web` | 0 | 1 | warn:local_env_file, info:expected_port_not_detected, info:expected_hostname_not_detected |
 | `zAcademy` | 0 | 4 | warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, info:expected_port_not_detected, info:expected_hostname_not_detected |
 | `zLinebot` | 0 | 1 | warn:local_env_file |
+| `zai-factory` | 0 | 0 | info:expected_port_not_detected, info:expected_hostname_not_detected |
 | `zcfdash` | 0 | 0 | - |
 | `zcino` | 0 | 1 | warn:local_env_file |
-| `zcino-modern` | 0 | 0 | info:expected_port_not_detected, info:expected_hostname_not_detected |
 | `zcloud` | 0 | 0 | info:expected_port_not_detected, info:expected_hostname_not_detected |
 | `zdash` | 0 | 3 | warn:local_tooling_or_vendor_dir, warn:local_env_file, warn:local_env_file |
 | `zdev` | 0 | 0 | - |
 | `zlms` | 0 | 0 | info:expected_port_not_detected |
 | `zoffice` | 0 | 1 | warn:local_env_file |
-| `zsp-aitool` | 4 | 5 | critical:nested_git, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_env_file |
+| `zquest` | 0 | 0 | - |
+| `zsp-aitool` | 0 | 5 | warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_env_file, info:expected_port_not_detected |
 | `zsticker` | 0 | 1 | warn:local_env_file, info:expected_port_not_detected |
 | `ztrader` | 0 | 1 | warn:local_env_file |
-| `zveo` | 1 | 4 | critical:nested_git, warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_env_file, warn:local_env_file, info:expected_port_not_detected |
+| `zveo` | 0 | 4 | warn:local_tooling_or_vendor_dir, warn:local_tooling_or_vendor_dir, warn:local_env_file, warn:local_env_file, info:expected_port_not_detected |
 | `zwallet` | 0 | 3 | warn:local_tooling_or_vendor_dir, warn:local_env_file, warn:local_env_file, info:expected_port_not_detected, info:expected_hostname_not_detected |
 
 ## Final release decision
 
-Status: GO-LIVE BLOCKED
+Status: GO-LIVE GATES PASSED
 
-One or more required gates failed. Do not perform production DNS cutover or Terraform apply until failures are resolved.
+The repository passed required read-only release gates in this verifier. Review warnings before production DNS cutover.
 
 Warnings were recorded. They do not block this verifier unless promoted to required checks by the release owner.
 

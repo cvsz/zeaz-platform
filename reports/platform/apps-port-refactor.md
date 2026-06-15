@@ -23,6 +23,7 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | zcloud | ui | `apps/zcloud` | `zcloud.zeaz.dev` | 3004 | `http://127.0.0.1:3004` | active | `` | `` |
 | zsp-aitool | ui | `apps/zsp-aitool` | `ztest.zeaz.dev` | 3008 | `http://127.0.0.1:3008` | active | `` | `` |
 | auth | auth | `apps/auth` | `auth.zeaz.dev` | 9443 | `http://127.0.0.1:9443` | active | `` | `` |
+| zai-factory | ops | `apps/zai-factory` | `factory.zeaz.dev` | 8710 | `http://127.0.0.1:8710` | reserved | `` | `/v1/factory` |
 | zcfdash | ui | `apps/web` | `zcfdash.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | `web` | `` |
 | zcfdash-api | api | `apps/api` | `api-zcfdash.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active | `api-gateway` | `/api/runtime/cloudflare` |
 | ztrader-api | api | `apps/ztrader` | `api-ztrader.zeaz.dev` | 8016 | `http://127.0.0.1:8016` | active | `ztrader` | `/api/v1` |
@@ -48,5 +49,6 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 8088 | zcfdash-api |
 | 8090 | zveo-api |
 | 8091 | zoffice |
+| 8710 | zai-factory |
 | 9443 | auth |
 | 22022 | ssh |

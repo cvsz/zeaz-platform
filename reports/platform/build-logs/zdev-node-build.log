@@ -1,5 +1,0 @@
-$ cd 'apps/zdev' && npm run build
-
-> @zeaz/zdev@1.0.0 build
-> exit 0
-

@@ -176,15 +176,6 @@
       "origin": null,
       "port": null,
       "status": "reserved"
-    },
-    {
-      "app_id": "zcino",
-      "path": "apps/zcino",
-      "type": "app",
-      "hostnames": ["zcino.zeaz.dev"],
-      "origin": null,
-      "port": null,
-      "status": "reserved"
     }
   ]
 }

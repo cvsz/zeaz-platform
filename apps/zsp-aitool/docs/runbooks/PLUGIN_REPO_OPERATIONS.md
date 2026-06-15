@@ -8,7 +8,7 @@ Run `make plugin-validate`. This will check:
 - Duplicated domains
 - Duplicated ports
 - Embedded path resolution
-- Stale domains (e.g. `zdash-api.zeaz.dev`)
+- Stale domains (e.g. `api-zdash.zeaz.dev`)
 
 ## Rendering Intent
 Run `make plugin-render-cloudflare`.

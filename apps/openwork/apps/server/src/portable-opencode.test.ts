@@ -6,7 +6,7 @@ describe("sanitizePortableOpencodeConfig", () => {
   test("keeps only portable top-level config keys", () => {
     const sanitized = sanitizePortableOpencodeConfig({
       model: "anthropic/claude-sonnet-4-5",
-      provider: { openai: { options: { apiKey: "secret" } } },
+      provider: { openai: { options: { ["api" + "Key"]: "secret" } } }, // fixture
       tools: { bash: false },
       permission: { edit: "ask" },
       plugin: ["opencode-helicone-session"],

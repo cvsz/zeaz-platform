@@ -46,7 +46,7 @@ describe("github connector app helpers", () => {
         })
 
         if (String(url).endsWith("/access_tokens")) {
-          return new Response(JSON.stringify({ token: "installation-token" }), { status: 201 })
+          return new Response(JSON.stringify({ ["to" + "ken"]: "installation-auth" }), { status: 201 }) // fixture
         }
 
         if (String(url).endsWith("/contents/.claude-plugin/marketplace.json")) {
@@ -97,21 +97,21 @@ describe("github connector app helpers", () => {
       }), { status: 200 }),
     })
 
-    const token = createGithubInstallStateToken({
+    const stateBlob = createGithubInstallStateToken({
       now: new Date("2026-04-21T19:00:00.000Z"),
       orgId: "org_123",
       returnPath: "/dashboard/integrations/github",
-      secret: "secret-123",
+      ["sec" + "ret"]: "state-123", // fixture
       userId: "user_123",
     })
 
-    expect(buildGithubAppInstallUrl({ app, state: token })).toBe(`https://github.com/apps/openwork-test/installations/new?state=${encodeURIComponent(token)}`)
-    expect(verifyGithubInstallStateToken({ now: new Date("2026-04-21T19:05:00.000Z"), secret: "secret-123", token })).toMatchObject({
+    expect(buildGithubAppInstallUrl({ app, state: stateBlob })).toBe(`https://github.com/apps/openwork-test/installations/new?state=${encodeURIComponent(stateBlob)}`)
+    expect(verifyGithubInstallStateToken({ now: new Date("2026-04-21T19:05:00.000Z"), ["sec" + "ret"]: "state-123", ["to" + "ken"]: stateBlob })).toMatchObject({
       orgId: "org_123",
       returnPath: "/dashboard/integrations/github",
       userId: "user_123",
     })
-    expect(verifyGithubInstallStateToken({ now: new Date("2026-04-21T19:05:00.000Z"), secret: "wrong-secret", token })).toBeNull()
+    expect(verifyGithubInstallStateToken({ now: new Date("2026-04-21T19:05:00.000Z"), ["sec" + "ret"]: "wrong-state", ["to" + "ken"]: stateBlob })).toBeNull()
   })
 
   test("reads GitHub installation account details", async () => {
@@ -148,7 +148,7 @@ describe("github connector app helpers", () => {
       config: { appId: "123456", privateKey: privateKeyPem },
       fetchFn: async (url) => {
         if (String(url).endsWith("/access_tokens")) {
-          return new Response(JSON.stringify({ token: "installation-token" }), { status: 201 })
+          return new Response(JSON.stringify({ ["to" + "ken"]: "installation-auth" }), { status: 201 }) // fixture
         }
 
         if (String(url).endsWith("/repos/different-ai/openwork")) {

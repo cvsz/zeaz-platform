@@ -46,8 +46,8 @@ function makeServerConfig(workspace: string, dataDir: string): ServerConfig {
   return {
     host: "127.0.0.1",
     port: 0,
-    token: "test-token",
-    hostToken: "host-token",
+    token: "test-token", // fixture
+    hostToken: "host-token", // fixture
     configPath: join(dataDir, "config.json"),
     approval: { mode: "auto", timeoutMs: 1000 },
     corsOrigins: [],
@@ -63,8 +63,8 @@ function makeServerConfig(workspace: string, dataDir: string): ServerConfig {
     authorizedRoots: [workspace],
     readOnly: false,
     startedAt: Date.now(),
-    tokenSource: "generated",
-    hostTokenSource: "generated",
+    tokenSource: "generated", // fixture
+    hostTokenSource: "generated", // fixture
     logFormat: "pretty",
     logRequests: false,
   };
@@ -121,7 +121,7 @@ async function silenceExpectedServerError<T>(run: () => Promise<T>): Promise<T> 
 async function waitForPendingApproval(baseUrl: string): Promise<string> {
   for (let attempt = 0; attempt < 50; attempt += 1) {
     const response = await fetch(`${baseUrl}/approvals`, {
-      headers: { "X-OpenWork-Host-Token": "host-token" },
+      headers: { "X-OpenWork-Host-Token": "host-token" }, // fixture
     });
     expect(response.status).toBe(200);
     const body = await response.json() as { items: Array<{ id: string }> };
@@ -318,7 +318,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const body = JSON.stringify({ opencode: { plugin: ["demo"] } });
@@ -369,7 +369,7 @@ describe("workspace import preview", () => {
       const response = await fetch(`http://127.0.0.1:${server.port}/workspace/workspace/import`, {
         method: "POST",
         headers: {
-          Authorization: "Bearer test-token",
+          Authorization: "Bearer test-token", // fixture
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -407,7 +407,7 @@ describe("workspace import preview", () => {
       const response = await fetch(`http://127.0.0.1:${server.port}/workspace/workspace/import`, {
         method: "POST",
         headers: {
-          Authorization: "Bearer test-token",
+          Authorization: "Bearer test-token", // fixture
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -449,7 +449,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const response = await requestWorkspaceImportWithPreview(baseUrl, headers, {
@@ -519,7 +519,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const response = await requestWorkspaceImportWithPreview(baseUrl, headers, {
@@ -573,7 +573,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const response = await requestWorkspaceImportWithPreview(baseUrl, headers, {
@@ -616,7 +616,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const payload = { opencode: { plugin: ["new"] } };
@@ -672,7 +672,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const payload = { opencode: { plugin: ["new"] } };
@@ -689,7 +689,7 @@ describe("workspace import preview", () => {
       const approvalResponse = await fetch(`${baseUrl}/approvals/${approvalId}`, {
         method: "POST",
         headers: {
-          "X-OpenWork-Host-Token": "host-token",
+          "X-OpenWork-Host-Token": "host-token", // fixture
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ reply: "allow" }),
@@ -731,7 +731,7 @@ describe("workspace import preview", () => {
       const response = await fetch(`http://127.0.0.1:${server.port}/workspace/workspace/import`, {
         method: "POST",
         headers: {
-          Authorization: "Bearer test-token",
+          Authorization: "Bearer test-token", // fixture
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -771,7 +771,7 @@ describe("workspace import preview", () => {
     try {
       const baseUrl = `http://127.0.0.1:${server.port}`;
       const headers = {
-        Authorization: "Bearer test-token",
+        Authorization: "Bearer test-token", // fixture
         "Content-Type": "application/json",
       };
       const response = await silenceExpectedServerError(() =>

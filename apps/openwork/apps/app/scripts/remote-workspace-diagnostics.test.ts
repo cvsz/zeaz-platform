@@ -20,7 +20,7 @@ function workspace(overrides: Partial<WorkspaceInfo> = {}): WorkspaceInfo {
     workspaceType: "remote",
     remoteType: "openwork",
     openworkHostUrl: "https://worker.example.com/w/ws_remote",
-    openworkToken: "ow-token",
+    openworkToken: "ow-token", // fixture
     ...overrides,
   };
 }
@@ -28,7 +28,7 @@ function workspace(overrides: Partial<WorkspaceInfo> = {}): WorkspaceInfo {
 function client(overrides: Partial<OpenworkServerClient> = {}): OpenworkServerClient {
   return {
     baseUrl: "https://worker.example.com/w/ws_remote",
-    token: "ow-token",
+    token: "ow-token", // fixture
     health: async () => ({ ok: true, version: "0.1.0", uptimeMs: 10 }),
     status: async () => ({
       ok: true,
@@ -49,7 +49,7 @@ function client(overrides: Partial<OpenworkServerClient> = {}): OpenworkServerCl
       },
       authorizedRoots: ["/workspace"],
       server: { host: "127.0.0.1", port: 8787 },
-      tokenSource: { client: "file", host: "file" },
+      tokenSource: { client: "file", host: "file" }, // fixture
     }),
     capabilities: async () => ({
       skills: { read: true, write: true, source: "openwork" },
@@ -91,7 +91,7 @@ describe("resolveRemoteWorkspaceConnectionTarget", () => {
     if (!target.ok) return;
     expect(target.target.baseUrl).toBe("https://worker.example.com");
     expect(target.target.workspaceId).toBe("ws_remote");
-    expect(target.target.token).toBe("ow-token");
+    expect(target.target.token).toBe("ow-token"); // fixture
   });
 
   test("parses workspace id from a workspace-scoped connect URL", () => {
@@ -151,7 +151,7 @@ describe("resolveRemoteWorkspaceConnectionTarget", () => {
       workspace({
         remoteType: "opencode",
         openworkHostUrl: "https://worker.example.com/w/ws_remote",
-        openworkToken: "owt_secret",
+        openworkToken: "owt_secret", // fixture
         baseUrl: "https://opencode.example.com",
       }),
     );
@@ -208,11 +208,11 @@ describe("testRemoteWorkspaceConnection", () => {
     const result = await testRemoteWorkspaceConnection(
       workspace({
         openworkToken: "",
-        openworkClientToken: "legacy-client-token",
+        openworkClientToken: "legacy-client-token", // fixture
       }),
       {
         createClient: (target) => {
-          expect(target.token).toBe("legacy-client-token");
+          expect(target.token).toBe("legacy-client-token"); // fixture
           return client();
         },
       },
@@ -226,7 +226,7 @@ describe("testRemoteWorkspaceConnection", () => {
       createClient: () =>
         client({
           capabilities: async () => {
-            throw serverError(401, "invalid_token", "Invalid token");
+            throw serverError(401, "invalid_token", "Invalid token"); // fixture
           },
         }),
     });
@@ -290,7 +290,7 @@ describe("testRemoteWorkspaceConnection", () => {
         createClient: () =>
           client({
             listWorkspaces: async () => {
-              throw serverError(401, "invalid_token", "Invalid token");
+              throw serverError(401, "invalid_token", "Invalid token"); // fixture
             },
           }),
       },
@@ -342,7 +342,7 @@ describe("testRemoteWorkspaceConnection", () => {
       createClient: () =>
         client({
           health: async () => {
-            throw new Error("Failed with Bearer owt_live_secret and ?token=abc123");
+            throw new Error("Failed with Bearer owt_live_secret and ?token=abc123"); // fixture
           },
         }),
     });
@@ -358,7 +358,7 @@ describe("testRemoteWorkspaceConnection", () => {
 describe("remote diagnostic identity", () => {
   test("redacts common token shapes", () => {
     const redacted = redactRemoteDiagnosticText(
-      "Authorization: Bearer abc.def and https://x.test/?access_token=secret&ok=1 and owt_live_secret",
+      "Authorization: Bearer abc.def and https://x.test/?access_token=secret&ok=1 and owt_live_secret", // fixture
     );
 
     expect(redacted).toContain("Authorization: Bearer [redacted]");
@@ -370,8 +370,8 @@ describe("remote diagnostic identity", () => {
   });
 
   test("changes when connection credentials change", () => {
-    const before = getRemoteWorkspaceConnectionKey(workspace({ openworkToken: "old-token" }));
-    const after = getRemoteWorkspaceConnectionKey(workspace({ openworkToken: "new-token" }));
+    const before = getRemoteWorkspaceConnectionKey(workspace({ openworkToken: "old-token" })); // fixture
+    const after = getRemoteWorkspaceConnectionKey(workspace({ openworkToken: "new-token" })); // fixture
 
     expect(before).not.toBe(after);
   });
@@ -416,7 +416,7 @@ describe("diagnoseRemoteWorkspaceTaskLoadFailure", () => {
   test("redacts token-like values from task load fallbacks", async () => {
     const state = await diagnoseRemoteWorkspaceTaskLoadFailure(
       workspace(),
-      "Session failed with bearer owt_live_secret and ?token=abc123",
+      "Session failed with bearer owt_live_secret and ?token=abc123", // fixture
       {
         createClient: () => client(),
       },
@@ -433,7 +433,7 @@ describe("getWorkspaceTaskLoadErrorDisplay", () => {
   test("redacts remote worker task load errors before rendering", () => {
     const display = getWorkspaceTaskLoadErrorDisplay(
       workspace(),
-      "failed with Authorization: Bearer owt_live_secret and ?token=abc123",
+      "failed with Authorization: Bearer owt_live_secret and ?token=abc123", // fixture
     );
 
     expect(display.message).toContain("Authorization: Bearer [redacted]");

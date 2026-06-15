@@ -54,7 +54,7 @@ package com.example.validator
 data class RegistrationRequest(
     val name: String,
     val email: String,
-    val password: String,
+    val passcode: String,
 )
 
 sealed class ValidationResult {
@@ -82,7 +82,7 @@ class RegistrationValidatorTest : FunSpec({
         val request = RegistrationRequest(
             name = "Alice",
             email = "alice@example.com",
-            password = "SecureP@ss1",
+            passcode = "SecureP@ss1",
         )
 
         val result = validateRegistration(request)
@@ -94,7 +94,7 @@ class RegistrationValidatorTest : FunSpec({
         val request = RegistrationRequest(
             name = "",
             email = "alice@example.com",
-            password = "SecureP@ss1",
+            passcode = "SecureP@ss1",
         )
 
         val result = validateRegistration(request)
@@ -107,7 +107,7 @@ class RegistrationValidatorTest : FunSpec({
         val request = RegistrationRequest(
             name = "Alice",
             email = "not-an-email",
-            password = "SecureP@ss1",
+            passcode = "SecureP@ss1",
         )
 
         val result = validateRegistration(request)
@@ -116,11 +116,11 @@ class RegistrationValidatorTest : FunSpec({
         invalid.errors shouldBe listOf("Invalid email format")
     }
 
-    test("short password returns Invalid") {
+    test("short passcode returns Invalid") {
         val request = RegistrationRequest(
             name = "Alice",
             email = "alice@example.com",
-            password = "short",
+            passcode = "short",
         )
 
         val result = validateRegistration(request)
@@ -133,7 +133,7 @@ class RegistrationValidatorTest : FunSpec({
         val request = RegistrationRequest(
             name = "",
             email = "bad",
-            password = "short",
+            passcode = "short",
         )
 
         val result = validateRegistration(request)
@@ -170,7 +170,7 @@ fun validateRegistration(request: RegistrationRequest): ValidationResult {
     val errors = buildList {
         if (request.name.isBlank()) add("Name is required")
         if (!EMAIL_REGEX.matches(request.email)) add("Invalid email format")
-        if (request.password.length < MIN_PASSWORD_LENGTH) add("Password must be at least $MIN_PASSWORD_LENGTH characters")
+        if (request.passcode.length < MIN_PASSWORD_LENGTH) add("Passcode must be at least $MIN_PASSWORD_LENGTH characters")
     }
 
     return if (errors.isEmpty()) ValidationResult.Valid
@@ -186,7 +186,7 @@ $ ./gradlew test
 RegistrationValidatorTest > valid registration returns Valid PASSED
 RegistrationValidatorTest > blank name returns Invalid PASSED
 RegistrationValidatorTest > invalid email returns Invalid PASSED
-RegistrationValidatorTest > short password returns Invalid PASSED
+RegistrationValidatorTest > short passcode returns Invalid PASSED
 RegistrationValidatorTest > multiple errors returns all errors PASSED
 
 PASSED (5 tests, 5 passed, 0 failed)

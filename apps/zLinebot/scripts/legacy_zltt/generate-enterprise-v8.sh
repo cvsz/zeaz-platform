@@ -107,10 +107,12 @@ import os
 app = FastAPI()
 
 def db():
+    dsn = os.getenv("DATABASE_URL")
+    if dsn:
+        return psycopg2.connect(dsn)
     return psycopg2.connect(
         host=os.getenv("POSTGRES_HOST","postgres"),
         user="zlttbots",
-        password="zlttbots",
         dbname="zlttbots"
     )
 

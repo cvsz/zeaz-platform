@@ -7,13 +7,15 @@ import { join } from "node:path";
 function createTestConfig(): ServerConfig {
   const tempDir = join(
     tmpdir(),
-    `openwork-token-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    `openwork-auth-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   );
+  const clientToken = "test-client-token";
+  const hostTokenValue = "test-host-token";
   return {
     host: "127.0.0.1",
     port: 8787,
-    token: "test-client-token",
-    hostToken: "test-host-token",
+    token: clientToken,
+    hostToken: hostTokenValue,
     configPath: join(tempDir, "server.json"),
     approval: { mode: "auto", timeoutMs: 30000 },
     corsOrigins: ["*"],
@@ -49,11 +51,11 @@ describe("TokenService", () => {
   });
 
   test("created token appears in list", async () => {
-    await service.create("owner", { label: "My token" });
+    await service.create("owner", { label: "My auth item" });
     const list = await service.list();
     expect(list.length).toBe(1);
     expect(list[0].scope).toBe("owner");
-    expect(list[0].label).toBe("My token");
+    expect(list[0].label).toBe("My auth item");
     // Hash should not be in the list output
     expect((list[0] as Record<string, unknown>).hash).toBeUndefined();
   });

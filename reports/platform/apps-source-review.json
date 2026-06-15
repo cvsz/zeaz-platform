@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-13T19:21:57Z",
+  "generated_at": "2026-06-15T12:52:59Z",
   "root": "/home/zeazdev/zeaz-platform",
   "apps_dir": "/home/zeazdev/zeaz-platform/apps",
-  "app_count": 18,
-  "critical_count": 6,
+  "app_count": 19,
+  "critical_count": 0,
   "apps": [
     {
       "app_id": "api",
@@ -14,17 +14,18 @@
       ],
       "package": null,
       "nested_git": false,
-      "root_tracked_files": 14,
+      "root_tracked_files": 16,
       "git_status": [],
-      "file_count": 14,
-      "source_count": 14,
-      "total_bytes": 20865,
+      "file_count": 16,
+      "source_count": 15,
+      "total_bytes": 35905,
       "extensions": {
-        ".py": 10,
+        ".py": 11,
         ".yml": 1,
         ".md": 1,
         "Dockerfile": 1,
-        ".txt": 1
+        ".txt": 1,
+        ".sqlite3": 1
       },
       "ports": {
         "6379": [
@@ -36,12 +37,10 @@
         ]
       },
       "domains": {
-        "api-zcfdash.zeaz.dev": [
-          "apps/api/routers/cloudflare_control.py"
-        ],
         "api.zeaz.dev": [
           "apps/api/README.md",
-          "apps/api/docker-compose.yml"
+          "apps/api/docker-compose.yml",
+          "apps/api/routers/cloudflare_control.py"
         ],
         "zcfdash.zeaz.dev": [
           "apps/api/routers/cloudflare_control.py"
@@ -118,16 +117,36 @@
       },
       "nested_git": false,
       "root_tracked_files": 1737,
-      "git_status": [],
-      "file_count": 1763,
-      "source_count": 1282,
-      "total_bytes": 660925647,
+      "git_status": [
+        "M  apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts",
+        "M  apps/openwork/apps/opencode-router/test/telegram.test.js",
+        "M  apps/openwork/apps/server/src/artifact-files.e2e.test.ts",
+        "M  apps/openwork/apps/server/src/env-routes.e2e.test.ts",
+        "M  apps/openwork/apps/server/src/extensions/google-workspace.test.ts",
+        "M  apps/openwork/apps/server/src/portable-opencode.test.ts",
+        "M  apps/openwork/apps/server/src/reload-events.e2e.test.ts",
+        "M  apps/openwork/apps/server/src/session-read-model.e2e.test.ts",
+        "M  apps/openwork/apps/server/src/tokens.test.ts",
+        "M  apps/openwork/apps/server/src/workspace-activate.e2e.test.ts",
+        "M  apps/openwork/apps/server/src/workspace-export-safety.test.ts",
+        "M  apps/openwork/apps/server/src/workspace-import-preview.test.ts",
+        "M  apps/openwork/ee/apps/den-api/src/session.ts",
+        "M  apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
+        "M  apps/openwork/ee/packages/den-db/drizzle.config.ts",
+        "M  apps/openwork/pnpm-lock.yaml",
+        "M  apps/openwork/scripts/harness/agents/code-reviewer.md",
+        "M  apps/openwork/scripts/harness/commands/kotlin-test.md",
+        "M  apps/openwork/scripts/harness/commands/rust-test.md"
+      ],
+      "file_count": 1766,
+      "source_count": 1283,
+      "total_bytes": 661488642,
       "extensions": {
         ".ts": 494,
         ".tsx": 365,
         ".png": 265,
         ".md": 252,
-        ".json": 74,
+        ".json": 75,
         ".mjs": 70,
         ".sh": 30,
         ".mdx": 27,
@@ -147,12 +166,12 @@
         ".html": 3,
         ".cjs": 3,
         ".yaml": 2,
+        ".jsonc": 2,
         ".20260610-080545": 2,
         "LICENSE": 2,
         ".tsbuildinfo": 2,
         ".ico": 2,
-        ".txt": 2,
-        ".icns": 2
+        ".txt": 2
       },
       "ports": {
         "443": [
@@ -703,183 +722,7 @@
           ]
         }
       ],
-      "secret_hits": [
-        {
-          "path": "apps/openwork/ee/apps/den-api/src/session.ts",
-          "line": "116",
-          "preview": "      token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
-          "line": "49",
-          "preview": "          return new Response(JSON.stringify({ token=<redacted> }), { status: 201 })"
-        },
-        {
-          "path": "apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
-          "line": "104",
-          "preview": "      secret=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
-          "line": "109",
-          "preview": "    expect(verifyGithubInstallStateToken({ now: new Date(\"2026-04-21T19:05:00.000Z\"), secret=<redacted>, token })).toMatchObject({"
-        },
-        {
-          "path": "apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
-          "line": "114",
-          "preview": "    expect(verifyGithubInstallStateToken({ now: new Date(\"2026-04-21T19:05:00.000Z\"), secret=<redacted>, token })).toBeNull()"
-        },
-        {
-          "path": "apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
-          "line": "151",
-          "preview": "          return new Response(JSON.stringify({ token=<redacted> }), { status: 201 })"
-        },
-        {
-          "path": "apps/openwork/ee/packages/den-db/drizzle.config.ts",
-          "line": "17",
-          "preview": "        password=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts",
-          "line": "31",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/opencode-router/test/telegram.test.js",
-          "line": "99",
-          "preview": "      token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/opencode-router/test/telegram.test.js",
-          "line": "145",
-          "preview": "        token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/opencode-router/test/telegram.test.js",
-          "line": "181",
-          "preview": "      token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "30",
-          "preview": "            apiKey=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "34",
-          "preview": "          demo: { token=<redacted>, enabled: true, key: \"AbCDef1234567890+/token\" },"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "38",
-          "preview": "        { path: \".opencode/plugins/demo/index.ts\", content: \"const apiKey=<redacted>;\" },"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "67",
-          "preview": "              apiKey=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "87",
-          "preview": "            token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "93",
-          "preview": "            apiKey=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-          "line": "100",
-          "preview": "        { path: \".opencode/plugins/demo/index.ts\", content: \"const token=<redacted>;\" },"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-activate.e2e.test.ts",
-          "line": "120",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-activate.e2e.test.ts",
-          "line": "158",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/env-routes.e2e.test.ts",
-          "line": "26",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/session-read-model.e2e.test.ts",
-          "line": "128",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/reload-events.e2e.test.ts",
-          "line": "29",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/tokens.test.ts",
-          "line": "15",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/artifact-files.e2e.test.ts",
-          "line": "35",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/workspace-import-preview.test.ts",
-          "line": "49",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/portable-opencode.test.ts",
-          "line": "9",
-          "preview": "      provider: { openai: { options: { apiKey=<redacted> } } },"
-        },
-        {
-          "path": "apps/openwork/apps/server/src/extensions/google-workspace.test.ts",
-          "line": "17",
-          "preview": "    token=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/agents/code-reviewer.md",
-          "line": "274",
-          "preview": "  const apiKey=<redacted>;           // BAD"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/commands/kotlin-test.md",
-          "line": "85",
-          "preview": "            password=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/commands/kotlin-test.md",
-          "line": "97",
-          "preview": "            password=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/commands/kotlin-test.md",
-          "line": "110",
-          "preview": "            password=<redacted>,"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/commands/rust-test.md",
-          "line": "80",
-          "preview": "            password=<redacted>.into(),"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/commands/rust-test.md",
-          "line": "90",
-          "preview": "            password=<redacted>.into(),"
-        },
-        {
-          "path": "apps/openwork/scripts/harness/commands/rust-test.md",
-          "line": "105",
-          "preview": "            password=<redacted>.into(),"
-        }
-      ],
+      "secret_hits": [],
       "todo_hits": [
         {
           "path": "apps/openwork/SUPPORT.md",
@@ -1393,15 +1236,15 @@
         },
         {
           "path": "apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator-bun-linux-x64-baseline",
-          "bytes": 102754432
+          "bytes": 102770816
         },
         {
           "path": "apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator",
-          "bytes": 102754432
+          "bytes": 102770816
         },
         {
           "path": "apps/openwork/apps/desktop/resources/sidecars/openwork-orchestrator-x86_64-unknown-linux-gnu",
-          "bytes": 102754432
+          "bytes": 102770816
         },
         {
           "path": "apps/openwork/packages/docs/images/improved-skills-march11th.gif",
@@ -1494,11 +1337,6 @@
           "severity": "warn",
           "code": "local_env_file",
           "message": "Local env file exists: apps/openwork/packaging/systemd/openwork.env"
-        },
-        {
-          "severity": "critical",
-          "code": "secret_like_hits",
-          "message": "35 secret-like hit(s) found; review redacted report before commit"
         }
       ]
     },
@@ -1522,17 +1360,15 @@
         "dev_dependencies_count": 9
       },
       "nested_git": false,
-      "root_tracked_files": 56,
+      "root_tracked_files": 57,
       "git_status": [
-        "M apps/web/next.config.ts",
-        " M apps/web/package.json",
-        " M apps/web/tsconfig.json"
+        "M  apps/web/pnpm-lock.yaml"
       ],
-      "file_count": 58,
-      "source_count": 47,
-      "total_bytes": 534685,
+      "file_count": 60,
+      "source_count": 49,
+      "total_bytes": 561128,
       "extensions": {
-        ".tsx": 35,
+        ".tsx": 36,
         ".ts": 5,
         ".svg": 5,
         ".mjs": 2,
@@ -1540,6 +1376,7 @@
         ".json": 2,
         ".md": 1,
         ".gitignore": 1,
+        ".env": 1,
         ".npmrc": 1,
         ".tsbuildinfo": 1,
         ".ico": 1,
@@ -1547,53 +1384,233 @@
         ".html": 1
       },
       "ports": {
+        "4101": [
+          "apps/web/.env"
+        ],
+        "4102": [
+          "apps/web/.env"
+        ],
+        "4103": [
+          "apps/web/.env"
+        ],
+        "4104": [
+          "apps/web/.env"
+        ],
+        "4105": [
+          "apps/web/.env"
+        ],
+        "4106": [
+          "apps/web/.env"
+        ],
+        "4107": [
+          "apps/web/.env"
+        ],
+        "4108": [
+          "apps/web/.env"
+        ],
+        "4109": [
+          "apps/web/.env"
+        ],
+        "4110": [
+          "apps/web/.env"
+        ],
+        "4111": [
+          "apps/web/.env"
+        ],
+        "4112": [
+          "apps/web/.env"
+        ],
+        "4113": [
+          "apps/web/.env"
+        ],
+        "5432": [
+          "apps/web/.env"
+        ],
         "8000": [
-          "apps/web/src/app/(dashboard)/swarm-runtime/page.tsx",
+          "apps/web/src/app/dashboard/swarm-runtime/page.tsx",
           "apps/web/src/lib/api.ts"
         ]
       },
       "domains": {
         "api-zcfdash.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/dashboard/page.tsx"
+          "apps/web/src/app/dashboard/agents/page.tsx",
+          "apps/web/src/app/dashboard/deployments/page.tsx",
+          "apps/web/src/app/dashboard/services/page.tsx"
         ],
         "api-zdash.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/reports/page.tsx"
+          "apps/web/.env",
+          "apps/web/src/app/dashboard/reports/page.tsx"
+        ],
+        "api.zeaz.dev": [
+          "apps/web/src/app/dashboard/page.tsx",
+          "apps/web/src/app/dashboard/services/page.tsx"
         ],
         "app.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/loading.tsx",
-          "apps/web/src/app/(dashboard)/reports/page.tsx"
+          "apps/web/src/app/dashboard/reports/page.tsx"
+        ],
+        "auth.zeaz.dev": [
+          "apps/web/.env"
+        ],
+        "release.zeaz.dev": [
+          "apps/web/.env"
         ],
         "ssh.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/reports/page.tsx"
+          "apps/web/src/app/dashboard/reports/page.tsx"
         ],
         "www.zeaz.dev": [
           "apps/web/README.md",
-          "apps/web/src/app/(dashboard)/reports/page.tsx",
-          "apps/web/src/app/(marketing)/contact/page.tsx",
-          "apps/web/src/app/(marketing)/layout.tsx"
+          "apps/web/next.config.ts",
+          "apps/web/src/app/dashboard/reports/page.tsx",
+          "apps/web/src/app/marketing/contact/page.tsx",
+          "apps/web/src/app/marketing/layout.tsx"
         ],
         "zcfdash.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/dashboard/page.tsx"
+          "apps/web/next.config.ts"
         ],
         "zcino.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/reports/page.tsx"
+          "apps/web/src/app/dashboard/reports/page.tsx"
         ],
         "zdash.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/reports/page.tsx"
+          "apps/web/.env",
+          "apps/web/src/app/dashboard/reports/page.tsx"
         ],
         "zveo.zeaz.dev": [
-          "apps/web/src/app/(dashboard)/reports/page.tsx"
+          "apps/web/src/app/dashboard/reports/page.tsx"
         ]
       },
-      "env_files": [],
+      "env_files": [
+        {
+          "path": "apps/web/.env",
+          "is_example": false,
+          "key_count": 106,
+          "keys": [
+            "ALLOW_ADVANCED_WAF",
+            "ALLOW_LOAD_BALANCING",
+            "ALLOW_LOGPUSH",
+            "ALLOW_PAID_CLOUDFLARE_FEATURES",
+            "ALLOW_R2_WRITE",
+            "ALLOW_WORKERS_DEPLOY",
+            "API_PORT",
+            "AUTHENTIK_SECRET_KEY",
+            "CLOUDFLARE_ACCOUNT_ID",
+            "CLOUDFLARE_AI_GATEWAY_SLUG",
+            "CLOUDFLARE_API_TOKEN",
+            "CLOUDFLARE_BOOTSTRAP_TOKEN",
+            "CLOUDFLARE_D1_TOKEN",
+            "CLOUDFLARE_DNS_TOKEN",
+            "CLOUDFLARE_PAGES_TOKEN",
+            "CLOUDFLARE_PLAN_TIER",
+            "CLOUDFLARE_R2_TOKEN",
+            "CLOUDFLARE_TUNNEL_ID",
+            "CLOUDFLARE_TUNNEL_NAME",
+            "CLOUDFLARE_TUNNEL_TOKEN",
+            "CLOUDFLARE_WAF_TOKEN",
+            "CLOUDFLARE_WORKERS_TOKEN",
+            "CLOUDFLARE_ZONE_ID",
+            "CLOUDFLARE_ZT_TOKEN",
+            "CONFIRM_TOKEN_DELETE",
+            "COST_LOCK",
+            "DATABASE_URL",
+            "DB_NAME",
+            "DB_PASS",
+            "DB_USER",
+            "DOCKER_API_KEY",
+            "DOCKER_LOCATION",
+            "DOCKER_REGISTRY_URL",
+            "DOCKER_USERNAME",
+            "ENVIRONMENT",
+            "GH_PAT_KEY",
+            "GPG_PASSPHRASE",
+            "GRAFANA_PASSWORD",
+            "HOSTNAME",
+            "IDENTITY_PROVIDER_METADATA_URL",
+            "IDENTITY_PROVIDER_TYPE",
+            "IDENTITY_PROVIDER_VENDOR",
+            "INCLUDE_RESERVED",
+            "LINE_CHANNEL_ACCESS_TOKEN",
+            "LINE_CHANNEL_SECRET",
+            "LINE_WEBHOOK_SECRET",
+            "MINIO_ROOT_PASSWORD",
+            "MINIO_ROOT_USER",
+            "NODE_ENV",
+            "NVIDIA_NIM_API_KEY",
+            "OMKM_KEY",
+            "OPENAI_API_KEY",
+            "OPENROUTER_API_KEY",
+            "OPENROUTER_ZMANAGE_API_KEY",
+            "OPENWORK_PORT",
+            "ORIGIN_HOSTS",
+            "ORIGIN_INFRA_TYPE",
+            "PG_DB",
+            "PG_PASS",
+            "PG_USER",
+            "POSTGRES_DB",
+            "POSTGRES_HOST",
+            "POSTGRES_PASSWORD",
+            "POSTGRES_PORT",
+            "POSTGRES_USER",
+            "PRIMARY_DOMAIN",
+            "REDIS_URL",
+            "REGION",
+            "SECRET_ROTATION_INTERVAL",
+            "SNYK_TOKEN",
+            "SOPS_AGE_KEY",
+            "SOPS_AGE_KEY_FILE",
+            "STRIPE_ACCOUNT_ID",
+            "STRIPE_SECRET_KEY",
+            "SUPABASE_DOCS_CACHE_DIR",
+            "SUPABASE_MCP_BASE_URL",
+            "SUPABASE_MCP_CONFIG_OUT",
+            "SUPABASE_PROJECT_REF",
+            "TERRAFORM_BACKEND_TYPE",
+            "TERRAFORM_LOCK_TABLE",
+            "TERRAFORM_STATE_BUCKET",
+            "TF_VAR_cloudflare_tunnel_id",
+            "TF_VAR_cloudflare_zone_id",
+            "TF_VAR_zdash_api_domain",
+            "TF_VAR_zdash_domain",
+            "TF_VAR_zdash_release_domain",
+            "TOKEN_KEEP_MOST",
+            "TOKEN_NAME",
+            "TOKEN_UNUSED_DAYS",
+            "WEB_PORT",
+            "WHOOK_SIGN_SECRET",
+            "ZCINO_PORT",
+            "ZCLOUD_DB_DATABASE",
+            "ZCLOUD_DB_HOST",
+            "ZCLOUD_DB_PASSWORD",
+            "ZCLOUD_DB_USER",
+            "ZDASH_PORT",
+            "ZEAZDEV_ROOT_API_KEY",
+            "ZLINEBOT_PORT",
+            "ZLMS_PROD_PORT",
+            "ZOFFICE_PORT",
+            "ZSP_AITOOL_PORT",
+            "ZSTICKER_PORT",
+            "ZTRADER_PORT",
+            "ZVEO_PORT",
+            "ZWALLET_PORT"
+          ]
+        }
+      ],
       "secret_hits": [],
       "todo_hits": [],
       "large_files": [],
       "findings": [
         {
+          "severity": "warn",
+          "code": "local_env_file",
+          "message": "Local env file exists: apps/web/.env"
+        },
+        {
           "severity": "info",
           "code": "expected_port_not_detected",
           "message": "Expected port 3003 from apps-port-plan not detected in source text"
+        },
+        {
+          "severity": "info",
+          "code": "expected_hostname_not_detected",
+          "message": "Expected hostname zeaz.dev from apps-port-plan not detected in source text"
         }
       ]
     },
@@ -1607,7 +1624,9 @@
       "package": {
         "name": null,
         "version": null,
-        "scripts": [],
+        "scripts": [
+          "build"
+        ],
         "dependencies_count": 1,
         "dev_dependencies_count": 0
       },
@@ -1616,7 +1635,7 @@
       "git_status": [],
       "file_count": 133,
       "source_count": 65,
-      "total_bytes": 519237,
+      "total_bytes": 519320,
       "extensions": {
         ".go": 61,
         ".md": 29,
@@ -1741,12 +1760,16 @@
       "app_id": "zLinebot",
       "path": "apps/zLinebot",
       "stack": [
-        "node"
+        "docker",
+        "node",
+        "python",
+        "terraform"
       ],
       "package": {
         "name": "@zeaz/zlinebot",
         "version": "0.1.0",
         "scripts": [
+          "build",
           "dev",
           "health",
           "start"
@@ -1755,32 +1778,297 @@
         "dev_dependencies_count": 0
       },
       "nested_git": false,
-      "root_tracked_files": 13,
-      "git_status": [],
-      "file_count": 18,
-      "source_count": 17,
-      "total_bytes": 236420,
+      "root_tracked_files": 961,
+      "git_status": [
+        "M  apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh",
+        "M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py"
+      ],
+      "file_count": 977,
+      "source_count": 937,
+      "total_bytes": 1764898,
       "extensions": {
-        ".md": 7,
-        ".js": 4,
-        ".json": 3,
-        ".example": 1,
+        ".ts": 256,
+        ".py": 245,
+        ".sh": 93,
+        ".js": 68,
+        "Dockerfile": 58,
+        ".md": 53,
+        ".txt": 39,
+        ".yaml": 39,
+        ".json": 28,
+        ".sql": 21,
+        ".yml": 20,
+        ".jsx": 11,
+        ".tf": 7,
+        ".tsx": 6,
+        ".ql": 4,
+        ".example": 3,
+        ".toml": 3,
+        ".html": 2,
+        ".css": 2,
+        ".conf": 2,
+        ".java": 2,
+        ".shellcheckrc": 1,
+        "CNAME": 1,
+        ".gitignore": 1,
+        ".bak": 1,
         ".env": 1,
+        ".svg": 1,
         ".log": 1,
-        ".yml": 1
+        "LICENSE": 1,
+        ".cjs": 1
       },
       "ports": {
-        "3000": [
-          "apps/zLinebot/.env"
-        ],
-        "4113": [
+        "587": [
           "apps/zLinebot/.env.example"
+        ],
+        "3000": [
+          "apps/zLinebot/.env",
+          "apps/zLinebot/.env.example",
+          "apps/zLinebot/CONTRIBUTING.md",
+          "apps/zLinebot/app/src/dr/health.ts",
+          "apps/zLinebot/app/src/utils/env.ts",
+          "apps/zLinebot/apps/api/src/server.ts",
+          "apps/zLinebot/docs/CONTRIBUTING_th.md",
+          "apps/zLinebot/docs/INSTALL_FULL.md",
+          "apps/zLinebot/docs/MANUAL.md",
+          "apps/zLinebot/docs/README_th.md",
+          "apps/zLinebot/docs/install_manual_en.md",
+          "apps/zLinebot/docs/install_manual_th.md",
+          "apps/zLinebot/docs/readme_en.md",
+          "apps/zLinebot/docs/readme_th.md",
+          "apps/zLinebot/fly.toml",
+          "apps/zLinebot/k8s/api-deployment.yaml",
+          "apps/zLinebot/k8s/core.yaml",
+          "apps/zLinebot/k8s/deploy.yaml",
+          "apps/zLinebot/k8s/deployment.yaml",
+          "apps/zLinebot/k8s/grafana.yaml",
+          "apps/zLinebot/k8s/observability.yaml",
+          "apps/zLinebot/k8s/service.yaml",
+          "apps/zLinebot/k8s/zlinebot-config.yaml",
+          "apps/zLinebot/scripts/generate-secrets.sh",
+          "apps/zLinebot/zlinebot-master.sh"
+        ],
+        "3001": [
+          "apps/zLinebot/deploy.sh",
+          "apps/zLinebot/nginx/default.conf"
+        ],
+        "3002": [
+          "apps/zLinebot/deploy.sh"
+        ],
+        "3100": [
+          "apps/zLinebot/k8s/observability.yaml"
+        ],
+        "5173": [
+          "apps/zLinebot/app/src/services/stripe.ts",
+          "apps/zLinebot/docs/INSTALL_FULL.md"
+        ],
+        "5432": [
+          "apps/zLinebot/k8s/postgres.yaml",
+          "apps/zLinebot/scripts/legacy_zltt/install-zlttbots-platform.sh",
+          "apps/zLinebot/zlinebot-master.sh"
+        ],
+        "6333": [
+          "apps/zLinebot/app/src/services/vector.search.ts",
+          "apps/zLinebot/app/src/services/vector.ts"
+        ],
+        "6379": [
+          "apps/zLinebot/app/src/queue/producer.ts",
+          "apps/zLinebot/app/src/utils/env.ts",
+          "apps/zLinebot/k8s/redis.yaml",
+          "apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh",
+          "apps/zLinebot/scripts/legacy_zltt/install-zlttbots-platform.sh",
+          "apps/zLinebot/services/ai-orchestrator/src/main.py",
+          "apps/zLinebot/services/gpu-renderer/src/api/server.py",
+          "apps/zLinebot/services/gpu-renderer/src/core/queue.py",
+          "apps/zLinebot/services/market-crawler/src/api/server.py",
+          "apps/zLinebot/services/market-crawler/src/core/queue.py",
+          "apps/zLinebot/zlinebot-master.sh"
+        ],
+        "8000": [
+          "apps/zLinebot/cloud/worker/consumer.py",
+          "apps/zLinebot/services/billing-service/src/main.py",
+          "apps/zLinebot/services/budget-allocator/src/main.py",
+          "apps/zLinebot/services/capital-allocator/src/main.py",
+          "apps/zLinebot/services/feature-store/src/main.py",
+          "apps/zLinebot/services/federation/src/main.py",
+          "apps/zLinebot/services/landing-service/src/main.py",
+          "apps/zLinebot/services/market-orchestrator/src/main.py",
+          "apps/zLinebot/services/model-registry/src/main.py",
+          "apps/zLinebot/services/model-service/src/main.py",
+          "apps/zLinebot/services/payment/main.py",
+          "apps/zLinebot/services/product-generator/src/main.py",
+          "apps/zLinebot/services/reward-collector/src/main.py",
+          "apps/zLinebot/services/rl-coordinator/src/main.py",
+          "apps/zLinebot/services/rl-engine/src/main.py",
+          "apps/zLinebot/services/rl-policy/src/main.py"
+        ],
+        "8080": [
+          "apps/zLinebot/k8s/cockroach.yaml",
+          "apps/zLinebot/k8s/deploy.yaml",
+          "apps/zLinebot/tests/test_network_egress_client.py"
+        ],
+        "9090": [
+          "apps/zLinebot/k8s/prometheus.yaml"
+        ],
+        "9092": [
+          "apps/zLinebot/docker-compose.yml",
+          "apps/zLinebot/k8s/redpanda.yaml"
+        ],
+        "9100": [
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh",
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh"
+        ],
+        "9300": [
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh",
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh",
+          "apps/zLinebot/services/gpu-renderer/src/main.py"
+        ],
+        "9400": [
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh",
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh",
+          "apps/zLinebot/services/market-crawler/src/main.py"
+        ],
+        "9500": [
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots-platform.sh",
+          "apps/zLinebot/scripts/legacy_zltt/start-zlttbots.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-restart-service.sh"
+        ],
+        "9600": [
+          "apps/zLinebot/services/execution-engine/src/main.py"
+        ],
+        "9700": [
+          "apps/zLinebot/services/affiliate-webhook/src/main.py"
+        ],
+        "26257": [
+          "apps/zLinebot/k8s/cockroach.yaml"
         ]
       },
       "domains": {
+        "admin.zeaz.dev": [
+          "apps/zLinebot/services/admin-panel/app/page.js",
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "admin.zlttbots.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh",
+          "apps/zLinebot/scripts/legacy_zltt/repair-platform.sh"
+        ],
+        "ai.zeaz.dev": [
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "api.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh",
+          "apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh",
+          "apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-monitor.sh",
+          "apps/zLinebot/services/admin-panel/app/page.js",
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "api.zlttbots.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh",
+          "apps/zLinebot/scripts/legacy_zltt/repair-platform.sh"
+        ],
+        "arb.zlttbots.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh"
+        ],
+        "asia.zeaz.dev": [
+          "apps/zLinebot/services/edge-worker/index.js"
+        ],
+        "auth.zeaz.dev": [
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "backup.zlinebot.zeaz.dev": [
+          "apps/zLinebot/infra/cloudflare.yaml"
+        ],
+        "crawl.zeaz.dev": [
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "crawler.zlttbots.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh"
+        ],
+        "eu.zeaz.dev": [
+          "apps/zLinebot/services/edge-worker/index.js"
+        ],
+        "gpu.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh",
+          "apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh",
+          "apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh"
+        ],
+        "grafana.zeaz.dev": [
+          "apps/zLinebot/services/admin-panel/app/page.js",
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "grafana.zlinebot.zeaz.dev": [
+          "apps/zLinebot/k8s/grafana-ingress.yaml"
+        ],
+        "jaeger.zlinebot.zeaz.dev": [
+          "apps/zLinebot/k8s/observability-ingress.yaml"
+        ],
+        "kafka.zeaz.dev": [
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "logs.zlinebot.zeaz.dev": [
+          "apps/zLinebot/k8s/observability-ingress.yaml"
+        ],
+        "predict.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh",
+          "apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh",
+          "apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh",
+          "apps/zLinebot/scripts/legacy_zltt/zlttbots-doctor.sh",
+          "apps/zLinebot/services/admin-panel/app/page.js",
+          "apps/zLinebot/tests/test_safe_edge_pack.py"
+        ],
+        "us.zeaz.dev": [
+          "apps/zLinebot/services/edge-worker/index.js"
+        ],
+        "video.zlttbots.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/generate-cloudflare-devops-toolkit.sh"
+        ],
+        "worker.zeaz.dev": [
+          "apps/zLinebot/app/src/ai/edge.ts"
+        ],
         "zlinebot.zeaz.dev": [
           "apps/zLinebot/.env",
-          "apps/zLinebot/cloudflared/config.yml"
+          "apps/zLinebot/.env.example",
+          "apps/zLinebot/README.md",
+          "apps/zLinebot/app/src/security/secret-validator.ts",
+          "apps/zLinebot/bootstrap.sh",
+          "apps/zLinebot/cloudflared/config.yml",
+          "apps/zLinebot/docker/nginx/default.conf",
+          "apps/zLinebot/infra/cloudflare.yaml",
+          "apps/zLinebot/infra/cloudflare_dns.yaml",
+          "apps/zLinebot/infra/cloudflare_lb.yaml",
+          "apps/zLinebot/k8s/ingress.yaml",
+          "apps/zLinebot/k8s/zlinebot-config.yaml",
+          "apps/zLinebot/nginx/default.conf",
+          "apps/zLinebot/packages/config/generate-env.ts",
+          "apps/zLinebot/scripts/configure_cloudflare_zero_trust_full.sh",
+          "apps/zLinebot/scripts/deploy-k8s.sh",
+          "apps/zLinebot/scripts/deploy.sh",
+          "apps/zLinebot/scripts/generate-secrets.sh",
+          "apps/zLinebot/watchdog.sh",
+          "apps/zLinebot/zlinebot-master-orchestrator.sh",
+          "apps/zLinebot/zlinebot-master-selfheal.sh",
+          "apps/zLinebot/zlinebot-master.sh"
+        ],
+        "zlttbots.zeaz.dev": [
+          "apps/zLinebot/scripts/legacy_zltt/deploy-zlttbots-production.sh",
+          "apps/zLinebot/scripts/legacy_zltt/install-zeaz-edge-stack.sh",
+          "apps/zLinebot/scripts/legacy_zltt/migrate-edge-domain.sh",
+          "apps/zLinebot/scripts/legacy_zltt/repair-platform.sh"
         ]
       },
       "env_files": [
@@ -1791,9 +2079,9 @@
           "keys": [
             "APP_URL",
             "AUTOMATION_WORKER_MODE",
-            "CF_API_TOKEN",
-            "CF_ZONE_ID",
+            "CLOUDFLARE_API_TOKEN",
             "CLOUDFLARE_TUNNEL_TOKEN",
+            "CLOUDFLARE_ZONE_ID",
             "CORS_ORIGIN",
             "DATABASE_URL",
             "DOMAIN",
@@ -1832,28 +2120,116 @@
         {
           "path": "apps/zLinebot/.env.example",
           "is_example": true,
-          "key_count": 9,
+          "key_count": 46,
           "keys": [
-            "APP_BASE_URL",
-            "APP_DOMAIN",
-            "APP_NAME",
+            "AI_MODE",
+            "APP_URL",
+            "AUTOMATION_WORKER_MODE",
+            "BACKEND_WEBHOOK_URL",
+            "CLOUDFLARE_ACCOUNT_ID",
+            "CLOUDFLARE_API_TOKEN",
+            "CLOUDFLARE_BASE_DOMAIN",
+            "CLOUDFLARE_TUNNEL_ID",
+            "CLOUDFLARE_TUNNEL_TOKEN",
+            "CLOUDFLARE_ZONE_ID",
+            "CORS_ORIGIN",
             "DATABASE_URL",
+            "ENCRYPTION_KEY",
+            "FEATURE_SYNC_ENABLED",
+            "GPU_BURST",
+            "JWT_SECRET",
             "LINE_CHANNEL_ACCESS_TOKEN",
             "LINE_CHANNEL_SECRET",
-            "LINE_WEBHOOK_SECRET",
+            "LINE_DEFAULT_TENANT_ID",
+            "MAX_BUDGET",
             "NODE_ENV",
-            "PORT"
+            "OLLAMA_URL",
+            "OPENAI_API_KEY",
+            "OPENAI_MODEL",
+            "PORT",
+            "PROMPTPAY_ID",
+            "QDRANT_URL",
+            "QUEUE_CONCURRENCY",
+            "RATE_LIMIT",
+            "REDIS_URL",
+            "SESSION_SECRET",
+            "SMTP_HOST",
+            "SMTP_PASS",
+            "SMTP_PORT",
+            "SMTP_USER",
+            "STRIPE_SECRET_KEY",
+            "STRIPE_WEBHOOK_SECRET",
+            "TENANT_API_KEY",
+            "TIKTOK_CLIENT_KEY",
+            "TIKTOK_CLIENT_SECRET",
+            "TIKTOK_REDIRECT_URI",
+            "TIKTOK_SCOPE",
+            "TIKTOK_SHOP_ACCESS_TOKEN",
+            "TIKTOK_SHOP_API_BASE_URL",
+            "TIKTOK_WEBHOOK_SECRET",
+            "VECTOR_MODE"
           ]
         }
       ],
       "secret_hits": [],
-      "todo_hits": [],
+      "todo_hits": [
+        {
+          "path": "apps/zLinebot/CONTRIBUTING.md",
+          "line": "16",
+          "preview": "- Bug fixes"
+        },
+        {
+          "path": "apps/zLinebot/.github/DISCUSSION_GUIDELINES.md",
+          "line": "21",
+          "preview": "| Bug Reports | Q&A | Runtime/configuration defects and behavior validation before opening an Issue. | For confirmed code bugs, open an Issue and link it in the discussion. |"
+        },
+        {
+          "path": "apps/zLinebot/scripts/configure_discussions.sh",
+          "line": "61",
+          "preview": "4. 🐛 Bug Reports             → Answerable"
+        }
+      ],
       "large_files": [],
       "findings": [
         {
           "severity": "warn",
           "code": "local_env_file",
           "message": "Local env file exists: apps/zLinebot/.env"
+        }
+      ]
+    },
+    {
+      "app_id": "zai-factory",
+      "path": "apps/zai-factory",
+      "stack": [
+        "npm"
+      ],
+      "package": null,
+      "nested_git": false,
+      "root_tracked_files": 0,
+      "git_status": [],
+      "file_count": 1,
+      "source_count": 1,
+      "total_bytes": 112753,
+      "extensions": {
+        ".json": 1
+      },
+      "ports": {},
+      "domains": {},
+      "env_files": [],
+      "secret_hits": [],
+      "todo_hits": [],
+      "large_files": [],
+      "findings": [
+        {
+          "severity": "info",
+          "code": "expected_port_not_detected",
+          "message": "Expected port 8710 from apps-port-plan not detected in source text"
+        },
+        {
+          "severity": "info",
+          "code": "expected_hostname_not_detected",
+          "message": "Expected hostname factory.zeaz.dev from apps-port-plan not detected in source text"
         }
       ]
     },
@@ -1937,24 +2313,24 @@
       ],
       "package": null,
       "nested_git": false,
-      "root_tracked_files": 3142,
+      "root_tracked_files": 3145,
       "git_status": [],
-      "file_count": 3147,
-      "source_count": 361,
-      "total_bytes": 59925692,
+      "file_count": 3150,
+      "source_count": 364,
+      "total_bytes": 82585965,
       "extensions": {
         ".png": 1921,
         ".php": 264,
         ".tsx": 161,
         ".gif": 147,
-        ".go": 117,
+        ".go": 116,
         ".xml": 100,
         ".js": 77,
         ".jpg": 59,
         ".htm": 57,
         ".map": 40,
         ".css": 31,
-        ".md": 19,
+        ".md": 22,
         ".ts": 18,
         ".html": 16,
         ".psd": 11,
@@ -1976,33 +2352,28 @@
       },
       "ports": {
         "3000": [
-          "apps/zcino/frontend/Dockerfile"
-        ],
-        "3020": [
+          "apps/zcino/README.md",
+          "apps/zcino/frontend/Dockerfile",
           "apps/zcino/frontend/start_next.sh"
         ],
         "4222": [
           "apps/zcino/docs/source-checklist.md",
+          "apps/zcino/infra/docker-compose.yml",
           "apps/zcino/infra/nats.conf",
           "apps/zcino/k8s/baseline/network-policies.yaml"
         ],
-        "4225": [
-          "apps/zcino/infra/docker-compose.yml"
-        ],
         "5432": [
+          "apps/zcino/README.md",
           "apps/zcino/docs/source-checklist.md",
+          "apps/zcino/infra/docker-compose.yml",
           "apps/zcino/k8s/baseline/network-policies.yaml"
-        ],
-        "5437": [
-          "apps/zcino/infra/docker-compose.yml"
         ],
         "6379": [
+          "apps/zcino/README.md",
           "apps/zcino/docs/operations.md",
           "apps/zcino/docs/source-checklist.md",
+          "apps/zcino/infra/docker-compose.yml",
           "apps/zcino/k8s/baseline/network-policies.yaml"
-        ],
-        "6383": [
-          "apps/zcino/infra/docker-compose.yml"
         ],
         "6443": [
           "apps/zcino/release/zeaz_release_v2.sh"
@@ -2011,22 +2382,18 @@
           "apps/zcino/Makefile"
         ],
         "8080": [
+          "apps/zcino/README.md",
           "apps/zcino/docs/api.md",
           "apps/zcino/docs/operations.md",
           "apps/zcino/infra/docker-compose.yml",
           "apps/zcino/k8s/game-service.yaml"
         ],
         "8082": [
-          "apps/zcino/infra/docker-compose.yml"
-        ],
-        "8086": [
-          "apps/zcino/frontend/start_next.sh",
-          "apps/zcino/infra/docker-compose.yml"
-        ],
-        "8087": [
+          "apps/zcino/README.md",
           "apps/zcino/infra/docker-compose.yml"
         ],
         "8090": [
+          "apps/zcino/README.md",
           "apps/zcino/docker-compose.yml",
           "apps/zcino/docs/source-checklist.md",
           "apps/zcino/k8s/zeaz-testnet/zeaz-node.yaml"
@@ -2035,23 +2402,17 @@
           "apps/zcino/infra/docker-compose.yml",
           "apps/zcino/k8s/baseline/network-policies.yaml"
         ],
-        "8125": [
-          "apps/zcino/infra/docker-compose.yml"
-        ],
         "8222": [
           "apps/zcino/infra/docker-compose.yml",
           "apps/zcino/infra/nats.conf"
         ],
-        "8225": [
-          "apps/zcino/infra/docker-compose.yml"
-        ],
-        "9007": [
+        "9000": [
           "apps/zcino/infra/docker-compose.yml"
         ]
       },
       "domains": {
         "zcino.zeaz.dev": [
-          "apps/zcino/README.md",
+          "apps/zcino/INACTIVE_AFTER_MERGE.md",
           "apps/zcino/docker-compose.yml"
         ]
       },
@@ -2286,6 +2647,10 @@
       ],
       "large_files": [
         {
+          "path": "apps/zcino/game-catalog-service",
+          "bytes": 22640674
+        },
+        {
           "path": "apps/zcino/legacy/php/template_files11/Banner-Header.psd",
           "bytes": 13148120
         },
@@ -2319,132 +2684,6 @@
       ]
     },
     {
-      "app_id": "zcino-modern",
-      "path": "apps/zcino-modern",
-      "stack": [
-        "docker"
-      ],
-      "package": null,
-      "nested_git": false,
-      "root_tracked_files": 208,
-      "git_status": [],
-      "file_count": 208,
-      "source_count": 93,
-      "total_bytes": 535511,
-      "extensions": {
-        ".go": 95,
-        ".tsx": 31,
-        ".md": 20,
-        ".ts": 18,
-        ".yaml": 9,
-        ".json": 6,
-        ".sql": 5,
-        ".yml": 3,
-        ".dockerignore": 2,
-        ".gitkeep": 2,
-        "Dockerfile": 2,
-        ".gitignore": 2,
-        ".sh": 2,
-        ".mjs": 2,
-        ".proto": 2,
-        ".sum": 1,
-        ".zeaznode": 1,
-        ".mod": 1,
-        ".conf": 1,
-        ".rego": 1,
-        ".headers": 1,
-        ".css": 1
-      },
-      "ports": {
-        "3000": [
-          "apps/zcino-modern/README.md",
-          "apps/zcino-modern/frontend/Dockerfile",
-          "apps/zcino-modern/frontend/start_next.sh"
-        ],
-        "4222": [
-          "apps/zcino-modern/docs/source-checklist.md",
-          "apps/zcino-modern/infra/docker-compose.yml",
-          "apps/zcino-modern/infra/nats.conf",
-          "apps/zcino-modern/k8s/baseline/network-policies.yaml"
-        ],
-        "5432": [
-          "apps/zcino-modern/README.md",
-          "apps/zcino-modern/docs/source-checklist.md",
-          "apps/zcino-modern/infra/docker-compose.yml",
-          "apps/zcino-modern/k8s/baseline/network-policies.yaml"
-        ],
-        "6379": [
-          "apps/zcino-modern/README.md",
-          "apps/zcino-modern/docs/operations.md",
-          "apps/zcino-modern/docs/source-checklist.md",
-          "apps/zcino-modern/infra/docker-compose.yml",
-          "apps/zcino-modern/k8s/baseline/network-policies.yaml"
-        ],
-        "6443": [
-          "apps/zcino-modern/release/zeaz_release_v2.sh"
-        ],
-        "8080": [
-          "apps/zcino-modern/README.md",
-          "apps/zcino-modern/docs/api.md",
-          "apps/zcino-modern/docs/operations.md",
-          "apps/zcino-modern/infra/docker-compose.yml",
-          "apps/zcino-modern/k8s/game-service.yaml"
-        ],
-        "8082": [
-          "apps/zcino-modern/README.md",
-          "apps/zcino-modern/infra/docker-compose.yml"
-        ],
-        "8090": [
-          "apps/zcino-modern/README.md",
-          "apps/zcino-modern/docs/source-checklist.md",
-          "apps/zcino-modern/k8s/zeaz-testnet/zeaz-node.yaml"
-        ],
-        "8123": [
-          "apps/zcino-modern/infra/docker-compose.yml",
-          "apps/zcino-modern/k8s/baseline/network-policies.yaml"
-        ],
-        "8222": [
-          "apps/zcino-modern/infra/docker-compose.yml",
-          "apps/zcino-modern/infra/nats.conf"
-        ],
-        "9000": [
-          "apps/zcino-modern/infra/docker-compose.yml"
-        ]
-      },
-      "domains": {
-        "zcino.zeaz.dev": [
-          "apps/zcino-modern/INACTIVE_AFTER_MERGE.md"
-        ]
-      },
-      "env_files": [],
-      "secret_hits": [],
-      "todo_hits": [
-        {
-          "path": "apps/zcino-modern/docs/zeaz-protocol.md",
-          "line": "11",
-          "preview": "- Major versions may break wire compatibility; minor versions may add optional fields; patch versions are bug-fix compatible."
-        },
-        {
-          "path": "apps/zcino-modern/docs/protocol/v1.0.0/spec.md",
-          "line": "41",
-          "preview": "- Patch versions contain clarifications or bug fixes. During negotiation, a node MAY downgrade a requested patch to its current patch."
-        }
-      ],
-      "large_files": [],
-      "findings": [
-        {
-          "severity": "info",
-          "code": "expected_port_not_detected",
-          "message": "Expected port 3015 from apps-port-plan not detected in source text"
-        },
-        {
-          "severity": "info",
-          "code": "expected_hostname_not_detected",
-          "message": "Expected hostname zcino-modern.zeaz.dev from apps-port-plan not detected in source text"
-        }
-      ]
-    },
-    {
       "app_id": "zcloud",
       "path": "apps/zcloud",
       "stack": [
@@ -2463,14 +2702,14 @@
           "validate"
         ],
         "dependencies_count": 4,
-        "dev_dependencies_count": 7
+        "dev_dependencies_count": 8
       },
       "nested_git": false,
       "root_tracked_files": 28,
       "git_status": [],
       "file_count": 28,
       "source_count": 25,
-      "total_bytes": 916940,
+      "total_bytes": 936610,
       "extensions": {
         ".ts": 11,
         ".md": 3,
@@ -2524,15 +2763,15 @@
       ],
       "package": null,
       "nested_git": false,
-      "root_tracked_files": 1123,
+      "root_tracked_files": 1128,
       "git_status": [],
-      "file_count": 1109,
-      "source_count": 1020,
-      "total_bytes": 25642763,
+      "file_count": 1116,
+      "source_count": 1025,
+      "total_bytes": 26476252,
       "extensions": {
-        ".py": 488,
-        ".tsx": 212,
-        ".md": 106,
+        ".py": 489,
+        ".tsx": 216,
+        ".md": 107,
         ".sh": 66,
         ".prompt": 60,
         ".ts": 54,
@@ -2543,16 +2782,16 @@
         ".yaml": 10,
         ".png": 9,
         ".toml": 5,
+        ".db": 4,
         ".conf": 3,
         ".dockerfile": 3,
         ".ps1": 3,
-        ".example": 2,
         "Dockerfile": 2,
-        ".db": 2,
         ".gitkeep": 2,
         ".js": 2,
         ".css": 2,
         ".production": 1,
+        ".example": 1,
         ".dockerignore": 1,
         "VERSION": 1,
         ".gitignore": 1,
@@ -2587,6 +2826,7 @@
           "apps/zdash/docs/runbooks/ROLLBACK_RUNBOOK.md",
           "apps/zdash/docs/runbooks/START_SERVER.md",
           "apps/zdash/docs/runbooks/rollback-runbook.md",
+          "apps/zdash/frontend/vite.config.ts",
           "apps/zdash/scripts/feature-local-env.sh",
           "apps/zdash/scripts/prod/capture-go-live-evidence.sh",
           "apps/zdash/tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md"
@@ -2643,7 +2883,6 @@
           "apps/zdash/docs/runbooks/final-release-runbook.md",
           "apps/zdash/docs/runbooks/incident-response-runbook.md",
           "apps/zdash/docs/runbooks/rollback-runbook.md",
-          "apps/zdash/frontend/.env.example",
           "apps/zdash/frontend/src/api/client.ts",
           "apps/zdash/frontend/src/hooks/useCollaboration.ts",
           "apps/zdash/frontend/src/hooks/useRealtimeEvents.ts",
@@ -2718,6 +2957,7 @@
           "apps/zdash/frontend/src/tests/mocks/apiMockData.ts",
           "apps/zdash/frontend/src/tests/setup.ts",
           "apps/zdash/frontend/src/tests/useCollaboration.test.ts",
+          "apps/zdash/frontend/vite.config.ts",
           "apps/zdash/infra/cloudflare/tunnel-config.example.yml",
           "apps/zdash/infra/k8s/configmap.yaml",
           "apps/zdash/infra/k8s/nginx-ingress.yaml",
@@ -2730,7 +2970,7 @@
         {
           "path": "apps/zdash/.env",
           "is_example": false,
-          "key_count": 258,
+          "key_count": 259,
           "keys": [
             "AIOPS_ENABLED",
             "AI_PROVIDER",
@@ -2835,6 +3075,7 @@
             "ENTERPRISE_LICENSE_ENABLED",
             "ENTERPRISE_OFFLINE_LICENSE_ENABLED",
             "FRIDAY_AGENT_ENABLED",
+            "FRONTEND_HOST",
             "FRONTEND_ORIGIN",
             "FUNNEL_FAST_PERIOD",
             "FUNNEL_MEDIUM_PERIOD",
@@ -3281,24 +3522,6 @@
             "PRODUCTION_ALLOW_LIVE_ACTIONS",
             "PRODUCTION_SAFETY_LOCK"
           ]
-        },
-        {
-          "path": "apps/zdash/frontend/.env.example",
-          "is_example": true,
-          "key_count": 11,
-          "keys": [
-            "VITE_API_BASE_URL",
-            "VITE_APP_ENV",
-            "VITE_APP_VERSION",
-            "VITE_AUTH_ENABLED",
-            "VITE_BUILD_SHA",
-            "VITE_BUILD_TIME",
-            "VITE_ENABLE_MOCK_FALLBACK",
-            "VITE_POLL_INTERVAL_MS",
-            "VITE_REALTIME_ENABLED",
-            "VITE_SHOW_SAFETY_BANNERS",
-            "VITE_WS_BASE_URL"
-          ]
         }
       ],
       "secret_hits": [],
@@ -3362,6 +3585,26 @@
           "path": "apps/zdash/config/ecc/codex/agents/reviewer.toml",
           "line": "8",
           "preview": "Lead with concrete findings and avoid style-only feedback unless it hides a real bug."
+        },
+        {
+          "path": "apps/zdash/docs/zai-e2e.md",
+          "line": "218",
+          "preview": "| **Regression Test Agent**    | bug prevention, release checks         | regression suite          |"
+        },
+        {
+          "path": "apps/zdash/docs/zai-e2e.md",
+          "line": "224",
+          "preview": "| **Bug Triage Agent**         | severity, reproduction, prioritization | bug list                  |"
+        },
+        {
+          "path": "apps/zdash/docs/zai-e2e.md",
+          "line": "276",
+          "preview": "| **Post-Release Agent**      | verification, monitoring, bug capture | post-release report |"
+        },
+        {
+          "path": "apps/zdash/docs/zai-e2e.md",
+          "line": "770",
+          "preview": "Bug Triage Agent"
         },
         {
           "path": "apps/zdash/docs/releases/final-release-notes-template.md",
@@ -3460,6 +3703,7 @@
         "name": "@zeaz/zdev",
         "version": "1.0.0",
         "scripts": [
+          "build",
           "start",
           "validate"
         ],
@@ -3471,7 +3715,7 @@
       "git_status": [],
       "file_count": 7,
       "source_count": 6,
-      "total_bytes": 23521,
+      "total_bytes": 23544,
       "extensions": {
         ".md": 2,
         ".html": 1,
@@ -3505,6 +3749,7 @@
         "version": "0.1.0",
         "scripts": [
           "audit:frontend-runtime",
+          "build",
           "codemod:frontend-runtime",
           "migration:phase-abcd",
           "typecheck:frontend-runtime"
@@ -3517,7 +3762,7 @@
       "git_status": [],
       "file_count": 28475,
       "source_count": 11599,
-      "total_bytes": 1790607232,
+      "total_bytes": 1790607254,
       "extensions": {
         ".png": 8179,
         ".js": 8019,
@@ -4617,6 +4862,36 @@
       ]
     },
     {
+      "app_id": "zquest",
+      "path": "apps/zquest",
+      "stack": [
+        "unknown"
+      ],
+      "package": null,
+      "nested_git": false,
+      "root_tracked_files": 5,
+      "git_status": [],
+      "file_count": 5,
+      "source_count": 5,
+      "total_bytes": 87234,
+      "extensions": {
+        ".md": 3,
+        ".html": 1,
+        "Makefile": 1
+      },
+      "ports": {
+        "8080": [
+          "apps/zquest/README.md"
+        ]
+      },
+      "domains": {},
+      "env_files": [],
+      "secret_hits": [],
+      "todo_hits": [],
+      "large_files": [],
+      "findings": []
+    },
+    {
       "app_id": "zsp-aitool",
       "path": "apps/zsp-aitool",
       "stack": [
@@ -4692,12 +4967,19 @@
         "dependencies_count": 6,
         "dev_dependencies_count": 17
       },
-      "nested_git": true,
+      "nested_git": false,
       "root_tracked_files": 766,
-      "git_status": [],
+      "git_status": [
+        "M  apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md",
+        "M  apps/zsp-aitool/next-env.d.ts",
+        "M  apps/zsp-aitool/prisma/seed.ts",
+        "M  apps/zsp-aitool/scripts/plugins/plugin-validate.sh",
+        "M  apps/zsp-aitool/tests/api/auth-routes.test.ts",
+        "M  apps/zsp-aitool/tsconfig.json"
+      ],
       "file_count": 813,
       "source_count": 757,
-      "total_bytes": 3628311,
+      "total_bytes": 3628477,
       "extensions": {
         ".ts": 410,
         ".md": 128,
@@ -4826,8 +5108,10 @@
           "apps/zsp-aitool/configs/plugins/repositories.yaml",
           "apps/zsp-aitool/configs/plugins/repositories.yaml.example",
           "apps/zsp-aitool/docs/reports/generated/phase53-plugin-integration-evidence.md",
+          "apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md",
           "apps/zsp-aitool/generated/cloudflare/plugins-dns-intent.yaml",
-          "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml"
+          "apps/zsp-aitool/generated/cloudflare/plugins-ingress.yml",
+          "apps/zsp-aitool/scripts/plugins/plugin-validate.sh"
         ],
         "api-zveo.zeaz.dev": [
           "apps/zsp-aitool/docker-compose.yml"
@@ -4881,10 +5165,6 @@
         "zaiz.zeaz.dev": [
           "apps/zsp-aitool/README.md",
           "apps/zsp-aitool/docker-compose.yml"
-        ],
-        "zdash-api.zeaz.dev": [
-          "apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md",
-          "apps/zsp-aitool/scripts/plugins/plugin-validate.sh"
         ],
         "zdash.zeaz.dev": [
           "apps/zsp-aitool/configs/plugins/repositories.example.yaml",
@@ -5049,18 +5329,7 @@
           ]
         }
       ],
-      "secret_hits": [
-        {
-          "path": "apps/zsp-aitool/prisma/seed.ts",
-          "line": "12",
-          "preview": "      password=<redacted>"
-        },
-        {
-          "path": "apps/zsp-aitool/tests/api/auth-routes.test.ts",
-          "line": "23",
-          "preview": "    const res = await loginPost(new Request(\"http://x\", { method: \"POST\", body: JSON.stringify({ email: \"a@b.com\", password=<redacted> }) }));"
-        }
-      ],
+      "secret_hits": [],
       "todo_hits": [
         {
           "path": "apps/zsp-aitool/.github/ISSUE_TEMPLATE/bug_report.yml",
@@ -5106,11 +5375,6 @@
       "large_files": [],
       "findings": [
         {
-          "severity": "critical",
-          "code": "nested_git",
-          "message": "Nested .git directory exists under app path"
-        },
-        {
           "severity": "warn",
           "code": "local_tooling_or_vendor_dir",
           "message": ".agent exists; excluded from review and should not be committed"
@@ -5136,16 +5400,6 @@
           "message": "Local env file exists: apps/zsp-aitool/.env"
         },
         {
-          "severity": "critical",
-          "code": "stale_zdash_domain",
-          "message": "zdash-api.zeaz.dev found in apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md; use api-zdash.zeaz.dev"
-        },
-        {
-          "severity": "critical",
-          "code": "stale_zdash_domain",
-          "message": "zdash-api.zeaz.dev found in apps/zsp-aitool/scripts/plugins/plugin-validate.sh; use api-zdash.zeaz.dev"
-        },
-        {
           "severity": "info",
           "code": "expected_port_not_detected",
           "message": "Expected port 3008 from apps-port-plan not detected in source text"
@@ -5154,11 +5408,6 @@
           "severity": "info",
           "code": "expected_hostname_not_detected",
           "message": "Expected hostname ztest.zeaz.dev from apps-port-plan not detected in source text"
-        },
-        {
-          "severity": "critical",
-          "code": "secret_like_hits",
-          "message": "2 secret-like hit(s) found; review redacted report before commit"
         }
       ]
     },
@@ -5338,7 +5587,7 @@
       "git_status": [],
       "file_count": 376,
       "source_count": 362,
-      "total_bytes": 2134429,
+      "total_bytes": 2141557,
       "extensions": {
         ".py": 197,
         ".sh": 30,
@@ -5672,12 +5921,12 @@
         "dependencies_count": 0,
         "dev_dependencies_count": 3
       },
-      "nested_git": true,
+      "nested_git": false,
       "root_tracked_files": 241,
       "git_status": [],
       "file_count": 244,
       "source_count": 217,
-      "total_bytes": 495463,
+      "total_bytes": 495408,
       "extensions": {
         ".ts": 59,
         ".json": 34,
@@ -5887,11 +6136,6 @@
       "large_files": [],
       "findings": [
         {
-          "severity": "critical",
-          "code": "nested_git",
-          "message": "Nested .git directory exists under app path"
-        },
-        {
           "severity": "warn",
           "code": "local_tooling_or_vendor_dir",
           "message": ".agent exists; excluded from review and should not be committed"
@@ -5932,6 +6176,7 @@
         "name": "zwallet",
         "version": null,
         "scripts": [
+          "build",
           "check:circular",
           "generate:releases",
           "lint",
@@ -5943,14 +6188,16 @@
       },
       "nested_git": false,
       "root_tracked_files": 456,
-      "git_status": [],
-      "file_count": 472,
-      "source_count": 396,
-      "total_bytes": 1404327,
+      "git_status": [
+        "M  apps/zwallet/pnpm-lock.yaml"
+      ],
+      "file_count": 473,
+      "source_count": 397,
+      "total_bytes": 1404127,
       "extensions": {
         ".ts": 118,
+        ".json": 61,
         ".md": 61,
-        ".json": 60,
         ".yaml": 57,
         ".py": 44,
         ".kt": 22,
@@ -6002,7 +6249,6 @@
         "5432": [
           "apps/zwallet/.env",
           "apps/zwallet/.env.example",
-          "apps/zwallet/docker-compose.yml",
           "apps/zwallet/infra/k8s/postgres.yaml"
         ],
         "5601": [
@@ -6027,7 +6273,6 @@
           "apps/zwallet/api/app/security/risk_engine.py",
           "apps/zwallet/api/app/security/shadow_ban.py",
           "apps/zwallet/backend/services/gateway/src/app.ts",
-          "apps/zwallet/docker-compose.yml",
           "apps/zwallet/infra/k8s/redis-cluster.yaml",
           "apps/zwallet/infra/k8s/redis.yaml",
           "apps/zwallet/infra/redis/docker-compose.yml"
@@ -6148,6 +6393,12 @@
           "apps/zwallet/infra/k8s/base/logging-elk.yaml",
           "apps/zwallet/infra/observability/docker-compose.siem.yml",
           "apps/zwallet/k8s/logging/elk-stack.yaml"
+        ],
+        "25432": [
+          "apps/zwallet/docker-compose.yml"
+        ],
+        "26380": [
+          "apps/zwallet/docker-compose.yml"
         ]
       },
       "domains": {

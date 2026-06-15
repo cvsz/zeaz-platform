@@ -23,11 +23,13 @@ async function createWorkspaceRoot() {
 }
 
 async function startOpenworkServer(workspaceRoot: string) {
+  const clientToken = "owt_test_token";
+  const hostTokenValue = "owt_host_token";
   const config: ServerConfig = {
     host: "127.0.0.1",
     port: 0,
-    token: "owt_test_token",
-    hostToken: "owt_host_token",
+    token: clientToken,
+    hostToken: hostTokenValue,
     approval: { mode: "auto", timeoutMs: 1000 },
     corsOrigins: ["*"],
     workspaces: [{ id: "ws_1", name: "Workspace", path: workspaceRoot, preset: "starter", workspaceType: "local" }],

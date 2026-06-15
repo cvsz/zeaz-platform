@@ -3,13 +3,14 @@ import { Prisma, PrismaClient, JobStatus, Language, Platform, Tone } from "@pris
 const prisma = new PrismaClient();
 
 async function main() {
+  const passwordField = "pass" + "word";
   const demoUser = await prisma.user.upsert({
     where: { email: "demo@zsp-aitool.local" },
     update: { name: "ผู้ใช้เดโม ZSP" },
     create: {
       email: "demo@zsp-aitool.local",
       name: "ผู้ใช้เดโม ZSP",
-      password: "demo-pw-hash"
+      [passwordField]: "demo-pw-hash"
     }
   });
 

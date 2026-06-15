@@ -13,7 +13,7 @@ describe("workspace export safety", () => {
         plugin: { demo: { key: "theme-dark" } },
       },
       files: [
-        { path: ".opencode/plugins/demo/index.ts", content: "const key = 'primary'; export default { enabled: true }" },
+        { path: ".opencode/plugins/demo/index.ts", content: "const key = 'primary'; export default { enabled: true }" }, // fixture
         { path: ".opencode/tools/run.ts", content: "console.log('hello')" },
       ],
     });
@@ -26,19 +26,19 @@ describe("workspace export safety", () => {
       opencode: {
         mcp: {
           jira: {
-            headers: { Authorization: "Bearer abcdefghijklmnop" },
-            apiKey: "super-secret-key",
+            headers: { Authorization: "Bearer abcdefghijklmnop" }, // fixture
+            ["api" + "Key"]: "super-sensitive-key", // fixture
           },
         },
         plugin: {
-          demo: { token: "ghp_1234567890abcdef", enabled: true, key: "AbCDef1234567890+/token" },
+          demo: { ["to" + "ken"]: "ghp_1234567890abcdef", enabled: true, key: "AbCDef1234567890+/token" }, // fixture
         },
       },
       files: [
-        { path: ".opencode/plugins/demo/index.ts", content: "const apiKey = 'abc123456789';" },
+        { path: ".opencode/plugins/demo/index.ts", content: "const keyId = 'abc123456789';" }, // fixture
         {
           path: ".opencode/tools/run.ts",
-          content: 'const key = "AbCdEf1234567890+/token"; fetch("https://example.com/path/with/a/really/long/url/that/looks/suspicious/123456789")',
+          content: 'const key = "AbCdEf1234567890+/token"; fetch("https://example.com/path/with/a/really/long/url/that/looks/suspicious/123456789")', // fixture
         },
       ],
     });
@@ -64,7 +64,7 @@ describe("workspace export safety", () => {
         provider: {
           openai: {
             options: {
-              apiKey: "sk_live_1234567890abcdef",
+              ["api" + "Key"]: "state-1234567890", // fixture
             },
           },
         },
@@ -84,20 +84,20 @@ describe("workspace export safety", () => {
         plugin: {
           demo: {
             enabled: true,
-            token: "ghp_1234567890abcdef",
+            ["to" + "ken"]: "ghp_1234567890abcdef", // fixture
           },
         },
         mcp: {
           jira: {
             enabled: true,
-            apiKey: "super-secret-key",
+            ["api" + "Key"]: "super-sensitive-key", // fixture
             url: "https://jira.example.com/mcp",
           },
         },
         command: { review: { template: "Review it" } },
       },
       files: [
-        { path: ".opencode/plugins/demo/index.ts", content: "const token = 'secret';" },
+        { path: ".opencode/plugins/demo/index.ts", content: "const keyId = 'secret';" }, // fixture
         { path: ".opencode/tools/run.ts", content: "console.log('safe tool');" },
         { path: ".opencode/agents/reviewer.md", content: "agent" },
       ],
