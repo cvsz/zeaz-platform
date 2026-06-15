@@ -1,3 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+overrides:
+  postcss: "^8.5.15"
+  esbuild: "^0.28.1"

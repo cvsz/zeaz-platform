@@ -92,7 +92,7 @@ PY
 
 ensure_loopback_config() {
   mkdir -p "$HOME/.gnupg"
-  chmod 700 "$HOME/.gnupg"
+  chmod 700 "$HOME/.gnupg" 2>/dev/null || warn "Unable to chmod $HOME/.gnupg; continuing"
 
   touch "$HOME/.gnupg/gpg-agent.conf"
   touch "$HOME/.gnupg/gpg.conf"
@@ -109,7 +109,7 @@ ensure_loopback_config() {
   grep -qxF "use-agent" "$HOME/.gnupg/gpg.conf" \
     || echo "use-agent" >> "$HOME/.gnupg/gpg.conf"
 
-  chmod 600 "$HOME/.gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg.conf"
+  chmod 600 "$HOME/.gnupg/gpg-agent.conf" "$HOME/.gnupg/gpg.conf" 2>/dev/null || warn "Unable to chmod GPG config files; continuing"
 
   gpgconf --kill gpg-agent || true
   gpgconf --launch gpg-agent || true
