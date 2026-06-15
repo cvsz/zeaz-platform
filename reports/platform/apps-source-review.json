@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-15T12:52:59Z",
+  "generated_at": "2026-06-15T14:28:59Z",
   "root": "/home/zeazdev/zeaz-platform",
   "apps_dir": "/home/zeazdev/zeaz-platform/apps",
   "app_count": 19,
@@ -117,30 +117,10 @@
       },
       "nested_git": false,
       "root_tracked_files": 1737,
-      "git_status": [
-        "M  apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts",
-        "M  apps/openwork/apps/opencode-router/test/telegram.test.js",
-        "M  apps/openwork/apps/server/src/artifact-files.e2e.test.ts",
-        "M  apps/openwork/apps/server/src/env-routes.e2e.test.ts",
-        "M  apps/openwork/apps/server/src/extensions/google-workspace.test.ts",
-        "M  apps/openwork/apps/server/src/portable-opencode.test.ts",
-        "M  apps/openwork/apps/server/src/reload-events.e2e.test.ts",
-        "M  apps/openwork/apps/server/src/session-read-model.e2e.test.ts",
-        "M  apps/openwork/apps/server/src/tokens.test.ts",
-        "M  apps/openwork/apps/server/src/workspace-activate.e2e.test.ts",
-        "M  apps/openwork/apps/server/src/workspace-export-safety.test.ts",
-        "M  apps/openwork/apps/server/src/workspace-import-preview.test.ts",
-        "M  apps/openwork/ee/apps/den-api/src/session.ts",
-        "M  apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts",
-        "M  apps/openwork/ee/packages/den-db/drizzle.config.ts",
-        "M  apps/openwork/pnpm-lock.yaml",
-        "M  apps/openwork/scripts/harness/agents/code-reviewer.md",
-        "M  apps/openwork/scripts/harness/commands/kotlin-test.md",
-        "M  apps/openwork/scripts/harness/commands/rust-test.md"
-      ],
+      "git_status": [],
       "file_count": 1766,
       "source_count": 1283,
-      "total_bytes": 661488642,
+      "total_bytes": 661488638,
       "extensions": {
         ".ts": 494,
         ".tsx": 365,
@@ -1361,9 +1341,7 @@
       },
       "nested_git": false,
       "root_tracked_files": 57,
-      "git_status": [
-        "M  apps/web/pnpm-lock.yaml"
-      ],
+      "git_status": [],
       "file_count": 60,
       "source_count": 49,
       "total_bytes": 561128,
@@ -1779,10 +1757,7 @@
       },
       "nested_git": false,
       "root_tracked_files": 961,
-      "git_status": [
-        "M  apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh",
-        "M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py"
-      ],
+      "git_status": [],
       "file_count": 977,
       "source_count": 937,
       "total_bytes": 1764898,
@@ -4969,14 +4944,7 @@
       },
       "nested_git": false,
       "root_tracked_files": 766,
-      "git_status": [
-        "M  apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md",
-        "M  apps/zsp-aitool/next-env.d.ts",
-        "M  apps/zsp-aitool/prisma/seed.ts",
-        "M  apps/zsp-aitool/scripts/plugins/plugin-validate.sh",
-        "M  apps/zsp-aitool/tests/api/auth-routes.test.ts",
-        "M  apps/zsp-aitool/tsconfig.json"
-      ],
+      "git_status": [],
       "file_count": 813,
       "source_count": 757,
       "total_bytes": 3628477,
@@ -6188,9 +6156,7 @@
       },
       "nested_git": false,
       "root_tracked_files": 456,
-      "git_status": [
-        "M  apps/zwallet/pnpm-lock.yaml"
-      ],
+      "git_status": [],
       "file_count": 473,
       "source_count": 397,
       "total_bytes": 1404127,

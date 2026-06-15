@@ -1,6 +1,6 @@
 # Build all stacks report
 
-Generated: 2026-06-15T12:53:06Z
+Generated: 2026-06-15T14:29:05Z
 
 Mode: `safe`
 
@@ -8,7 +8,7 @@ Mode: `safe`
 |---|---|---|---|
 | api | python-compile | `cd 'apps/api' && python3 -m compileall -q .       -x '(.venv|venv|node_modules|dist|build|__pycache__|.pytest_cache|.ruff_cache|.mypy_cache)'` | PASS |
 | api | docker | RUN_DOCKER_BUILD=false | SKIP |
-| openwork | node-build | `cd 'apps/openwork' && pnpm run build` | PASS |
+| openwork | node-build | `cd 'apps/openwork' && pnpm run build` | FAIL:1 |
 | openwork | docker | RUN_DOCKER_BUILD=false | SKIP |
 | web | node-build | `cd 'apps/web' && pnpm run build` | FAIL:1 |
 | web | docker | RUN_DOCKER_BUILD=false | SKIP |

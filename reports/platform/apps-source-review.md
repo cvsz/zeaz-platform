@@ -1,6 +1,6 @@
 # Apps source review
 
-Generated: `2026-06-15T12:52:59Z`
+Generated: `2026-06-15T14:28:59Z`
 Apps scanned: `19`
 
 This report is read-only. It excludes dependency, cache, build, runtime, vendor, and local tooling directories.
@@ -216,30 +216,6 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 - `apps/openwork/ee/apps/landing/public/enterprise-showcase-bg.jpg` `1108255` bytes
 - `apps/openwork/packages/docs/images/exa-search-toggle.png` `1042555` bytes
 
-### Git status
-
-```text
-M  apps/openwork/apps/app/scripts/remote-workspace-diagnostics.test.ts
-M  apps/openwork/apps/opencode-router/test/telegram.test.js
-M  apps/openwork/apps/server/src/artifact-files.e2e.test.ts
-M  apps/openwork/apps/server/src/env-routes.e2e.test.ts
-M  apps/openwork/apps/server/src/extensions/google-workspace.test.ts
-M  apps/openwork/apps/server/src/portable-opencode.test.ts
-M  apps/openwork/apps/server/src/reload-events.e2e.test.ts
-M  apps/openwork/apps/server/src/session-read-model.e2e.test.ts
-M  apps/openwork/apps/server/src/tokens.test.ts
-M  apps/openwork/apps/server/src/workspace-activate.e2e.test.ts
-M  apps/openwork/apps/server/src/workspace-export-safety.test.ts
-M  apps/openwork/apps/server/src/workspace-import-preview.test.ts
-M  apps/openwork/ee/apps/den-api/src/session.ts
-M  apps/openwork/ee/apps/den-api/test/github-connector-app.test.ts
-M  apps/openwork/ee/packages/den-db/drizzle.config.ts
-M  apps/openwork/pnpm-lock.yaml
-M  apps/openwork/scripts/harness/agents/code-reviewer.md
-M  apps/openwork/scripts/harness/commands/kotlin-test.md
-M  apps/openwork/scripts/harness/commands/rust-test.md
-```
-
 ## `web`
 
 - Path: `apps/web`
@@ -297,12 +273,6 @@ M  apps/openwork/scripts/harness/commands/rust-test.md
 - `warn` `local_env_file`: Local env file exists: apps/web/.env
 - `info` `expected_port_not_detected`: Expected port 3003 from apps-port-plan not detected in source text
 - `info` `expected_hostname_not_detected`: Expected hostname zeaz.dev from apps-port-plan not detected in source text
-
-### Git status
-
-```text
-M  apps/web/pnpm-lock.yaml
-```
 
 ## `zAcademy`
 
@@ -434,13 +404,6 @@ M  apps/web/pnpm-lock.yaml
 - `apps/zLinebot/CONTRIBUTING.md:16` `- Bug fixes`
 - `apps/zLinebot/.github/DISCUSSION_GUIDELINES.md:21` `| Bug Reports | Q&A | Runtime/configuration defects and behavior validation before opening an Issue. | For confirmed code bugs, open an Issue and link it in the discussion. |`
 - `apps/zLinebot/scripts/configure_discussions.sh:61` `4. 🐛 Bug Reports             → Answerable`
-
-### Git status
-
-```text
-M  apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh
-M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py
-```
 
 ## `zai-factory`
 
@@ -1016,17 +979,6 @@ M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py
 - `apps/zsp-aitool/docs/prompts/zsp-aitool-full-source-en.md:64` `- Do not leave TODO comments in core features.`
 - `apps/zsp-aitool/docs/runbooks/user-feedback-playbook.md:28` `## Bug report template`
 
-### Git status
-
-```text
-M  apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md
-M  apps/zsp-aitool/next-env.d.ts
-M  apps/zsp-aitool/prisma/seed.ts
-M  apps/zsp-aitool/scripts/plugins/plugin-validate.sh
-M  apps/zsp-aitool/tests/api/auth-routes.test.ts
-M  apps/zsp-aitool/tsconfig.json
-```
-
 ## `zsticker`
 
 - Path: `apps/zsticker`
@@ -1272,9 +1224,3 @@ M  apps/zsp-aitool/tsconfig.json
 - `apps/zwallet/docs/REPO_MASTER_META_REVIEW_2026-05-05.md:60` `- No placeholders/TODO in production runtime: **Partial/Fail**`
 - `apps/zwallet/docs/REPO_MASTER_META_REVIEW_2026-05-05.md:77` `7. Add CI policies: critical-folder `any` budget, forbidden TODO/placeholders, mandatory tx-stage telemetry assertions.`
 - `apps/zwallet/docs/releases/RELEASE_NOTES.md:42` `- docs: add gateway bug review findings (cc8cca8, @CVSz)`
-
-### Git status
-
-```text
-M  apps/zwallet/pnpm-lock.yaml
-```
