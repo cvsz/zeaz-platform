@@ -29,6 +29,8 @@ const navItems: NavItem[] = [
   { to: "/organizations", labelKey: "nav.organizations", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace", labelKey: "nav.workspace", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workers", labelKey: "nav.workers", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/workflows", labelKey: "nav.workflows", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/zai-ecosystem", labelKey: "nav.zai_ecosystem", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/org", labelKey: "sidebar.org_map", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/logs", labelKey: "nav.logs", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/settings", labelKey: "nav.settings", roles: ["admin", "operator", "analyst", "viewer"] },

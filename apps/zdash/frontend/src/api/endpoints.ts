@@ -1478,3 +1478,42 @@ export const getTeamSummary = async () => {
   const data = await apiClient.get<{ summary: TeamSummary }>('/api/team/summary', { summary: mockTeamSummary });
   return data.summary;
 };
+
+// --- Workflows ---
+export type Workflow = {
+  name: string;
+  description?: string;
+  status?: string;
+  created_at?: string;
+  last_run_at?: string;
+};
+
+export type WorkflowRunResult = {
+  ok: boolean;
+  message: string;
+  run_id?: string;
+};
+
+export const listWorkflows = async () => {
+  const data = await apiClient.get<{ workflows: Workflow[] }>("/workflows/", {
+    workflows: [
+      { name: "test-workflow", description: "Mock Workflow", status: "active" }
+    ],
+  });
+  return data.workflows ?? [];
+};
+
+export const getWorkflow = async (name: string) => {
+  const data = await apiClient.get<{ workflow: Workflow }>(`/workflows/${name}`, {
+    workflow: { name, description: "Mock Workflow details", status: "active" },
+  });
+  return data.workflow;
+};
+
+export const runWorkflow = async (name: string, payload?: Record<string, unknown>) => {
+  const data = await apiClient.post<WorkflowRunResult>(`/workflows/${name}/run`, payload, {
+    ok: true,
+    message: `Mock run started for workflow ${name}`,
+  });
+  return data;
+};

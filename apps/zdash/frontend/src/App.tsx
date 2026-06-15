@@ -37,6 +37,8 @@ import Usage from "./pages/Usage";
 import Marketplace from "./pages/Marketplace";
 import Enterprise from "./pages/Enterprise";
 import Onboarding from "./pages/Onboarding";
+import Workflows from "./pages/Workflows";
+import ZaiEcosystem from "./pages/ZaiEcosystem";
 import { RealtimeProvider } from "./realtime/context";
 
 function ProtectedDashboardRoutes() {
@@ -58,6 +60,8 @@ function ProtectedDashboardRoutes() {
           <Route path="/organizations" element={<Organizations />} />
           <Route path="/workspace" element={<Workspace />} />
           <Route path="/workers" element={<Workers />} />
+          <Route path="/workflows" element={<Workflows />} />
+          <Route path="/zai-ecosystem" element={<ZaiEcosystem />} />
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/billing" element={<Billing />} />

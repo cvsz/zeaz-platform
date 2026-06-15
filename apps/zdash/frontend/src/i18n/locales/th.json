@@ -1398,7 +1398,6 @@
     "subscription_card_reactivate": "เปิดใช้งานอีกครั้ง",
     "subscription_card_status": "สถานะ",
     "subscription_card_title": "การสมัครสมาชิก",
-    "subscription_plan": "แผนการสมัครสมาชิก",
     "subscription_status": "การสมัครสมาชิก สถานะ",
     "subtitle": "จัดการการสมัครสมาชิก การอัปเกรด เครดิตการใช้งาน และประวัติใบแจ้งหนี้",
     "team_members": "ทีม Members",
@@ -1758,7 +1757,7 @@
     "consumption_trend": "แนวโน้มการบริโภค",
     "custom_branding": "การปรับแต่งแบรนด์ที่กำหนดเอง",
     "custom_domain": "โดเมนพอร์ทัลที่กำหนดเอง",
-    "custom_hostname_preview": "ชื่อโฮสต์ที่กำหนดเอง",
+    "custom_hostname_preview": "ชื่อโฮสต์ที่กำหนดเอง:",
     "customer_health": "การจัดการความสำเร็จ",
     "customer_health_at_risk": "At Risk",
     "customer_health_customers": "Customers",
@@ -1879,7 +1878,7 @@
     "step_skipped": "Skipped",
     "steps_total": "{{completed}} of {{total}} steps complete",
     "subtitle": "จัดการใบอนุญาตผู้ปฏิบัติการ การส่งออกระบบ ขั้นตอนการเริ่มต้นใช้งาน และการกำหนดค่าแบรนด์",
-    "support_contact_preview": "ผู้ติดต่อสนับสนุน",
+    "support_contact_preview": "ผู้ติดต่อสนับสนุน:",
     "support_email": "อีเมลสนับสนุน",
     "system_backups": "การสำรองข้อมูลระบบและการส่งออกการกำหนดค่า",
     "system_onboarding": "รายการตรวจสอบการเริ่มต้นใช้งานระบบ",
@@ -1911,8 +1910,6 @@
     "preview_signals": "สัญญาณ",
     "preview_guardians": "ผู้พิทักษ์",
     "preview_status": "สถานะ",
-    "support_contact_preview": "ผู้ติดต่อสนับสนุน:",
-    "custom_hostname_preview": "ชื่อโฮสต์ที่กำหนดเอง:",
     "save_branding_settings": "บันทึกการตั้งค่าแบรนด์",
     "branding_update_success": "อัปเดตการตั้งค่าแบรนด์เรียบร้อยแล้ว",
     "branding_reset_success": "รีเซ็ตแบรนด์เป็นการกำหนดค่าเริ่มต้นเรียบร้อยแล้ว",
@@ -2467,5 +2464,6 @@
     "unknown": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ",
     "update_failed": "ล้มเหลว to update.",
     "validation_error": "ข้อผิดพลาดการตรวจสอบความถูกต้อง กรุณาตรวจสอบข้อมูลที่ป้อน"
-  }
+  },
+  "nav.zai_ecosystem": "ZAI Ecosystem"
 }

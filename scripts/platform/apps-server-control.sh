@@ -12,7 +12,7 @@ RUNTIME_DIR="${APPS_SERVER_RUNTIME_DIR:-runtime/app-servers}"
 REPORT="reports/platform/apps-server-control.md"
 HOST_BIND="${HOST_BIND:-127.0.0.1}"
 ONLY_APP="${APP:-}"
-ONLY_HOST="${HOSTNAME:-}"
+ONLY_HOST="${HOST_FILTER:-}"
 INCLUDE_RESERVED="${INCLUDE_RESERVED:-true}"
 mkdir -p "$RUNTIME_DIR" "$(dirname "$REPORT")"
 
@@ -27,14 +27,14 @@ Route sources:
 
 Filters:
   APP=<app_id>                 Limit to one app_id from base plan or overlays
-  HOSTNAME=<hostname>          Limit to one hostname from base plan or overlays
+  HOST_FILTER=<hostname>       Limit to one hostname from base plan or overlays
   INCLUDE_RESERVED=false       Skip reserved routes
 
 Examples:
   make -f Makefile -f Makefile.app-servers apps-server-status
   make -f Makefile -f Makefile.app-servers apps-server-start
   APP=zcfdash make -f Makefile -f Makefile.app-servers apps-server-start
-  HOSTNAME=zcfdash.zeaz.dev make -f Makefile -f Makefile.app-servers apps-server-start
+  HOST_FILTER=zcfdash.zeaz.dev make -f Makefile -f Makefile.app-servers apps-server-start
   make -f Makefile -f Makefile.app-servers apps-server-stop
 EOF
 }

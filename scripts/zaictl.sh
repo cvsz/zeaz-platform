@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # zaictl - ZeaZ Platform Master Control CLI
-ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 cd "$ROOT"
 
 function show_usage() {
@@ -15,6 +16,9 @@ function show_usage() {
     echo "  audit             Run platform surface audit"
     echo "  skill list        List all enabled skills"
     echo "  agent list        List all enabled agents"
+    echo "  workflow list        List all available workflows"
+    echo "  workflow show <name> Show details of a workflow"
+    echo "  workflow run <name>  Execute a workflow via Gemini CLI"
     echo "  agent result-list [filters]  List stored sub-agent results"
     echo "  agent result-get [args]      Show latest stored result for an agent"
     echo "  agent result-put [submit args]  Store a sub-agent result via mailbox CLI"
@@ -28,9 +32,9 @@ function show_usage() {
 }
 
 case "$1" in
-    status) ./scripts/platform/apps-server-control.sh status ;;
-    start)  ./scripts/platform/apps-server-control.sh start "$2" ;;
-    stop)   ./scripts/platform/apps-server-control.sh stop "$2" ;;
+    status) APP="$2" ./scripts/platform/apps-server-control.sh status ;;
+    start)  APP="$2" ./scripts/platform/apps-server-control.sh start ;;
+    stop)   APP="$2" ./scripts/platform/apps-server-control.sh stop ;;
     factory) ./apps/zai-factory/bin/ai-factory.js "${@:2}" ;;
     audit)  gemini -p "run workspace-surface-audit skill" ;;
     report)
@@ -47,7 +51,7 @@ case "$1" in
             else
                 status="${RED}OFFLINE${NC}"
             fi
-            printf "%-20s (Port: %-5s) - %s\n" "$host" "$port" "$status"
+            printf "%-20s (Port: %-5s) - %b\n" "$host" "$port" "$status"
         done
         ;;
     test)
@@ -93,6 +97,27 @@ case "$1" in
     skill)
         case "$2" in
             list) gemini skills list ;;
+            *) show_usage ;;
+        esac
+        ;;
+    workflow)
+        case "$2" in
+            list) ls -F .agent/workflows/ | grep "\.md" | sed 's/\.md//' ;;
+            show) 
+                if [ -f ".agent/workflows/$3.md" ]; then
+                    cat ".agent/workflows/$3.md"
+                else
+                    echo "Workflow '$3' not found."
+                fi
+                ;;
+            run)
+                if [ -f ".agent/workflows/$3.md" ]; then
+                    echo "Executing workflow: $3"
+                    gemini -p "/$3"
+                else
+                    echo "Workflow '$3' not found."
+                fi
+                ;;
             *) show_usage ;;
         esac
         ;;

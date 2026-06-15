@@ -5,9 +5,9 @@ SHELL := /usr/bin/env bash
 ROOT_DIR := $(CURDIR)
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
-BACKEND_HOST ?= 127.0.0.1
+BACKEND_HOST ?= 0.0.0.0
 BACKEND_PORT ?= 8005
-FRONTEND_HOST ?= 127.0.0.1
+FRONTEND_HOST ?= 0.0.0.0
 FRONTEND_PORT ?= 5173
 RELEASE_HOST ?= 127.0.0.1
 RELEASE_PORT ?= 5172
@@ -50,7 +50,7 @@ install-frontend: ## Install frontend dependencies
 install-local: install-backend install-frontend ## Install backend and frontend
 
 run-backend: ## Run backend in foreground
-	@PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) $(PYTHON) -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload
+	@PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) $(BACKEND_DIR)/.venv/bin/python -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload
 
 run-frontend: ## Run frontend in foreground
 	@cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT)
@@ -61,13 +61,13 @@ server-start: ## Start backend and frontend in background
 		echo "backend already running pid=$$(cat "$(BACKEND_PID)")"; \
 	else \
 		echo "START backend http://$(BACKEND_HOST):$(BACKEND_PORT)"; \
-		PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) nohup $(PYTHON) -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) >> "$(BACKEND_LOG)" 2>&1 & echo $$! > "$(BACKEND_PID)"; \
+		PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) nohup $(BACKEND_DIR)/.venv/bin/python -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) >> "$(BACKEND_LOG)" 2>&1 & echo $$! > "$(BACKEND_PID)"; \
 	fi
 	@if [ -f "$(FRONTEND_PID)" ] && kill -0 "$$(cat "$(FRONTEND_PID)")" >/dev/null 2>&1; then \
 		echo "frontend already running pid=$$(cat "$(FRONTEND_PID)")"; \
 	else \
 		echo "START frontend http://$(FRONTEND_HOST):$(FRONTEND_PORT)"; \
-		cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) nohup $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT) >> "../../$(FRONTEND_LOG)" 2>&1 & echo $$! > "../../$(FRONTEND_PID)"; \
+		cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) nohup $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT) >> "../$(FRONTEND_LOG)" 2>&1 & echo $$! > "../$(FRONTEND_PID)"; \
 	fi
 	@$(MAKE) server-status
 

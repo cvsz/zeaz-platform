@@ -41,4 +41,8 @@ ingress:
     service: http://traefik:80
   - hostname: app.zeaz.dev
     service: http://traefik:80
+  - hostname: api-apps.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-app.zeaz.dev
+    service: http://traefik:80
   - service: http_status:404

@@ -1,0 +1,116 @@
+version: "3.9"
+services:
+  kafka:
+    image: bitnami/kafka:3.7
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "echo > /dev/tcp/127.0.0.1/9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  platform-core:
+    build: ../apps/platform-core
+    ports:
+      - "4000:4000"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      billing-service:
+        condition: service_started
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - BILLING_SERVICE_URL=http://billing-service:3002
+
+  worker-ai:
+    build: ../apps/worker-ai
+    ports:
+      - "5000:5000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+
+  auth-service:
+    build: ../apps/auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-please-set-a-32-char-minimum-secret-key}
+
+  billing-service:
+    build: ../apps/billing-service
+    ports:
+      - "3002:3002"
+    environment:
+      - STRIPE_KEY=${STRIPE_KEY:-}
+      - STRIPE_PRO_PRICE_ID=${STRIPE_PRO_PRICE_ID:-}
+
+  log-service:
+    build: ../apps/log-service
+    ports:
+      - "6000:6000"
+
+  api-gateway:
+    build: ../apps/api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - platform-core
+      - worker-ai
+      - auth-service
+      - billing-service
+      - log-service
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-please-set-a-32-char-minimum-secret-key}
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - BILLING_SERVICE_URL=http://billing-service:3002
+      - LOG_SERVICE_URL=http://log-service:6000
+
+  frontend:
+    build: ../apps/frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-gateway
+
+  security-api:
+    build: ../services/security-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SECURITY_API_KEY=${SECURITY_API_KEY:?set SECURITY_API_KEY}
+      - SCAN_ROOT=/tmp/zlttbots-scans
+
+  ai-fix-engine:
+    build: ../services/ai-fix
+
+  pr-bot:
+    build: ../services/pr-bot
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+
+  redis:
+    image: redis:7.4-alpine
+
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  grafana:
+    image: grafana/grafana:11.6.1
+    ports:
+      - "3003:3000"
+
+  loki:
+    image: grafana/loki:3.4.2
+    ports:
+      - "3100:3100"

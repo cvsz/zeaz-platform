@@ -1,5 +1,6 @@
 {
   "nav": {
+    "workflows": "Workflows",
     "admin": "Admin",
     "alerts": "Alerts",
     "backtests": "Backtests",
@@ -1390,14 +1391,13 @@
     "status_trialing": "Trialing",
     "storage": "Storage",
     "subscription_card_cancel": "Cancel Subscription",
-    "subscription_plan": "Subscription plan",
+    "subscription_plan": "Subscription Plan",
     "subscription_card_cycle": "Billing Cycle",
     "subscription_card_next_billing": "Next Billing",
     "subscription_card_plan": "Plan",
     "subscription_card_reactivate": "Reactivate",
     "subscription_card_status": "Status",
     "subscription_card_title": "Subscription",
-    "subscription_plan": "Subscription Plan",
     "subscription_status": "Subscription Status",
     "subtitle": "Manage your subscription and billing.",
     "team_members": "Team Members",
@@ -1757,7 +1757,7 @@
     "consumption_trend": "Consumption Trend",
     "custom_branding": "Custom Branding",
     "custom_domain": "Custom Domain",
-    "custom_hostname_preview": "Custom Hostname Preview",
+    "custom_hostname_preview": "Custom hostname:",
     "customer_health": "Customer Health",
     "customer_health_at_risk": "At Risk",
     "customer_health_customers": "Customers",
@@ -1878,7 +1878,7 @@
     "step_skipped": "Skipped",
     "steps_total": "{{completed}} of {{total}} steps complete",
     "subtitle": "Enterprise settings, branding, and compliance.",
-    "support_contact_preview": "Support Contact Preview",
+    "support_contact_preview": "Support contact:",
     "support_email": "Support Email",
     "system_backups": "System Backups",
     "system_onboarding": "System Onboarding",
@@ -1910,8 +1910,6 @@
     "preview_signals": "Signals",
     "preview_guardians": "Guardians",
     "preview_status": "Status",
-    "support_contact_preview": "Support contact:",
-    "custom_hostname_preview": "Custom hostname:",
     "save_branding_settings": "Save Branding Settings",
     "branding_update_success": "White-label settings updated successfully.",
     "branding_reset_success": "Branding reset to default configuration.",
@@ -2466,5 +2464,6 @@
     "unknown": "Unknown",
     "update_failed": "Failed to update.",
     "validation_error": "Validation failed. Please check your input."
-  }
+  },
+  "nav.zai_ecosystem": "ZAI Ecosystem"
 }

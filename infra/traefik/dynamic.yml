@@ -1,4 +1,36 @@
 http:
+  routers:
+    zdash-web:
+      rule: "Host(`zdash.zeaz.dev`)"
+      service: zdash-web-service
+    zdash-api:
+      rule: "Host(`api-zdash.zeaz.dev`)"
+      service: zdash-api-service
+    zwallet-web:
+      rule: "Host(`app.zeaz.dev`)"
+      service: zwallet-web-service
+    zwallet-api:
+      rule: "Host(`api-apps.zeaz.dev`) || Host(`api-app.zeaz.dev`)"
+      service: zwallet-api-service
+
+  services:
+    zdash-web-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:5173"
+    zdash-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:8005"
+    zwallet-web-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:4173"
+    zwallet-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:8080"
+
   middlewares:
     auth:
       forwardAuth:
