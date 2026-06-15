@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import PageHeader from "../components/layout/PageHeader";
+import GlassCard from "../components/ui/GlassCard";
+import StatusBadge from "../components/ui/StatusBadge";
+import Button from "../components/common/Button";
 import { useT } from "../hooks/useT";
 import { listWorkflows, runWorkflow, type Workflow } from "../api/endpoints";
 import { Play, Activity, Clock } from "lucide-react";
@@ -42,58 +45,70 @@ export default function Workflows() {
   };
 
   return (
-    <div className="flex flex-col space-y-6">
-      <PageHeader 
-        title="Workflows" 
-        subtitle="Manage and execute automated AI workflows." 
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Automation"
+        title="Workflows"
+        subtitle="Manage and execute automated AI workflows."
       />
 
-      {message && (
-        <div className="p-4 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan">
-          {message}
+      <GlassCard className="p-4 md:p-5" glow="cyan">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Workflow runway</p>
+            <p className="mt-1 text-sm text-text-secondary">
+              Runbook-driven automation with dry-run safe defaults and an operator-first execution surface.
+            </p>
+          </div>
+          <StatusBadge status={`${workflows.length} WORKFLOWS`} variant="info" />
         </div>
-      )}
+      </GlassCard>
+
+      {message ? (
+        <GlassCard className="border border-accent-cyan/20 p-4">
+          <p className="text-sm text-accent-cyan">{message}</p>
+        </GlassCard>
+      ) : null}
 
       {loading ? (
         <div className="text-text-dim">Loading workflows...</div>
       ) : workflows.length === 0 ? (
         <div className="text-text-dim">No workflows found.</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {workflows.map((wf) => (
-            <div 
-              key={wf.name} 
-              className="flex flex-col p-5 rounded-xl border border-border bg-panel"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium text-text-primary flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-accent-cyan" />
+            <GlassCard key={wf.name} hover className="flex flex-col p-5">
+              <div className="mb-4 flex items-start justify-between">
+                <h3 className="flex items-center gap-2 text-lg font-medium text-text-primary">
+                  <Activity className="h-5 w-5 text-accent-cyan" />
                   {wf.name}
                 </h3>
-                <span className={`px-2 py-1 text-xs rounded-full ${wf.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-gray-500/10 text-gray-400'}`}>
-                  {wf.status || 'unknown'}
-                </span>
+                <StatusBadge
+                  status={wf.status || "unknown"}
+                  variant={wf.status === "active" ? "success" : "muted"}
+                />
               </div>
-              
-              <p className="text-sm text-text-secondary mb-6 flex-grow">
+
+              <p className="mb-6 flex-grow text-sm text-text-secondary">
                 {wf.description || "No description provided."}
               </p>
 
-              <div className="flex items-center justify-between border-t border-border pt-4 mt-auto">
-                <div className="flex items-center text-xs text-text-dim gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{wf.last_run_at ? new Date(wf.last_run_at).toLocaleString() : 'Never run'}</span>
+              <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+                <div className="flex items-center gap-1 text-xs text-text-dim">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>{wf.last_run_at ? new Date(wf.last_run_at).toLocaleString() : "Never run"}</span>
                 </div>
-                <button
+                <Button
                   onClick={() => handleRun(wf.name)}
                   disabled={runningWorkflow === wf.name}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-accent-cyan/10 text-accent-cyan hover:bg-accent-cyan/20 transition-colors disabled:opacity-50"
+                  variant="primary"
+                  className="px-3 py-1.5"
                 >
-                  <Play className="w-4 h-4" />
-                  {runningWorkflow === wf.name ? 'Running...' : 'Run'}
-                </button>
+                  <Play className="h-4 w-4" />
+                  {runningWorkflow === wf.name ? "Running..." : "Run"}
+                </Button>
               </div>
-            </div>
+            </GlassCard>
           ))}
         </div>
       )}

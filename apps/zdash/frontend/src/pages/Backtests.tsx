@@ -23,6 +23,7 @@ import Button from "../components/common/Button";
 import DataTable from "../components/common/DataTable";
 import MetricCard from "../components/common/MetricCard";
 import PageHeader from "../components/layout/PageHeader";
+import GlassCard from "../components/ui/GlassCard";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
 import { useT } from "../hooks/useT";
@@ -160,6 +161,7 @@ export default function Backtests() {
   return (
     <div className="space-y-5">
       <PageHeader
+        eyebrow="Strategy Lab"
         title={t('backtests.backtests')}
         subtitle={t('backtests.backtests_subtitle', { agent: AGENT_NAME_BY_ID.joe })}
         actions={<Badge variant="warning">{t('backtests.live_trading_disabled')}</Badge>}
@@ -172,7 +174,7 @@ export default function Backtests() {
         <MetricCard label={t('backtests.stored_results')} value={results.length} />
       </div>
 
-      <section className="rounded-card border border-border bg-panel p-4">
+      <GlassCard className="p-4">
         <h3 className="text-sm font-semibold text-white">{t('backtests.strategy_list')}</h3>
         <p className="mt-1 text-xs text-text-dim">{t('backtests.strategy_list_subtitle')}</p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -186,10 +188,11 @@ export default function Backtests() {
             ))
           )}
         </div>
-      </section>
+      </GlassCard>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onRunBacktest(event)}>
+        <GlassCard className="p-4">
+          <form onSubmit={(event) => void onRunBacktest(event)}>
           <h3 className="text-sm font-semibold text-white">{t('backtests.run_backtest')}</h3>
           <div className="mt-3 grid gap-3 md:grid-cols-3">
             <label className="text-xs text-text-secondary">
@@ -222,9 +225,11 @@ export default function Backtests() {
               {runningBacktest ? t('backtests.running') : t('backtests.run')}
             </Button>
           </div>
-        </form>
+          </form>
+        </GlassCard>
 
-        <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onRunOptimization(event)}>
+        <GlassCard className="p-4">
+          <form onSubmit={(event) => void onRunOptimization(event)}>
           <h3 className="text-sm font-semibold text-white">{t('backtests.optimization')}</h3>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             <label className="text-xs text-text-secondary">
@@ -245,11 +250,12 @@ export default function Backtests() {
               {runningOptimization ? t('backtests.optimizing') : t('backtests.run_optimization')}
             </Button>
           </div>
-        </form>
+          </form>
+        </GlassCard>
       </div>
 
       {selectedResult ? (
-        <section className="rounded-card border border-border bg-panel p-4">
+        <GlassCard className="p-4">
           <h3 className="text-sm font-semibold text-white">{t('backtests.backtest_results_and_metrics')}</h3>
           <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             <MetricCard label={t('backtests.win_rate')} value={formatPercent(selectedResult.metrics.win_rate)} />
@@ -282,10 +288,10 @@ export default function Backtests() {
               ]}
             />
           </div>
-        </section>
+        </GlassCard>
       ) : null}
 
-      <section className="rounded-card border border-border bg-panel p-4">
+      <GlassCard className="p-4">
         <h3 className="text-sm font-semibold text-white">{t('backtests.result_history')}</h3>
         <div className="mt-3">
           <DataTable<BacktestResult>
@@ -315,9 +321,9 @@ export default function Backtests() {
             ]}
           />
         </div>
-      </section>
+      </GlassCard>
 
-      <section className="rounded-card border border-border bg-panel p-4">
+      <GlassCard className="p-4">
         <h3 className="text-sm font-semibold text-white">{t('backtests.ranked_optimization_results')}</h3>
         {optimization ? (
           <div className="mt-3 space-y-2">
@@ -338,9 +344,9 @@ export default function Backtests() {
         ) : (
           <p className="mt-2 text-sm text-text-dim">{t('backtests.run_optimization_to_view')}</p>
         )}
-      </section>
+      </GlassCard>
 
-      <section className="rounded-card border border-border bg-panel p-4">
+      <GlassCard className="p-4">
         <h3 className="text-sm font-semibold text-white">{t('backtests.promotion_check_panel')}</h3>
         <p className="mt-1 text-xs text-text-dim">{t('backtests.promotion_check_subtitle')}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -353,7 +359,7 @@ export default function Backtests() {
           </Button>
           <Badge variant="warning">{promotionStatus}</Badge>
         </div>
-      </section>
+      </GlassCard>
 
       {message ? <p className="text-sm text-state-success">{message}</p> : null}
       {error ? <p className="text-sm text-state-danger">{error}</p> : null}

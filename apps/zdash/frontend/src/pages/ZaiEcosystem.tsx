@@ -1,5 +1,7 @@
 import React from "react";
 import PageHeader from "../components/layout/PageHeader";
+import GlassCard from "../components/ui/GlassCard";
+import StatusBadge from "../components/ui/StatusBadge";
 import { useT } from "../hooks/useT";
 import { Workflow, Code, Zap, Layers, Server, Search, Database, Shield, Layout, PenTool, BarChart } from "lucide-react";
 
@@ -22,17 +24,16 @@ export default function ZaiEcosystem() {
   ];
 
   return (
-    <div className="flex flex-col space-y-8">
-      <PageHeader 
-        title="ZAI Ecosystem" 
-        subtitle="Explore the Master AI Agent Matrix and SDLC Workflows." 
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Ecosystem"
+        title="ZAI Ecosystem"
+        subtitle="Explore the Master AI Agent Matrix and SDLC Workflows."
       />
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        
-        {/* ZAI Coding Workflow */}
-        <div className="flex flex-col p-6 rounded-2xl border border-border bg-panel backdrop-blur shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
+        <GlassCard hover className="flex flex-col p-6">
+          <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
             <div className="p-3 bg-accent-cyan/10 text-accent-cyan rounded-xl">
               <Code className="w-6 h-6" />
             </div>
@@ -41,7 +42,7 @@ export default function ZaiEcosystem() {
               <p className="text-sm text-text-secondary">Software Development Life Cycle (SDLC)</p>
             </div>
           </div>
-          
+
           <div className="space-y-6">
             {codingPhases.map((phase, i) => (
               <div key={i} className="flex gap-4 group">
@@ -59,21 +60,18 @@ export default function ZaiEcosystem() {
                   <p className="text-sm text-text-secondary mb-3">{phase.desc}</p>
                   <div className="flex flex-wrap gap-2">
                     {phase.skills.map(skill => (
-                      <span key={skill} className="px-2 py-1 text-[11px] font-medium rounded-md bg-white/5 text-text-dim border border-white/10">
-                        {skill}
-                      </span>
+                      <StatusBadge key={skill} status={skill} variant="muted" />
                     ))}
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </GlassCard>
 
-        {/* ZAI General Ecosystem */}
-        <div className="flex flex-col p-6 rounded-2xl border border-border bg-panel backdrop-blur shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-            <div className="p-3 bg-accent-purple/10 text-accent-purple rounded-xl">
+        <GlassCard hover className="flex flex-col p-6">
+          <div className="mb-6 flex items-center gap-3 border-b border-border pb-4">
+            <div className="rounded-xl bg-accent-violet/10 p-3 text-accent-violet">
               <Workflow className="w-6 h-6" />
             </div>
             <div>
@@ -81,7 +79,7 @@ export default function ZaiEcosystem() {
               <p className="text-sm text-text-secondary">End-to-End Enterprise Operations</p>
             </div>
           </div>
-          
+
           <div className="space-y-6">
             {generalPhases.map((phase, i) => (
               <div key={i} className="flex gap-4 group">
@@ -99,17 +97,14 @@ export default function ZaiEcosystem() {
                   <p className="text-sm text-text-secondary mb-3">{phase.desc}</p>
                   <div className="flex flex-wrap gap-2">
                     {phase.skills.map(skill => (
-                      <span key={skill} className="px-2 py-1 text-[11px] font-medium rounded-md bg-white/5 text-text-dim border border-white/10">
-                        {skill}
-                      </span>
+                      <StatusBadge key={skill} status={skill} variant="muted" />
                     ))}
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
+        </GlassCard>
       </div>
     </div>
   );

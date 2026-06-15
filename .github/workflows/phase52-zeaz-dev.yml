@@ -26,7 +26,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
@@ -41,9 +41,8 @@ jobs:
 
       - name: Upload generated evidence
         if: ${{ hashFiles('docs/reports/generated/zeaz-dev-*.md') != '' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: phase52-zeaz-dev-evidence
           path: docs/reports/generated/zeaz-dev-*.md
           if-no-files-found: warn
-

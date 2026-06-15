@@ -1,0 +1,45 @@
+{
+  "description": "zDash DNS intent example — dry-run by default",
+  "zone": "example.invalid",
+  "apply_required": "APPLY=true",
+  "cost_lock": true,
+  "plan_tier": "Free",
+  "allow_paid_cloudflare_features": false,
+  "hostnames": [
+    {
+      "name": "zdash.example.invalid",
+      "purpose": "zDash frontend",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "api-zdash.example.invalid",
+      "purpose": "zDash backend API",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "name": "release.example.invalid",
+      "purpose": "optional public release evidence page",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto"
+    }
+  ],
+  "rollback": {
+    "disable_route": true,
+    "restore_previous_dns_target": true,
+    "lock_access_policy": true,
+    "no_destructive_deletes": true
+  },
+  "notes": [
+    "Existing ssh.zeaz.dev route must remain unchanged.",
+    "No paid Cloudflare features are enabled in this example.",
+    "Use scoped Cloudflare tokens only; never Global API Key."
+  ]
+}

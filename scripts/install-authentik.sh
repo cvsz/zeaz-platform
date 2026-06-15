@@ -1,8 +1,6 @@
-# install-authentik.sh
-
 #!/usr/bin/env bash
-
 set -Eeuo pipefail
+IFS=$'\n\t'
 
 AUTH_DIR="/opt/authentik"
 

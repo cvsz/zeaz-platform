@@ -96,6 +96,18 @@ export default function Dashboard() {
   const latestBacktest = backtestResults.data?.[0] ?? null;
 
   const latestLogs = (logsState.data ?? []).slice(0, 6);
+  const liveStreamLabel = realtime.connection.connected
+    ? realtime.connection.stale
+      ? "STALE"
+      : "LIVE"
+    : "OFFLINE";
+  const backendModeLabel = backendConnected ? "CONNECTED" : "SIMULATED";
+  const riskBadgeVariant =
+    getSeverityFromStatus(riskLevel) === "danger"
+      ? "danger"
+      : getSeverityFromStatus(riskLevel) === "warning"
+        ? "warning"
+        : "success";
 
   const eventItems = realtime.events.map((e) => ({
     id: e.id,
@@ -108,8 +120,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-5">
       <PageHeader
+        eyebrow="Mission Control"
         title="Dashboard"
-        subtitle="Live session overview with dry-run-safe defaults and guardrails enabled."
+        subtitle="Live session overview with dry-run-safe defaults, realtime telemetry, and governance guardrails enabled."
         actions={
           <>
             <RealtimeStatusBadge connection={realtime.connection} compact />
@@ -124,6 +137,69 @@ export default function Dashboard() {
       {mockFallbackActive ? (
         <SafetyBanner text="Mock fallback mode active. Backend data is simulated for offline-safe UI rendering." variant="info" />
       ) : null}
+
+      <GlassCard className="overflow-hidden border border-border/80 p-0">
+        <div className="grid gap-0 xl:grid-cols-[1.35fr_0.85fr]">
+          <div className="p-6 md:p-8">
+            <div className="inline-flex items-center gap-2 rounded-pill border border-accent-cyan/30 bg-accent-cyan/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-accent-cyan">
+              Operational command surface
+            </div>
+            <h3 className="mt-4 max-w-2xl text-3xl font-semibold tracking-tight text-text-primary md:text-4xl">
+              One place to monitor strategy, risk, and execution readiness.
+            </h3>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-text-dim">
+              This dashboard keeps the trading stack in dry-run-first posture while surfacing health, realtime
+              telemetry, backtests, and operator actions in a single control surface.
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <StatusBadge status={backendModeLabel} variant={backendConnected ? "success" : "warning"} />
+              <StatusBadge status={tradingDryRun ? "DRY_RUN" : "LIVE"} variant={tradingDryRun ? "info" : "danger"} />
+              <StatusBadge status={riskLevel.toUpperCase()} variant={riskBadgeVariant} />
+              <StatusBadge status={liveStreamLabel} variant={realtime.connection.connected && !realtime.connection.stale ? "success" : realtime.connection.stale ? "warning" : "muted"} pulsing={realtime.connection.connected && !realtime.connection.stale} />
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-card border border-border bg-canvas/45 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Primary lane</p>
+                <p className="mt-2 text-sm font-semibold text-text-primary">Dry-run-safe XAU workflow</p>
+                <p className="mt-1 text-xs leading-5 text-text-dim">
+                  Trade signals, backtests, and publishing gates stay isolated until operators explicitly move forward.
+                </p>
+              </div>
+              <div className="rounded-card border border-border bg-canvas/45 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Operator focus</p>
+                <p className="mt-2 text-sm font-semibold text-text-primary">Realtime + governance in one view</p>
+                <p className="mt-1 text-xs leading-5 text-text-dim">
+                  Health, alerts, scheduler, content, and audit flows are organized for quick scanability.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-border bg-canvas/35 p-6 md:p-8 xl:border-l xl:border-t-0">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Operational pulse</p>
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center justify-between rounded-card border border-border bg-panel/70 px-4 py-3">
+                <span className="text-sm text-text-secondary">System health</span>
+                <StatusBadge status={healthStatus.toUpperCase()} variant={healthStatus === "ok" ? "success" : "warning"} />
+              </div>
+              <div className="flex items-center justify-between rounded-card border border-border bg-panel/70 px-4 py-3">
+                <span className="text-sm text-text-secondary">Agents online</span>
+                <StatusBadge status={`${onlineAgents}/${totalAgents || 9}`} variant={onlineAgents > 0 ? "success" : "warning"} />
+              </div>
+              <div className="flex items-center justify-between rounded-card border border-border bg-panel/70 px-4 py-3">
+                <span className="text-sm text-text-secondary">Scheduler</span>
+                <StatusBadge status={schedulerRunning ? "RUNNING" : "IDLE"} variant={schedulerRunning ? "success" : "muted"} />
+              </div>
+              <div className="flex items-center justify-between rounded-card border border-border bg-panel/70 px-4 py-3">
+                <span className="text-sm text-text-secondary">Content gate</span>
+                <StatusBadge status={contentApprovalRequired ? "APPROVAL" : "AUTO"} variant={contentApprovalRequired ? "warning" : "success"} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </GlassCard>
 
       {/* Metric cards row */}
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -150,7 +226,7 @@ export default function Dashboard() {
           title="Risk Level"
           value={riskLevel.toUpperCase()}
           subtitle="Guardian drawdown checks"
-          variant={getSeverityFromStatus(riskLevel) === "danger" ? "danger" : getSeverityFromStatus(riskLevel) === "warning" ? "warning" : "success"}
+          variant={riskBadgeVariant}
         />
       </div>
 
@@ -288,7 +364,37 @@ export default function Dashboard() {
         </div>
       </GlassCard>
 
-      <TeamRoster />
+      <GlassCard className="overflow-hidden border border-border/80 p-0">
+        <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="border-b border-border p-4 lg:border-b-0 lg:border-r">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Runtime Chain</p>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              Alexander Prime delegates execution to Sophia Lane, coordinating Victor Hale (Risk), Isla Grant
+              (Scheduler + IoT), Nathan Cole (Backtesting), Elena Voss, Julian Reed, Maya Quinn (Content), and
+              Damien Cross (Trading).
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                AGENT_NAME_BY_ID.ceo,
+                AGENT_NAME_BY_ID.janie,
+                AGENT_NAME_BY_ID.guardian,
+                AGENT_NAME_BY_ID.friday,
+                AGENT_NAME_BY_ID.joe,
+                AGENT_NAME_BY_ID.editor,
+                AGENT_NAME_BY_ID.graphic,
+                AGENT_NAME_BY_ID.social,
+                AGENT_NAME_BY_ID.trading,
+              ].map((name) => (
+                <StatusBadge key={name} status={name} variant="muted" size="sm" />
+              ))}
+            </div>
+          </div>
+
+          <div className="p-4 md:p-5">
+            <TeamRoster />
+          </div>
+        </div>
+      </GlassCard>
     </div>
   );
 }

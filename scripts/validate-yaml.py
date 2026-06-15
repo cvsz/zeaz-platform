@@ -93,7 +93,9 @@ for pattern in ("*.yml", "*.yaml"):
 failed: list[tuple[Path, Exception]] = []
 for path in sorted(set(files)):
     try:
-        yaml.safe_load(path.read_text(encoding="utf-8"))
+        docs = list(yaml.safe_load_all(path.read_text(encoding="utf-8")))
+        if not docs:
+          raise ValueError("YAML file contains no documents")
     except Exception as exc:
         failed.append((path, exc))
 

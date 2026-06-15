@@ -1,20 +1,14 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import SectionCard from "../components/common/SectionCard";
 
 export default function SubagentResults() {
   return (
     <div className="p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Subagent Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            This page displays results and outputs from various subagents executing workflows.
-            (Content coming soon)
-          </p>
-        </CardContent>
-      </Card>
+      <SectionCard title="Subagent Results">
+        <p className="text-slate-400">
+          This page displays results and outputs from various subagents executing workflows.
+          (Content coming soon)
+        </p>
+      </SectionCard>
     </div>
   );
 }
