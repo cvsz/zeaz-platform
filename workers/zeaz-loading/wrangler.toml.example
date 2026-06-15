@@ -1,0 +1,16 @@
+name = "zeaz-loading"
+main = "src/index.js"
+compatibility_date = "2026-05-24"
+
+workers_dev = false
+
+routes = [
+  { pattern = "www.zeaz.dev/*", zone_name = "zeaz.dev" }
+]
+
+[vars]
+BRAND_NAME = "ZeaZ"
+APP_URL = "https://www.zeaz.dev"
+STATUS_TEXT_TH = "กำลังเริ่มต้นระบบ ZeaZ Cloud"
+STATUS_TEXT_EN = "Initializing ZeaZ Cloud Stack"
+TARGET_URL = "https://www.zeaz.dev"
