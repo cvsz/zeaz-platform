@@ -974,7 +974,32 @@ When adding generated files, ensure they are lintable, testable, and documented.
 
 ---
 
-## 24. Final Instruction
+## 24. Technology Stack
+
+ZeaZ Platform is a multi-application, Cloudflare-first monorepo. The core stack components include:
+
+### Core Infrastructure & Routing
+- **Reverse Proxy**: Traefik (entry gateway for all internal apps)
+- **Tunneling**: Cloudflare Tunnel (`cloudflared`) routing external traffic to Traefik
+- **Databases**: PostgreSQL (primary relational), Redis (caching, sessions, pub/sub)
+- **Containerization**: Docker & Docker Compose
+- **Security & Identity**: Authentik, Cloudflare Zero Trust
+
+### Applications
+- **Frontend / Web Apps**: Next.js, React (Vite)
+- **Backend APIs**: FastAPI (Python), Node.js/Express
+- **Developer Tools & Cockpits**: `apps/zcloud` (CloudPanel), `apps/zdash` (Next.js/FastAPI), `apps/zcfdash`
+- **Algo Trading & Game Services**: `apps/ztrader` (Celery/FastAPI), `apps/zcino`, `apps/zcino-modern`
+- **Educational & Workspace**: `apps/zAcademy`, `apps/zlms`, `apps/zoffice`, `apps/openwork`
+- **Other Utilities**: `apps/zLinebot`, `apps/zsticker`, `apps/zsp-aitool`, `apps/zveo`, `apps/zwallet`
+
+### Agentic Capabilities
+- **ZAI Ecosystem**: `zai-agents-pack` utilizing Claude Code and advanced AI architectures
+- **Workflow & Orchestration**: AgentDB, Hooks, and autonomous loops via `.agents` and `zaictl`
+
+---
+
+## 25. Final Instruction
 
 This repository must evolve from specification to safe executable platform through phased, validated, reviewable changes.
 
