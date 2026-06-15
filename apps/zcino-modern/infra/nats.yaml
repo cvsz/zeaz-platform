@@ -1,7 +1,0 @@
-version: "3"
-
-services:
-  nats:
-    image: nats:2.10
-    ports:
-      - "4222:4222"
