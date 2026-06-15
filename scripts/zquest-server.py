@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sqlite3
+from json import JSONDecodeError
 from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -203,7 +204,11 @@ class Handler(SimpleHTTPRequestHandler):
             return
         length = int(self.headers.get("Content-Length") or 0)
         raw = self.rfile.read(length) if length else b"{}"
-        payload = json.loads(raw.decode("utf-8") or "{}")
+        try:
+            payload = json.loads(raw.decode("utf-8") or "{}")
+        except JSONDecodeError:
+            self._json(400, {"ok": False, "error": "invalid JSON"})
+            return
         self._json(200, {"ok": True, "backend": "sqlite", "database": save_db(payload)})
 
     def do_POST(self) -> None:

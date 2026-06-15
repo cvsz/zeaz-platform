@@ -45,8 +45,21 @@ start() {
   nohup env ZQUEST_HOST="$HOST" ZQUEST_PORT="$PORT" ZQUEST_DOCROOT="$DOCROOT" ZQUEST_DATABASE_PATH="$DB_PATH" \
     "$PYTHON_BIN" "$SERVER_SCRIPT" >"$LOG_FILE" 2>&1 &
   echo $! >"$PID_FILE"
-  sleep 1
-  status
+  for _ in $(seq 1 20); do
+    if curl -fsS --max-time 1 "http://${HOST}:${PORT}/api/runtime/zquest/health" >/dev/null 2>&1; then
+      status
+      return 0
+    fi
+    if ! is_running; then
+      log "process exited early; see $LOG_FILE"
+      [[ -s "$LOG_FILE" ]] && sed -n '1,120p' "$LOG_FILE"
+      return 1
+    fi
+    sleep 0.25
+  done
+  log "timed out waiting for health; see $LOG_FILE"
+  [[ -s "$LOG_FILE" ]] && sed -n '1,120p' "$LOG_FILE"
+  return 1
 }
 
 stop() {
@@ -66,8 +79,12 @@ stop() {
 
 status() {
   if is_running; then
-    log "running pid=$(cat "$PID_FILE") http://${HOST}:${PORT}"
-    return 0
+    if curl -fsS --max-time 2 "http://${HOST}:${PORT}/api/runtime/zquest/health" >/dev/null 2>&1; then
+      log "running pid=$(cat "$PID_FILE") http://${HOST}:${PORT}"
+      return 0
+    fi
+    log "pid file present but health is not ready; see $LOG_FILE"
+    return 1
   fi
   if command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://${HOST}:${PORT}/api/runtime/zquest/health" >/dev/null 2>&1; then
     log "running external http://${HOST}:${PORT}"

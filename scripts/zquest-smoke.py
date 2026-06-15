@@ -16,7 +16,19 @@ def request_json(url: str, method: str = "GET", data: dict | None = None) -> dic
         headers["Content-Type"] = "application/json"
     req = urllib.request.Request(url, data=body, headers=headers, method=method)
     with urllib.request.urlopen(req, timeout=5) as response:
-      return json.loads(response.read().decode("utf-8"))
+        return json.loads(response.read().decode("utf-8"))
+
+
+def request_raw(url: str, method: str, body: bytes | None = None, content_type: str | None = None) -> int:
+    headers = {}
+    if content_type:
+        headers["Content-Type"] = content_type
+    req = urllib.request.Request(url, data=body, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=5) as response:
+            return response.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
 
 
 def main() -> int:
@@ -59,6 +71,15 @@ def main() -> int:
     roundtrip = request_json(f"{base}/api/runtime/zquest/database")
     if roundtrip.get("database", {}).get("activeUserId") != "guest":
         raise SystemExit("roundtrip failed")
+
+    invalid_status = request_raw(
+        f"{base}/api/runtime/zquest/database",
+        method="PUT",
+        body=b"{not-json",
+        content_type="application/json",
+    )
+    if invalid_status not in {400, 422}:
+        raise SystemExit(f"invalid JSON status mismatch: {invalid_status}")
 
     print("zquest smoke ok")
     return 0
