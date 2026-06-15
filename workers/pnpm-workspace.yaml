@@ -4,7 +4,7 @@ packages:
   - 'zeaz-loading'
 
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
 
 overrides:
   postcss: "8.5.15"
