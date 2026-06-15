@@ -34,29 +34,5 @@
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"
-  },
-  "resolutions": {
-    "postcss": "latest",
-    "follow-redirects": "latest",
-    "qs": "latest",
-    "uuid": "latest",
-    "file-type": "latest",
-    "ip-address": "latest",
-    "esbuild": "latest",
-    "@tootallnate/once": "latest",
-    "ws": "latest",
-    "@protobufjs/utf8": "latest"
-  },
-  "overrides": {
-    "postcss": "latest",
-    "follow-redirects": "latest",
-    "qs": "latest",
-    "uuid": "latest",
-    "file-type": "latest",
-    "ip-address": "latest",
-    "esbuild": "latest",
-    "@tootallnate/once": "latest",
-    "ws": "latest",
-    "@protobufjs/utf8": "latest"
   }
 }

@@ -57,11 +57,5 @@
     "typescript": "^5.8.3",
     "drizzle-kit": "^0.31.4",
     "pg": "^8.16.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "postcss": "^8.5.15",
-      "esbuild": "^0.28.1"
-    }
   }
 }

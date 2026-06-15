@@ -1,6 +1,5 @@
 allowBuilds:
   sharp: false
-
 overrides:
-  postcss: "^8.5.15"
-  esbuild: "^0.28.1"
+  esbuild: 0.28.1
+  postcss: 8.5.15

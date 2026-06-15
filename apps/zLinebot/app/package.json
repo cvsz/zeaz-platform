@@ -45,8 +45,5 @@
   "main": "dist/main.js",
   "engines": {
     "node": ">=20.0.0"
-  },
-  "overrides": {
-    "tar": "^7.5.13"
   }
 }
