@@ -1,8 +1,0 @@
-pools:
-  - name: primary
-    origins: [LOCAL_IP]
-  - name: backup
-    origins: [zlinebot.zeaz.dev]
-load_balancer:
-  default_pools: [primary, backup]
-  fallback_pool: backup

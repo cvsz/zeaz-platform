@@ -113,6 +113,7 @@ validate: test validate-env env-format-validate yaml-validate gitlink-validate c
 	@echo "Validation complete."
 
 validate-env:
+	@python3 scripts/omega/validate-env.py
 	@bash scripts/env-report-check.sh advisory
 
 validate-env-strict:
@@ -849,8 +850,44 @@ zquest-restart: zquest-stop zquest-start ## Restart zQuest server
 zquest-smoke: ## Run zQuest smoke tests against the local server
 	@bash scripts/zquest-control.sh smoke
 
-# Include Zeaz Cloudflare routing ops Makefile
--include ops/zeaz-cloudflare/Makefile.zeaz-cloudflare.mk
+.PHONY: all-apps-start all-apps-stop all-apps-restart all-apps-status
+
+all-apps-start: ## Start all apps (Makefile or npm/pnpm start)
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^start:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" start & \
+			elif [ -f "$$app/package.json" ]; then \
+				echo "Starting $$app via npm/pnpm..."; \
+				(cd "$$app" && ( [ -f pnpm-lock.yaml ] && pnpm start || npm start ) &) \
+			else echo "Skipping $$app"; fi; \
+		fi; \
+	done
+
+all-apps-stop: ## Stop all apps (Makefile or process kill)
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^stop:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" stop || true; \
+			else \
+				echo "Stopping processes in $$app..."; \
+				pids=$$(pgrep -f "$$app"); \
+				if [ -n "$$pids" ]; then kill $$pids; else echo "No process found for $$app"; fi; \
+			fi; \
+		fi; \
+	done
+all-apps-restart: all-apps-stop all-apps-start
+
+all-apps-status: ## Show status of all apps
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^status:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" status; \
+			else \
+				pgrep -af "$$app" || echo "$$app: Stopped"; \
+			fi; \
+		fi; \
+	done
 
 # OMEGA Platform Installer Targets
 install:

@@ -1,9 +1,0 @@
-confluent-kafka==2.5.0
-numpy==2.3.2
-boto3==1.40.30
-ray[rllib]>=2.60.0
-scikit-learn==1.7.1
-
-cryptography>=46.1.0
-fastapi==0.116.1
-pydantic==2.12.0

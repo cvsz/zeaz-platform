@@ -1,8 +1,0 @@
-records:
-  - name: zlinebot.zeaz.dev
-    type: A
-    value: PRIMARY_IP
-    proxied: true
-  - name: backup.zlinebot.zeaz.dev
-    type: CNAME
-    value: zlinebot.zeaz.dev

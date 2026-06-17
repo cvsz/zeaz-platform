@@ -199,3 +199,8 @@ apps/zsticker/credentials.json
 backups/snapshots/*.tar.gz
 backups/snapshots/*.sha256
 !backups/snapshots/.gitkeep
+
+# Omega Platform
+.gemini/plans/imported-*
+.gemini/mcp-configs/
+.gemini/settings.json

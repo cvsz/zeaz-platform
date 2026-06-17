@@ -1,2 +1,0 @@
-ALTER DATABASE app PRIMARY REGION "asia-southeast1";
-ALTER DATABASE app ADD REGION "us-east1";

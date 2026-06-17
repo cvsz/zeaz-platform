@@ -12,6 +12,9 @@ http:
     zwallet-api:
       rule: "Host(`api-apps.zeaz.dev`) || Host(`api-app.zeaz.dev`)"
       service: zwallet-api-service
+    zeaz-web:
+      rule: "Host(`zeaz.dev`) || Host(`www.zeaz.dev`)"
+      service: zeaz-web-service
 
   services:
     zdash-web-service:
@@ -30,6 +33,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://172.18.0.1:8080"
+    zeaz-web-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:3000"
 
   middlewares:
     auth:

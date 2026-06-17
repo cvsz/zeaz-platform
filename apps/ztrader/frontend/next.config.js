@@ -8,7 +8,7 @@ const nextConfig = {
   poweredByHeader: false,
 
   turbopack: {
-    root: path.resolve(__dirname, '../../..'),
+    root: path.join(__dirname),
   },
 
   async headers() {

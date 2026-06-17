@@ -103,6 +103,12 @@ async def get_audit_logs(limit: int = 50, db: AsyncSession = Depends(get_db_sess
 
 @router.post("/api/v1/bot/start", response_model=BotStatusResponse)
 async def start_bot(req: BotStartRequest):
+    if settings.GLOBAL_KILL_SWITCH:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="System is currently in a safe state (Global Kill Switch active). Trading prohibited."
+        )
+
     bot_id = f"bot-{req.strategy_name}-{req.symbol.replace('/', '-')}"
 
     if bot_id in ACTIVE_BOTS and ACTIVE_BOTS[bot_id]["active"]:
