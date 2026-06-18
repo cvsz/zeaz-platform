@@ -93,7 +93,7 @@ services:
   api-gateway:
     build:
       context: ../..
-      dockerfile: apps/zeaz-api-gateway/Dockerfile
+      dockerfile: apps/api-gateway/Dockerfile
     profiles:
     - node
     environment:

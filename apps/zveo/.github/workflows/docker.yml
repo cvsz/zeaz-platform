@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - image: api-gateway
-            dockerfile: apps/zeaz-api-gateway/Dockerfile
+            dockerfile: apps/api-gateway/Dockerfile
           - image: render-worker
             dockerfile: apps/render-worker/Dockerfile
           - image: dashboard

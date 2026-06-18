@@ -15,7 +15,7 @@ zVEO keeps domain, prompt, scene graph, queue, media pipeline, security, and obs
 - `packages/scene-graph` owns deterministic DAG compilation and continuity propagation.
 - `packages/prompt-compiler` owns provider-specific prompt emission from typed scene payloads.
 - `packages/queue-ts` owns BullMQ queue semantics, idempotency, retries, leases, heartbeats, and DLQ handoff.
-- `apps/zeaz-api-gateway` owns HTTP ingress, authentication, RBAC enforcement, OpenAPI, readiness, metrics, workflow submission, and media pipeline submission.
+- `apps/api-gateway` owns HTTP ingress, authentication, RBAC enforcement, OpenAPI, readiness, metrics, workflow submission, and media pipeline submission.
 - `apps/render-worker` owns provider execution boundaries, timeout control, heartbeat reporting, and artifact validation.
 - `packages/media-pipeline` owns resumable export planning, FFmpeg graph generation, synchronization, and checkpointed media state.
 

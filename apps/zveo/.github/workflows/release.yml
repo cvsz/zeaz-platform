@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - image: api-gateway
-            dockerfile: apps/zeaz-api-gateway/Dockerfile
+            dockerfile: apps/api-gateway/Dockerfile
             context: .
           - image: render-worker
             dockerfile: apps/render-worker/Dockerfile

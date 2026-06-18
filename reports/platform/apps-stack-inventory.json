@@ -2262,9 +2262,9 @@
         "python"
       ],
       "stack_files": [
-        "apps/zveo/apps/zeaz-api-gateway/Dockerfile",
-        "apps/zveo/apps/zeaz-api-gateway/package.json",
-        "apps/zveo/apps/zeaz-api-gateway/tsconfig.json",
+        "apps/zveo/apps/api-gateway/Dockerfile",
+        "apps/zveo/apps/api-gateway/package.json",
+        "apps/zveo/apps/api-gateway/tsconfig.json",
         "apps/zveo/apps/dashboard/Dockerfile",
         "apps/zveo/apps/dashboard/next.config.ts",
         "apps/zveo/apps/dashboard/package.json",
@@ -2406,7 +2406,7 @@
             "apps/zveo/infra/docker/docker-compose.yml"
           ],
           "6379": [
-            "apps/zveo/apps/zeaz-api-gateway/src/config.ts",
+            "apps/zveo/apps/api-gateway/src/config.ts",
             "apps/zveo/apps/render-worker/src/worker.ts",
             "apps/zveo/infra/kubernetes/base/network-policy.yaml"
           ],
@@ -2417,8 +2417,8 @@
             "apps/zveo/infra/kubernetes/api.yaml"
           ],
           "8080": [
-            "apps/zveo/apps/zeaz-api-gateway/Dockerfile",
-            "apps/zveo/apps/zeaz-api-gateway/src/openapi.ts",
+            "apps/zveo/apps/api-gateway/Dockerfile",
+            "apps/zveo/apps/api-gateway/src/openapi.ts",
             "apps/zveo/apps/dashboard/app/settings/page.tsx",
             "apps/zveo/apps/dashboard/lib/api.test.ts",
             "apps/zveo/apps/dashboard/lib/api.ts",

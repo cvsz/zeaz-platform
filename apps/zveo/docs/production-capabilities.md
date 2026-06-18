@@ -118,25 +118,25 @@ apps/render-worker/src/worker.ts     Worker lifecycle, heartbeats, timeouts, pro
 ### Repository tree
 
 ```text
-apps/zeaz-api-gateway/src/server.ts       HTTP/HTTPS server, validation, audit events, rate limiting, trace IDs
-apps/zeaz-api-gateway/src/auth.ts         Signed service bearer tokens and RBAC principals
-apps/zeaz-api-gateway/src/config.ts       Environment and file-backed secret loading, TLS settings
+apps/api-gateway/src/server.ts       HTTP/HTTPS server, validation, audit events, rate limiting, trace IDs
+apps/api-gateway/src/auth.ts         Signed service bearer tokens and RBAC principals
+apps/api-gateway/src/config.ts       Environment and file-backed secret loading, TLS settings
 packages/core/src/security.ts        Secret loading, audit logger, token-bucket rate limiter
 packages/core/src/rbac.ts            Permission model
 ```
 
 ### Source files
 
-- `apps/zeaz-api-gateway/src/server.ts`
-- `apps/zeaz-api-gateway/src/auth.ts`
-- `apps/zeaz-api-gateway/src/config.ts`
+- `apps/api-gateway/src/server.ts`
+- `apps/api-gateway/src/auth.ts`
+- `apps/api-gateway/src/config.ts`
 - `packages/core/src/security.ts`
 - `packages/core/src/rbac.ts`
 
 ### Configuration files
 
-- `apps/zeaz-api-gateway/package.json`
-- `apps/zeaz-api-gateway/Dockerfile`
+- `apps/api-gateway/package.json`
+- `apps/api-gateway/Dockerfile`
 - `infra/kubernetes/base/api-gateway.yaml`
 - `infra/kubernetes/base/network-policy.yaml`
 

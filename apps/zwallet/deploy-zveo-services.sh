@@ -13,7 +13,7 @@ After=network.target
 [Service]
 Type=simple
 User=zeazdev
-WorkingDirectory=/opt/zveo/apps/zeaz-api-gateway
+WorkingDirectory=/opt/zveo/apps/api-gateway
 Environment=NODE_ENV=production
 Environment=PORT=8090
 ExecStart=/usr/bin/node dist/server.js

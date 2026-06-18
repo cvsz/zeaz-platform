@@ -12,7 +12,7 @@ All external inputs and inter-service payloads are parsed through strict TypeScr
 ## Implementation boundaries
 
 - `packages/core` owns workflow, job, asset, retry, event, RBAC, logging, metrics, tracing, and recovery contracts.
-- `apps/zeaz-api-gateway` parses HTTP payloads and authenticates principals before enqueueing render jobs or media pipeline commands.
+- `apps/api-gateway` parses HTTP payloads and authenticates principals before enqueueing render jobs or media pipeline commands.
 - `packages/db` mirrors database entities so services do not hand-roll persistence shapes.
 - Python compatibility modules keep equivalent validation semantics for legacy workers and tests.
 

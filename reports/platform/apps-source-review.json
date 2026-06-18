@@ -5964,7 +5964,7 @@
           "apps/zveo/infra/docker/docker-compose.yml"
         ],
         "6379": [
-          "apps/zveo/apps/zeaz-api-gateway/src/config.ts",
+          "apps/zveo/apps/api-gateway/src/config.ts",
           "apps/zveo/apps/render-worker/src/worker.ts",
           "apps/zveo/infra/kubernetes/base/network-policy.yaml"
         ],
@@ -5977,8 +5977,8 @@
         "8080": [
           "apps/zveo/.env.example.node",
           "apps/zveo/.env.node",
-          "apps/zveo/apps/zeaz-api-gateway/Dockerfile",
-          "apps/zveo/apps/zeaz-api-gateway/src/openapi.ts",
+          "apps/zveo/apps/api-gateway/Dockerfile",
+          "apps/zveo/apps/api-gateway/src/openapi.ts",
           "apps/zveo/apps/dashboard/app/settings/page.tsx",
           "apps/zveo/apps/dashboard/lib/api.test.ts",
           "apps/zveo/apps/dashboard/lib/api.ts",

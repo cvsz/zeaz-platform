@@ -1106,10 +1106,10 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 - `4319` from `apps/zveo/infra/observability/docker-compose.observability.yml`
 - `5432` from `apps/zveo/drizzle.config.ts, apps/zveo/scripts/db-smoke.sh`
 - `5436` from `apps/zveo/infra/docker/docker-compose.yml`
-- `6379` from `apps/zveo/apps/zeaz-api-gateway/src/config.ts, apps/zveo/apps/render-worker/src/worker.ts, apps/zveo/infra/kubernetes/base/network-policy.yaml`
+- `6379` from `apps/zveo/apps/api-gateway/src/config.ts, apps/zveo/apps/render-worker/src/worker.ts, apps/zveo/infra/kubernetes/base/network-policy.yaml`
 - `6382` from `apps/zveo/infra/docker/docker-compose.yml`
 - `8000` from `apps/zveo/infra/kubernetes/api.yaml`
-- `8080` from `apps/zveo/.env.example.node, apps/zveo/.env.node, apps/zveo/apps/zeaz-api-gateway/Dockerfile, apps/zveo/apps/zeaz-api-gateway/src/openapi.ts, apps/zveo/apps/dashboard/app/settings/page.tsx, apps/zveo/apps/dashboard/lib/api.test.ts, apps/zveo/apps/dashboard/lib/api.ts, apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/docs/openapi/api-gateway.openapi.ts, apps/zveo/infra/docker/docker-compose.yml, apps/zveo/infra/kubernetes/base/api-gateway.yaml, apps/zveo/infra/kubernetes/base/blue-green.yaml`
+- `8080` from `apps/zveo/.env.example.node, apps/zveo/.env.node, apps/zveo/apps/api-gateway/Dockerfile, apps/zveo/apps/api-gateway/src/openapi.ts, apps/zveo/apps/dashboard/app/settings/page.tsx, apps/zveo/apps/dashboard/lib/api.test.ts, apps/zveo/apps/dashboard/lib/api.ts, apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/docs/openapi/api-gateway.openapi.ts, apps/zveo/infra/docker/docker-compose.yml, apps/zveo/infra/kubernetes/base/api-gateway.yaml, apps/zveo/infra/kubernetes/base/blue-green.yaml`
 - `9000` from `apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/infra/docker/docker-compose.yml`
 - `9005` from `apps/zveo/infra/docker/docker-compose.yml`
 - `9006` from `apps/zveo/infra/docker/docker-compose.yml`

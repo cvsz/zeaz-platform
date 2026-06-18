@@ -12,7 +12,7 @@ zVEO treats observability, security, and isolation as runtime requirements. Serv
 ## Implementation boundaries
 
 - `packages/core` owns logger, metric, tracing, RBAC, secret, rate-limiter, circuit-breaker, bulkhead, and recovery utilities.
-- `apps/zeaz-api-gateway` exposes health, readiness, metrics, OpenAPI, authenticated workflow submission, and media pipeline submission.
+- `apps/api-gateway` exposes health, readiness, metrics, OpenAPI, authenticated workflow submission, and media pipeline submission.
 - Kubernetes manifests define service isolation, autoscaling, PDBs, and blue/green rollout controls.
 - Terraform defines encrypted, versioned, replicated object storage with public access blocked.
 
