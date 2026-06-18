@@ -47,6 +47,7 @@ export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 .PHONY: zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan
 .PHONY: zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate
 .PHONY: git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai
+.PHONY: local-publish-help local-publish-scan local-publish-scan-untracked local-publish local-publish-untracked local-publish-tracked
 .PHONY: zaiz-deps-check
 .PHONY: zquest-start zquest-stop zquest-status zquest-restart zquest-smoke
 
@@ -290,6 +291,26 @@ gpg-finalize: validate
 	@git status --short
 
 git-finalize: gpg-finalize
+
+local-publish-help:
+	@bash scripts/git/review-and-publish-local-changes.sh --help
+
+local-publish-scan:
+	@bash scripts/git/review-and-publish-local-changes.sh --message "$${COMMIT_MSG:-chore: publish reviewed local changes}"
+
+local-publish-scan-untracked:
+	@bash scripts/git/review-and-publish-local-changes.sh --include-untracked --message "$${COMMIT_MSG:-chore: publish reviewed local changes}"
+
+local-publish:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@bash scripts/git/review-and-publish-local-changes.sh --apply --include-untracked --message "$(COMMIT_MSG)" $${GIT_BRANCH:+--branch "$${GIT_BRANCH}"} $${GIT_REMOTE:+--remote "$${GIT_REMOTE}"}
+
+local-publish-untracked: local-publish
+
+local-publish-tracked:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@bash scripts/git/review-and-publish-local-changes.sh --apply --message "$(COMMIT_MSG)" $${GIT_BRANCH:+--branch "$${GIT_BRANCH}"} $${GIT_REMOTE:+--remote "$${GIT_REMOTE}"}
+
 
 zaiz-validate: validate
 

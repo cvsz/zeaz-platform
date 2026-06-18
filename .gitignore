@@ -204,3 +204,39 @@ backups/snapshots/*.sha256
 .gemini/plans/imported-*
 .gemini/mcp-configs/
 .gemini/settings.json
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
