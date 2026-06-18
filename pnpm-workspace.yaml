@@ -6,24 +6,27 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
 overrides:
   esbuild: 0.28.1
   postcss: 8.5.15
+
 packages:
-- apps/zeaz-web
-- apps/openwork
-- apps/zAcademy
-- apps/zcloud
-- apps/zdev
-- apps/zLinebot
-- apps/zlms
-- apps/zsp-aitool
-- apps/zwallet
-- apps/zdash/frontend
-- apps/zdash/backend
-- apps/ztrader/frontend
-- apps/zveo/frontend
-- '!apps/zeaz-api'
-- '!apps/zcino'
-- '!apps/zcino-modern'
-- '!apps/zsticker'
+  - apps/zeaz-web
+  - apps/zow
+  - apps/zacademy
+  - apps/zcloud
+  - apps/zdev
+  - apps/zai-factory
+  - apps/zlinebot
+  - apps/zlms
+  - apps/zaiz
+  - apps/zwallet
+  - apps/zdash/frontend
+  - apps/zdash/backend
+  - apps/ztrader/frontend
+  - apps/zveo/frontend
+  - '!apps/zeaz-api'
+  - '!apps/zcino'
+  - '!apps/zcino-modern'
+  - '!apps/zsticker'

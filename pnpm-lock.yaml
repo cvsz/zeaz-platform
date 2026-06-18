@@ -12,6 +12,8 @@ importers:
 
   .: {}
 
+  apps/zai-factory: {}
+
   apps/zcloud:
     dependencies:
       next:

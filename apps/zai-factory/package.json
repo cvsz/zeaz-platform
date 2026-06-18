@@ -1,0 +1,19 @@
+{
+  "name": "@zeaz/zai-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ZEAZ AI Factory engine, app registry, and local factory dashboard.",
+  "bin": {
+    "zai-factory": "./bin/ai-factory.js"
+  },
+  "scripts": {
+    "dev": "node server.mjs --host 127.0.0.1 --port 4191",
+    "start": "node server.mjs --host 127.0.0.1 --port 4191",
+    "validate": "node scripts/validate-apps-registry.mjs",
+    "build": "node scripts/validate-apps-registry.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
