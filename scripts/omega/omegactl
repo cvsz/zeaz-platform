@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${REPO_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
+
+log() { printf '==> %s\n' "$*"; }
+ok() { printf 'OK %s\n' "$*"; }
+warn() { printf 'WARN %s\n' "$*" >&2; }
+fail=0
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  scripts/omega/omegactl <command>
+
+Commands:
+  status      Print Omega addon path status.
+  list        List installed Omega agents, skills, commands, plugins, templates.
+  doctor      Run safe local checks and print warnings.
+  help        Show this help.
+
+Environment:
+  REPO_ROOT   Repository root. Default: auto-detected from this script.
+USAGE
+}
+
+count_entries() {
+  local path="$1"
+  if [[ -d "$path" ]]; then
+    find "$path" -mindepth 1 -maxdepth 1 2>/dev/null | wc -l | tr -d ' '
+  else
+    printf '0'
+  fi
+}
+
+path_status() {
+  local label="$1"
+  local path="$2"
+  if [[ -e "$path" ]]; then
+    printf '[FOUND] %-24s %s\n' "$label" "$path"
+  else
+    printf '[MISS ] %-24s %s\n' "$label" "$path"
+  fi
+}
+
+cmd_status() {
+  log "Omega status"
+  printf 'Repo: %s\n' "$REPO_ROOT"
+  path_status "Agents" "$REPO_ROOT/.agents/agents"
+  path_status "Skills" "$REPO_ROOT/.skills"
+  path_status "Gemini commands" "$REPO_ROOT/.gemini/commands"
+  path_status "Plugins" "$REPO_ROOT/.omega/plugins"
+  path_status "Templates" "$REPO_ROOT/.omega/templates"
+  path_status "Docs" "$REPO_ROOT/docs/omega"
+  path_status "omegactl" "$REPO_ROOT/scripts/omega/omegactl"
+}
+
+cmd_list() {
+  log "Omega inventory"
+  printf 'Agents:          %s\n' "$(count_entries "$REPO_ROOT/.agents/agents")"
+  printf 'Skills:          %s\n' "$(count_entries "$REPO_ROOT/.skills")"
+  printf 'Gemini commands: %s\n' "$(count_entries "$REPO_ROOT/.gemini/commands")"
+  printf 'Plugins:         %s\n' "$(count_entries "$REPO_ROOT/.omega/plugins")"
+  printf 'Templates:       %s\n' "$(count_entries "$REPO_ROOT/.omega/templates")"
+
+  for dir in \
+    "$REPO_ROOT/.agents/agents" \
+    "$REPO_ROOT/.skills" \
+    "$REPO_ROOT/.gemini/commands" \
+    "$REPO_ROOT/.omega/plugins" \
+    "$REPO_ROOT/.omega/templates"; do
+    if [[ -d "$dir" ]]; then
+      printf '\n%s\n' "$dir"
+      find "$dir" -mindepth 1 -maxdepth 1 -printf '  %f\n' 2>/dev/null | sort | sed -n '1,80p'
+    fi
+  done
+}
+
+check_exists() {
+  local label="$1"
+  local path="$2"
+  if [[ -e "$path" ]]; then
+    ok "$label exists"
+  else
+    warn "$label missing: $path"
+    fail=1
+  fi
+}
+
+cmd_doctor() {
+  log "Omega doctor"
+  check_exists "Repo" "$REPO_ROOT"
+  check_exists "GEMINI.md" "$REPO_ROOT/GEMINI.md"
+  check_exists "Omega template dir" "$REPO_ROOT/.omega/templates"
+  check_exists "Omega command dir" "$REPO_ROOT/.gemini/commands"
+  check_exists "omegactl" "$REPO_ROOT/scripts/omega/omegactl"
+
+  if [[ -f "$REPO_ROOT/GEMINI.md" ]] && grep -q 'OMEGA_MASTER_ADVANCED_PROFESSIONAL_START' "$REPO_ROOT/GEMINI.md"; then
+    ok "GEMINI.md contains Omega marker"
+  else
+    warn "GEMINI.md does not contain Omega marker"
+    fail=1
+  fi
+
+  if command -v gemini >/dev/null 2>&1; then
+    ok "Gemini CLI available: $(command -v gemini)"
+  else
+    warn "Gemini CLI not found in PATH"
+  fi
+
+  if [[ "${DISPLAY:-}" == "" ]]; then
+    warn "DISPLAY is not set; avoid Gemini interactive paste mode on headless SSH"
+  fi
+
+  if [[ $fail -ne 0 ]]; then
+    return 1
+  fi
+  ok "Omega doctor passed"
+}
+
+case "${1:-help}" in
+  status) cmd_status ;;
+  list) cmd_list ;;
+  doctor) cmd_doctor ;;
+  help|-h|--help) usage ;;
+  *)
+    echo "Unknown command: $1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
