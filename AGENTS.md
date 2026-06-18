@@ -8,6 +8,13 @@
 
 ## Git Workflow
 
+
+### Forbidden Commands
+- **Never use** `git commit` directly
+- **Never use** `git push` directly
+- **Never use** `git pull` directly
+- **Never use** `gh` CLI for commit/push/pull operations
+
 ### Allowed Commands
 | Operation   | Command                            |
 |-------------|------------------------------------|
@@ -17,19 +24,13 @@
 | Pull        | `make gpg-pull`                    |
 | All-in-one  | `make gpg-finalize COMMIT_MSG="..."` |
 
-### Forbidden Commands
-- **Never use** `git commit` directly
-- **Never use** `git push` directly
-- **Never use** `git pull` directly
-- **Never use** `gh` CLI for commit/push/pull operations
-
 ### Branching
 - Follow the established branch naming conventions (e.g., `fix/`, `feat/`).
 
 This file is the authoritative operating guide for Codex and other automated coding agents working in this repository.
 
 Repository: `cvsz/zeaz-platform`
-Organization: `ZeazDev`
+Organization: `ZeazDev Company Limited`
 Primary domain: `zeaz.dev`
 Primary objective: build and maintain a production-grade, GitOps-ready Cloudflare Zero Trust platform without committing secrets, fake production identifiers, or unsafe automation.
 
@@ -124,20 +125,19 @@ The repository must converge toward this structure:
 zeaz-platform/
 ├── .github/
 ├── apps/
-│   ├── api/
-│   ├── openwork/
-│   ├── web/
+│   ├── zeaz-api/
+│   ├── zow/
+│   ├── zeaz-web/
 │   ├── zAcademy/
 │   ├── zLinebot/
 │   ├── zcfdash/
 │   ├── zcino/
-│   ├── zcino-modern/
 │   ├── zcloud/
 │   ├── zdash/
 │   ├── zdev/
 │   ├── zlms/
 │   ├── zoffice/
-│   ├── zsp-aitool/
+│   ├── zaiz/
 │   ├── zsticker/
 │   ├── ztrader/
 │   ├── zveo/

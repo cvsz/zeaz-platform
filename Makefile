@@ -922,3 +922,17 @@ package:
 
 harness-audit:
 	@node scripts/harness-audit.js repo --format text
+# ==============================================================================
+# ZEAZ Omega AI Assets Installer
+# ==============================================================================
+
+.PHONY: omega-ai-assets-scan omega-ai-assets-install omega-ai-assets-verify
+
+omega-ai-assets-scan:
+	@bash scripts/omega/install-ai-assets-master.sh
+
+omega-ai-assets-install:
+	@bash scripts/omega/install-ai-assets-master.sh --apply
+
+omega-ai-assets-verify:
+	@bash scripts/omega/verify-ai-assets-master.sh
