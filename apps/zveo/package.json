@@ -56,6 +56,6 @@
   "devDependencies": {
     "typescript": "^5.8.3",
     "drizzle-kit": "^0.31.4",
-    "pg": "^8.16.0"
+    "pg": "^8.21.0"
   }
 }
