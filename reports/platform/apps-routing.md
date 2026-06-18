@@ -2,7 +2,7 @@
 
 | App | Path | Type | Hostname(s) | Origin | Port | Status | API Prefix |
 |---|---|---|---|---|---:|---|---|
-| root | `apps/web` | ui | `zeaz.dev, www.zeaz.dev` | `http://127.0.0.1:3003` | `3003` | active | `` |
+| root | `apps/zeaz-web` | ui | `zeaz.dev, www.zeaz.dev` | `http://127.0.0.1:3003` | `3003` | active | `` |
 | ssh | `system/ssh` | tcp | `ssh.zeaz.dev` | `ssh://127.0.0.1:22022` | `22022` | active | `` |
 | zwallet | `apps/zwallet` | ui | `app.zeaz.dev` | `http://127.0.0.1:3003` | `3003` | active | `` |
 | studio | `apps/zoffice` | ui | `studio.zeaz.dev` | `http://127.0.0.1:3001` | `3001` | active | `` |

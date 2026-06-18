@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Apply Phase 51/52 report fixes + apps/web CI Tailwind oxide fix.
+# Apply Phase 51/52 report fixes + apps/zeaz-web CI Tailwind oxide fix.
 # Run from cvsz/zeaz-platform repo root:
 #   bash apply-phase51-52-web-ci-fix.sh
 
@@ -112,7 +112,7 @@ cat > scripts/ci/install-web-deps-safe.sh <<'EOF'
 set -Eeuo pipefail
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-WEB="$ROOT/apps/web"
+WEB="$ROOT/apps/zeaz-web"
 
 cd "$WEB"
 
@@ -155,7 +155,7 @@ replacement = """- name: Install web dependencies safely
   run: scripts/ci/install-web-deps-safe.sh
 
 - name: Build web
-  working-directory: apps/web
+  working-directory: apps/zeaz-web
   env:
     NEXT_TELEMETRY_DISABLED: "1"
   run: npm run build"""
@@ -166,17 +166,17 @@ for path in list(workflow_dir.glob("*.yml")) + list(workflow_dir.glob("*.yaml"))
     original = s
 
     pattern1 = re.compile(
-        r"-\s*(?:name:\s*[^\n]*\n\s*)?run:\s*\|\n\s*cd apps/web\n\s*npm run build",
+        r"-\s*(?:name:\s*[^\n]*\n\s*)?run:\s*\|\n\s*cd apps/zeaz-web\n\s*npm run build",
         re.MULTILINE,
     )
     s = pattern1.sub(replacement, s)
 
-    if "scripts/ci/install-web-deps-safe.sh" not in s and "working-directory: apps/web" in s and "npm run build" in s:
+    if "scripts/ci/install-web-deps-safe.sh" not in s and "working-directory: apps/zeaz-web" in s and "npm run build" in s:
         lines = s.splitlines()
         out = []
         inserted = False
         for line in lines:
-            if (not inserted) and "working-directory: apps/web" in line:
+            if (not inserted) and "working-directory: apps/zeaz-web" in line:
                 indent = line[: len(line) - len(line.lstrip())]
                 out.append(f"{indent}- name: Install web dependencies safely")
                 out.append(f"{indent}  run: scripts/ci/install-web-deps-safe.sh")
@@ -196,7 +196,7 @@ echo "[7/7] Validate Phase 51/52 and web build"
 make phase51-validate
 make phase52-validate
 scripts/ci/install-web-deps-safe.sh
-(cd apps/web && npm run build)
+(cd apps/zeaz-web && npm run build)
 
 echo
 echo "Done. Review:"

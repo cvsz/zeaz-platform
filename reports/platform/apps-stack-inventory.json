@@ -2,7 +2,7 @@
   "apps": [
     {
       "app_id": "api",
-      "path": "apps/api",
+      "path": "apps/zeaz-api",
       "nested_git": false,
       "root_tracked_files": 16,
       "git_status": [],
@@ -11,29 +11,29 @@
         "python"
       ],
       "stack_files": [
-        "apps/api/Dockerfile",
-        "apps/api/docker-compose.yml",
-        "apps/api/requirements.txt"
+        "apps/zeaz-api/Dockerfile",
+        "apps/zeaz-api/docker-compose.yml",
+        "apps/zeaz-api/requirements.txt"
       ],
       "package": null,
       "signals": {
         "ports": {
           "6379": [
-            "apps/api/routers/scheduler.py",
-            "apps/api/routers/swarm.py"
+            "apps/zeaz-api/routers/scheduler.py",
+            "apps/zeaz-api/routers/swarm.py"
           ],
           "8000": [
-            "apps/api/docker-compose.yml"
+            "apps/zeaz-api/docker-compose.yml"
           ]
         },
         "domains": {
           "api.zeaz.dev": [
-            "apps/api/README.md",
-            "apps/api/docker-compose.yml",
-            "apps/api/routers/cloudflare_control.py"
+            "apps/zeaz-api/README.md",
+            "apps/zeaz-api/docker-compose.yml",
+            "apps/zeaz-api/routers/cloudflare_control.py"
           ],
           "zcfdash.zeaz.dev": [
-            "apps/api/routers/cloudflare_control.py"
+            "apps/zeaz-api/routers/cloudflare_control.py"
           ]
         },
         "extension_counts": {
@@ -461,21 +461,21 @@
     },
     {
       "app_id": "web",
-      "path": "apps/web",
+      "path": "apps/zeaz-web",
       "nested_git": false,
       "root_tracked_files": 57,
       "git_status": [
-        "M  apps/web/pnpm-lock.yaml"
+        "M  apps/zeaz-web/pnpm-lock.yaml"
       ],
       "stack": [
         "node",
         "pnpm"
       ],
       "stack_files": [
-        "apps/web/next.config.ts",
-        "apps/web/package.json",
-        "apps/web/pnpm-lock.yaml",
-        "apps/web/tsconfig.json"
+        "apps/zeaz-web/next.config.ts",
+        "apps/zeaz-web/package.json",
+        "apps/zeaz-web/pnpm-lock.yaml",
+        "apps/zeaz-web/tsconfig.json"
       ],
       "package": {
         "name": "@zeaz/web",
@@ -492,47 +492,47 @@
       "signals": {
         "ports": {
           "8000": [
-            "apps/web/src/app/dashboard/swarm-runtime/page.tsx",
-            "apps/web/src/lib/api.ts"
+            "apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx",
+            "apps/zeaz-web/src/lib/api.ts"
           ]
         },
         "domains": {
           "api-zcfdash.zeaz.dev": [
-            "apps/web/src/app/dashboard/agents/page.tsx",
-            "apps/web/src/app/dashboard/deployments/page.tsx",
-            "apps/web/src/app/dashboard/services/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/agents/page.tsx",
+            "apps/zeaz-web/src/app/dashboard/deployments/page.tsx",
+            "apps/zeaz-web/src/app/dashboard/services/page.tsx"
           ],
           "api-zdash.zeaz.dev": [
-            "apps/web/src/app/dashboard/reports/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
           ],
           "api.zeaz.dev": [
-            "apps/web/src/app/dashboard/page.tsx",
-            "apps/web/src/app/dashboard/services/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/page.tsx",
+            "apps/zeaz-web/src/app/dashboard/services/page.tsx"
           ],
           "app.zeaz.dev": [
-            "apps/web/src/app/dashboard/reports/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
           ],
           "ssh.zeaz.dev": [
-            "apps/web/src/app/dashboard/reports/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
           ],
           "www.zeaz.dev": [
-            "apps/web/README.md",
-            "apps/web/next.config.ts",
-            "apps/web/src/app/dashboard/reports/page.tsx",
-            "apps/web/src/app/marketing/contact/page.tsx",
-            "apps/web/src/app/marketing/layout.tsx"
+            "apps/zeaz-web/README.md",
+            "apps/zeaz-web/next.config.ts",
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx",
+            "apps/zeaz-web/src/app/marketing/contact/page.tsx",
+            "apps/zeaz-web/src/app/marketing/layout.tsx"
           ],
           "zcfdash.zeaz.dev": [
-            "apps/web/next.config.ts"
+            "apps/zeaz-web/next.config.ts"
           ],
           "zcino.zeaz.dev": [
-            "apps/web/src/app/dashboard/reports/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
           ],
           "zdash.zeaz.dev": [
-            "apps/web/src/app/dashboard/reports/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
           ],
           "zveo.zeaz.dev": [
-            "apps/web/src/app/dashboard/reports/page.tsx"
+            "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
           ]
         },
         "extension_counts": {
@@ -647,7 +647,7 @@
         "apps/zLinebot/app/package-lock.json",
         "apps/zLinebot/app/package.json",
         "apps/zLinebot/app/tsconfig.json",
-        "apps/zLinebot/apps/api/Dockerfile",
+        "apps/zLinebot/apps/zeaz-api/Dockerfile",
         "apps/zLinebot/apps/worker/Dockerfile",
         "apps/zLinebot/cloud/worker/Dockerfile",
         "apps/zLinebot/cloud/worker/requirements.txt",
@@ -789,7 +789,7 @@
             "apps/zLinebot/CONTRIBUTING.md",
             "apps/zLinebot/app/src/dr/health.ts",
             "apps/zLinebot/app/src/utils/env.ts",
-            "apps/zLinebot/apps/api/src/server.ts",
+            "apps/zLinebot/apps/zeaz-api/src/server.ts",
             "apps/zLinebot/docs/CONTRIBUTING_th.md",
             "apps/zLinebot/docs/INSTALL_FULL.md",
             "apps/zLinebot/docs/MANUAL.md",
@@ -2262,9 +2262,9 @@
         "python"
       ],
       "stack_files": [
-        "apps/zveo/apps/api-gateway/Dockerfile",
-        "apps/zveo/apps/api-gateway/package.json",
-        "apps/zveo/apps/api-gateway/tsconfig.json",
+        "apps/zveo/apps/zeaz-api-gateway/Dockerfile",
+        "apps/zveo/apps/zeaz-api-gateway/package.json",
+        "apps/zveo/apps/zeaz-api-gateway/tsconfig.json",
         "apps/zveo/apps/dashboard/Dockerfile",
         "apps/zveo/apps/dashboard/next.config.ts",
         "apps/zveo/apps/dashboard/package.json",
@@ -2406,7 +2406,7 @@
             "apps/zveo/infra/docker/docker-compose.yml"
           ],
           "6379": [
-            "apps/zveo/apps/api-gateway/src/config.ts",
+            "apps/zveo/apps/zeaz-api-gateway/src/config.ts",
             "apps/zveo/apps/render-worker/src/worker.ts",
             "apps/zveo/infra/kubernetes/base/network-policy.yaml"
           ],
@@ -2417,8 +2417,8 @@
             "apps/zveo/infra/kubernetes/api.yaml"
           ],
           "8080": [
-            "apps/zveo/apps/api-gateway/Dockerfile",
-            "apps/zveo/apps/api-gateway/src/openapi.ts",
+            "apps/zveo/apps/zeaz-api-gateway/Dockerfile",
+            "apps/zveo/apps/zeaz-api-gateway/src/openapi.ts",
             "apps/zveo/apps/dashboard/app/settings/page.tsx",
             "apps/zveo/apps/dashboard/lib/api.test.ts",
             "apps/zveo/apps/dashboard/lib/api.ts",
@@ -2512,8 +2512,8 @@
         "apps/zwallet/api/pyproject.toml",
         "apps/zwallet/api/requirements.txt",
         "apps/zwallet/apps/android/package.json",
-        "apps/zwallet/apps/api/package.json",
-        "apps/zwallet/apps/api/tsconfig.json",
+        "apps/zwallet/apps/zeaz-api/package.json",
+        "apps/zwallet/apps/zeaz-api/tsconfig.json",
         "apps/zwallet/apps/world/package-lock.json",
         "apps/zwallet/apps/world/package.json",
         "apps/zwallet/backend/package-lock.json",
@@ -2592,7 +2592,7 @@
         "ports": {
           "3000": [
             "apps/zwallet/.env.example",
-            "apps/zwallet/apps/api/src/server.ts",
+            "apps/zwallet/apps/zeaz-api/src/server.ts",
             "apps/zwallet/docs/api-spec.yaml",
             "apps/zwallet/infra/helm/templates/api-deployment.yaml",
             "apps/zwallet/infra/k8s/api-deployment.yaml",

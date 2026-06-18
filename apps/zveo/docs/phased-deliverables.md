@@ -7,7 +7,7 @@ This document maps the production scaffold to the mandatory six-phase delivery o
 ### Repository tree
 
 ```text
-apps/api-gateway/         HTTP API, authentication, RBAC, OpenAPI, metrics
+apps/zeaz-api-gateway/         HTTP API, authentication, RBAC, OpenAPI, metrics
 apps/render-worker/       BullMQ render worker, heartbeats, provider timeout boundary
 packages/core/            Zod schemas, events, RBAC, state machines, logging, metrics, tracing
 packages/queue-ts/        BullMQ runtime with priority, leasing, DLQ, adaptive concurrency
@@ -19,7 +19,7 @@ infra/kubernetes/base/    Deployments, services, RBAC, HPA, security policies
 ### Complete source code
 
 - Domain contracts and events: `packages/core/src/schemas.ts`, `packages/core/src/events.ts`.
-- Authentication/RBAC: `apps/api-gateway/src/auth.ts`, `packages/core/src/rbac.ts`.
+- Authentication/RBAC: `apps/zeaz-api-gateway/src/auth.ts`, `packages/core/src/rbac.ts`.
 - Queue runtime: `packages/queue-ts/src/index.ts`.
 - Asset validation: `apps/render-worker/src/asset-validator.ts`, `packages/storage/validator.py`.
 - Structured logging, metrics, and trace spans: `packages/core/src/logger.ts`, `packages/core/src/metrics.ts`, `packages/core/src/tracing.ts`.
@@ -30,7 +30,7 @@ infra/kubernetes/base/    Deployments, services, RBAC, HPA, security policies
 
 ### API contracts
 
-- TypeScript OpenAPI 3.1 source: `apps/api-gateway/src/openapi.ts`.
+- TypeScript OpenAPI 3.1 source: `apps/zeaz-api-gateway/src/openapi.ts`.
 - Contract mirror for documentation: `docs/openapi/api-gateway.openapi.ts`.
 
 ### Unit + integration tests
@@ -40,7 +40,7 @@ infra/kubernetes/base/    Deployments, services, RBAC, HPA, security policies
 
 ### Docker and Kubernetes
 
-- Dockerfiles: `apps/api-gateway/Dockerfile`, `apps/render-worker/Dockerfile`, `apps/api-gateway/Dockerfile`, `apps/orchestrator/Dockerfile`.
+- Dockerfiles: `apps/zeaz-api-gateway/Dockerfile`, `apps/render-worker/Dockerfile`, `apps/zeaz-api-gateway/Dockerfile`, `apps/orchestrator/Dockerfile`.
 - Compose: `infra/docker/docker-compose.yml`.
 - Kubernetes base: `infra/kubernetes/base/*.yaml`.
 
@@ -137,7 +137,7 @@ The media pipeline builds resumable workflow plans, models checkpoints and retri
 ### Schema, API, tests, and operations
 
 - API route: `POST /v1/workflows/{workflowId}/media-pipelines`.
-- OpenAPI contract: `apps/api-gateway/src/openapi.ts`.
+- OpenAPI contract: `apps/zeaz-api-gateway/src/openapi.ts`.
 - Tests: `packages/media-pipeline/tests/media-pipeline.test.ts`.
 - Docker Compose includes a `media-worker` service for pipeline package execution.
 

@@ -5,8 +5,8 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 
 | App | Role | Path | Hostname | Port | Origin | Status | Check Mode | Health Path | Alias | API Gateway |
 |---|---|---|---|---:|---|---|---|---|---|---|
-| web-root | ui | `apps/web` | `zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | report-only | `` | `` | `` |
-| web-www | ui | `apps/web` | `www.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | report-only | `` | `` | `` |
+| web-root | ui | `apps/zeaz-web` | `zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | report-only | `` | `` | `` |
+| web-www | ui | `apps/zeaz-web` | `www.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active | report-only | `` | `` | `` |
 | ssh | tcp | `system/ssh` | `ssh.zeaz.dev` | 22022 | `ssh://127.0.0.1:22022` | active |  | `` | `` | `` |
 | zdash | ui | `apps/zdash` | `zdash.zeaz.dev` | 5173 | `http://127.0.0.1:5173` | active | must-run | `` | `` | `` |
 | zdash-api | api | `apps/zdash` | `api-zdash.zeaz.dev` | 8005 | `http://127.0.0.1:8005` | active | must-run | `/health` | `` | `/v1/zdash` |
@@ -24,8 +24,8 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | zsp-aitool | ui | `apps/zsp-aitool` | `ztest.zeaz.dev` | 3008 | `http://127.0.0.1:3008` | active | report-only | `` | `` | `` |
 | auth | auth | `apps/auth` | `auth.zeaz.dev` | 9443 | `http://127.0.0.1:9443` | active | report-only | `` | `` | `` |
 | zai-factory | ops | `apps/zai-factory` | `factory.zeaz.dev` | 8710 | `http://127.0.0.1:8710` | reserved |  | `` | `` | `/v1/factory` |
-| zcfdash | ui | `apps/web` | `zcfdash.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active |  | `` | `web` | `` |
-| zcfdash-api | api | `apps/api` | `api-zcfdash.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active |  | `` | `api-gateway` | `/api/runtime/cloudflare` |
+| zcfdash | ui | `apps/zeaz-web` | `zcfdash.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active |  | `` | `web` | `` |
+| zcfdash-api | api | `apps/zeaz-api` | `api-zcfdash.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active |  | `` | `api-gateway` | `/api/runtime/cloudflare` |
 | ztrader-api | api | `apps/ztrader` | `api-ztrader.zeaz.dev` | 8016 | `http://127.0.0.1:8016` | active |  | `` | `ztrader` | `/api/v1` |
 
 ## Port usage

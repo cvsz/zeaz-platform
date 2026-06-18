@@ -10,7 +10,7 @@ overrides:
   esbuild: 0.28.1
   postcss: 8.5.15
 packages:
-- apps/web
+- apps/zeaz-web
 - apps/openwork
 - apps/zAcademy
 - apps/zcloud
@@ -23,7 +23,7 @@ packages:
 - apps/zdash/backend
 - apps/ztrader/frontend
 - apps/zveo/frontend
-- '!apps/api'
+- '!apps/zeaz-api'
 - '!apps/zcino'
 - '!apps/zcino-modern'
 - '!apps/zsticker'

@@ -31,7 +31,7 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 ## `api`
 
-- Path: `apps/api`
+- Path: `apps/zeaz-api`
 - Stack: `docker, python`
 - Root tracked files: `16`
 - Nested git: `False`
@@ -40,13 +40,13 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 ### Ports
 
-- `6379` from `apps/api/routers/scheduler.py, apps/api/routers/swarm.py`
-- `8000` from `apps/api/docker-compose.yml`
+- `6379` from `apps/zeaz-api/routers/scheduler.py, apps/zeaz-api/routers/swarm.py`
+- `8000` from `apps/zeaz-api/docker-compose.yml`
 
 ### Domains
 
-- `api.zeaz.dev` from `apps/api/README.md, apps/api/docker-compose.yml, apps/api/routers/cloudflare_control.py`
-- `zcfdash.zeaz.dev` from `apps/api/routers/cloudflare_control.py`
+- `api.zeaz.dev` from `apps/zeaz-api/README.md, apps/zeaz-api/docker-compose.yml, apps/zeaz-api/routers/cloudflare_control.py`
+- `zcfdash.zeaz.dev` from `apps/zeaz-api/routers/cloudflare_control.py`
 
 ### Env files
 
@@ -218,7 +218,7 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 ## `web`
 
-- Path: `apps/web`
+- Path: `apps/zeaz-web`
 - Stack: `node, pnpm`
 - Root tracked files: `57`
 - Nested git: `False`
@@ -233,44 +233,44 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 ### Ports
 
-- `4101` from `apps/web/.env`
-- `4102` from `apps/web/.env`
-- `4103` from `apps/web/.env`
-- `4104` from `apps/web/.env`
-- `4105` from `apps/web/.env`
-- `4106` from `apps/web/.env`
-- `4107` from `apps/web/.env`
-- `4108` from `apps/web/.env`
-- `4109` from `apps/web/.env`
-- `4110` from `apps/web/.env`
-- `4111` from `apps/web/.env`
-- `4112` from `apps/web/.env`
-- `4113` from `apps/web/.env`
-- `5432` from `apps/web/.env`
-- `8000` from `apps/web/src/app/dashboard/swarm-runtime/page.tsx, apps/web/src/lib/api.ts`
+- `4101` from `apps/zeaz-web/.env`
+- `4102` from `apps/zeaz-web/.env`
+- `4103` from `apps/zeaz-web/.env`
+- `4104` from `apps/zeaz-web/.env`
+- `4105` from `apps/zeaz-web/.env`
+- `4106` from `apps/zeaz-web/.env`
+- `4107` from `apps/zeaz-web/.env`
+- `4108` from `apps/zeaz-web/.env`
+- `4109` from `apps/zeaz-web/.env`
+- `4110` from `apps/zeaz-web/.env`
+- `4111` from `apps/zeaz-web/.env`
+- `4112` from `apps/zeaz-web/.env`
+- `4113` from `apps/zeaz-web/.env`
+- `5432` from `apps/zeaz-web/.env`
+- `8000` from `apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx, apps/zeaz-web/src/lib/api.ts`
 
 ### Domains
 
-- `api-zcfdash.zeaz.dev` from `apps/web/src/app/dashboard/agents/page.tsx, apps/web/src/app/dashboard/deployments/page.tsx, apps/web/src/app/dashboard/services/page.tsx`
-- `api-zdash.zeaz.dev` from `apps/web/.env, apps/web/src/app/dashboard/reports/page.tsx`
-- `api.zeaz.dev` from `apps/web/src/app/dashboard/page.tsx, apps/web/src/app/dashboard/services/page.tsx`
-- `app.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `auth.zeaz.dev` from `apps/web/.env`
-- `release.zeaz.dev` from `apps/web/.env`
-- `ssh.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `www.zeaz.dev` from `apps/web/README.md, apps/web/next.config.ts, apps/web/src/app/dashboard/reports/page.tsx, apps/web/src/app/marketing/contact/page.tsx, apps/web/src/app/marketing/layout.tsx`
-- `zcfdash.zeaz.dev` from `apps/web/next.config.ts`
-- `zcino.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `zdash.zeaz.dev` from `apps/web/.env, apps/web/src/app/dashboard/reports/page.tsx`
-- `zveo.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
+- `api-zcfdash.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/agents/page.tsx, apps/zeaz-web/src/app/dashboard/deployments/page.tsx, apps/zeaz-web/src/app/dashboard/services/page.tsx`
+- `api-zdash.zeaz.dev` from `apps/zeaz-web/.env, apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `api.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/page.tsx, apps/zeaz-web/src/app/dashboard/services/page.tsx`
+- `app.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `auth.zeaz.dev` from `apps/zeaz-web/.env`
+- `release.zeaz.dev` from `apps/zeaz-web/.env`
+- `ssh.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `www.zeaz.dev` from `apps/zeaz-web/README.md, apps/zeaz-web/next.config.ts, apps/zeaz-web/src/app/dashboard/reports/page.tsx, apps/zeaz-web/src/app/marketing/contact/page.tsx, apps/zeaz-web/src/app/marketing/layout.tsx`
+- `zcfdash.zeaz.dev` from `apps/zeaz-web/next.config.ts`
+- `zcino.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `zdash.zeaz.dev` from `apps/zeaz-web/.env, apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `zveo.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
 
 ### Env files
 
-- `apps/web/.env` `local-only` keys=106: `ALLOW_ADVANCED_WAF, ALLOW_LOAD_BALANCING, ALLOW_LOGPUSH, ALLOW_PAID_CLOUDFLARE_FEATURES, ALLOW_R2_WRITE, ALLOW_WORKERS_DEPLOY, API_PORT, AUTHENTIK_SECRET_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_GATEWAY_SLUG, CLOUDFLARE_API_TOKEN, CLOUDFLARE_BOOTSTRAP_TOKEN, CLOUDFLARE_D1_TOKEN, CLOUDFLARE_DNS_TOKEN, CLOUDFLARE_PAGES_TOKEN, CLOUDFLARE_PLAN_TIER, CLOUDFLARE_R2_TOKEN, CLOUDFLARE_TUNNEL_ID, CLOUDFLARE_TUNNEL_NAME, CLOUDFLARE_TUNNEL_TOKEN, CLOUDFLARE_WAF_TOKEN, CLOUDFLARE_WORKERS_TOKEN, CLOUDFLARE_ZONE_ID, CLOUDFLARE_ZT_TOKEN, CONFIRM_TOKEN_DELETE, COST_LOCK, DATABASE_URL, DB_NAME, DB_PASS, DB_USER, DOCKER_API_KEY, DOCKER_LOCATION, DOCKER_REGISTRY_URL, DOCKER_USERNAME, ENVIRONMENT, GH_PAT_KEY, GPG_PASSPHRASE, GRAFANA_PASSWORD, HOSTNAME, IDENTITY_PROVIDER_METADATA_URL, IDENTITY_PROVIDER_TYPE, IDENTITY_PROVIDER_VENDOR, INCLUDE_RESERVED, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_WEBHOOK_SECRET, MINIO_ROOT_PASSWORD, MINIO_ROOT_USER, NODE_ENV, NVIDIA_NIM_API_KEY`
+- `apps/zeaz-web/.env` `local-only` keys=106: `ALLOW_ADVANCED_WAF, ALLOW_LOAD_BALANCING, ALLOW_LOGPUSH, ALLOW_PAID_CLOUDFLARE_FEATURES, ALLOW_R2_WRITE, ALLOW_WORKERS_DEPLOY, API_PORT, AUTHENTIK_SECRET_KEY, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_GATEWAY_SLUG, CLOUDFLARE_API_TOKEN, CLOUDFLARE_BOOTSTRAP_TOKEN, CLOUDFLARE_D1_TOKEN, CLOUDFLARE_DNS_TOKEN, CLOUDFLARE_PAGES_TOKEN, CLOUDFLARE_PLAN_TIER, CLOUDFLARE_R2_TOKEN, CLOUDFLARE_TUNNEL_ID, CLOUDFLARE_TUNNEL_NAME, CLOUDFLARE_TUNNEL_TOKEN, CLOUDFLARE_WAF_TOKEN, CLOUDFLARE_WORKERS_TOKEN, CLOUDFLARE_ZONE_ID, CLOUDFLARE_ZT_TOKEN, CONFIRM_TOKEN_DELETE, COST_LOCK, DATABASE_URL, DB_NAME, DB_PASS, DB_USER, DOCKER_API_KEY, DOCKER_LOCATION, DOCKER_REGISTRY_URL, DOCKER_USERNAME, ENVIRONMENT, GH_PAT_KEY, GPG_PASSPHRASE, GRAFANA_PASSWORD, HOSTNAME, IDENTITY_PROVIDER_METADATA_URL, IDENTITY_PROVIDER_TYPE, IDENTITY_PROVIDER_VENDOR, INCLUDE_RESERVED, LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, LINE_WEBHOOK_SECRET, MINIO_ROOT_PASSWORD, MINIO_ROOT_USER, NODE_ENV, NVIDIA_NIM_API_KEY`
 
 ### Findings
 
-- `warn` `local_env_file`: Local env file exists: apps/web/.env
+- `warn` `local_env_file`: Local env file exists: apps/zeaz-web/.env
 - `info` `expected_port_not_detected`: Expected port 3003 from apps-port-plan not detected in source text
 - `info` `expected_hostname_not_detected`: Expected hostname zeaz.dev from apps-port-plan not detected in source text
 
@@ -343,7 +343,7 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 ### Ports
 
 - `587` from `apps/zLinebot/.env.example`
-- `3000` from `apps/zLinebot/.env, apps/zLinebot/.env.example, apps/zLinebot/CONTRIBUTING.md, apps/zLinebot/app/src/dr/health.ts, apps/zLinebot/app/src/utils/env.ts, apps/zLinebot/apps/api/src/server.ts, apps/zLinebot/docs/CONTRIBUTING_th.md, apps/zLinebot/docs/INSTALL_FULL.md, apps/zLinebot/docs/MANUAL.md, apps/zLinebot/docs/README_th.md, apps/zLinebot/docs/install_manual_en.md, apps/zLinebot/docs/install_manual_th.md`
+- `3000` from `apps/zLinebot/.env, apps/zLinebot/.env.example, apps/zLinebot/CONTRIBUTING.md, apps/zLinebot/app/src/dr/health.ts, apps/zLinebot/app/src/utils/env.ts, apps/zLinebot/apps/zeaz-api/src/server.ts, apps/zLinebot/docs/CONTRIBUTING_th.md, apps/zLinebot/docs/INSTALL_FULL.md, apps/zLinebot/docs/MANUAL.md, apps/zLinebot/docs/README_th.md, apps/zLinebot/docs/install_manual_en.md, apps/zLinebot/docs/install_manual_th.md`
 - `3001` from `apps/zLinebot/deploy.sh, apps/zLinebot/nginx/default.conf`
 - `3002` from `apps/zLinebot/deploy.sh`
 - `3100` from `apps/zLinebot/k8s/observability.yaml`
@@ -1106,10 +1106,10 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 - `4319` from `apps/zveo/infra/observability/docker-compose.observability.yml`
 - `5432` from `apps/zveo/drizzle.config.ts, apps/zveo/scripts/db-smoke.sh`
 - `5436` from `apps/zveo/infra/docker/docker-compose.yml`
-- `6379` from `apps/zveo/apps/api-gateway/src/config.ts, apps/zveo/apps/render-worker/src/worker.ts, apps/zveo/infra/kubernetes/base/network-policy.yaml`
+- `6379` from `apps/zveo/apps/zeaz-api-gateway/src/config.ts, apps/zveo/apps/render-worker/src/worker.ts, apps/zveo/infra/kubernetes/base/network-policy.yaml`
 - `6382` from `apps/zveo/infra/docker/docker-compose.yml`
 - `8000` from `apps/zveo/infra/kubernetes/api.yaml`
-- `8080` from `apps/zveo/.env.example.node, apps/zveo/.env.node, apps/zveo/apps/api-gateway/Dockerfile, apps/zveo/apps/api-gateway/src/openapi.ts, apps/zveo/apps/dashboard/app/settings/page.tsx, apps/zveo/apps/dashboard/lib/api.test.ts, apps/zveo/apps/dashboard/lib/api.ts, apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/docs/openapi/api-gateway.openapi.ts, apps/zveo/infra/docker/docker-compose.yml, apps/zveo/infra/kubernetes/base/api-gateway.yaml, apps/zveo/infra/kubernetes/base/blue-green.yaml`
+- `8080` from `apps/zveo/.env.example.node, apps/zveo/.env.node, apps/zveo/apps/zeaz-api-gateway/Dockerfile, apps/zveo/apps/zeaz-api-gateway/src/openapi.ts, apps/zveo/apps/dashboard/app/settings/page.tsx, apps/zveo/apps/dashboard/lib/api.test.ts, apps/zveo/apps/dashboard/lib/api.ts, apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/docs/openapi/api-gateway.openapi.ts, apps/zveo/infra/docker/docker-compose.yml, apps/zveo/infra/kubernetes/base/api-gateway.yaml, apps/zveo/infra/kubernetes/base/blue-green.yaml`
 - `9000` from `apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/infra/docker/docker-compose.yml`
 - `9005` from `apps/zveo/infra/docker/docker-compose.yml`
 - `9006` from `apps/zveo/infra/docker/docker-compose.yml`
@@ -1160,7 +1160,7 @@ This report is read-only. It excludes dependency, cache, build, runtime, vendor,
 
 ### Ports
 
-- `3000` from `apps/zwallet/.env, apps/zwallet/.env.example, apps/zwallet/apps/api/src/server.ts, apps/zwallet/docs/api-spec.yaml, apps/zwallet/infra/helm/templates/api-deployment.yaml, apps/zwallet/infra/k8s/api-deployment.yaml, apps/zwallet/infra/k8s/monitoring.yaml, apps/zwallet/k8s/monitoring/monitoring-stack.yaml`
+- `3000` from `apps/zwallet/.env, apps/zwallet/.env.example, apps/zwallet/apps/zeaz-api/src/server.ts, apps/zwallet/docs/api-spec.yaml, apps/zwallet/infra/helm/templates/api-deployment.yaml, apps/zwallet/infra/k8s/api-deployment.yaml, apps/zwallet/infra/k8s/monitoring.yaml, apps/zwallet/k8s/monitoring/monitoring-stack.yaml`
 - `3002` from `apps/zwallet/deploy-zveo-services.sh`
 - `4173` from `apps/zwallet/apps/world/README.md`
 - `4222` from `apps/zwallet/docker-compose.yml`

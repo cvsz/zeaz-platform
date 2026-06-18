@@ -27,7 +27,7 @@ Hard rules:
 zVEO is already a monorepo with:
 
 ```text
-apps/api-gateway      Node.js TypeScript API gateway
+apps/zeaz-api-gateway      Node.js TypeScript API gateway
 apps/dashboard        Next.js operations dashboard
 apps/render-worker    BullMQ render worker
 packages/core         domain schemas, RBAC, logging, metrics, tracing
@@ -81,7 +81,7 @@ Scope:
 - Align Node.js version across root package.json, AGENTS.MD, README.md, Dockerfiles, and docker-compose. Prefer Node.js 24 if package.json and current Docker images already use it.
 - Create root .env.example with all required local variables.
 - Create app-specific env examples if needed:
-  - apps/api-gateway/.env.example
+  - apps/zeaz-api-gateway/.env.example
   - apps/dashboard/.env.example
   - apps/render-worker/.env.example
 - Ensure root scripts use the actual workspace package names.
@@ -379,7 +379,7 @@ Deliverables:
 ## One-Shot Prompt If You Want Codex to Plan Before Coding
 
 ```text
-Read README.md, AGENTS.MD, docs/phased-deliverables.md, docs/production-capabilities.md, package.json, pnpm-workspace.yaml, apps/api-gateway/src/server.ts, apps/dashboard/lib/api.ts, apps/render-worker/src/worker.ts, infra/docker/docker-compose.yml, and all package.json files.
+Read README.md, AGENTS.MD, docs/phased-deliverables.md, docs/production-capabilities.md, package.json, pnpm-workspace.yaml, apps/zeaz-api-gateway/src/server.ts, apps/dashboard/lib/api.ts, apps/render-worker/src/worker.ts, infra/docker/docker-compose.yml, and all package.json files.
 
 Then produce a phased implementation plan to clean and complete this full-stack monorepo. Do not change files yet. The plan must identify exact files to edit, scripts to run, risks, and acceptance criteria. Keep the existing queue-first architecture. Do not propose deleting the repo or replacing it with a generic Next.js/Express app.
 ```

@@ -6,8 +6,8 @@ usage() { echo 'Usage: scripts/ports/list-all-ports.sh'; }
 cat <<'PORTS'
 app,path,domain,port
 openwork,apps/openwork,zow.zeaz.dev,4101
-api,apps/api,api-zcfdash.zeaz.dev,4102
-web,apps/web,zcfdash.zeaz.dev,4103
+api,apps/zeaz-api,api-zcfdash.zeaz.dev,4102
+web,apps/zeaz-web,zcfdash.zeaz.dev,4103
 zoffice,apps/zoffice,zoffice.zeaz.dev,4104
 zwallet,apps/zwallet,app.zeaz.dev,4105
 ztrader,apps/ztrader,ztrader.zeaz.dev,4106

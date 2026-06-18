@@ -7,8 +7,8 @@ Overlay glob: configs/platform/*-route-overlay.json
 
 | Service | Public hostname | App path | Local origin | Status |
 |---|---|---|---|---|
-| UI | https://zcfdash.zeaz.dev | apps/web | http://127.0.0.1:3003 | STOPPED |
-| API | https://api-zcfdash.zeaz.dev | apps/api | http://127.0.0.1:8088 | RUNNING pid=219959 |
+| UI | https://zcfdash.zeaz.dev | apps/zeaz-web | http://127.0.0.1:3003 | STOPPED |
+| API | https://api-zcfdash.zeaz.dev | apps/zeaz-api | http://127.0.0.1:8088 | RUNNING pid=219959 |
 
 ## Commands
 

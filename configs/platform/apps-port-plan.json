@@ -21,7 +21,7 @@
     {
       "app_id": "web-root",
       "role": "ui",
-      "path": "apps/web",
+      "path": "apps/zeaz-web",
       "hostname": "zeaz.dev",
       "port": 3003,
       "origin": "http://127.0.0.1:3003",
@@ -31,7 +31,7 @@
     {
       "app_id": "web-www",
       "role": "ui",
-      "path": "apps/web",
+      "path": "apps/zeaz-web",
       "hostname": "www.zeaz.dev",
       "port": 3003,
       "origin": "http://127.0.0.1:3003",

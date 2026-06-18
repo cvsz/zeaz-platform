@@ -35,7 +35,7 @@ Evidence sources:
 
 ### Workspace members (actively wired)
 - `apps/dashboard`
-- `apps/api-gateway`
+- `apps/zeaz-api-gateway`
 - `apps/render-worker`
 - `packages/{contracts,core,db,queue-ts,prompt-compiler,scene-graph,media-pipeline,workflow-engine,scene-memory,providers,telemetry-ts}`
 
@@ -47,7 +47,7 @@ Proof:
 ## Suspected unused files/packages (needs manual confirmation)
 
 These paths exist but are **not** included in the pnpm workspace globs:
-- `apps/api_gateway`
+- `apps/zeaz-api_gateway`
 - `apps/worker_render`
 - `apps/worker_postprocess`
 - `apps/worker_media`
@@ -63,7 +63,7 @@ Interpretation:
 ## Duplicate Python vs TypeScript implementations
 
 Potential duplicate naming pairs:
-- API: `apps/api_gateway` (legacy) vs `apps/api-gateway` (current workspace app)
+- API: `apps/zeaz-api_gateway` (legacy) vs `apps/zeaz-api-gateway` (current workspace app)
 - Queue: `packages/queue` (legacy) vs `packages/queue-ts` (current workspace package)
 - Telemetry: `packages/telemetry` (legacy) vs `packages/telemetry-ts` (current workspace package)
 
@@ -81,7 +81,7 @@ Likely cause:
 ## Broken docs claims (initial)
 
 No explicit broken claim found in this pass, but documentation should be reviewed for references to:
-- legacy app paths (e.g., `apps/api_gateway`)
+- legacy app paths (e.g., `apps/zeaz-api_gateway`)
 - legacy package names (`queue`, `telemetry`) instead of `queue-ts`, `telemetry-ts`
 
 ## High-risk deletion list (do not delete yet)
@@ -99,7 +99,7 @@ No file/package is marked safe-delete yet because `knip` and `ts-prune` could no
 ## Move-to-legacy candidates (proposed)
 
 Candidate set for future Event 13 move plan:
-- `apps/api_gateway`
+- `apps/zeaz-api_gateway`
 - `apps/worker_render`
 - `apps/worker_postprocess`
 - `apps/worker_media`

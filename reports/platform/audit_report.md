@@ -8,14 +8,14 @@ This audit report summarizes the state of the `cvsz/zeaz-platform` repository, i
 - **Port Management:** Refactored successfully. Port origins have been isolated (`zcfdash` API on 8088, Web on 3003) and documented in `reports/platform/apps-port-refactor.md`.
 - **Cloudflare Tunnels:** Configured and generated successfully in `reports/platform/cloudflare-tunnel-ingress.generated.yml`.
 
-## 3. Python API & Backend (`apps/api`, `apps/ztrader`)
+## 3. Python API & Backend (`apps/zeaz-api`, `apps/ztrader`)
 - **Environment State:** Fixed module resolution issues (e.g., `opentelemetry`, `google-genai`). The control panel now explicitly targets the initialized virtual environment.
 - **Process Management:** Refactored `apps-server-control.sh` and `zcfdash-control-panel.sh`. Orphaned child processes no longer block ports after restarts due to proper `exec` and process detaching (`setsid`).
 - **Health Checks:** Fixed the `service_status` polling which incorrectly reported a `STOPPED` state when hitting `403 Forbidden` API endpoints.
 
-## 4. Frontend Ecosystem (`apps/web`, `apps/zcloud`, `apps/ztrader/frontend`)
-- **Next.js & Turbopack:** Successfully resolved Next.js Monorepo Root path resolution. `--turbopack` flags were modified/removed where they caused conflicts in `apps/web/package.json`.
-- **Node Environment:** Dependencies (`pnpm`) lockfiles and build processes are functioning correctly. `apps/zsp-aitool` and `apps/web` are successfully building.
+## 4. Frontend Ecosystem (`apps/zeaz-web`, `apps/zcloud`, `apps/ztrader/frontend`)
+- **Next.js & Turbopack:** Successfully resolved Next.js Monorepo Root path resolution. `--turbopack` flags were modified/removed where they caused conflicts in `apps/zeaz-web/package.json`.
+- **Node Environment:** Dependencies (`pnpm`) lockfiles and build processes are functioning correctly. `apps/zsp-aitool` and `apps/zeaz-web` are successfully building.
 
 ## 5. Security & Compliance
 - **Auth:** `403 Forbidden` observed on `/api/runtime/cloudflare/health` indicates active authorization middleware. The endpoint is protected as intended.

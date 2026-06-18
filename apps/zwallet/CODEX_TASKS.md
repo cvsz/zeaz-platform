@@ -17,7 +17,7 @@ This plan converts `docs/00_AGENT_CONTRACT.md` through `docs/11_FINAL_EXECUTION.
 ### 1.1 Structure alignment
 - [x] Verify/create target folders:
   - `/apps/android`
-  - `/apps/api`
+  - `/apps/zeaz-api`
   - `/services/wallet-engine`
   - `/services/swap-engine`
   - `/services/indexer`

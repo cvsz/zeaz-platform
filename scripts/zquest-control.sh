@@ -10,7 +10,7 @@ PYTHON_BIN="${PYTHON:-python3}"
 HOST="${ZQUEST_HOST:-127.0.0.1}"
 PORT="${ZQUEST_PORT:-8080}"
 DOCROOT="${ZQUEST_DOCROOT:-$ROOT/apps/zquest}"
-DB_PATH="${ZQUEST_DATABASE_PATH:-$ROOT/apps/api/data/zquest.sqlite3}"
+DB_PATH="${ZQUEST_DATABASE_PATH:-$ROOT/apps/zeaz-api/data/zquest.sqlite3}"
 SERVER_SCRIPT="${ZQUEST_SERVER_SCRIPT:-$ROOT/scripts/zquest-server.py}"
 
 usage() {

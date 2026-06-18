@@ -24,19 +24,19 @@
 
 ## api
 
-- Path: `apps/api`
+- Path: `apps/zeaz-api`
 - Stack: `docker, python`
 - Root tracked files: `16`
 
 ### Ports
 
-- `6379` from `apps/api/routers/scheduler.py, apps/api/routers/swarm.py`
-- `8000` from `apps/api/docker-compose.yml`
+- `6379` from `apps/zeaz-api/routers/scheduler.py, apps/zeaz-api/routers/swarm.py`
+- `8000` from `apps/zeaz-api/docker-compose.yml`
 
 ### Domains
 
-- `api.zeaz.dev` from `apps/api/README.md, apps/api/docker-compose.yml, apps/api/routers/cloudflare_control.py`
-- `zcfdash.zeaz.dev` from `apps/api/routers/cloudflare_control.py`
+- `api.zeaz.dev` from `apps/zeaz-api/README.md, apps/zeaz-api/docker-compose.yml, apps/zeaz-api/routers/cloudflare_control.py`
+- `zcfdash.zeaz.dev` from `apps/zeaz-api/routers/cloudflare_control.py`
 
 ## openwork
 
@@ -94,26 +94,26 @@
 
 ## web
 
-- Path: `apps/web`
+- Path: `apps/zeaz-web`
 - Stack: `node, pnpm`
 - Root tracked files: `57`
 
 ### Ports
 
-- `8000` from `apps/web/src/app/dashboard/swarm-runtime/page.tsx, apps/web/src/lib/api.ts`
+- `8000` from `apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx, apps/zeaz-web/src/lib/api.ts`
 
 ### Domains
 
-- `api-zcfdash.zeaz.dev` from `apps/web/src/app/dashboard/agents/page.tsx, apps/web/src/app/dashboard/deployments/page.tsx, apps/web/src/app/dashboard/services/page.tsx`
-- `api-zdash.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `api.zeaz.dev` from `apps/web/src/app/dashboard/page.tsx, apps/web/src/app/dashboard/services/page.tsx`
-- `app.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `ssh.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `www.zeaz.dev` from `apps/web/README.md, apps/web/next.config.ts, apps/web/src/app/dashboard/reports/page.tsx, apps/web/src/app/marketing/contact/page.tsx, apps/web/src/app/marketing/layout.tsx`
-- `zcfdash.zeaz.dev` from `apps/web/next.config.ts`
-- `zcino.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `zdash.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
-- `zveo.zeaz.dev` from `apps/web/src/app/dashboard/reports/page.tsx`
+- `api-zcfdash.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/agents/page.tsx, apps/zeaz-web/src/app/dashboard/deployments/page.tsx, apps/zeaz-web/src/app/dashboard/services/page.tsx`
+- `api-zdash.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `api.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/page.tsx, apps/zeaz-web/src/app/dashboard/services/page.tsx`
+- `app.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `ssh.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `www.zeaz.dev` from `apps/zeaz-web/README.md, apps/zeaz-web/next.config.ts, apps/zeaz-web/src/app/dashboard/reports/page.tsx, apps/zeaz-web/src/app/marketing/contact/page.tsx, apps/zeaz-web/src/app/marketing/layout.tsx`
+- `zcfdash.zeaz.dev` from `apps/zeaz-web/next.config.ts`
+- `zcino.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `zdash.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
+- `zveo.zeaz.dev` from `apps/zeaz-web/src/app/dashboard/reports/page.tsx`
 
 ## zAcademy
 
@@ -142,7 +142,7 @@
 ### Ports
 
 - `587` from `apps/zLinebot/.env.example`
-- `3000` from `apps/zLinebot/.env.example, apps/zLinebot/CONTRIBUTING.md, apps/zLinebot/app/src/dr/health.ts, apps/zLinebot/app/src/utils/env.ts, apps/zLinebot/apps/api/src/server.ts, apps/zLinebot/docs/CONTRIBUTING_th.md, apps/zLinebot/docs/INSTALL_FULL.md, apps/zLinebot/docs/MANUAL.md, apps/zLinebot/docs/README_th.md, apps/zLinebot/docs/install_manual_en.md`
+- `3000` from `apps/zLinebot/.env.example, apps/zLinebot/CONTRIBUTING.md, apps/zLinebot/app/src/dr/health.ts, apps/zLinebot/app/src/utils/env.ts, apps/zLinebot/apps/zeaz-api/src/server.ts, apps/zLinebot/docs/CONTRIBUTING_th.md, apps/zLinebot/docs/INSTALL_FULL.md, apps/zLinebot/docs/MANUAL.md, apps/zLinebot/docs/README_th.md, apps/zLinebot/docs/install_manual_en.md`
 - `3001` from `apps/zLinebot/deploy.sh`
 - `3002` from `apps/zLinebot/deploy.sh`
 - `3100` from `apps/zLinebot/k8s/observability.yaml`
@@ -453,10 +453,10 @@
 - `4319` from `apps/zveo/infra/observability/docker-compose.observability.yml`
 - `5432` from `apps/zveo/drizzle.config.ts, apps/zveo/scripts/db-smoke.sh`
 - `5436` from `apps/zveo/infra/docker/docker-compose.yml`
-- `6379` from `apps/zveo/apps/api-gateway/src/config.ts, apps/zveo/apps/render-worker/src/worker.ts, apps/zveo/infra/kubernetes/base/network-policy.yaml`
+- `6379` from `apps/zveo/apps/zeaz-api-gateway/src/config.ts, apps/zveo/apps/render-worker/src/worker.ts, apps/zveo/infra/kubernetes/base/network-policy.yaml`
 - `6382` from `apps/zveo/infra/docker/docker-compose.yml`
 - `8000` from `apps/zveo/infra/kubernetes/api.yaml`
-- `8080` from `apps/zveo/apps/api-gateway/Dockerfile, apps/zveo/apps/api-gateway/src/openapi.ts, apps/zveo/apps/dashboard/app/settings/page.tsx, apps/zveo/apps/dashboard/lib/api.test.ts, apps/zveo/apps/dashboard/lib/api.ts, apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/docs/openapi/api-gateway.openapi.ts, apps/zveo/infra/docker/docker-compose.yml, apps/zveo/infra/kubernetes/base/api-gateway.yaml, apps/zveo/infra/kubernetes/base/blue-green.yaml`
+- `8080` from `apps/zveo/apps/zeaz-api-gateway/Dockerfile, apps/zveo/apps/zeaz-api-gateway/src/openapi.ts, apps/zveo/apps/dashboard/app/settings/page.tsx, apps/zveo/apps/dashboard/lib/api.test.ts, apps/zveo/apps/dashboard/lib/api.ts, apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/docs/openapi/api-gateway.openapi.ts, apps/zveo/infra/docker/docker-compose.yml, apps/zveo/infra/kubernetes/base/api-gateway.yaml, apps/zveo/infra/kubernetes/base/blue-green.yaml`
 - `9000` from `apps/zveo/docs/architecture/node-only-profile.md, apps/zveo/infra/docker/docker-compose.yml`
 - `9005` from `apps/zveo/infra/docker/docker-compose.yml`
 - `9006` from `apps/zveo/infra/docker/docker-compose.yml`
@@ -479,7 +479,7 @@
 
 ### Ports
 
-- `3000` from `apps/zwallet/.env.example, apps/zwallet/apps/api/src/server.ts, apps/zwallet/docs/api-spec.yaml, apps/zwallet/infra/helm/templates/api-deployment.yaml, apps/zwallet/infra/k8s/api-deployment.yaml, apps/zwallet/infra/k8s/monitoring.yaml, apps/zwallet/k8s/monitoring/monitoring-stack.yaml`
+- `3000` from `apps/zwallet/.env.example, apps/zwallet/apps/zeaz-api/src/server.ts, apps/zwallet/docs/api-spec.yaml, apps/zwallet/infra/helm/templates/api-deployment.yaml, apps/zwallet/infra/k8s/api-deployment.yaml, apps/zwallet/infra/k8s/monitoring.yaml, apps/zwallet/k8s/monitoring/monitoring-stack.yaml`
 - `3002` from `apps/zwallet/deploy-zveo-services.sh`
 - `4173` from `apps/zwallet/apps/world/README.md`
 - `4222` from `apps/zwallet/docker-compose.yml`

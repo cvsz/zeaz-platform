@@ -26,7 +26,7 @@ M  apps/openwork/pnpm-lock.yaml
 M  apps/openwork/scripts/harness/agents/code-reviewer.md
 M  apps/openwork/scripts/harness/commands/kotlin-test.md
 M  apps/openwork/scripts/harness/commands/rust-test.md
-M  apps/web/pnpm-lock.yaml
+M  apps/zeaz-web/pnpm-lock.yaml
 M  apps/zLinebot/scripts/legacy_zltt/generate-enterprise-v8.sh
 M  apps/zLinebot/tests/security_platform/test_pr_bot_extension.py
 M  apps/zsp-aitool/docs/runbooks/PLUGIN_REPO_OPERATIONS.md
@@ -149,9 +149,9 @@ M  terraform/cloudflare-apps/apps.auto.tfvars.json
 ./ai/providers
 ./apps
 ./apps/.codex
-./apps/api
+./apps/zeaz-api
 ./apps/openwork
-./apps/web
+./apps/zeaz-web
 ./apps/zAcademy
 ./apps/zLinebot
 ./apps/zai-factory
@@ -655,11 +655,11 @@ terraform/zeaz.tfplan
 .agents/skills/zai-build-automation/templates/justfile-php:42:    {{ php }} -S localhost:8000 -t public/
 .agents/skills/zai-build-automation/templates/makefile-php.mk:44:	$(PHP) -S localhost:8000 -t public/
 .agents/skills/zai-build-automation/templates/taskfile-php.yml:45:      - '{{.PHP}} -S localhost:8000 -t public/'
-apps/api/docker-compose.yml:16:      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/runtime/services')"]
+apps/zeaz-api/docker-compose.yml:16:      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/runtime/services')"]
 apps/openwork/zeaz/installer/mcp-fix-phase2.sh:113:	Try: http://localhost:8000/sse
-apps/web/src/app/dashboard/swarm-runtime/page.tsx:13:      const res = await fetch('http://localhost:8000/api/runtime/swarm/agents');
-apps/web/src/app/dashboard/swarm-runtime/page.tsx:18:    const ws = new WebSocket('ws://localhost:8000/api/runtime/swarm/ws/swarm');
-apps/web/src/lib/api.ts:11:  return "http://localhost:8000";
+apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx:13:      const res = await fetch('http://localhost:8000/api/runtime/swarm/agents');
+apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx:18:    const ws = new WebSocket('ws://localhost:8000/api/runtime/swarm/ws/swarm');
+apps/zeaz-web/src/lib/api.ts:11:  return "http://localhost:8000";
 apps/zdash/.codex/cloud/AGENTS.template.md:25:- Never introduce `localhost:8000`.
 apps/zdash/.codex/cloud/general-custom-instructions.md:31:- never introduce localhost:8000 in repo changes
 apps/zdash/.codex/cloud/maintenance.sh:100:  tracked_source_grep "localhost:8000|BACKEND_PORT=8000"
@@ -792,11 +792,11 @@ docs/reports/generated/repo-deep-dive-report.md:654:.agents/skills/zai-build-aut
 docs/reports/generated/repo-deep-dive-report.md:655:.agents/skills/zai-build-automation/templates/justfile-php:42:    {{ php }} -S localhost:8000 -t public/
 docs/reports/generated/repo-deep-dive-report.md:656:.agents/skills/zai-build-automation/templates/makefile-php.mk:44:	$(PHP) -S localhost:8000 -t public/
 docs/reports/generated/repo-deep-dive-report.md:657:.agents/skills/zai-build-automation/templates/taskfile-php.yml:45:      - '{{.PHP}} -S localhost:8000 -t public/'
-docs/reports/generated/repo-deep-dive-report.md:658:apps/api/docker-compose.yml:16:      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/runtime/services')"]
+docs/reports/generated/repo-deep-dive-report.md:658:apps/zeaz-api/docker-compose.yml:16:      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/runtime/services')"]
 docs/reports/generated/repo-deep-dive-report.md:659:apps/openwork/zeaz/installer/mcp-fix-phase2.sh:113:	Try: http://localhost:8000/sse
-docs/reports/generated/repo-deep-dive-report.md:660:apps/web/src/app/dashboard/swarm-runtime/page.tsx:13:      const res = await fetch('http://localhost:8000/api/runtime/swarm/agents');
-docs/reports/generated/repo-deep-dive-report.md:661:apps/web/src/app/dashboard/swarm-runtime/page.tsx:18:    const ws = new WebSocket('ws://localhost:8000/api/runtime/swarm/ws/swarm');
-docs/reports/generated/repo-deep-dive-report.md:662:apps/web/src/lib/api.ts:11:  return "http://localhost:8000";
+docs/reports/generated/repo-deep-dive-report.md:660:apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx:13:      const res = await fetch('http://localhost:8000/api/runtime/swarm/agents');
+docs/reports/generated/repo-deep-dive-report.md:661:apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx:18:    const ws = new WebSocket('ws://localhost:8000/api/runtime/swarm/ws/swarm');
+docs/reports/generated/repo-deep-dive-report.md:662:apps/zeaz-web/src/lib/api.ts:11:  return "http://localhost:8000";
 docs/reports/generated/repo-deep-dive-report.md:663:apps/zdash/.codex/cloud/AGENTS.template.md:25:- Never introduce `localhost:8000`.
 docs/reports/generated/repo-deep-dive-report.md:664:apps/zdash/.codex/cloud/general-custom-instructions.md:31:- never introduce localhost:8000 in repo changes
 docs/reports/generated/repo-deep-dive-report.md:665:apps/zdash/.codex/cloud/maintenance.sh:100:  tracked_source_grep "localhost:8000|BACKEND_PORT=8000"
@@ -1177,7 +1177,7 @@ terraform/cloudflare-apps/variables.tf:16:    condition     = can(regex("^[0-9a-
 ./.ops/backups/zcino-20260609/infra/docker-compose.yml
 ./.ops/backups/zcino-20260609/infra/zeaz-testnet/docker-compose.yml
 ./.ops/backups/zkbtrader/docker-compose.yml
-./apps/api/docker-compose.yml
+./apps/zeaz-api/docker-compose.yml
 ./apps/openwork/.devcontainer/docker-compose.yml
 ./apps/openwork/packaging/docker/docker-compose.den-dev.yml
 ./apps/openwork/packaging/docker/docker-compose.dev.yml

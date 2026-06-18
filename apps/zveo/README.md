@@ -36,7 +36,7 @@ docker compose --profile node up -d postgres redis minio
 docker compose --profile node run db-migrate
 
 # Start API gateway locally
-cd apps/api-gateway
+cd apps/zeaz-api-gateway
 pnpm install
 pnpm dev
 

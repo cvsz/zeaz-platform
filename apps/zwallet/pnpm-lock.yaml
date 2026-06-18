@@ -37,7 +37,7 @@ importers:
 
   apps/android: {}
 
-  apps/api:
+  apps/zeaz-api:
     dependencies:
       '@fastify/rate-limit':
         specifier: ^10.3.0

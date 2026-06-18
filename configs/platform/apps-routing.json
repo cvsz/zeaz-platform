@@ -9,7 +9,7 @@
   "apps": [
     {
       "app_id": "root",
-      "path": "apps/web",
+      "path": "apps/zeaz-web",
       "type": "ui",
       "hostnames": ["zeaz.dev", "www.zeaz.dev"],
       "origin": "http://127.0.0.1:3003",

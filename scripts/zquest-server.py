@@ -11,7 +11,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(os.getenv("ZQUEST_DOCROOT") or "/home/zeazdev/zeaz-platform/apps/zquest")
-DB = Path(os.getenv("ZQUEST_DATABASE_PATH") or "/home/zeazdev/zeaz-platform/apps/api/data/zquest.sqlite3")
+DB = Path(os.getenv("ZQUEST_DATABASE_PATH") or "/home/zeazdev/zeaz-platform/apps/zeaz-api/data/zquest.sqlite3")
 HOST = os.getenv("ZQUEST_HOST", "127.0.0.1")
 PORT = int(os.getenv("ZQUEST_PORT", "8080"))
 

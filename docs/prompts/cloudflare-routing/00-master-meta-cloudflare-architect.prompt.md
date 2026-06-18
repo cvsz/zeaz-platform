@@ -26,8 +26,8 @@ Hard requirements:
 Required hostname map:
 - `/home/zeazdev/zeaz-platform` -> `zcfdash.zeaz.dev`
 - `/home/zeazdev/zeaz-platform/apps/openwork/` -> `openwork.zeaz.dev`
-- `/home/zeazdev/zeaz-platform/apps/web/` -> `www.zeaz.dev`, `zeaz.dev`
-- `/home/zeazdev/zeaz-platform/apps/api/` -> `api.zeaz.dev`
+- `/home/zeazdev/zeaz-platform/apps/zeaz-web/` -> `www.zeaz.dev`, `zeaz.dev`
+- `/home/zeazdev/zeaz-platform/apps/zeaz-api/` -> `api.zeaz.dev`
 - `/home/zeazdev/zeaz-platform/apps/zcino/` -> `zcino.zeaz.dev`
 - `/home/zeazdev/zeaz-platform/apps/zdash/` -> `api-zdash.zeaz.dev`, `zdash.zeaz.dev`
 - `/home/zeazdev/zeaz-platform/apps/zlms-prod/` -> `zlms.zeaz.dev`

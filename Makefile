@@ -113,7 +113,7 @@ validate: test validate-env env-format-validate yaml-validate gitlink-validate c
 	@echo "Validation complete."
 
 validate-env:
-	@python3 scripts/omega/validate-env.py
+	@bash scripts/env-report-check.sh advisory
 	@bash scripts/env-report-check.sh advisory
 
 validate-env-strict:
@@ -303,7 +303,7 @@ zaiz-deps-check:
 	@$(PYTHON) -m venv .venv-depcheck
 	@. .venv-depcheck/bin/activate && python -m pip install --upgrade pip setuptools wheel
 	@if [ -f requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r requirements.txt; fi
-	@if [ -f apps/api/requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r apps/api/requirements.txt; fi
+	@if [ -f apps/zeaz-api/requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r apps/zeaz-api/requirements.txt; fi
 	@rm -rf .venv-depcheck
 
 doctor:

@@ -7,7 +7,7 @@
   "apps": [
     {
       "app_id": "api",
-      "path": "apps/api",
+      "path": "apps/zeaz-api",
       "stack": [
         "docker",
         "python"
@@ -29,21 +29,21 @@
       },
       "ports": {
         "6379": [
-          "apps/api/routers/scheduler.py",
-          "apps/api/routers/swarm.py"
+          "apps/zeaz-api/routers/scheduler.py",
+          "apps/zeaz-api/routers/swarm.py"
         ],
         "8000": [
-          "apps/api/docker-compose.yml"
+          "apps/zeaz-api/docker-compose.yml"
         ]
       },
       "domains": {
         "api.zeaz.dev": [
-          "apps/api/README.md",
-          "apps/api/docker-compose.yml",
-          "apps/api/routers/cloudflare_control.py"
+          "apps/zeaz-api/README.md",
+          "apps/zeaz-api/docker-compose.yml",
+          "apps/zeaz-api/routers/cloudflare_control.py"
         ],
         "zcfdash.zeaz.dev": [
-          "apps/api/routers/cloudflare_control.py"
+          "apps/zeaz-api/routers/cloudflare_control.py"
         ]
       },
       "env_files": [],
@@ -1322,7 +1322,7 @@
     },
     {
       "app_id": "web",
-      "path": "apps/web",
+      "path": "apps/zeaz-web",
       "stack": [
         "node",
         "pnpm"
@@ -1363,102 +1363,102 @@
       },
       "ports": {
         "4101": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4102": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4103": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4104": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4105": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4106": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4107": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4108": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4109": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4110": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4111": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4112": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "4113": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "5432": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "8000": [
-          "apps/web/src/app/dashboard/swarm-runtime/page.tsx",
-          "apps/web/src/lib/api.ts"
+          "apps/zeaz-web/src/app/dashboard/swarm-runtime/page.tsx",
+          "apps/zeaz-web/src/lib/api.ts"
         ]
       },
       "domains": {
         "api-zcfdash.zeaz.dev": [
-          "apps/web/src/app/dashboard/agents/page.tsx",
-          "apps/web/src/app/dashboard/deployments/page.tsx",
-          "apps/web/src/app/dashboard/services/page.tsx"
+          "apps/zeaz-web/src/app/dashboard/agents/page.tsx",
+          "apps/zeaz-web/src/app/dashboard/deployments/page.tsx",
+          "apps/zeaz-web/src/app/dashboard/services/page.tsx"
         ],
         "api-zdash.zeaz.dev": [
-          "apps/web/.env",
-          "apps/web/src/app/dashboard/reports/page.tsx"
+          "apps/zeaz-web/.env",
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
         ],
         "api.zeaz.dev": [
-          "apps/web/src/app/dashboard/page.tsx",
-          "apps/web/src/app/dashboard/services/page.tsx"
+          "apps/zeaz-web/src/app/dashboard/page.tsx",
+          "apps/zeaz-web/src/app/dashboard/services/page.tsx"
         ],
         "app.zeaz.dev": [
-          "apps/web/src/app/dashboard/reports/page.tsx"
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
         ],
         "auth.zeaz.dev": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "release.zeaz.dev": [
-          "apps/web/.env"
+          "apps/zeaz-web/.env"
         ],
         "ssh.zeaz.dev": [
-          "apps/web/src/app/dashboard/reports/page.tsx"
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
         ],
         "www.zeaz.dev": [
-          "apps/web/README.md",
-          "apps/web/next.config.ts",
-          "apps/web/src/app/dashboard/reports/page.tsx",
-          "apps/web/src/app/marketing/contact/page.tsx",
-          "apps/web/src/app/marketing/layout.tsx"
+          "apps/zeaz-web/README.md",
+          "apps/zeaz-web/next.config.ts",
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx",
+          "apps/zeaz-web/src/app/marketing/contact/page.tsx",
+          "apps/zeaz-web/src/app/marketing/layout.tsx"
         ],
         "zcfdash.zeaz.dev": [
-          "apps/web/next.config.ts"
+          "apps/zeaz-web/next.config.ts"
         ],
         "zcino.zeaz.dev": [
-          "apps/web/src/app/dashboard/reports/page.tsx"
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
         ],
         "zdash.zeaz.dev": [
-          "apps/web/.env",
-          "apps/web/src/app/dashboard/reports/page.tsx"
+          "apps/zeaz-web/.env",
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
         ],
         "zveo.zeaz.dev": [
-          "apps/web/src/app/dashboard/reports/page.tsx"
+          "apps/zeaz-web/src/app/dashboard/reports/page.tsx"
         ]
       },
       "env_files": [
         {
-          "path": "apps/web/.env",
+          "path": "apps/zeaz-web/.env",
           "is_example": false,
           "key_count": 106,
           "keys": [
@@ -1578,7 +1578,7 @@
         {
           "severity": "warn",
           "code": "local_env_file",
-          "message": "Local env file exists: apps/web/.env"
+          "message": "Local env file exists: apps/zeaz-web/.env"
         },
         {
           "severity": "info",
@@ -1803,7 +1803,7 @@
           "apps/zLinebot/CONTRIBUTING.md",
           "apps/zLinebot/app/src/dr/health.ts",
           "apps/zLinebot/app/src/utils/env.ts",
-          "apps/zLinebot/apps/api/src/server.ts",
+          "apps/zLinebot/apps/zeaz-api/src/server.ts",
           "apps/zLinebot/docs/CONTRIBUTING_th.md",
           "apps/zLinebot/docs/INSTALL_FULL.md",
           "apps/zLinebot/docs/MANUAL.md",
@@ -5964,7 +5964,7 @@
           "apps/zveo/infra/docker/docker-compose.yml"
         ],
         "6379": [
-          "apps/zveo/apps/api-gateway/src/config.ts",
+          "apps/zveo/apps/zeaz-api-gateway/src/config.ts",
           "apps/zveo/apps/render-worker/src/worker.ts",
           "apps/zveo/infra/kubernetes/base/network-policy.yaml"
         ],
@@ -5977,8 +5977,8 @@
         "8080": [
           "apps/zveo/.env.example.node",
           "apps/zveo/.env.node",
-          "apps/zveo/apps/api-gateway/Dockerfile",
-          "apps/zveo/apps/api-gateway/src/openapi.ts",
+          "apps/zveo/apps/zeaz-api-gateway/Dockerfile",
+          "apps/zveo/apps/zeaz-api-gateway/src/openapi.ts",
           "apps/zveo/apps/dashboard/app/settings/page.tsx",
           "apps/zveo/apps/dashboard/lib/api.test.ts",
           "apps/zveo/apps/dashboard/lib/api.ts",
@@ -6196,7 +6196,7 @@
         "3000": [
           "apps/zwallet/.env",
           "apps/zwallet/.env.example",
-          "apps/zwallet/apps/api/src/server.ts",
+          "apps/zwallet/apps/zeaz-api/src/server.ts",
           "apps/zwallet/docs/api-spec.yaml",
           "apps/zwallet/infra/helm/templates/api-deployment.yaml",
           "apps/zwallet/infra/k8s/api-deployment.yaml",

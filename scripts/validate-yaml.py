@@ -69,7 +69,7 @@ def should_skip(path: Path) -> bool:
     if any(part in SKIP_PARTS for part in path.parts):
         return True
 
-    # Skip all YAML files in adopted/imported apps (anything under apps/ except apps/api and apps/web)
+    # Skip all YAML files in adopted/imported apps (anything under apps/ except apps/zeaz-api and apps/zeaz-web)
     if len(path.parts) >= 2 and path.parts[0] == "apps":
         if path.parts[1] not in {"api", "web"}:
             return True
