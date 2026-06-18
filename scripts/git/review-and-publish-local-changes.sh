@@ -27,7 +27,7 @@ Default behavior:
   - Reviews tracked changes.
   - Ignores untracked files unless --include-untracked is passed.
   - Blocks sensitive paths and files.
-  - Blocks files matching common credential patterns.
+  - Blocks private-key blocks and likely credential assignments.
   - Blocks files larger than 20 MiB unless --allow-large is passed.
   - Stages explicit safe file paths only; never runs git add .
   - Commits using make gpg-finalize when available.
@@ -182,7 +182,9 @@ if [[ ! -s "$all_candidates" ]]; then
 fi
 
 path_block_regex='(^|/)(\.env($|\.)|\.envrc$|\.npmrc$|\.pypirc$|\.netrc$|\.kube($|/)|\.ssh($|/)|\.gnupg($|/)|\.terraform($|/)|\.wrangler($|/)|secrets($|/)|secret($|/)|credentials?($|/)|creds\.json$|credentials\.json$|token($|/)|tokens($|/)|.*\.tfstate$|.*\.tfvars$|.*\.pem$|.*\.key$|.*\.p12$|.*\.pfx$|id_rsa$|id_ed25519$)'
-content_regex='(BEGIN [A-Z ]*PRIVATE KEY|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|GOOGLE_APPLICATION_CREDENTIALS|CLOUDFLARE_API_TOKEN|GITHUB_TOKEN|OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY|DATABASE_URL=.*://|postgres://|mysql://|redis://.*@|-----BEGIN OPENSSH PRIVATE KEY-----)'
+private_key_regex='(BEGIN [A-Z ]*PRIVATE KEY|-----BEGIN OPENSSH PRIVATE KEY-----)'
+credential_assignment_regex='(^|[^A-Za-z0-9_])(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|GOOGLE_APPLICATION_CREDENTIALS|CLOUDFLARE_API_TOKEN|GITHUB_TOKEN|OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY|DATABASE_URL)[[:space:]]*[:=][[:space:]]*["'"'"'\''"'"'"']?[^[:space:]#"'"'"'\''"'"'"'<>$]'
+credential_url_regex='(postgres|mysql|redis)://[^[:space:]@/]+:[^[:space:]@/]+@'
 
 while IFS= read -r file; do
   [[ -z "$file" ]] && continue
@@ -200,7 +202,15 @@ while IFS= read -r file; do
     fi
 
     if LC_ALL=C grep -Il . -- "$file" >/dev/null 2>&1; then
-      if LC_ALL=C grep -IqE "$content_regex" -- "$file" 2>/dev/null; then
+      if LC_ALL=C grep -IqE "$private_key_regex" -- "$file" 2>/dev/null; then
+        printf '%s\n' "$file" >> "$blocked_content"
+        continue
+      fi
+      if LC_ALL=C grep -IqE "$credential_assignment_regex" -- "$file" 2>/dev/null; then
+        printf '%s\n' "$file" >> "$blocked_content"
+        continue
+      fi
+      if LC_ALL=C grep -IqE "$credential_url_regex" -- "$file" 2>/dev/null; then
         printf '%s\n' "$file" >> "$blocked_content"
         continue
       fi
