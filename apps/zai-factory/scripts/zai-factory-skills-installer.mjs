@@ -74,14 +74,17 @@ const REPO_SCAN_ROOTS = [
   path.join(REPO_ROOT, ".skills"),
   path.join(REPO_ROOT, ".plugins"),
   path.join(REPO_ROOT, ".extensions"),
-  path.join(REPO_ROOT, ".gemini")
+  path.join(REPO_ROOT, ".gemini"),
+  path.join(REPO_ROOT, ".opencode", "agents"),
+  path.join(REPO_ROOT, ".config", "opencode", "agents")
 ];
 
 const GLOBAL_SCAN_ROOTS = [
   path.join(HOME, ".agents"),
   path.join(HOME, ".skills"),
   path.join(HOME, ".plugins"),
-  path.join(HOME, ".extensions")
+  path.join(HOME, ".extensions"),
+  path.join(HOME, ".config", "opencode", "agents")
 ];
 
 const SCAN_ROOTS = INCLUDE_GLOBAL
@@ -281,6 +284,46 @@ function detectAsset(markerFile) {
     };
   }
 
+  if (dir.includes(`${path.sep}opencode${path.sep}agents`) && base.endsWith(".md")) {
+    const text = readTextMaybe(markerFile);
+    let name = base.replace(/\.md$/, "");
+    let description = "";
+    let tools = {};
+    
+    const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (match) {
+      const fm = match[1];
+      const nameMatch = fm.match(/^name:\s*["']?([^"'\n]+)["']?/m);
+      if (nameMatch) name = nameMatch[1].trim();
+      
+      const descMatch = fm.match(/^description:\s*["']?([^"'\n]+)["']?/m);
+      if (descMatch) description = descMatch[1].trim();
+      
+      const toolsMatch = fm.match(/^tools:\s*\[(.*?)\]/m);
+      if (toolsMatch) {
+        const items = toolsMatch[1].split(',').map(s => s.replace(/["']/g, "").trim()).filter(Boolean);
+        for (const t of items) tools[t] = true;
+      } else {
+        const toolsBlockMatch = fm.match(/^tools:\s*\n((?:\s+-\s+[^\n]+\n?)*)/m);
+        if (toolsBlockMatch) {
+          const items = toolsBlockMatch[1].split('\n').filter(l => l.trim().startsWith('-')).map(l => l.replace(/^\s*-\s*["']?([^"']+)["']?/, "$1").trim());
+          for (const t of items) tools[t] = true;
+        }
+      }
+    }
+
+    return {
+      type: "opencode-agent",
+      sourceFamily: "opencode",
+      id: slug(name),
+      name,
+      description,
+      tools,
+      root: markerFile,
+      marker: markerFile
+    };
+  }
+
   return null;
 }
 
@@ -297,7 +340,8 @@ function findMarkers(root) {
       ["plugin.json", "plugin.yaml", "plugin.yml", "plugin.toml"].includes(base) ||
       ["extension.json", "extension.yaml", "extension.yml", "manifest.json", "manifest.yaml", "manifest.yml"].includes(base) ||
       (file.includes(`${path.sep}.gemini${path.sep}`) && base.endsWith(".prompt.md")) ||
-      (file.includes(`${path.sep}.gemini${path.sep}`) && base.endsWith(".toml"))
+      (file.includes(`${path.sep}.gemini${path.sep}`) && base.endsWith(".toml")) ||
+      (file.includes(`${path.sep}opencode${path.sep}agents${path.sep}`) && base.endsWith(".md"))
     ) {
       markers.push(file);
     }
@@ -313,6 +357,8 @@ function sourcePriority(asset) {
   if (root.startsWith(path.join(REPO_ROOT, ".plugins"))) return 2;
   if (root.startsWith(path.join(REPO_ROOT, ".extensions"))) return 3;
   if (root.startsWith(path.join(REPO_ROOT, ".gemini"))) return 4;
+  if (root.startsWith(path.join(REPO_ROOT, ".opencode", "agents"))) return 5;
+  if (root.startsWith(path.join(REPO_ROOT, ".config", "opencode", "agents"))) return 6;
   if (root.startsWith(HOME)) return 10;
   return 99;
 }
@@ -505,7 +551,8 @@ function writeRegistry(result) {
       plugins: installed.filter((x) => x.type === "plugin").length,
       extensions: installed.filter((x) => x.type === "extension").length,
       prompts: installed.filter((x) => x.type === "prompt").length,
-      commands: installed.filter((x) => x.type === "command").length
+      commands: installed.filter((x) => x.type === "command").length,
+      "opencode-agents": installed.filter((x) => x.type === "opencode-agent").length
     },
     assets: installed,
     duplicates: result.duplicates
@@ -527,7 +574,7 @@ function writeRegistry(result) {
   lines.push("");
   lines.push("| Type | Count |");
   lines.push("|---|---:|");
-  for (const key of ["skills", "agents", "plugins", "extensions", "prompts", "commands"]) {
+  for (const key of ["skills", "agents", "plugins", "extensions", "prompts", "commands", "opencode-agents"]) {
     lines.push(`| ${key} | ${registry.counts[key]} |`);
   }
   lines.push("");
