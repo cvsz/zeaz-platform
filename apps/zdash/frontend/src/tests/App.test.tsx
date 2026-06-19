@@ -56,7 +56,7 @@ describe("App routing", () => {
   it("renders sub-agent results route", async () => {
     renderAt("/subagents");
     await waitForStableUi();
-    expect(await screen.findByRole("heading", { name: "Subagent Results", level: 3 })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Subagent Results", level: 2 })).toBeTruthy();
     expect(await screen.findByText(/results and outputs from various subagents/i)).toBeTruthy();
   });
 
