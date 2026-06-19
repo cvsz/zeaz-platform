@@ -11,7 +11,7 @@
     "@noble/curves": "^1.9.7",
     "bip39": "^3.1.0",
     "ethereum-cryptography": "^3.2.0",
-    "zod": "^4.1.12"
+    "zod": "^4.4.3"
   },
   "exports": {
     ".": "./src/index.ts"
