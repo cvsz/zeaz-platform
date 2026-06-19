@@ -1,50 +1,223 @@
 const cron = require('node-cron');
-const axios = require('axios');
+const db = require('./db');
+const https = require('https');
 
 const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
 const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
-const FB_API_URL = 'https://graph.facebook.com/v19.0';
+const FB_VERSION = process.env.FB_API_VERSION || 'v19.0';
+
+const isConfigured = () =>
+  PAGE_ID && ACCESS_TOKEN && !ACCESS_TOKEN.includes('placeholder');
+
+// Active cron job registry: { [scheduleId]: cronJob }
+const activeJobs = {};
 
 /**
- * Perform the auto-posting logic.
- * Here you can fetch posts from a database, file, or external API
- * and then post them to the Facebook page.
+ * Post a message to the Facebook page.
  */
-const autoPostToPage = async () => {
-  console.log('Running auto-post to Facebook page...');
+const postToFacebook = async (message, imageUrl = null) => {
+  const axios = require('axios');
+  const fbAxios = axios.create({
+    baseURL: `https://graph.facebook.com/${FB_VERSION}`,
+    httpsAgent: process.env.NODE_ENV !== 'production'
+      ? new https.Agent({ rejectUnauthorized: false })
+      : undefined,
+    timeout: 15000,
+  });
 
-  if (!PAGE_ID || !ACCESS_TOKEN || ACCESS_TOKEN.includes('placeholder')) {
-    console.log('Skipping auto-post: Valid FACEBOOK_PAGE_ID and FACEBOOK_ACCESS_TOKEN are required.');
+  if (imageUrl && !imageUrl.startsWith('data:')) {
+    const params = { url: imageUrl, access_token: ACCESS_TOKEN };
+    if (message) params.message = message;
+    const r = await fbAxios.post(`/${PAGE_ID}/photos`, null, { params });
+    return r.data;
+  } else {
+    const r = await fbAxios.post(`/${PAGE_ID}/feed`, null, {
+      params: { message, access_token: ACCESS_TOKEN },
+    });
+    return r.data;
+  }
+};
+
+/**
+ * Auto-post logic: pulls next pending item from queue, or uses template.
+ */
+const autoPostToPage = async (scheduleId = null, customMessage = null) => {
+  const label = scheduleId ? `[schedule:${scheduleId}]` : '[auto]';
+  console.log(`${label} Running auto-post...`);
+
+  if (!isConfigured()) {
+    console.log(`${label} Skipping: credentials not configured.`);
     return;
   }
 
-  // Example: We could fetch a quote of the day or similar content to post.
-  // For demonstration, we'll post a simple automated message.
-  const message = `Automated post at ${new Date().toLocaleString()} 🤖✨`;
-
   try {
-    const response = await axios.post(`${FB_API_URL}/${PAGE_ID}/feed`, null, {
-      params: {
-        message,
-        access_token: ACCESS_TOKEN
-      }
-    });
-    console.log('Successfully posted to Facebook:', response.data);
+    const pending = db.queue.getPending();
+    if (pending.length > 0) {
+      const item = pending[0];
+      console.log(`${label} Publishing queued item: ${item.id}`);
+      db.queue.updateStatus(item.id, 'publishing');
+      const result = await postToFacebook(item.message, item.imageUrl);
+      db.queue.updateStatus(item.id, 'published', { publishedAt: new Date().toISOString(), postId: result.id });
+      db.history.add({ type: item.type, message: item.message, status: 'success', postId: result.id, source: label });
+      console.log(`${label} Published queued item ${item.id} → FB post ${result.id}`);
+      return;
+    }
+
+    const settings = db.settings.get();
+    const message = customMessage
+      || settings.autoPostTemplate.replace('{TIME}', new Date().toLocaleString());
+
+    const result = await postToFacebook(message);
+    db.history.add({ type: 'text', message, status: 'success', postId: result.id, source: label });
+    console.log(`${label} Auto-posted template → FB post ${result.id}`);
   } catch (error) {
-    console.error('Failed to post to Facebook:', error.response?.data || error.message);
+    const msg = error.response?.data?.error?.message || error.message;
+    console.error(`${label} Auto-post failed:`, msg);
+    db.history.add({ type: 'auto', status: 'error', error: msg, source: label });
   }
 };
 
 /**
- * Initialize all scheduled jobs.
+ * Register a cron job for a custom schedule entry from DB.
+ */
+const registerSchedule = (schedule) => {
+  if (activeJobs[schedule.id]) {
+    activeJobs[schedule.id].stop();
+    delete activeJobs[schedule.id];
+  }
+  if (!schedule.enabled) return;
+  if (!cron.validate(schedule.cron)) {
+    console.warn(`[scheduler] Invalid cron for schedule ${schedule.id}: "${schedule.cron}"`);
+    return;
+  }
+  activeJobs[schedule.id] = cron.schedule(schedule.cron, () => {
+    autoPostToPage(schedule.id, schedule.message || null);
+  });
+  console.log(`[scheduler] Registered schedule "${schedule.name}" (${schedule.cron})`);
+};
+
+/**
+ * Stop and remove a cron job by schedule ID.
+ */
+const unregisterSchedule = (scheduleId) => {
+  if (activeJobs[scheduleId]) {
+    activeJobs[scheduleId].stop();
+    delete activeJobs[scheduleId];
+    console.log(`[scheduler] Unregistered schedule ${scheduleId}`);
+  }
+};
+
+/**
+ * Register the AI Auto-Poster 3-hour job.
+ */
+const registerAiAutoPoster = () => {
+  // Lazy require to avoid circular deps
+  let aiAutoPoster;
+  try { aiAutoPoster = require('./aiAutoPoster'); } catch (e) {
+    console.error('[scheduler] Could not load aiAutoPoster:', e.message);
+    return;
+  }
+
+  const { aiAutoPostWithJitter, AI_AUTOPOSTER_CRON } = aiAutoPoster;
+
+  if (activeJobs['__ai_autoposter__']) {
+    activeJobs['__ai_autoposter__'].stop();
+    delete activeJobs['__ai_autoposter__'];
+  }
+
+  if (!cron.validate(AI_AUTOPOSTER_CRON)) {
+    console.warn('[scheduler] Invalid AI autoposter cron:', AI_AUTOPOSTER_CRON);
+    return;
+  }
+
+  activeJobs['__ai_autoposter__'] = cron.schedule(AI_AUTOPOSTER_CRON, () => {
+    aiAutoPostWithJitter();
+  });
+
+  console.log(`[scheduler] AI Auto-Poster registered (${AI_AUTOPOSTER_CRON}) — posts every 3h with random jitter.`);
+};
+
+/**
+ * Initialize all scheduler jobs from DB and settings.
  */
 const initJobs = () => {
-  // Schedule to run every hour at minute 0 (0 * * * *)
-  cron.schedule('0 * * * *', autoPostToPage);
-  console.log('Facebook auto-post scheduler initialized (runs every hour).');
+  const settings = db.settings.get();
+
+  // Default hourly queue-drain job
+  if (settings.schedulerEnabled) {
+    const defaultCron = settings.defaultCron || '0 * * * *';
+    if (cron.validate(defaultCron)) {
+      activeJobs['__default__'] = cron.schedule(defaultCron, () => autoPostToPage());
+      console.log(`[scheduler] Default auto-post job initialized (${defaultCron}).`);
+    }
+  }
+
+  // AI Content Auto-Poster (every 3h)
+  const aiSettings = settings.aiAutoPoster || {};
+  if (aiSettings.enabled !== false) {
+    registerAiAutoPoster();
+  } else {
+    console.log('[scheduler] AI Auto-Poster is disabled in settings.');
+  }
+
+  // Custom schedules from DB
+  const schedules = db.schedules.getAll();
+  for (const schedule of schedules) {
+    registerSchedule(schedule);
+  }
+
+  console.log(`[scheduler] Initialized ${Object.keys(activeJobs).length} cron job(s).`);
 };
+
+/**
+ * Restart the default job with a new cron expression.
+ */
+const restartDefaultJob = (cronExpr) => {
+  if (activeJobs['__default__']) {
+    activeJobs['__default__'].stop();
+    delete activeJobs['__default__'];
+  }
+  if (cronExpr && cron.validate(cronExpr)) {
+    activeJobs['__default__'] = cron.schedule(cronExpr, () => autoPostToPage());
+    console.log(`[scheduler] Default job restarted: ${cronExpr}`);
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Toggle the AI auto-poster on/off at runtime.
+ */
+const setAiAutoPosterEnabled = (enabled) => {
+  if (enabled) {
+    registerAiAutoPoster();
+  } else {
+    if (activeJobs['__ai_autoposter__']) {
+      activeJobs['__ai_autoposter__'].stop();
+      delete activeJobs['__ai_autoposter__'];
+      console.log('[scheduler] AI Auto-Poster disabled.');
+    }
+  }
+  // Persist
+  db.settings.update({ aiAutoPoster: { ...(db.settings.get().aiAutoPoster || {}), enabled } });
+};
+
+/**
+ * Get status of all active jobs.
+ */
+const getStatus = () => ({
+  activeJobs: Object.keys(activeJobs),
+  count: Object.keys(activeJobs).length,
+  aiAutoPosterActive: !!activeJobs['__ai_autoposter__'],
+});
 
 module.exports = {
   initJobs,
-  autoPostToPage
+  autoPostToPage,
+  registerSchedule,
+  unregisterSchedule,
+  registerAiAutoPoster,
+  setAiAutoPosterEnabled,
+  restartDefaultJob,
+  getStatus,
 };

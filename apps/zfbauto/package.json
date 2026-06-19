@@ -1,18 +1,20 @@
 {
   "name": "@zeaz/zfbauto",
-  "version": "1.0.0",
-  "description": "ZeaZ FB Auto Post Bot",
+  "version": "1.1.0",
+  "description": "ZeaZ FB Auto Post Bot — Full-featured Facebook page automation dashboard",
   "main": "src/server.js",
   "private": true,
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js",
+    "dev": "node --watch src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "axios": "^1.18.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "form-data": "^4.0.0",
+    "multer": "^1.4.5-lts.1",
     "node-cron": "^4.4.1"
   }
 }

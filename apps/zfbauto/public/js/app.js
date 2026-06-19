@@ -1,185 +1,1130 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('post-form');
-  const btnSubmit = document.getElementById('btn-submit');
-  const feedList = document.getElementById('feed-list');
-  const btnRefresh = document.getElementById('btn-refresh');
-  const kpiTotalPosts = document.getElementById('kpi-total-posts');
-  
-  // Health Check
-  const checkHealth = async () => {
-    try {
-      const res = await fetch('/health');
-      const data = await res.json();
-      const statusText = document.getElementById('status-text');
-      const statusBadge = document.getElementById('system-status');
-      
-      if (data.ok) {
-        statusText.textContent = 'System Online';
-        statusBadge.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
-        statusBadge.style.color = 'var(--color-accent)';
-      } else {
-        throw new Error('Not OK');
-      }
-    } catch (e) {
-      const statusText = document.getElementById('status-text');
-      const statusBadge = document.getElementById('system-status');
-      statusText.textContent = 'System Offline';
-      statusBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-      statusBadge.style.color = 'var(--color-destructive)';
-      document.querySelector('.status-dot').style.backgroundColor = 'var(--color-destructive)';
-      document.querySelector('.status-dot').style.boxShadow = '0 0 8px var(--color-destructive)';
-    }
+/**
+ * ZeaZ FB Auto — Full SPA Application Script
+ * Pages: Dashboard, Compose, Queue, Scheduler, Feed, History, Settings
+ */
+(function () {
+  'use strict';
+
+  // ── Router ──────────────────────────────────────────────────────────────────
+  const pages = {
+    dashboard: { el: null, onEnter: loadDashboard },
+    compose:   { el: null, onEnter: initComposePage },
+    queue:     { el: null, onEnter: loadQueue },
+    scheduler: { el: null, onEnter: loadScheduler },
+    feed:      { el: null, onEnter: loadFeed },
+    history:   { el: null, onEnter: loadHistory },
+    settings:  { el: null, onEnter: loadSettings },
   };
 
-  // Fetch Config & Insights
-  const fetchConfigAndInsights = async () => {
-    try {
-      const kpiFollowers = document.getElementById('kpi-followers');
-      const kpiPageStatus = document.getElementById('kpi-page-status');
+  let currentPage = 'dashboard';
 
-      // Fetch Config
-      const configRes = await fetch('/api/facebook/config');
-      const configData = await configRes.json();
-      
-      if (configData.success) {
-        const { pageId, hasAccessToken } = configData.data;
-        if (hasAccessToken) {
-          kpiPageStatus.textContent = pageId || 'Connected';
-          kpiPageStatus.style.color = 'var(--color-accent)';
+  function navigate(pageId) {
+    if (!pages[pageId]) return;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => {
+      l.classList.toggle('active', l.dataset.page === pageId);
+    });
+
+    const el = document.getElementById(`page-${pageId}`);
+    if (el) el.classList.add('active');
+    currentPage = pageId;
+
+    closeSidebar();
+    if (pages[pageId].onEnter) pages[pageId].onEnter();
+  }
+
+  document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      navigate(link.dataset.page);
+    });
+  });
+
+  document.querySelectorAll('[data-page]').forEach(el => {
+    if (!el.classList.contains('nav-link') && el.tagName === 'A') {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        navigate(el.dataset.page);
+      });
+    }
+  });
+
+  // ── Sidebar Toggle ───────────────────────────────────────────────────────────
+  const sidebar  = document.getElementById('sidebar');
+  const overlay  = document.getElementById('overlay');
+
+  document.getElementById('sidebar-open')?.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+  });
+
+  document.getElementById('sidebar-close')?.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  }
+
+  // ── Toast ────────────────────────────────────────────────────────────────────
+  function toast(msg, type = 'success', durationMs = 4500) {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+
+    const icons = {
+      success: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+      error:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>',
+      warning: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+    };
+
+    el.innerHTML = `${icons[type] || ''}<span>${msg}</span>`;
+    container.appendChild(el);
+
+    setTimeout(() => {
+      el.style.animation = 'slideOut 0.3s ease forwards';
+      setTimeout(() => el.remove(), 300);
+    }, durationMs);
+  }
+
+  // ── API Helper ───────────────────────────────────────────────────────────────
+  async function api(method, path, body = null, isFormData = false) {
+    const opts = { method, headers: {} };
+    if (body && !isFormData) {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(body);
+    } else if (body && isFormData) {
+      opts.body = body; // FormData — let browser set Content-Type
+    }
+    const res = await fetch(path, opts);
+    const json = await res.json();
+    if (!json.ok && !res.ok) throw new Error(json.error?.message || 'Request failed');
+    return json;
+  }
+
+  // ── Health Check ─────────────────────────────────────────────────────────────
+  let healthOk = false;
+
+  async function checkHealth() {
+    const badge  = document.getElementById('system-status');
+    const text   = document.getElementById('status-text');
+    const dot    = badge?.querySelector('.status-dot');
+
+    try {
+      const data = await api('GET', '/health');
+      healthOk = true;
+      if (text) text.textContent = 'Online';
+      badge?.classList.remove('offline');
+    } catch {
+      healthOk = false;
+      if (text) text.textContent = 'Offline';
+      badge?.classList.add('offline');
+    }
+  }
+
+  // ── Format helpers ────────────────────────────────────────────────────────────
+  function fmtDate(d) {
+    if (!d) return '--';
+    return new Date(d).toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function fmtRelative(d) {
+    if (!d) return '--';
+    const diff = Date.now() - new Date(d).getTime();
+    const min  = Math.floor(diff / 60000);
+    if (min < 1)  return 'Just now';
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24)  return `${hr}h ago`;
+    return `${Math.floor(hr/24)}d ago`;
+  }
+
+  function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Set loading state ─────────────────────────────────────────────────────────
+  function setLoading(btn, loading) {
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: DASHBOARD
+  // ══════════════════════════════════════════════════════════════════
+  async function loadDashboard() {
+    await Promise.all([
+      loadDashboardInsights(),
+      loadDashboardQueue(),
+      loadMiniHistory(),
+    ]);
+  }
+
+  async function loadDashboardInsights() {
+    try {
+      const [configData, insightsData, schedulesData] = await Promise.all([
+        api('GET', '/api/facebook/config'),
+        api('GET', '/api/facebook/insights'),
+        api('GET', '/api/schedules'),
+      ]);
+
+      // Followers
+      const followers = insightsData.data?.followers_count ?? insightsData.data?.fan_count ?? '--';
+      setText('kpi-followers', formatNum(followers));
+
+      // Page connection badge
+      const badge = document.getElementById('page-connection-badge');
+      const pageInfo = document.getElementById('page-info');
+      const pageName = insightsData.data?.name || configData.data?.pageId || 'Not Connected';
+
+      if (configData.data?.hasAccessToken && insightsData.configured !== false) {
+        if (badge) { badge.textContent = 'Connected'; badge.className = 'badge badge-green'; }
+        if (pageInfo) {
+          pageInfo.innerHTML = `
+            <div class="page-info-name">${escHtml(pageName)}</div>
+            <div class="page-info-sub">Page ID: ${escHtml(configData.data.pageId || '--')}</div>
+            <div class="page-info-sub">Fans: ${formatNum(insightsData.data?.fan_count ?? '--')}</div>
+          `;
+        }
+        // Update compose preview page name
+        const previewPageName = document.getElementById('preview-page-name');
+        if (previewPageName) previewPageName.textContent = pageName;
+      } else {
+        if (badge) { badge.textContent = 'Not Connected'; badge.className = 'badge badge-red'; }
+        if (pageInfo) pageInfo.innerHTML = `<div class="page-info-sub text-muted">Set FACEBOOK_PAGE_ID and FACEBOOK_ACCESS_TOKEN in .env</div>`;
+      }
+
+      // Queue size
+      setText('kpi-queue-size', configData.data?.queueLength ?? '--');
+
+      // Active schedules (custom)
+      setText('kpi-schedules', schedulesData.data?.length ?? '--');
+
+      // Update queue badge
+      const qb = document.getElementById('queue-badge');
+      const pending = configData.data?.pendingCount ?? 0;
+      if (qb) {
+        qb.style.display = pending > 0 ? 'inline-flex' : 'none';
+        qb.textContent = pending;
+      }
+      setText('queue-count-badge', configData.data?.queueLength ?? 0);
+    } catch (e) {
+      console.error('Dashboard insights error:', e);
+    }
+  }
+
+  async function loadDashboardQueue() {
+    try {
+      const data = await api('GET', '/api/history');
+      const history = data.data || [];
+      const today = new Date().toDateString();
+      const todayPosts = history.filter(h => h.status === 'success' && new Date(h.createdAt).toDateString() === today);
+      setText('kpi-posts-today', todayPosts.length);
+    } catch {
+      setText('kpi-posts-today', '--');
+    }
+  }
+
+  async function loadMiniHistory() {
+    const el = document.getElementById('mini-history-list');
+    if (!el) return;
+    try {
+      const data = await api('GET', '/api/history?limit=4');
+      const items = data.data || [];
+      if (items.length === 0) {
+        el.innerHTML = '<div class="text-muted small" style="padding:8px 0;">No activity yet.</div>';
+        return;
+      }
+      el.innerHTML = items.map(h => `
+        <div class="mini-history-item">
+          <span class="badge ${h.status === 'success' ? 'badge-green' : 'badge-red'}">${h.status}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.82rem;">${escHtml(h.message || h.type || '--')}</span>
+          <span class="text-muted" style="font-size:0.72rem;white-space:nowrap;">${fmtRelative(h.createdAt)}</span>
+        </div>
+      `).join('');
+    } catch {
+      el.innerHTML = '<div class="text-muted small" style="padding:8px 0;">Failed to load.</div>';
+    }
+  }
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function formatNum(n) {
+    if (n === '--' || n === null || n === undefined) return '--';
+    return Number(n).toLocaleString();
+  }
+
+  // Quick post on dashboard
+  const quickPostForm = document.getElementById('quick-post-form');
+  if (quickPostForm) {
+    const btnQuickPost  = document.getElementById('btn-quick-post');
+    const btnQuickQueue = document.getElementById('btn-quick-queue');
+    const quickMsg      = document.getElementById('quick-message');
+
+    quickPostForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = quickMsg.value.trim();
+      if (!msg) return toast('Message is required', 'error');
+      setLoading(btnQuickPost, true);
+      try {
+        await api('POST', '/api/facebook/post-message', { message: msg });
+        toast('Published to Facebook! ✅');
+        quickMsg.value = '';
+        loadDashboard();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        setLoading(btnQuickPost, false);
+      }
+    });
+
+    btnQuickQueue?.addEventListener('click', async () => {
+      const msg = quickMsg.value.trim();
+      if (!msg) return toast('Message is required', 'error');
+      setLoading(btnQuickQueue, true);
+      try {
+        await api('POST', '/api/queue', { message: msg });
+        toast('Added to queue!');
+        quickMsg.value = '';
+        loadDashboard();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        setLoading(btnQuickQueue, false);
+      }
+    });
+  }
+
+  document.getElementById('btn-refresh-all')?.addEventListener('click', loadDashboard);
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: COMPOSE
+  // ══════════════════════════════════════════════════════════════════
+  function initComposePage() {
+    const msgEl     = document.getElementById('compose-message');
+    const charCount = document.getElementById('char-count');
+    const previewTxt = document.getElementById('preview-text');
+    const previewImg = document.getElementById('preview-image');
+    const imgUrlEl  = document.getElementById('compose-image-url');
+    const fileEl    = document.getElementById('compose-file');
+    const dropZone  = document.getElementById('file-drop-zone');
+    const filePreview = document.getElementById('file-preview');
+
+    // Character counter + preview
+    msgEl?.addEventListener('input', () => {
+      charCount.textContent = msgEl.value.length;
+      previewTxt.textContent = msgEl.value || '';
+      if (!msgEl.value) previewTxt.innerHTML = '<span class="text-muted small">Start typing to preview...</span>';
+    });
+
+    // Image URL preview
+    imgUrlEl?.addEventListener('input', () => {
+      if (imgUrlEl.value) {
+        previewImg.innerHTML = `<img src="${escHtml(imgUrlEl.value)}" alt="preview" style="width:100%;max-height:240px;object-fit:cover;">`;
+        previewImg.style.display = 'block';
+      } else {
+        previewImg.style.display = 'none';
+      }
+    });
+
+    // Upload tabs
+    document.querySelectorAll('.upload-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.upload-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.upload-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = document.getElementById(`upload-${tab.dataset.tab}-panel`);
+        if (panel) panel.classList.add('active');
+      });
+    });
+
+    // File drop zone
+    dropZone?.addEventListener('click', () => fileEl?.click());
+
+    dropZone?.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
+    dropZone?.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+    dropZone?.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragging');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFileSelect(file, fileEl, filePreview, previewImg);
+    });
+
+    fileEl?.addEventListener('change', () => {
+      const file = fileEl.files[0];
+      if (file) handleFileSelect(file, fileEl, filePreview, previewImg);
+    });
+  }
+
+  function handleFileSelect(file, fileInput, previewContainer, previewImg) {
+    if (!file.type.startsWith('image/')) return toast('Only images allowed', 'error');
+    const url = URL.createObjectURL(file);
+    previewContainer.innerHTML = `<img src="${url}" alt="${escHtml(file.name)}" style="max-width:100%;max-height:160px;border-radius:6px;margin-top:10px;">`;
+    previewContainer.style.display = 'block';
+    previewImg.innerHTML = `<img src="${url}" alt="preview" style="width:100%;max-height:240px;object-fit:cover;">`;
+    previewImg.style.display = 'block';
+  }
+
+  // Compose form submit
+  const composeForm = document.getElementById('compose-form');
+  if (composeForm) {
+    const btnSubmit    = document.getElementById('btn-compose-submit');
+    const btnAddQueue  = document.getElementById('btn-compose-queue');
+
+    composeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message  = document.getElementById('compose-message').value.trim();
+      const link     = document.getElementById('compose-link').value.trim();
+      const imageUrl = document.getElementById('compose-image-url').value.trim();
+      const fileEl   = document.getElementById('compose-file');
+      const hasFile  = fileEl?.files.length > 0;
+
+      if (!message) return toast('Message is required', 'error');
+      setLoading(btnSubmit, true);
+
+      try {
+        if (hasFile) {
+          const fd = new FormData();
+          fd.append('message', message);
+          fd.append('image', fileEl.files[0]);
+          await api('POST', '/api/facebook/post-photo', fd, true);
+          toast('Photo published to Facebook! 🖼️');
+        } else if (imageUrl) {
+          await api('POST', '/api/facebook/post-photo', { message, url: imageUrl });
+          toast('Photo published to Facebook! 🖼️');
         } else {
-          kpiPageStatus.textContent = 'Missing Token';
-          kpiPageStatus.style.color = 'var(--color-destructive)';
+          await api('POST', '/api/facebook/post-message', { message, link: link || undefined });
+          toast('Post published to Facebook! ✅');
         }
+        composeForm.reset();
+        document.getElementById('char-count').textContent = '0';
+        document.getElementById('preview-text').innerHTML = '<span class="text-muted small">Start typing to preview...</span>';
+        document.getElementById('preview-image').style.display = 'none';
+        document.getElementById('file-preview').style.display = 'none';
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        setLoading(btnSubmit, false);
       }
+    });
 
-      // Fetch Insights
-      const insightsRes = await fetch('/api/facebook/insights');
-      const insightsData = await insightsRes.json();
-      
-      if (insightsData.success && insightsData.data) {
-        kpiFollowers.textContent = insightsData.data.followers_count || insightsData.data.fan_count || '0';
-        if (insightsData.data.name && kpiPageStatus.textContent !== 'Missing Token') {
-          kpiPageStatus.textContent = insightsData.data.name;
-        }
-      } else {
-        kpiFollowers.textContent = 'N/A';
+    btnAddQueue?.addEventListener('click', async () => {
+      const message  = document.getElementById('compose-message').value.trim();
+      const imageUrl = document.getElementById('compose-image-url').value.trim();
+      if (!message) return toast('Message is required', 'error');
+      setLoading(btnAddQueue, true);
+      try {
+        await api('POST', '/api/queue', { message, imageUrl: imageUrl || undefined });
+        toast('Added to queue!');
+        composeForm.reset();
+      } catch (err) {
+        toast(err.message, 'error');
+      } finally {
+        setLoading(btnAddQueue, false);
       }
-    } catch (e) {
-      console.error('Failed to fetch config/insights', e);
-      document.getElementById('kpi-followers').textContent = 'Error';
-    }
-  };
+    });
+  }
 
-  // Fetch recent posts
-  const fetchPosts = async () => {
-    feedList.innerHTML = '<div class="text-muted" style="text-align: center; padding: 32px 0;">Loading recent posts...</div>';
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: QUEUE
+  // ══════════════════════════════════════════════════════════════════
+  async function loadQueue() {
+    const container = document.getElementById('queue-list');
+    if (!container) return;
+    container.innerHTML = '<div class="text-muted" style="padding:32px;text-align:center;">Loading...</div>';
     try {
-      const res = await fetch('/api/facebook/posts');
-      const json = await res.json();
+      const data = await api('GET', '/api/queue');
+      const items = data.data || [];
+      setText('queue-count-badge', items.length);
 
-      if (!json.success) {
-        throw new Error(json.error?.message || 'Failed to fetch posts. Make sure PAGE_ID and ACCESS_TOKEN are valid in .env');
-      }
+      // Update sidebar badge
+      const qb = document.getElementById('queue-badge');
+      const pending = items.filter(i => i.status === 'pending').length;
+      if (qb) { qb.style.display = pending > 0 ? 'inline-flex' : 'none'; qb.textContent = pending; }
 
-      const posts = json.data?.data || [];
-      
-      kpiTotalPosts.textContent = posts.length > 0 ? posts.length : '0';
-
-      if (posts.length === 0) {
-        feedList.innerHTML = '<div class="text-muted" style="text-align: center; padding: 32px 0;">No posts found. Publish something!</div>';
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line></svg><p>Queue is empty.</p></div>`;
         return;
       }
 
-      feedList.innerHTML = posts.map(post => {
-        const date = new Date(post.created_time).toLocaleString();
-        const message = post.message || '<i>No message</i>';
+      container.innerHTML = items.map(item => {
+        const statusBadge = item.status === 'published' ? 'badge-green' :
+                            item.status === 'error'     ? 'badge-red'   :
+                            item.status === 'publishing'? 'badge-yellow' : 'badge-blue';
         return `
-          <div class="feed-item">
-            <div class="feed-header">
-              <span>Post ID: ${post.id.split('_')[1] || post.id}</span>
-              <span>${date}</span>
+          <div class="queue-item" id="qi-${item.id}">
+            <div class="queue-item-body">
+              <div class="queue-item-msg">${escHtml(item.message)}</div>
+              <div class="queue-item-meta">
+                <span>${fmtDate(item.createdAt)}</span>
+                ${item.imageUrl ? '<span>🖼️ photo</span>' : ''}
+                <span class="badge ${statusBadge}">${item.status}</span>
+              </div>
             </div>
-            <div class="feed-content">
-              ${message.replace(/\\n/g, '<br>')}
+            <div class="queue-item-actions">
+              ${item.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="publishQueueItem('${item.id}')">▶ Publish</button>` : ''}
+              <button class="btn btn-danger btn-sm" onclick="removeQueueItem('${item.id}')">✕</button>
             </div>
           </div>
         `;
       }).join('');
-      
-    } catch (e) {
-      console.error(e);
-      feedList.innerHTML = `<div style="color: var(--color-destructive); text-align: center; padding: 32px 0;">${e.message}</div>`;
-      showToast(e.message, 'error');
+    } catch (err) {
+      container.innerHTML = `<div class="text-muted" style="padding:32px;text-align:center;">Failed to load: ${escHtml(err.message)}</div>`;
+    }
+  }
+
+  window.publishQueueItem = async (id) => {
+    try {
+      await api('POST', `/api/queue/${id}/publish`);
+      toast('Published from queue! ✅');
+      loadQueue();
+    } catch (err) {
+      toast(err.message, 'error');
     }
   };
 
-  // Submit form
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const message = document.getElementById('message').value;
-    const imageUrl = document.getElementById('imageUrl').value;
-    
-    btnSubmit.disabled = true;
-    btnSubmit.classList.add('loading');
+  window.removeQueueItem = async (id) => {
+    try {
+      await api('DELETE', `/api/queue/${id}`);
+      document.getElementById(`qi-${id}`)?.remove();
+      toast('Removed from queue');
+      loadQueue();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  document.getElementById('btn-queue-refresh')?.addEventListener('click', loadQueue);
+  document.getElementById('btn-queue-clear')?.addEventListener('click', async () => {
+    if (!confirm('Clear entire queue?')) return;
+    try {
+      await api('DELETE', '/api/queue');
+      toast('Queue cleared');
+      loadQueue();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+
+  // Queue add form
+  const queueAddForm = document.getElementById('queue-add-form');
+  if (queueAddForm) {
+    queueAddForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message  = document.getElementById('queue-message').value.trim();
+      const imageUrl = document.getElementById('queue-image-url').value.trim();
+      if (!message) return toast('Message is required', 'error');
+      try {
+        await api('POST', '/api/queue', { message, imageUrl: imageUrl || undefined });
+        toast('Added to queue!');
+        queueAddForm.reset();
+        loadQueue();
+      } catch (err) {
+        toast(err.message, 'error');
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: SCHEDULER
+  // ══════════════════════════════════════════════════════════════════
+  async function loadScheduler() {
+    await Promise.all([loadSchedulerStatus(), loadSchedules()]);
+  }
+
+  async function loadSchedulerStatus() {
+    try {
+      const data = await api('GET', '/health');
+      const badge = document.getElementById('scheduler-status-badge');
+      const count = data.scheduler?.count ?? 0;
+      if (badge) {
+        badge.textContent = count > 0 ? `${count} job(s) active` : 'No jobs';
+        badge.className = `badge ${count > 0 ? 'badge-green' : 'badge-red'}`;
+      }
+    } catch {}
 
     try {
-      const endpoint = imageUrl ? '/api/facebook/post-photo' : '/api/facebook/post-message';
-      const body = { message };
-      if (imageUrl) body.url = imageUrl;
+      const data = await api('GET', '/api/settings');
+      const cronDisplay = document.getElementById('scheduler-cron-display');
+      const cronInput   = document.getElementById('scheduler-cron-input');
+      if (cronDisplay) cronDisplay.textContent = data.data?.defaultCron || '0 * * * *';
+      if (cronInput)   cronInput.value = data.data?.defaultCron || '0 * * * *';
+    } catch {}
+  }
 
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
+  async function loadSchedules() {
+    const container = document.getElementById('schedules-list');
+    if (!container) return;
+    try {
+      const data = await api('GET', '/api/schedules');
+      const items = data.data || [];
 
-      const json = await res.json();
-
-      if (json.success) {
-        showToast('Successfully published to Facebook!');
-        form.reset();
-        fetchPosts(); // Refresh feed
-      } else {
-        throw new Error(json.error?.message || json.error || 'Failed to publish post');
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><p>No custom schedules.</p></div>`;
+        return;
       }
-    } catch (e) {
-      console.error(e);
-      showToast(e.message, 'error');
-    } finally {
-      btnSubmit.disabled = false;
-      btnSubmit.classList.remove('loading');
+
+      container.innerHTML = items.map(s => `
+        <div class="schedule-item" id="sch-${s.id}">
+          <div style="flex-shrink:0;">
+            <span class="badge ${s.enabled ? 'badge-green' : ''}">${s.enabled ? 'On' : 'Off'}</span>
+          </div>
+          <div class="schedule-body">
+            <div class="schedule-name">${escHtml(s.name)}</div>
+            <div class="schedule-detail">${escHtml(s.cron)}</div>
+            <div class="schedule-msg">${escHtml(s.message)}</div>
+          </div>
+          <div class="schedule-actions">
+            <button class="btn btn-ghost btn-sm" onclick="toggleSchedule('${s.id}', ${!s.enabled})">${s.enabled ? 'Disable' : 'Enable'}</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSchedule('${s.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="text-muted" style="padding:32px;text-align:center;">Failed: ${escHtml(err.message)}</div>`;
+    }
+  }
+
+  window.toggleSchedule = async (id, enabled) => {
+    try {
+      await api('PATCH', `/api/schedules/${id}`, { enabled });
+      toast(`Schedule ${enabled ? 'enabled' : 'disabled'}`);
+      loadSchedules();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  window.deleteSchedule = async (id) => {
+    if (!confirm('Delete this schedule?')) return;
+    try {
+      await api('DELETE', `/api/schedules/${id}`);
+      toast('Schedule deleted');
+      loadSchedules();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  // Default scheduler form
+  document.getElementById('scheduler-default-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const cron = document.getElementById('scheduler-cron-input').value.trim();
+    try {
+      await api('POST', '/api/scheduler/restart', { cron });
+      await api('PATCH', '/api/settings', { defaultCron: cron });
+      toast(`Scheduler restarted with ${cron}`);
+      loadSchedulerStatus();
+    } catch (err) { toast(err.message, 'error'); }
+  });
+
+  // Trigger now
+  document.getElementById('btn-trigger-now')?.addEventListener('click', async () => {
+    try {
+      await api('POST', '/api/scheduler/trigger');
+      toast('Auto-post triggered manually ✅');
+    } catch (err) { toast(err.message, 'error'); }
+  });
+
+  // Add custom schedule
+  document.getElementById('schedule-add-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name    = document.getElementById('schedule-name').value.trim();
+    const cron    = document.getElementById('schedule-cron').value.trim();
+    const message = document.getElementById('schedule-message').value.trim();
+    try {
+      await api('POST', '/api/schedules', { name, cron, message });
+      toast(`Schedule "${name}" added!`);
+      e.target.reset();
+      loadSchedules();
+    } catch (err) { toast(err.message, 'error'); }
+  });
+
+  document.getElementById('btn-schedules-refresh')?.addEventListener('click', loadSchedules);
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: FEED
+  // ══════════════════════════════════════════════════════════════════
+  async function loadFeed() {
+    const container = document.getElementById('feed-list');
+    if (!container) return;
+    container.innerHTML = '<div class="text-muted" style="padding:48px;text-align:center;">Loading posts...</div>';
+    try {
+      const data = await api('GET', '/api/facebook/posts?limit=20');
+      const posts = data.data?.data || [];
+
+      if (posts.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No posts found.</p></div>';
+        return;
+      }
+
+      container.innerHTML = posts.map(post => {
+        const msg = post.message || post.story || '';
+        return `
+          <div class="feed-item" id="fi-${post.id}">
+            <div class="feed-item-header">
+              <span class="feed-item-id">${escHtml(post.id)}</span>
+              <span class="feed-item-date">${fmtDate(post.created_time)}</span>
+            </div>
+            ${msg ? `<div class="feed-item-msg">${escHtml(msg)}</div>` : ''}
+            ${post.full_picture ? `<div class="feed-item-image"><img src="${escHtml(post.full_picture)}" alt="post image"></div>` : ''}
+            ${post.permalink_url ? `<div><a href="${escHtml(post.permalink_url)}" target="_blank" rel="noopener" class="nav-link-inline">View on Facebook ↗</a></div>` : ''}
+            <div class="feed-item-actions">
+              <button class="btn btn-danger btn-sm" onclick="deleteFbPost('${post.id}')">Delete from Facebook</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="text-muted" style="padding:48px;text-align:center;">
+        ${escHtml(err.message)}<br><span class="small">Make sure your credentials are configured.</span>
+      </div>`;
+    }
+  }
+
+  window.deleteFbPost = async (postId) => {
+    if (!confirm('Delete this post from Facebook? This cannot be undone.')) return;
+    try {
+      await api('DELETE', `/api/facebook/posts/${encodeURIComponent(postId)}`);
+      toast('Post deleted from Facebook');
+      document.getElementById(`fi-${postId}`)?.remove();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  document.getElementById('btn-feed-refresh')?.addEventListener('click', loadFeed);
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: HISTORY
+  // ══════════════════════════════════════════════════════════════════
+  async function loadHistory() {
+    const container = document.getElementById('history-list');
+    if (!container) return;
+    container.innerHTML = '<div class="text-muted" style="padding:48px;text-align:center;">Loading...</div>';
+    try {
+      const data = await api('GET', '/api/history?limit=100');
+      const items = data.data || [];
+
+      if (items.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No history yet.</p></div>';
+        return;
+      }
+
+      container.innerHTML = items.map(h => {
+        const iconClass = h.status === 'success' ? 'success' : h.type === 'auto' ? 'auto' : 'error';
+        const icon = h.status === 'success' ? '✓' : h.status === 'error' ? '✗' : '⟳';
+        return `
+          <div class="history-item">
+            <div class="history-icon ${iconClass}">${icon}</div>
+            <div class="history-body">
+              <div class="history-msg">${escHtml(h.message || h.type || '--')}</div>
+              <div class="history-meta">
+                ${h.postId ? `ID: ${h.postId} · ` : ''}
+                ${h.source ? `${h.source} · ` : ''}
+                ${fmtDate(h.createdAt)}
+              </div>
+            </div>
+            <div class="history-status">
+              <span class="badge ${h.status === 'success' ? 'badge-green' : 'badge-red'}">${h.status}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="text-muted" style="padding:48px;text-align:center;">Failed: ${escHtml(err.message)}</div>`;
+    }
+  }
+
+  document.getElementById('btn-history-refresh')?.addEventListener('click', loadHistory);
+
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: SETTINGS
+  // ══════════════════════════════════════════════════════════════════
+  async function loadSettings() {
+    try {
+      const [settingsData, configData, healthData] = await Promise.all([
+        api('GET', '/api/settings'),
+        api('GET', '/api/facebook/config'),
+        api('GET', '/health'),
+      ]);
+
+      const s = settingsData.data || {};
+      const c = configData.data || {};
+
+      setVal('setting-template', s.autoPostTemplate || '');
+      setVal('setting-cron', s.defaultCron || '');
+      setVal('setting-max-queue', s.maxQueueSize || 100);
+
+      const schedulerToggle = document.getElementById('setting-scheduler-enabled');
+      if (schedulerToggle) schedulerToggle.checked = !!s.schedulerEnabled;
+
+      // Connection info
+      setText('info-page-id', c.pageId || 'Not set');
+      const tokenBadge = document.getElementById('info-token-badge');
+      if (tokenBadge) {
+        tokenBadge.textContent = c.hasAccessToken ? 'Configured' : 'Missing';
+        tokenBadge.className = `badge ${c.hasAccessToken ? 'badge-green' : 'badge-red'}`;
+      }
+      const schedulerBadge = document.getElementById('info-scheduler-badge');
+      const jobCount = healthData.scheduler?.count ?? 0;
+      if (schedulerBadge) {
+        schedulerBadge.textContent = jobCount > 0 ? `${jobCount} job(s)` : 'No jobs';
+        schedulerBadge.className = `badge ${jobCount > 0 ? 'badge-green' : ''}`;
+      }
+      setText('info-env', healthData.environment || '--');
+    } catch (err) {
+      toast('Failed to load settings: ' + err.message, 'error');
+    }
+  }
+
+  function setVal(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  }
+
+  document.getElementById('settings-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const updates = {
+      autoPostTemplate: document.getElementById('setting-template').value,
+      defaultCron:      document.getElementById('setting-cron').value,
+      maxQueueSize:     parseInt(document.getElementById('setting-max-queue').value, 10) || 100,
+      schedulerEnabled: document.getElementById('setting-scheduler-enabled').checked,
+    };
+    try {
+      await api('PATCH', '/api/settings', updates);
+      toast('Settings saved! ✅');
+    } catch (err) {
+      toast(err.message, 'error');
     }
   });
 
-  // Toasts
-  const showToast = (message, type = 'success') => {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    const icon = type === 'success' 
-      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
-      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  checkHealth();
+  navigate('dashboard');
 
-    toast.innerHTML = `${icon} <span>${message}</span>`;
-    container.appendChild(toast);
+  // Poll health every 30s
+  setInterval(checkHealth, 30000);
 
-    setTimeout(() => {
-      toast.style.animation = 'fadeOut 0.3s ease-out forwards';
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
+  // ══════════════════════════════════════════════════════════════════
+  //  PAGE: AI CONTENT GENERATOR
+  // ══════════════════════════════════════════════════════════════════
+
+  // State
+  let _topics = [];
+  let _formats = [];
+  let _selectedTopic = null;
+  let _selectedFormat = null;
+  let _lastGenerated = null;
+
+  const FORMAT_LABELS = {
+    tips: '📋 Tips', howto: '🚀 How-To', fact: '💡 Facts',
+    quote: '✨ Quote', checklist: '☑️ Checklist', story: '📖 Story',
+  };
+  const PROVIDER_LABELS = {
+    auto: '🔄 Auto', cloudflare: '☁️ Cloudflare', openai: '🟢 OpenAI',
+    gemini: '🔵 Gemini', local: '📝 Local', 'local-fallback': '📝 Local',
   };
 
-  btnRefresh.addEventListener('click', () => {
-    fetchPosts();
-    fetchConfigAndInsights();
+  async function initAiPage() {
+    await Promise.all([loadTopics(), loadAiSettings()]);
+  }
+
+  async function loadTopics() {
+    try {
+      const data = await api('GET', '/api/ai/topics');
+      _topics = data.data || [];
+      const data2 = await api('GET', '/api/ai/formats');
+      _formats = data2.data || [];
+      renderTopicChips();
+      renderFormatTabs();
+      renderTopicLibrary();
+      populateTopicSelect();
+    } catch (e) {
+      console.error('Failed to load topics/formats:', e);
+    }
+  }
+
+  function renderTopicChips() {
+    const grid = document.getElementById('topic-grid');
+    if (!grid) return;
+    grid.innerHTML = _topics.map(t => `
+      <div class="topic-chip" data-tag="${t.tag}" title="${t.en}">
+        <span>${t.emoji}</span>${t.th}
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.topic-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        grid.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('selected'));
+        if (_selectedTopic === chip.dataset.tag) {
+          _selectedTopic = null; // deselect
+        } else {
+          chip.classList.add('selected');
+          _selectedTopic = chip.dataset.tag;
+        }
+      });
+    });
+  }
+
+  function renderFormatTabs() {
+    const container = document.getElementById('format-tabs');
+    if (!container) return;
+    container.innerHTML = _formats.map(f => `
+      <button type="button" class="format-tab" data-format="${f}">${FORMAT_LABELS[f] || f}</button>
+    `).join('');
+
+    container.querySelectorAll('.format-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        container.querySelectorAll('.format-tab').forEach(t => t.classList.remove('selected'));
+        if (_selectedFormat === tab.dataset.format) {
+          _selectedFormat = null;
+        } else {
+          tab.classList.add('selected');
+          _selectedFormat = tab.dataset.format;
+        }
+      });
+    });
+  }
+
+  function renderTopicLibrary() {
+    const el = document.getElementById('topic-library-list');
+    if (!el) return;
+    el.innerHTML = _topics.map(t => `
+      <div class="topic-library-item" data-tag="${t.tag}">
+        <span>${t.emoji}</span>
+        <div style="flex:1;">
+          <div>${t.th}</div>
+          <div class="tag">#${t.tag}</div>
+        </div>
+      </div>
+    `).join('');
+
+    el.querySelectorAll('.topic-library-item').forEach(item => {
+      item.addEventListener('click', () => {
+        _selectedTopic = item.dataset.tag;
+        // Update chips
+        document.querySelectorAll('.topic-chip').forEach(c => {
+          c.classList.toggle('selected', c.dataset.tag === _selectedTopic);
+        });
+        // Update settings select
+        const sel = document.getElementById('ai-setting-topic');
+        if (sel) sel.value = _selectedTopic;
+      });
+    });
+  }
+
+  function populateTopicSelect() {
+    const sel = document.getElementById('ai-setting-topic');
+    if (!sel) return;
+    _topics.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.tag;
+      opt.textContent = `${t.emoji} ${t.th}`;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Randomize selection
+  document.getElementById('btn-ai-randomize')?.addEventListener('click', () => {
+    // Random topic
+    const t = _topics[Math.floor(Math.random() * _topics.length)];
+    _selectedTopic = t?.tag || null;
+    document.querySelectorAll('.topic-chip').forEach(c => {
+      c.classList.toggle('selected', c.dataset.tag === _selectedTopic);
+    });
+    // Random format
+    const f = _formats[Math.floor(Math.random() * _formats.length)];
+    _selectedFormat = f || null;
+    document.querySelectorAll('.format-tab').forEach(t => {
+      t.classList.toggle('selected', t.dataset.format === _selectedFormat);
+    });
   });
 
-  // Init
-  checkHealth();
-  fetchConfigAndInsights();
-  fetchPosts();
-});
+  // Generate Preview
+  const btnGenerate = document.getElementById('btn-ai-generate');
+  btnGenerate?.addEventListener('click', async () => {
+    setLoading(btnGenerate, true);
+    const previewCard = document.getElementById('ai-preview-card');
+    const btnQueue = document.getElementById('btn-ai-add-queue');
+    const btnPost  = document.getElementById('btn-ai-post-now');
+
+    try {
+      const payload = {
+        tag:       _selectedTopic || undefined,
+        format:    _selectedFormat || undefined,
+        withImage: document.getElementById('ai-with-image')?.checked !== false,
+        provider:  document.getElementById('ai-provider-select')?.value || 'auto',
+      };
+
+      const data = await api('POST', '/api/ai/generate', payload);
+      _lastGenerated = data.data;
+
+      // Show preview card
+      if (previewCard) previewCard.style.display = 'block';
+
+      // Update preview text
+      const previewText = document.getElementById('ai-preview-text');
+      if (previewText) {
+        previewText.style.whiteSpace = 'pre-wrap';
+        previewText.textContent = _lastGenerated.message;
+      }
+
+      // Editable textarea
+      const editArea = document.getElementById('ai-preview-edit');
+      if (editArea) {
+        editArea.value = _lastGenerated.message;
+        // Sync edit to preview
+        editArea.oninput = () => {
+          if (previewText) previewText.textContent = editArea.value;
+          if (_lastGenerated) _lastGenerated.message = editArea.value;
+        };
+      }
+
+      // Image preview
+      const previewImg = document.getElementById('ai-preview-image');
+      if (previewImg) {
+        if (_lastGenerated.imageUrl && !_lastGenerated.imageUrl.startsWith('data:')) {
+          previewImg.innerHTML = `<img src="${escHtml(_lastGenerated.imageUrl)}" alt="post image" style="width:100%;max-height:240px;object-fit:cover;" onerror="this.parentElement.style.display='none'">`;
+          previewImg.style.display = 'block';
+        } else {
+          previewImg.style.display = 'none';
+        }
+      }
+
+      // Update badges
+      const topic = _lastGenerated.topic;
+      setText('ai-preview-topic', `${topic?.emoji || ''} ${topic?.th || topic?.tag || '--'}`);
+      setText('ai-preview-format', FORMAT_LABELS[_lastGenerated.format] || _lastGenerated.format);
+      setText('ai-preview-provider', PROVIDER_LABELS[_lastGenerated.provider] || _lastGenerated.provider);
+
+      // Enable action buttons
+      if (btnQueue) btnQueue.disabled = false;
+      if (btnPost)  btnPost.disabled  = false;
+
+      toast(`Generated! Topic: ${topic?.th || topic?.tag} | Provider: ${_lastGenerated.provider}`);
+    } catch (e) {
+      toast('Generation failed: ' + e.message, 'error');
+    } finally {
+      setLoading(btnGenerate, false);
+    }
+  });
+
+  // Add Generated Content to Queue
+  document.getElementById('btn-ai-add-queue')?.addEventListener('click', async () => {
+    if (!_lastGenerated) return;
+    try {
+      await api('POST', '/api/queue', {
+        message:  _lastGenerated.message,
+        imageUrl: _lastGenerated.imageUrl && !_lastGenerated.imageUrl.startsWith('data:')
+                  ? _lastGenerated.imageUrl : undefined,
+      });
+      toast('Added to queue! 📋');
+    } catch (e) {
+      toast(e.message, 'error');
+    }
+  });
+
+  // Post Generated Content Now
+  const btnPostNow = document.getElementById('btn-ai-post-now');
+  btnPostNow?.addEventListener('click', async () => {
+    if (!_lastGenerated) return;
+    if (!confirm('Post this AI-generated content to Facebook now?')) return;
+    setLoading(btnPostNow, true);
+    try {
+      const payload = {
+        tag:      _lastGenerated.topic?.tag,
+        format:   _lastGenerated.format,
+        withImage: !!_lastGenerated.imageUrl,
+        provider: _lastGenerated.provider,
+      };
+      // Override generated content by posting message directly via compose route
+      const postPayload = { message: _lastGenerated.message };
+      if (_lastGenerated.imageUrl && !_lastGenerated.imageUrl.startsWith('data:')) {
+        postPayload.url = _lastGenerated.imageUrl;
+        await api('POST', '/api/facebook/post-photo', postPayload);
+      } else {
+        await api('POST', '/api/facebook/post-message', postPayload);
+      }
+      toast('AI content posted to Facebook! 🚀');
+      _lastGenerated = null;
+      document.getElementById('btn-ai-add-queue').disabled = true;
+      btnPostNow.disabled = true;
+      document.getElementById('ai-preview-card').style.display = 'none';
+    } catch (e) {
+      toast(e.message, 'error');
+    } finally {
+      setLoading(btnPostNow, false);
+    }
+  });
+
+  // Load AI Settings
+  async function loadAiSettings() {
+    try {
+      const [settingsData, healthData] = await Promise.all([
+        api('GET', '/api/ai/settings'),
+        api('GET', '/health'),
+      ]);
+      const s = settingsData.data || {};
+
+      // Update KPI
+      const isEnabled = s.enabled !== false;
+      const aiJobActive = healthData.scheduler?.aiAutoPosterActive;
+
+      setText('ai-kpi-status', isEnabled ? (aiJobActive ? 'Active' : 'Enabled') : 'Disabled');
+      setText('ai-kpi-provider', PROVIDER_LABELS[s.provider || 'auto'] || 'Auto');
+
+      const autoposterBadge = document.getElementById('ai-autoposter-status');
+      if (autoposterBadge) {
+        autoposterBadge.textContent = isEnabled ? 'Enabled' : 'Disabled';
+        autoposterBadge.className = `badge ${isEnabled ? 'badge-green' : 'badge-red'}`;
+      }
+
+      const statusBadge = document.getElementById('ai-status-badge');
+      if (statusBadge) {
+        statusBadge.textContent = isEnabled ? '🤖 Running' : '⏸ Paused';
+        statusBadge.className = `badge ${isEnabled ? 'badge-green' : ''}`;
+      }
+
+      // Fill form
+      const topicSel = document.getElementById('ai-setting-topic');
+      if (topicSel) topicSel.value = s.topicTag || '';
+
+      const fmtSel = document.getElementById('ai-setting-format');
+      if (fmtSel) fmtSel.value = s.postFormat || '';
+
+      const provSel = document.getElementById('ai-setting-provider');
+      if (provSel) provSel.value = s.provider || 'auto';
+
+      const imgToggle = document.getElementById('ai-setting-image');
+      if (imgToggle) imgToggle.checked = s.withImage !== false;
+
+      const enableToggle = document.getElementById('ai-setting-enabled');
+      if (enableToggle) enableToggle.checked = s.enabled !== false;
+
+    } catch (e) {
+      console.error('AI settings load error:', e);
+    }
+  }
+
+  // Save AI Settings
+  document.getElementById('ai-settings-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const updates = {
+      enabled:    document.getElementById('ai-setting-enabled')?.checked,
+      topicTag:   document.getElementById('ai-setting-topic')?.value || undefined,
+      postFormat: document.getElementById('ai-setting-format')?.value || undefined,
+      provider:   document.getElementById('ai-setting-provider')?.value || 'auto',
+      withImage:  document.getElementById('ai-setting-image')?.checked !== false,
+    };
+    try {
+      await api('PATCH', '/api/ai/settings', updates);
+      toast('AI auto-poster settings saved! ✅');
+      loadAiSettings();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+
+  // Register page
+  pages.ai = { el: document.getElementById('page-ai'), onEnter: initAiPage };
+
+})();

@@ -3,130 +3,728 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZeaZ FB Auto Post - Dashboard</title>
-  <meta name="description" content="Dashboard for scheduling and posting content to Facebook Pages automatically.">
+  <title>ZeaZ FB Auto — Dashboard</title>
+  <meta name="description" content="Full-featured Facebook page automation dashboard by ZeaZ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="app-container">
-    
+
     <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-          </svg>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+          </div>
+          <div>
+            <div class="brand-name">zfbauto</div>
+            <div class="brand-sub">v1.1.0</div>
+          </div>
         </div>
-        zfbauto
+        <button class="sidebar-toggle" id="sidebar-close" aria-label="Close sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
-      
+
       <nav class="nav-links">
-        <a href="#" class="nav-link active">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-          Dashboard
+        <a href="#dashboard" class="nav-link active" data-page="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Overview
         </a>
-        <a href="#" class="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          Posts
+        <a href="#compose" class="nav-link" data-page="compose">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Compose
         </a>
-        <a href="#" class="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <a href="#queue" class="nav-link" data-page="queue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          Queue
+          <span class="badge" id="queue-badge" style="display:none;">0</span>
+        </a>
+        <a href="#scheduler" class="nav-link" data-page="scheduler">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Scheduler
+        </a>
+        <a href="#ai" class="nav-link" data-page="ai" style="position:relative;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          AI Generator
+          <span style="font-size:0.65rem;background:linear-gradient(135deg,#a855f7,#4f8ef7);color:white;padding:1px 5px;border-radius:99px;margin-left:auto;">AI</span>
+        </a>
+        <a href="#feed" class="nav-link" data-page="feed">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Page Feed
+        </a>
+        <a href="#history" class="nav-link" data-page="history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12 8 12 12 14 14"></polyline><path d="M3.05 11a9 9 0 1 0 .5-4.5"></path><polyline points="3 3 3 9 9 9"></polyline></svg>
+          History
+        </a>
+        <a href="#settings" class="nav-link" data-page="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
           Settings
         </a>
       </nav>
-    </aside>
 
-    <!-- Main -->
-    <main class="main-content">
-      <header class="header">
-        <div>
-          <h1>Overview</h1>
-          <p class="text-muted" style="margin-top: 4px;">Monitor and publish content to your Facebook page.</p>
-        </div>
+      <div class="sidebar-footer">
         <div class="status-badge" id="system-status">
           <div class="status-dot"></div>
-          <span id="status-text">Checking System...</span>
+          <span id="status-text">Checking...</span>
         </div>
-      </header>
+      </div>
+    </aside>
 
-      <!-- Metrics -->
-      <section class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
-        <div class="card">
-          <div class="card-header">
-            <span>Total Posts</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-          </div>
-          <div class="card-value" id="kpi-total-posts">--</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span>Page Followers</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          </div>
-          <div class="card-value" id="kpi-followers">--</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span>Next Auto-Post</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          </div>
-          <div class="card-value" style="font-size: 1.5rem;" id="kpi-next-post">T+ 1hr</div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <span>Page Connection</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </div>
-          <div class="card-value" style="color: var(--color-accent); font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="kpi-page-status">Checking...</div>
-        </div>
-      </section>
+    <!-- Mobile header -->
+    <div class="mobile-header">
+      <button class="sidebar-toggle" id="sidebar-open" aria-label="Open sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <span class="brand-name">zfbauto</span>
+    </div>
 
-      <!-- Content Grid -->
-      <section class="content-grid">
-        <!-- Publish Form -->
-        <div class="card">
-          <div class="card-header">
-            <span style="font-size: 1rem; color: var(--color-on-primary);">Create New Post</span>
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ── PAGE: Dashboard ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <h1>Overview</h1>
+            <p class="text-muted">Monitor and automate your Facebook page posting.</p>
           </div>
-          <form id="post-form">
-            <div class="form-group">
-              <label for="message">Message</label>
-              <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+          <button class="btn btn-ghost btn-sm" id="btn-refresh-all">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Refresh
+          </button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Page Followers</div>
+              <div class="kpi-value" id="kpi-followers">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Posts Today</div>
+              <div class="kpi-value" id="kpi-posts-today">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--purple">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Queue Size</div>
+              <div class="kpi-value" id="kpi-queue-size">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--orange">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Active Schedules</div>
+              <div class="kpi-value" id="kpi-schedules">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Info + Quick Actions -->
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Page Connection</span>
+              <span class="badge" id="page-connection-badge">Checking...</span>
+            </div>
+            <div class="page-info" id="page-info">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Quick Post</span>
+            </div>
+            <form id="quick-post-form">
+              <div class="form-group">
+                <textarea id="quick-message" placeholder="What's on your mind?" rows="3"></textarea>
+              </div>
+              <div class="btn-row">
+                <button type="button" class="btn btn-secondary" id="btn-quick-queue">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Add to Queue
+                </button>
+                <button type="submit" class="btn btn-primary" id="btn-quick-post">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  Publish Now
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Recent History</span>
+              <a href="#history" class="nav-link-inline" data-page="history">View all →</a>
+            </div>
+            <div id="mini-history-list">
+              <div class="text-muted small" style="padding:16px 0;">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Compose ── -->
+      <div class="page" id="page-compose">
+        <div class="page-header">
+          <div>
+            <h1>Compose Post</h1>
+            <p class="text-muted">Create and publish content directly to your Facebook page.</p>
+          </div>
+        </div>
+        <div class="compose-layout">
+          <div class="card compose-card">
+            <div class="card-header">
+              <span class="card-title">New Post</span>
+            </div>
+            <form id="compose-form">
+              <div class="form-group">
+                <label for="compose-message">Message <span class="req">*</span></label>
+                <textarea id="compose-message" name="message" placeholder="Write your post content here..." rows="6" required></textarea>
+                <div class="char-counter"><span id="char-count">0</span> / 63,206</div>
+              </div>
+              <div class="form-group">
+                <label for="compose-link">Link URL (optional)</label>
+                <input type="url" id="compose-link" name="link" placeholder="https://example.com">
+              </div>
+              <div class="form-group">
+                <label>Photo (optional)</label>
+                <div class="upload-tabs">
+                  <button type="button" class="upload-tab active" data-tab="url">URL</button>
+                  <button type="button" class="upload-tab" data-tab="file">Upload File</button>
+                </div>
+                <div class="upload-panel active" id="upload-url-panel">
+                  <input type="url" id="compose-image-url" name="imageUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="upload-panel" id="upload-file-panel">
+                  <div class="file-drop-zone" id="file-drop-zone">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path></svg>
+                    <p>Drop image here or <label for="compose-file" class="link-text">browse</label></p>
+                    <input type="file" id="compose-file" name="image" accept="image/*" style="display:none;">
+                    <div class="file-preview" id="file-preview" style="display:none;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button type="button" class="btn btn-ghost" id="btn-compose-queue">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line></svg>
+                  Add to Queue
+                </button>
+                <button type="submit" class="btn btn-primary" id="btn-compose-submit">
+                  <span class="spinner"></span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  Publish Now
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="compose-sidebar">
+            <div class="card">
+              <div class="card-header"><span class="card-title">Preview</span></div>
+              <div class="fb-preview" id="fb-preview">
+                <div class="fb-preview-header">
+                  <div class="fb-preview-avatar"></div>
+                  <div>
+                    <div class="fb-preview-page" id="preview-page-name">Your Page</div>
+                    <div class="fb-preview-time">Just now · 🌐</div>
+                  </div>
+                </div>
+                <div class="fb-preview-text" id="preview-text"><span class="text-muted small">Start typing to preview...</span></div>
+                <div class="fb-preview-image" id="preview-image" style="display:none;"></div>
+                <div class="fb-preview-actions">
+                  <span>👍 Like</span>
+                  <span>💬 Comment</span>
+                  <span>↗ Share</span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><span class="card-title">Tips</span></div>
+              <ul class="tips-list">
+                <li>Best posting times: 9am–11am and 1pm–3pm</li>
+                <li>Posts with images get 2x more engagement</li>
+                <li>Keep messages under 300 characters for best reach</li>
+                <li>Use emojis to increase engagement 🚀</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Queue ── -->
+      <div class="page" id="page-queue">
+        <div class="page-header">
+          <div>
+            <h1>Post Queue</h1>
+            <p class="text-muted">Manage posts waiting to be published.</p>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" id="btn-queue-refresh">Refresh</button>
+            <button class="btn btn-danger btn-sm" id="btn-queue-clear">Clear All</button>
+          </div>
+        </div>
+
+        <div class="queue-add-form card" style="margin-bottom:24px;">
+          <div class="card-header"><span class="card-title">Add to Queue</span></div>
+          <form id="queue-add-form" class="inline-form">
+            <div class="form-group flex-1">
+              <textarea id="queue-message" placeholder="Post message..." rows="2"></textarea>
             </div>
             <div class="form-group">
-              <label for="imageUrl">Photo URL (Optional)</label>
-              <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+              <input type="url" id="queue-image-url" placeholder="Image URL (optional)">
             </div>
-            <button type="submit" id="btn-submit">
-              <span class="loading-spinner"></span>
-              Publish Now
-            </button>
+            <button type="submit" class="btn btn-primary">Add to Queue</button>
           </form>
         </div>
 
-        <!-- Recent Posts -->
         <div class="card">
-          <div class="card-header flex-between">
-            <span style="font-size: 1rem; color: var(--color-on-primary);">Recent Posts Activity</span>
-            <button id="btn-refresh" style="padding: 6px 12px; font-size: 0.875rem; background: var(--color-primary); color: var(--color-foreground); border: 1px solid var(--color-border);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-              Refresh
-            </button>
+          <div class="card-header">
+            <span class="card-title">Queued Posts</span>
+            <span class="badge" id="queue-count-badge">0</span>
           </div>
-          <div class="feed-list" id="feed-list">
-            <!-- Loading State -->
-            <div class="text-muted" style="text-align: center; padding: 32px 0;">
-              Loading recent posts...
+          <div id="queue-list">
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              <p>Queue is empty. Add posts above.</p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      <!-- ── PAGE: Scheduler ── -->
+      <div class="page" id="page-scheduler">
+        <div class="page-header">
+          <div>
+            <h1>Scheduler</h1>
+            <p class="text-muted">Automate posting with cron schedules.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid-2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Default Auto-Post Job</span></div>
+            <div class="scheduler-default" id="scheduler-default-info">
+              <div class="info-row">
+                <span class="info-label">Status</span>
+                <span class="badge badge-green" id="scheduler-status-badge">Active</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Cron Schedule</span>
+                <code id="scheduler-cron-display">0 * * * *</code>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Behavior</span>
+                <span class="text-muted small">Consumes queue items; falls back to template</span>
+              </div>
+            </div>
+            <form id="scheduler-default-form" style="margin-top:16px;">
+              <div class="form-group">
+                <label>Cron Expression</label>
+                <input type="text" id="scheduler-cron-input" placeholder="0 * * * *" value="0 * * * *">
+                <div class="form-hint">
+                  <a href="https://crontab.guru" target="_blank" rel="noopener">crontab.guru ↗</a>
+                  — e.g. <code>0 9,13 * * *</code> = 9am &amp; 1pm daily
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm">
+                Apply Schedule
+              </button>
+            </form>
+            <div style="margin-top:12px;">
+              <button class="btn btn-ghost btn-sm" id="btn-trigger-now">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Trigger Now
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Add Custom Schedule</span></div>
+            <form id="schedule-add-form">
+              <div class="form-group">
+                <label>Name <span class="req">*</span></label>
+                <input type="text" id="schedule-name" placeholder="Morning Post" required>
+              </div>
+              <div class="form-group">
+                <label>Cron Expression <span class="req">*</span></label>
+                <input type="text" id="schedule-cron" placeholder="0 9 * * *" required>
+              </div>
+              <div class="form-group">
+                <label>Message <span class="req">*</span></label>
+                <textarea id="schedule-message" placeholder="Post content..." rows="3" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm">Add Schedule</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:24px;">
+          <div class="card-header">
+            <span class="card-title">Custom Schedules</span>
+            <button class="btn btn-ghost btn-sm" id="btn-schedules-refresh">Refresh</button>
+          </div>
+          <div id="schedules-list">
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <p>No custom schedules configured.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Feed ── -->
+      <div class="page" id="page-feed">
+        <div class="page-header">
+          <div>
+            <h1>Page Feed</h1>
+            <p class="text-muted">View and manage your Facebook page posts.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-feed-refresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="card">
+          <div id="feed-list">
+            <div class="text-muted" style="text-align:center;padding:48px 0;">Loading posts...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: History ── -->
+      <div class="page" id="page-history">
+        <div class="page-header">
+          <div>
+            <h1>Post History</h1>
+            <p class="text-muted">Local record of all publish actions.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-history-refresh">Refresh</button>
+        </div>
+        <div class="card">
+          <div id="history-list">
+            <div class="text-muted" style="text-align:center;padding:48px 0;">Loading history...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Settings ── -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div>
+            <h1>Settings</h1>
+            <p class="text-muted">Configure auto-posting behavior and defaults.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Auto-Post Template</span></div>
+            <form id="settings-form">
+              <div class="form-group">
+                <label>Default Post Template</label>
+                <textarea id="setting-template" rows="3" placeholder="Automated post at {TIME} 🤖✨"></textarea>
+                <div class="form-hint">Use <code>{TIME}</code> for timestamp placeholder.</div>
+              </div>
+              <div class="form-group">
+                <label>Default Cron Schedule</label>
+                <input type="text" id="setting-cron" placeholder="0 * * * *">
+                <div class="form-hint">Controls when the default auto-post job runs.</div>
+              </div>
+              <div class="form-group">
+                <label>Max Queue Size</label>
+                <input type="number" id="setting-max-queue" min="1" max="1000" placeholder="100">
+              </div>
+              <div class="form-group">
+                <label class="toggle-label">
+                  <input type="checkbox" id="setting-scheduler-enabled" class="toggle-input">
+                  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                  Enable Scheduler
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Connection Info</span></div>
+            <div class="info-table" id="settings-info-table">
+              <div class="info-row">
+                <span class="info-label">Page ID</span>
+                <code id="info-page-id" class="text-muted">Not set</code>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Access Token</span>
+                <span class="badge" id="info-token-badge">Checking...</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Scheduler</span>
+                <span class="badge" id="info-scheduler-badge">Checking...</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Environment</span>
+                <code id="info-env">--</code>
+              </div>
+            </div>
+            <div style="margin-top:20px;">
+              <p class="text-muted small">Configure credentials in <code>.env</code> file:</p>
+              <pre class="code-block">FACEBOOK_PAGE_ID=your_page_id
+FACEBOOK_ACCESS_TOKEN=your_token</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: AI Generator ── -->
+      <div class="page" id="page-ai">
+        <div class="page-header">
+          <div>
+            <h1>🤖 AI Content Generator</h1>
+            <p class="text-muted">Auto-generate "learn how to" posts every 3 hours using AI — Thai + English mixed content.</p>
+          </div>
+          <div class="btn-row">
+            <span class="badge" id="ai-status-badge">Loading...</span>
+          </div>
+        </div>
+
+        <!-- AI Auto-Poster Status Card -->
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--purple-dim);color:var(--purple);">🤖</div>
+            <div class="kpi-body">
+              <div class="kpi-label">AI Status</div>
+              <div class="kpi-value" id="ai-kpi-status" style="font-size:1rem;">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--primary-dim);color:var(--primary);">📡</div>
+            <div class="kpi-body">
+              <div class="kpi-label">AI Provider</div>
+              <div class="kpi-value" id="ai-kpi-provider" style="font-size:1rem;">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--accent-dim);color:var(--accent);">⏰</div>
+            <div class="kpi-body">
+              <div class="kpi-label">Interval</div>
+              <div class="kpi-value" id="ai-kpi-interval" style="font-size:1rem;">Every 3h</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:var(--warn-dim);color:var(--warn);">🎲</div>
+            <div class="kpi-body">
+              <div class="kpi-label">Jitter</div>
+              <div class="kpi-value" id="ai-kpi-jitter" style="font-size:1rem;">±30 min</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="compose-layout" style="grid-template-columns:1.3fr 0.7fr;">
+
+          <!-- Left: Generate Form + Preview -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Generate Controls -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">✨ Generate Content</span>
+                <button class="btn btn-ghost btn-sm" id="btn-ai-randomize">🎲 Random</button>
+              </div>
+
+              <div class="form-group">
+                <label>Topic</label>
+                <div class="topic-grid" id="topic-grid">
+                  <!-- Filled by JS -->
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top:8px;">
+                <label>Post Format</label>
+                <div class="format-tabs" id="format-tabs">
+                  <!-- Filled by JS -->
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top:8px;">
+                <label>AI Provider</label>
+                <select id="ai-provider-select">
+                  <option value="auto">🔄 Auto (Best available)</option>
+                  <option value="cloudflare">☁️ Cloudflare Workers AI</option>
+                  <option value="openai">🟢 OpenAI (GPT-4o-mini)</option>
+                  <option value="gemini">🔵 Google Gemini</option>
+                  <option value="local">📝 Local Templates (No API)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="toggle-label">
+                  <input type="checkbox" id="ai-with-image" class="toggle-input" checked>
+                  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                  Include Image from Unsplash
+                </label>
+              </div>
+
+              <div class="btn-row" style="margin-top:8px;">
+                <button class="btn btn-secondary" id="btn-ai-generate">
+                  <span class="spinner"></span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  Generate Preview
+                </button>
+                <button class="btn btn-ghost" id="btn-ai-add-queue" disabled>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line></svg>
+                  Add to Queue
+                </button>
+                <button class="btn btn-primary" id="btn-ai-post-now" disabled>
+                  <span class="spinner"></span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  Post Now
+                </button>
+              </div>
+            </div>
+
+            <!-- Generated Preview -->
+            <div class="card" id="ai-preview-card" style="display:none;">
+              <div class="card-header">
+                <span class="card-title">📄 Generated Content</span>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <span class="badge badge-blue" id="ai-preview-topic">--</span>
+                  <span class="badge" id="ai-preview-format">--</span>
+                  <span class="badge" id="ai-preview-provider">local</span>
+                </div>
+              </div>
+              <div class="ai-preview-content">
+                <div class="fb-preview" id="ai-fb-preview">
+                  <div class="fb-preview-header">
+                    <div class="fb-preview-avatar"></div>
+                    <div>
+                      <div class="fb-preview-page" id="ai-preview-page-name">Your Page</div>
+                      <div class="fb-preview-time">Just now · 🌐</div>
+                    </div>
+                  </div>
+                  <div class="fb-preview-text" id="ai-preview-text"><span class="text-muted small">Click "Generate Preview" to see content here...</span></div>
+                  <div class="fb-preview-image" id="ai-preview-image" style="display:none;"></div>
+                  <div class="fb-preview-actions">
+                    <span>👍 Like</span><span>💬 Comment</span><span>↗ Share</span>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:12px;">
+                <textarea id="ai-preview-edit" rows="6" style="font-size:0.85rem;line-height:1.5;"></textarea>
+                <div class="form-hint">✏️ Edit the content above before posting</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Auto-Poster Settings -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Auto-Poster Control -->
+            <div class="card">
+              <div class="card-header"><span class="card-title">⏰ Auto-Poster Settings</span></div>
+
+              <div class="info-row">
+                <span class="info-label">Status</span>
+                <span class="badge" id="ai-autoposter-status">--</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Schedule</span>
+                <code>Every 3 hours + ±30min jitter</code>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Cron</span>
+                <code>0 0,3,6,9,12,15,18,21 * * *</code>
+              </div>
+
+              <div style="margin-top:16px;">
+                <form id="ai-settings-form">
+                  <div class="form-group">
+                    <label>Default Topic (empty = random rotation)</label>
+                    <select id="ai-setting-topic">
+                      <option value="">🎲 Random Rotation</option>
+                      <!-- Filled by JS -->
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Default Format (empty = random)</label>
+                    <select id="ai-setting-format">
+                      <option value="">🎲 Random</option>
+                      <option value="tips">📋 Tips</option>
+                      <option value="howto">🚀 How-To</option>
+                      <option value="fact">💡 Fun Facts</option>
+                      <option value="quote">✨ Quote</option>
+                      <option value="checklist">☑️ Checklist</option>
+                      <option value="story">📖 Story</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>AI Provider</label>
+                    <select id="ai-setting-provider">
+                      <option value="auto">🔄 Auto</option>
+                      <option value="cloudflare">☁️ Cloudflare</option>
+                      <option value="openai">🟢 OpenAI</option>
+                      <option value="gemini">🔵 Gemini</option>
+                      <option value="local">📝 Local Templates</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle-label">
+                      <input type="checkbox" id="ai-setting-image" class="toggle-input" checked>
+                      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                      Include Images
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle-label">
+                      <input type="checkbox" id="ai-setting-enabled" class="toggle-input" checked>
+                      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                      Enable AI Auto-Poster
+                    </label>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-sm" style="width:100%;margin-top:8px;">Save Settings</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Topic Library -->
+            <div class="card">
+              <div class="card-header"><span class="card-title">📚 Topic Library</span></div>
+              <div id="topic-library-list" style="max-height:280px;overflow-y:auto;">
+                <div class="text-muted small" style="padding:8px;">Loading...</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
 
     </main>
   </div>
 
   <div class="toast-container" id="toast-container"></div>
+  <div class="overlay" id="overlay"></div>
 
   <script src="/js/app.js"></script>
 </body>
