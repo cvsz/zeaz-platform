@@ -7,8 +7,8 @@
   "apps_dir": "apps",
   "report_dir": "reports/cvsz-apps-merge",
   "internal_apps": [
-    "api",
-    "web"
+    "zeaz-api",
+    "zeaz-web"
   ],
   "protected_apps": [
     "zdash"
@@ -30,21 +30,9 @@
   },
   "apps": [
     {
-      "app_id": "ABTPi18n",
-      "repo": "git@github.com:cvsz/ABTPi18n.git",
-      "target_path": "apps/ABTPi18n",
-      "mode": "adopt-local",
-      "priority": "P1",
-      "deep_dive": true,
-      "safety_notes": [
-        "Trading platform claims and exchange connectivity require runtime isolation.",
-        "Do not run trading bots, exchange automation, social posting, or deployment as part of adoption."
-      ]
-    },
-    {
-      "app_id": "zkbtrader",
-      "repo": "git@github.com:cvsz/zkbtrader.git",
-      "target_path": "apps/zkbtrader",
+      "app_id": "ztrader",
+      "repo": "git@github.com:cvsz/ztrader.git",
+      "target_path": "apps/ztrader",
       "mode": "adopt-local",
       "priority": "P1",
       "deep_dive": true,
@@ -80,8 +68,8 @@
       "priority": "P2"
     },
     {
-      "app_id": "zAcademy",
-      "repo": "git@github.com:cvsz/zAcademy.git",
+      "app_id": "zacademy",
+      "repo": "git@github.com:cvsz/zacademy.git",
       "target_path": "apps/zAcademy",
       "mode": "adopt-local",
       "priority": "P3"
@@ -90,13 +78,6 @@
       "app_id": "zcino",
       "repo": "git@github.com:cvsz/zcino.git",
       "target_path": "apps/zcino",
-      "mode": "adopt-local",
-      "priority": "P3"
-    },
-    {
-      "app_id": "zcino-modern",
-      "repo": "git@github.com:cvsz/zcino-modern.git",
-      "target_path": "apps/zcino-modern",
       "mode": "adopt-local",
       "priority": "P3"
     },
