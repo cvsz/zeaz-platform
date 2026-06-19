@@ -611,6 +611,34 @@ if [[ "$CHECK_RUNTIME_BASELINE" == true ]]; then
   fi
 fi
 
+# Phase 17: Risk scoring tooling validation
+log_info "Running Phase 17 risk scoring tooling checks..."
+risk_scorer="${SCRIPTS_DIR}/score-cloudflare-change-risk.sh"
+if [[ ! -f "$risk_scorer" ]]; then
+  warnings+=("score-cloudflare-change-risk.sh not found")
+  total_warnings=$((total_warnings + 1))
+elif [[ ! -x "$risk_scorer" ]]; then
+  warnings+=("score-cloudflare-change-risk.sh not executable")
+  total_warnings=$((total_warnings + 1))
+else
+  log_ok "score-cloudflare-change-risk.sh exists and is executable"
+fi
+
+risk_scorecard="${REPO_ROOT}/docs/infra/cloudflare-risk-scorecard-template.md"
+if [[ ! -f "$risk_scorecard" ]]; then
+  warnings+=("docs/infra/cloudflare-risk-scorecard-template.md not found")
+  total_warnings=$((total_warnings + 1))
+else
+  log_ok "cloudflare-risk-scorecard-template.md exists"
+fi
+
+risk_gate="${REPO_ROOT}/docs/infra/cloudflare-risk-gate-policy.md"
+if [[ ! -f "$risk_gate" ]]; then
+  warnings+=("docs/infra/cloudflare-risk-gate-policy.md not found")
+  total_warnings=$((total_warnings + 1))
+else
+  log_ok "cloudflare-risk-gate-policy.md exists"
+fi
 # Phase 18: Environment boundary validation
 log_info "Running Phase 18 environment boundary validation..."
 env_issues=$(validate_environment_boundaries)
@@ -633,7 +661,6 @@ if [[ "$MODE" == "json" ]]; then
   echo "}"
 else
   echo ""
-  echo "========== Cloudflare Config Validation =========="
   echo "  Files validated: ${#TARGET_FILES[@]}"
   echo ""
 
@@ -671,7 +698,6 @@ else
     log_error "Validation failed with $total_errors error(s) and ${#warnings[@]} warning(s)."
   fi
 
-  echo "================================================="
 fi
 
 # ---------- Exit code ----------
