@@ -8,6 +8,9 @@ To comply with the `cvsz/zeaz-platform` monorepo constraints, this directory has
 - Replaces the missing application source.
 - Validates successfully in CI checks.
 - Provides `/health` endpoint.
+- Regenerated Facebook Graph API integrations for pages.
+- Exposes API endpoints for posting messages and photos to Facebook Pages.
+- Includes a `node-cron` scheduled worker to automate Facebook posts at regular intervals.
 
 ## Local development
 

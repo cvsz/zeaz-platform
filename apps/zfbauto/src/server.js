@@ -8,6 +8,9 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
+const fbController = require('./fbController');
+const scheduler = require('./scheduler');
+
 // Basic health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -17,6 +20,14 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Facebook Auto Post Routes
+app.post('/api/facebook/post-message', fbController.postMessage);
+app.post('/api/facebook/post-photo', fbController.postPhoto);
+app.get('/api/facebook/posts', fbController.getPosts);
+
 app.listen(port, () => {
   console.log(`zfbauto server listening on port ${port}`);
+  
+  // Initialize cron jobs
+  scheduler.initJobs();
 });
