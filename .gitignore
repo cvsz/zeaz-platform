@@ -240,3 +240,39 @@ secrets/
 *.key
 *.tfvars
 *.tfstate
+
+# Protect large binary/vendor directories (zlms)
+apps/zlms/app/bin/**
+apps/zlms/app/bin/Release/**
+!apps/zlms/app/bin/Release/Publish/.gitkeep  # if needed
+
+# Generated / temporary files
+.factory/
+reports/
+*.log
+fix-*.sh
+status.log
+pnpm-debug.log
+**/.DS_Store
+
+# Build artifacts (already partially covered)
+**/dist/
+**/build/
+**/node_modules/
+
+# Binary / Generated files - NEVER commit
+apps/zlms/app/bin/**
+apps/zlms/app/bin/Release/**
+!apps/zlms/app/bin/Release/.gitkeep
+
+# Temporary / Reports
+.factory/
+reports/
+*.log
+status.log
+fix-*.sh
+pnpm-debug.log
+
+# Build artifacts
+**/dist/
+**/build/
