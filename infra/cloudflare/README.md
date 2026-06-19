@@ -500,35 +500,3 @@ printf 'Remove production Worker route for app.zeaz.dev with no rollback plan' |
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check
 ```
 
-## Phase 18 - Cloudflare Multi-Environment Separation
-
-Phase 18 defines ownership boundaries for Cloudflare dev, staging, and production
-intent. It adds sanitized intent YAML files and an offline scanner to detect
-cross-environment drift before promotion.
-
-**Safety Statement:** Phase 18 is documentation and offline validation only. It
-does not deploy Workers, apply Terraform/OpenTofu, mutate DNS, mutate tunnels, or
-call Cloudflare write APIs.
-
-### Phase 18 Documents And Intent Files
-
-| File | Purpose |
-|---|---|
-| `docs/infra/cloudflare-environment-boundaries.md` | Three-environment model and boundary rules |
-| `docs/infra/cloudflare-environment-ownership-matrix.md` | Environment by resource ownership and approval matrix |
-| `docs/infra/cloudflare-cross-environment-drift-policy.md` | Drift definition, detection, remediation, and SLA |
-| `docs/infra/cloudflare-environment-promotion-policy.md` | Dev to staging to prod promotion gates |
-| `infra/cloudflare/environments/dev.yml` | Sanitized dev environment intent |
-| `infra/cloudflare/environments/staging.yml` | Sanitized staging environment intent |
-| `infra/cloudflare/environments/prod.yml` | Sanitized production environment intent |
-
-### Phase 18 Validation
-
-```bash
-bash -n infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --help
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --json | python3 -m json.tool
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --strict
-infra/cloudflare/scripts/validate-cloudflare-config.sh --check
-```

@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload generated evidence
         if: ${{ hashFiles('docs/reports/generated/zeaz-dev-*.md') != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: phase52-zeaz-dev-evidence
           path: docs/reports/generated/zeaz-dev-*.md

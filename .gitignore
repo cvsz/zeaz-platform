@@ -14,6 +14,7 @@ secrets/
 *.key
 *.p12
 *.agekey
+gh-set-env.sh
 infra/cloudflare/.env
 infra/cloudflare/.env.*
 
@@ -100,7 +101,7 @@ apps/zdash/*
 log.txt
 bootstrap-generate-tokens-once.sh
 zdash.sh
-
+*.log
 # OS
 .DS_Store
 Thumbs.db
