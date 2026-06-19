@@ -136,3 +136,18 @@ if __name__ == "__main__":
     ]
     zacademy_agent_dest = "/home/zeazdev/zeaz-platform/apps/zAcademy/.agents/agents"
     enable_agents(zacademy_agent_sources, zacademy_agent_dest)
+
+    # 4. Enable skills and agents in zai-factory
+    print("\n--- Enabling zai-factory skills and agents ---")
+    zaifactory_skill_sources = [
+        "/home/zeazdev/zeaz-platform/apps/zai-factory/skills"
+    ]
+    zaifactory_skill_dest = "/home/zeazdev/zeaz-platform/.agents/skills"
+    enable_skills(zaifactory_skill_sources, zaifactory_skill_dest)
+
+    zaifactory_agent_sources = [
+        "/home/zeazdev/zeaz-platform/apps/zai-factory/subagents/claude/agents",
+        "/home/zeazdev/zeaz-platform/apps/zai-factory/subagents/codex/agents"
+    ]
+    zaifactory_agent_dest = "/home/zeazdev/zeaz-platform/.agents/agents"
+    enable_agents(zaifactory_agent_sources, zaifactory_agent_dest)

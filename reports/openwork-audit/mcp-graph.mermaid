@@ -1,0 +1,58 @@
+graph LR
+  subgraph "MCP Gateway"
+    MCP_CORE[MCP Core - @modelcontextprotocol/sdk]
+    MCP_AUTH[MCP Auth - OAuth/OIDC]
+    MCP_CATALOG[MCP Catalog]
+    MCP_POLICY[MCP Policy Engine]
+  end
+
+  subgraph "Built-in MCP Servers"
+    UI_MCP[OpenWork UI MCP]
+    FILE_SYSTEM[File System MCP]
+    GITHUB_MCP[GitHub MCP]
+  end
+
+  subgraph "External Cloud MCPs"
+    CF_MCP[Cloudflare MCP]
+    POSTGRES_MCP[PostgreSQL MCP]
+    REDIS_MCP[Redis MCP]
+    DOCKER_MCP[Docker MCP]
+  end
+
+  subgraph "Marketplace"
+    REGISTRY[MCP Registry]
+    DISCOVERY[MCP Discovery]
+    INSTALL[MCP Installer]
+    CONFIG[MCP Config]
+  end
+
+  subgraph "Plugin System"
+    PLUGIN_CORE[Plugin System Core]
+    CONNECTORS[Connectors]
+    WEBHOOKS[Webhooks]
+    GITHUB_APP[GitHub App]
+  end
+
+  MCP_CORE --> MCP_AUTH
+  MCP_CORE --> MCP_CATALOG
+  MCP_CORE --> MCP_POLICY
+
+  MCP_CATALOG --> UI_MCP
+  MCP_CATALOG --> FILE_SYSTEM
+  MCP_CATALOG --> GITHUB_MCP
+  MCP_CATALOG --> CF_MCP
+  MCP_CATALOG --> POSTGRES_MCP
+  MCP_CATALOG --> REDIS_MCP
+  MCP_CATALOG --> DOCKER_MCP
+
+  REGISTRY --> DISCOVERY
+  REGISTRY --> INSTALL
+  REGISTRY --> CONFIG
+
+  PLUGIN_CORE --> CONNECTORS
+  PLUGIN_CORE --> WEBHOOKS
+  PLUGIN_CORE --> GITHUB_APP
+
+  style MCP_CORE fill:#9cf,stroke:#333
+  style REGISTRY fill:#9f9,stroke:#333
+  style PLUGIN_CORE fill:#fc9,stroke:#333

@@ -1,0 +1,14 @@
+version: 1
+plan_gating:
+  enterprise_features:
+    - api_shield
+  fallback_on_non_enterprise:
+    - js_challenge
+    - block
+rules:
+  - id: trading-api-unauthorized-methods
+    action: block
+    expression: "(http.host eq \"api-zdash.zeaz.dev\" or http.host eq \"ztrader.zeaz.dev\") and (http.request.uri.path contains \"/api/v1/trade\" or http.request.uri.path contains \"/api/v1/order\") and not (http.request.method in {\"POST\", \"DELETE\", \"GET\"})"
+  - id: trading-api-rate-limit-bypass-attempt
+    action: js_challenge
+    expression: "(http.host eq \"api-zdash.zeaz.dev\" or http.host eq \"ztrader.zeaz.dev\") and (http.request.headers[\"user-agent\"][0] eq \"\" or not (http.request.version in {\"HTTP/1.1\", \"HTTP/2\", \"HTTP/3\"}))"

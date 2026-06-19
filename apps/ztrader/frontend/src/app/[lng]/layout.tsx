@@ -1,8 +1,3 @@
-// ZeaZDev [Frontend Language Layout] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Unified Scaffolding - Lang Layout) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
 import React from 'react';
@@ -10,12 +5,12 @@ import { usePathname } from 'next/navigation';
 import { ThemeProvider } from '../../contexts/ThemeContext';
 import { LanguageSelector } from '../../components/LanguageSelector';
 import { Navigation } from '../../components/Navigation';
+import { SessionTimeoutModal } from '../../components/SessionTimeoutModal';
 
 export default function LangLayout({
   children,
 }: {
-  children: React.ReactNode
-  params: Promise<{ lng: string }>
+  children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const lng = pathname?.split('/')[1] || 'en';
@@ -23,22 +18,54 @@ export default function LangLayout({
   return (
     <ThemeProvider>
       <div lang={lng}>
-        <Navigation lng={lng} />
-        <div style={{
-          position: 'fixed',
-          top: '16px',
-          right: '16px',
-          zIndex: 1000,
-          display: 'flex',
-          gap: '12px',
-          alignItems: 'center'
-        }}>
-          <LanguageSelector />
-        </div>
-        <div style={{ paddingTop: '80px', minHeight: '100vh' }}>
+        <SessionTimeoutModal />
+        <a
+          href="#main-content"
+          className="skip-link"
+          style={{
+            position: 'fixed',
+            top: '-100%',
+            left: '8px',
+            zIndex: 10000,
+            padding: '10px 16px',
+            background: 'var(--color-primary)',
+            color: '#fff',
+            borderRadius: '0 0 8px 8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            textDecoration: 'none',
+            transition: 'top 0.15s ease',
+          }}
+        >
+          Skip to content
+        </a>
+        <NavigationWithLang lng={lng} />
+        <div
+          id="main-content"
+          style={{ paddingTop: '80px', minHeight: '100vh', overflowX: 'hidden' }}
+        >
           {children}
         </div>
       </div>
     </ThemeProvider>
-  )
+  );
+}
+
+function NavigationWithLang({ lng }: { lng: string }) {
+  return (
+    <>
+      <Navigation lng={lng} />
+      <div
+        className="lang-selector-fixed"
+        style={{
+          position: 'fixed',
+          top: '14px',
+          right: '24px',
+          zIndex: 1000,
+        }}
+      >
+        <LanguageSelector />
+      </div>
+    </>
+  );
 }

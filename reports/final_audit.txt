@@ -1,0 +1,30 @@
+Auditing api...
+api: NO BUILD SYSTEM
+--------------------
+Auditing zdash...
+zdash: NO BUILD SYSTEM
+--------------------
+Auditing zoffice...
+zoffice: NO BUILD SYSTEM
+--------------------
+Auditing zAcademy...
+zAcademy: BUILD PASSED
+--------------------
+Auditing zLinebot...
+zLinebot: BUILD PASSED
+--------------------
+Auditing zlms...
+zlms: BUILD PASSED
+--------------------
+Auditing zsticker...
+zsticker: NO BUILD SYSTEM
+--------------------
+Auditing zwallet...
+zwallet: BUILD FAILED
+npm error Missing script: "build"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /home/zeazdev/.npm/_logs/2026-06-14T22_20_05_877Z-debug-0.log
+
+--------------------

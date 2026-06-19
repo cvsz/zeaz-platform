@@ -14,7 +14,7 @@ Generated: 2026-06-09 UTC
 
 ## Persistence Findings
 
-- Existing signals include Prisma in `apps/ABTPi18n`, PostgreSQL/Kubernetes manifests in `apps/zdash` and `apps/zwallet`, legacy MySQL/PHP in `apps/zcino`, MySQL dev defaults in `apps/openwork`, and Python backends in `apps/api`, `apps/zoffice`, `apps/ztrader`, and `apps/zsticker`.
+- Existing signals include Prisma in `apps/ABTPi18n`, PostgreSQL/Kubernetes manifests in `apps/zdash` and `apps/zwallet`, legacy MySQL/PHP in `apps/zcino`, MySQL dev defaults in `apps/openwork`, and Python backends in `apps/zeaz-api`, `apps/zoffice`, `apps/ztrader`, and `apps/zsticker`.
 - Durable application migration should be app-by-app because several apps are imported upstream projects with their own storage assumptions.
 
 ## Security Notes

@@ -34,6 +34,7 @@ import type {
   AuditLogEntry,
   AdminSafetyCheck,
   AITraderStatus,
+  SubagentResult,
   RealtimeConnectionState,
   RealtimeEnvelope,
 } from '../api/types';
@@ -111,6 +112,38 @@ const mocks = vi.hoisted(() => {
     { id: "ceo", name: "Alexander Prime", role: "CEO", status: "online", health: "mock_ok", last_event: "Mock sync", capabilities: ["strategy"], metadata: { mock: true }, mock: true },
     { id: "janie", name: "Sophia Lane", role: "Coordinator", status: "online", health: "mock_ok", last_event: "Mock orchestration", capabilities: ["coordination"], metadata: { mock: true }, mock: true },
   ];
+  const mockSubagentResults: SubagentResult[] = [
+    {
+      agent_id: "019ec6ac-a368-7b91-a6c4-41aeaee6452e",
+      nickname: "Cicero",
+      agent_name: "code-architect",
+      status: "completed",
+      role: "architect",
+      source: "manual",
+      created_at: n(),
+      summary: "Architecture review for apps/ztrader is stored in the mailbox.",
+      details: "Mock mailbox detail for architecture review.",
+      artifacts: [
+        "artifacts/subagents/results/20260614T154241Z-019ec6ac-a368-7b91-a6c4-41aeaee6452e.json",
+      ],
+      metadata: {},
+    },
+    {
+      agent_id: "agent-review-002",
+      nickname: "Dorian",
+      agent_name: "reviewer",
+      status: "failed",
+      role: "reviewer",
+      source: "manual",
+      created_at: n(),
+      summary: "Review detected unresolved namespace drift in the merge target.",
+      details: "Mock reviewer detail payload.",
+      artifacts: [
+        "artifacts/subagents/results/20260614T161210Z-agent-review-002.json",
+      ],
+      metadata: { severity: "medium" },
+    },
+  ];
   const mockDrawdown = { current_equity: 9950, peak_equity: 10000, daily_start_equity: 10020, total_drawdown_percent: 0.5, daily_drawdown_percent: 0.7, floating_pnl: -50, risk_level: "normal", breached: false };
   const mockJobs: ScheduledJob[] = [
     { id: "job-trading-scan", name: "trading_scan", job_type: "trading_scan", schedule_type: "interval", status: "pending", enabled: true, interval_seconds: 300, payload: { symbol: "XAUUSD", dry_run: true, mock: true }, risk_guarded: true, created_at: n(), updated_at: n() },
@@ -153,6 +186,8 @@ const mocks = vi.hoisted(() => {
         getHealth: vi.fn().mockResolvedValue(mockHealth),
         getLogs: vi.fn().mockResolvedValue(mockLogs),
         getAgents: vi.fn().mockResolvedValue(mockAgents),
+        listSubagentResults: vi.fn().mockResolvedValue(mockSubagentResults),
+        getSubagentResult: vi.fn().mockResolvedValue(mockSubagentResults[0]),
         sendAgentMessage: vi.fn().mockResolvedValue({ ok: true, mock: true, response_text: "Mock response." }),
         getTradingStatus: vi.fn().mockResolvedValue({ enabled: true, dry_run: true, owner: mockTradingOwner, mock: true }),
         runTradingScan: vi.fn().mockResolvedValue({ symbol: "XAUUSD", timeframe: "M5", candles_analyzed: 200, latest_signal: mockSignals[0], ai_summary: "Simulation only", timestamp: n() }),

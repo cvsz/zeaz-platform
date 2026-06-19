@@ -1,0 +1,42 @@
+# ZeaZ Platform Cloudflare Tunnel Ingress Configuration
+#
+# This file is used for dynamic routing within VM deployments.
+# Do not commit real tunnel tokens or secrets here.
+
+required_env:
+  - ORIGIN_HOSTS
+  - PRIMARY_DOMAIN
+
+tunnel: ef0355dd-8e90-4563-a5b3-06b24f2e3b01
+failover_origins_from: ORIGIN_HOSTS
+
+ingress:
+  - hostname: auth.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: auth
+
+  - hostname: zveo.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: zveo
+
+  - hostname: studio.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: studio
+
+  - hostname: analytics.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: analytics
+
+  - hostname: app.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: app
+
+  - hostname: pay.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: pay
+
+  - hostname: treasury.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: treasury
+
+  - hostname: admin-wallet.${PRIMARY_DOMAIN}
+    service_from_origin_hosts: admin-wallet
+
+  - hostname: ztrader.${PRIMARY_DOMAIN}
+    service: http://localhost:3016
+
+  # Catch-all rule
+  - service: http_status:404

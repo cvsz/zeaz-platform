@@ -1,0 +1,2537 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#050719" />
+  <title>Codex Quest — Master Omega Final</title>
+  <style>
+    :root {
+      --bg: #050719;
+      --panel: rgba(8, 12, 38, .88);
+      --line: #223ca4;
+      --text: #f8fbff;
+      --muted: #b8d6ff;
+      --cyan: #18d8ff;
+      --gold: #ffd51f;
+      --pink: #ff4f8f;
+      --green: #7ee35b;
+      --purple: #9b5cff;
+      --danger: #ff4159;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 72% 13%, rgba(40, 101, 255, .28), transparent 28%),
+        radial-gradient(circle at 20% 28%, rgba(153, 74, 255, .22), transparent 24%),
+        linear-gradient(180deg, #040617 0%, #080b2a 68%, #061351 100%);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      width: min(1280px, 96vw);
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 3px solid #601dcc;
+      background: linear-gradient(90deg, #271164, #4a14a6);
+      padding: 9px 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 0 3px #0b0d30, 0 8px 0 #1a073f;
+      font-weight: 900;
+    }
+
+    .badge span:first-child {
+      color: var(--pink);
+      text-shadow: 2px 2px 0 #4b0621;
+    }
+
+    .subtitle {
+      color: #bfeeff;
+      text-align: right;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      margin: 6px 0 12px;
+      font-size: clamp(34px, 9vw, 104px);
+      line-height: .88;
+      text-transform: uppercase;
+      letter-spacing: -4px;
+      text-shadow:
+        0 5px 0 #090a21,
+        4px 0 0 #090a21,
+        -4px 0 0 #090a21,
+        0 -4px 0 #090a21,
+        0 11px 0 rgba(0,0,0,.35);
+    }
+
+    h1 .white { color: #fff; display: block; }
+    h1 .gold { color: var(--gold); display: block; }
+
+    .game-shell {
+      border: 4px solid #183183;
+      box-shadow:
+        0 0 0 3px #050718,
+        0 0 36px rgba(24,216,255,.18),
+        inset 0 0 24px rgba(24,216,255,.08);
+      background: #050719;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      image-rendering: pixelated;
+      background: #06091f;
+      cursor: crosshair;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .card {
+      border: 2px solid #253b99;
+      background: var(--panel);
+      padding: 12px;
+      min-height: 74px;
+      box-shadow: inset 0 0 18px rgba(24,216,255,.08);
+    }
+
+    .card b {
+      color: var(--cyan);
+      display: block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+
+    .card kbd {
+      display: inline-block;
+      padding: 2px 7px;
+      border: 2px solid #3949aa;
+      background: #11184c;
+      color: #fff;
+      border-radius: 4px;
+      margin: 1px;
+      font-weight: 900;
+      box-shadow: 0 2px 0 #050719;
+    }
+
+    .notice {
+      margin-top: 12px;
+      color: #d7e7ff;
+      background: rgba(0,0,0,.2);
+      border-left: 4px solid var(--gold);
+      padding: 10px 12px;
+      line-height: 1.5;
+    }
+
+    .db-shell {
+      margin-top: 12px;
+      border: 2px solid #253b99;
+      background: rgba(5, 7, 25, .88);
+      box-shadow: inset 0 0 18px rgba(24,216,255,.06);
+      padding: 14px;
+    }
+
+    .db-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .db-header h2 {
+      margin: 0;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+    }
+
+    .db-header p {
+      margin: 0 0 4px;
+      color: #d7e7ff;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .db-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(191,238,255,.4);
+      border-radius: 999px;
+      background: rgba(24,216,255,.08);
+      color: #e9fbff;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .db-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr 1.1fr;
+      gap: 10px;
+    }
+
+    .db-card {
+      border: 1px solid rgba(103,217,255,.35);
+      border-radius: 14px;
+      background: rgba(10, 14, 48, .82);
+      padding: 12px;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .db-card label,
+    .db-card .label {
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .db-card input {
+      width: 100%;
+      border: 1px solid rgba(155,92,255,.55);
+      border-radius: 10px;
+      background: rgba(4, 8, 28, .9);
+      color: var(--text);
+      padding: 10px 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    .db-card input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(24,216,255,.15);
+    }
+
+    .db-card button {
+      border: 2px solid #3949aa;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #243ea8, #121a4e);
+      color: #fff;
+      padding: 10px 12px;
+      font: inherit;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      cursor: pointer;
+      transition: transform .2s ease, filter .2s ease, border-color .2s ease;
+    }
+
+    .db-card button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+      border-color: var(--cyan);
+    }
+
+    .db-card button:active {
+      transform: translateY(1px);
+    }
+
+    .db-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .db-stat {
+      border: 1px solid rgba(191,238,255,.15);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      padding: 8px 10px;
+    }
+
+    .db-stat span {
+      display: block;
+      font-size: 11px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .db-stat strong {
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .db-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .db-actions button {
+      flex: 1 1 140px;
+    }
+
+    .db-leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .db-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+      max-height: 210px;
+      padding-right: 4px;
+    }
+
+    .db-user {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 10px;
+      border: 1px solid rgba(191,238,255,.14);
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+    }
+
+    .db-user.active {
+      border-color: rgba(126,227,91,.6);
+      box-shadow: 0 0 0 2px rgba(126,227,91,.12);
+    }
+
+    .db-row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+
+    .db-row-actions button {
+      padding: 4px 8px;
+      min-width: 0;
+      font-size: 11px;
+      border-radius: 8px;
+    }
+
+    .db-import-input {
+      display: none;
+    }
+
+    .db-user-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .db-user-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .db-vip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(255,213,31,.18);
+      border: 1px solid rgba(255,213,31,.55);
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .db-empty {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 6px 0;
+    }
+
+    .touch-controls {
+      display: none;
+      position: fixed;
+      inset: auto 12px 12px 12px;
+      z-index: 20;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .touch-group {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .touch-btn {
+      width: 58px;
+      height: 58px;
+      border: 2px solid rgba(103,217,255,.8);
+      border-radius: 16px;
+      background: rgba(9, 14, 48, .72);
+      color: white;
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow: 0 6px 0 rgba(0,0,0,.3);
+    }
+
+    @media (pointer: coarse) {
+      .touch-controls { display: flex; }
+    }
+
+    @media (max-width: 800px) {
+      .top { align-items: flex-start; flex-direction: column; }
+      .subtitle { text-align: left; }
+      .hud { grid-template-columns: 1fr 1fr; }
+      h1 { letter-spacing: -2px; }
+    }
+
+    @media (max-width: 520px) {
+      .hud { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="top">
+      <div class="badge"><span>♥</span><span>Master Omega Final Release</span></div>
+      <div class="subtitle">4K Pixel • Boss Fight • Achievements • Mobile • No Assets</div>
+    </div>
+
+    <h1><span class="white">Codex Quest</span><span class="gold">Omega Final</span></h1>
+
+    <section class="game-shell" aria-label="Codex Quest Master Omega Final playable game">
+      <canvas id="game" width="3840" height="2160"></canvas>
+    </section>
+
+    <section class="hud">
+      <div class="card">
+        <b>Move</b>
+        <kbd>A</kbd><kbd>D</kbd> or <kbd>←</kbd><kbd>→</kbd>
+      </div>
+      <div class="card">
+        <b>Action</b>
+        <kbd>Space</kbd> jump · <kbd>J</kbd> attack · <kbd>K</kbd> dash
+      </div>
+      <div class="card">
+        <b>System</b>
+        <kbd>P</kbd> pause · <kbd>R</kbd> restart · <kbd>M</kbd> mute
+      </div>
+      <div class="card">
+        <b>Release</b>
+        3 worlds · boss · checkpoints · particles · save high score
+      </div>
+    </section>
+
+    <p class="notice">
+      Single-file 4K HTML5 Canvas game with an optional API-backed player database. It can run offline with local storage, or sync to the platform API when served from the ZeaZ stack.
+    </p>
+
+    <section class="db-shell" aria-label="Player database and leaderboard">
+      <div class="db-header">
+        <div>
+          <p>Database</p>
+          <h2>Users • Score • Leaderboard • VIP • Points • Register</h2>
+        </div>
+        <div class="db-badge" id="dbSummary">Loading player database...</div>
+      </div>
+
+      <div class="db-grid">
+        <form class="db-card" id="registerForm">
+          <div class="label">Register / Switch User</div>
+          <label for="usernameInput">User name</label>
+          <input id="usernameInput" name="username" maxlength="24" autocomplete="nickname" placeholder="Enter player name" />
+          <button type="submit">Register User</button>
+          <input id="importDbInput" class="db-import-input" type="file" accept="application/json,.json" />
+          <div class="db-empty">Your user, points, score history, and VIP status are saved locally and synced to the backend when available.</div>
+        </form>
+
+        <div class="db-card">
+          <div class="label">Active Player</div>
+          <div id="activeUserCard" class="db-empty">No user loaded.</div>
+          <div class="db-meta">
+            <div class="db-stat"><span>Best Score</span><strong id="activeBestScore">0</strong></div>
+            <div class="db-stat"><span>Total Points</span><strong id="activePoints">0</strong></div>
+            <div class="db-stat"><span>Runs</span><strong id="activeRuns">0</strong></div>
+            <div class="db-stat"><span>VIP</span><strong id="activeVip">No</strong></div>
+          </div>
+          <div class="db-actions">
+            <button type="button" id="exportDbBtn">Export Database</button>
+            <button type="button" id="importDbBtn">Import Database</button>
+            <button type="button" id="deleteActiveUserBtn">Delete Active User</button>
+          </div>
+          <button type="button" id="resetDbBtn">Reset Database</button>
+        </div>
+
+        <div class="db-card db-leaderboard">
+          <div class="label">Leaderboard</div>
+          <div class="db-list" id="leaderboardList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="touch-controls" aria-hidden="true">
+    <div class="touch-group">
+      <button class="touch-btn" data-code="ArrowLeft">◀</button>
+      <button class="touch-btn" data-code="ArrowRight">▶</button>
+    </div>
+    <div class="touch-group">
+      <button class="touch-btn" data-code="KeyJ">ATK</button>
+      <button class="touch-btn" data-code="KeyK">DASH</button>
+      <button class="touch-btn" data-code="Space">JUMP</button>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d", { alpha: false });
+
+    const BASE_SCALE = 4;
+    const W = 960;
+    const H = 540;
+    const TILE = 32;
+
+    ctx.imageSmoothingEnabled = false;
+    let renderScale = BASE_SCALE;
+
+    const COLORS = {
+      text: "#f8fbff",
+      cyan: "#18d8ff",
+      gold: "#ffd51f",
+      pink: "#ff4f8f",
+      green: "#7ee35b",
+      purple: "#9b5cff",
+      dark: "#050719",
+      danger: "#ff4159"
+    };
+
+    const PHYS = {
+      gravity: 0.72,
+      friction: 0.82,
+      maxFall: 16,
+      coyoteFrames: 8,
+      jumpBufferFrames: 8
+    };
+
+    const keys = new Set();
+    let state = "title";
+    let last = performance.now();
+    let cameraX = 0;
+    let cameraY = 0;
+    let shake = 0;
+    let time = 0;
+    let muted = false;
+    let difficulty = "normal";
+    let quality = "4k";
+    let runStartedAt = 0;
+
+    const particles = [];
+    const floatTexts = [];
+    const achievements = [];
+    const projectiles = [];
+    const storms = [];
+
+    const store = {
+      get(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw === null ? fallback : JSON.parse(raw);
+        } catch { return fallback; }
+      },
+      set(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+      }
+    };
+
+    let highScore = store.get("codexQuestOmegaHighScore", 0);
+    const DB_KEY = "codexQuestOmegaDatabaseV1";
+    const VIP_THRESHOLD = 100;
+    const API_BASE = window.ZQUEST_API_BASE || (
+      window.location.origin && window.location.origin !== "null"
+        ? `${window.location.origin}/api/runtime/zquest`
+        : ""
+    );
+    const dbSummaryEl = document.getElementById("dbSummary");
+    const activeUserCardEl = document.getElementById("activeUserCard");
+    const activeBestScoreEl = document.getElementById("activeBestScore");
+    const activePointsEl = document.getElementById("activePoints");
+    const activeRunsEl = document.getElementById("activeRuns");
+    const activeVipEl = document.getElementById("activeVip");
+    const leaderboardListEl = document.getElementById("leaderboardList");
+    const registerFormEl = document.getElementById("registerForm");
+    const usernameInputEl = document.getElementById("usernameInput");
+    const resetDbBtnEl = document.getElementById("resetDbBtn");
+    const exportDbBtnEl = document.getElementById("exportDbBtn");
+    const importDbBtnEl = document.getElementById("importDbBtn");
+    const importDbInputEl = document.getElementById("importDbInput");
+    const deleteActiveUserBtnEl = document.getElementById("deleteActiveUserBtn");
+    let db = null;
+    let savedRunScore = 0;
+    let backendState = API_BASE ? "checking" : "offline";
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function getApiUrl(path) {
+      if (!API_BASE) return "";
+      return `${API_BASE}${path}`;
+    }
+
+    function slugify(value) {
+      return String(value)
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        || "player";
+    }
+
+    function createUser(username) {
+      const safeName = String(username || "Player").trim().replace(/\s+/g, " ").slice(0, 24) || "Player";
+      const stamp = nowIso();
+      return {
+        id: slugify(safeName),
+        username: safeName,
+        points: 0,
+        bestScore: 0,
+        lastScore: 0,
+        totalScore: 0,
+        runs: 0,
+        wins: 0,
+        vip: false,
+        createdAt: stamp,
+        lastLoginAt: stamp,
+        updatedAt: stamp,
+        runSavedScore: 0
+      };
+    }
+
+    function normalizeUser(user) {
+      if (!user || typeof user !== "object") return null;
+      const createdAt = typeof user.createdAt === "string" ? user.createdAt : nowIso();
+      const lastLoginAt = typeof user.lastLoginAt === "string" ? user.lastLoginAt : createdAt;
+      const updatedAt = typeof user.updatedAt === "string" ? user.updatedAt : lastLoginAt;
+      const username = String(user.username || "Player").trim().replace(/\s+/g, " ").slice(0, 24) || "Player";
+      const id = String(user.id || "").trim() || slugify(username);
+      return {
+        id,
+        username,
+        points: Number.isFinite(user.points) ? Math.max(0, Math.floor(user.points)) : 0,
+        bestScore: Number.isFinite(user.bestScore) ? Math.max(0, Math.floor(user.bestScore)) : 0,
+        lastScore: Number.isFinite(user.lastScore) ? Math.max(0, Math.floor(user.lastScore)) : 0,
+        totalScore: Number.isFinite(user.totalScore) ? Math.max(0, Math.floor(user.totalScore)) : 0,
+        runs: Number.isFinite(user.runs) ? Math.max(0, Math.floor(user.runs)) : 0,
+        wins: Number.isFinite(user.wins) ? Math.max(0, Math.floor(user.wins)) : 0,
+        vip: Boolean(user.vip),
+        createdAt,
+        lastLoginAt,
+        updatedAt,
+        runSavedScore: Number.isFinite(user.runSavedScore) ? Math.max(0, Math.floor(user.runSavedScore)) : 0
+      };
+    }
+
+    function normalizeDatabase(raw) {
+      const base = { version: 1, activeUserId: "", users: [], updatedAt: nowIso() };
+      if (!raw || typeof raw !== "object") {
+        const guest = createUser("Guest");
+        base.activeUserId = guest.id;
+        base.users = [guest];
+        return base;
+      }
+
+      const users = Array.isArray(raw.users)
+        ? raw.users.map(normalizeUser).filter(Boolean)
+        : [];
+      const deduped = [];
+      const seen = new Set();
+      for (const user of users) {
+        if (seen.has(user.id)) continue;
+        seen.add(user.id);
+        deduped.push(user);
+      }
+
+      if (!deduped.length) {
+        const guest = createUser("Guest");
+        base.activeUserId = guest.id;
+        base.users = [guest];
+        return base;
+      }
+
+      const activeUserId = typeof raw.activeUserId === "string" ? raw.activeUserId : "";
+      const activeUser = deduped.find(user => user.id === activeUserId) || deduped[0];
+      return {
+        version: Number.isFinite(raw.version) && raw.version > 0 ? Math.floor(raw.version) : 1,
+        activeUserId: activeUser.id,
+        users: deduped,
+        updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : nowIso()
+      };
+    }
+
+    function loadLocalDatabase() {
+      return normalizeDatabase(store.get(DB_KEY, null));
+    }
+
+    function saveLocalDatabase() {
+      store.set(DB_KEY, db);
+    }
+
+    async function fetchRemoteDatabase() {
+      if (!API_BASE) return null;
+      const response = await fetch(getApiUrl("/database"), {
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) {
+        throw new Error(`Database load failed with ${response.status}`);
+      }
+      const payload = await response.json();
+      if (!payload || typeof payload !== "object" || !payload.database) return null;
+      return {
+        initialized: Boolean(payload.initialized),
+        database: normalizeDatabase(payload.database)
+      };
+    }
+
+    async function saveRemoteDatabase() {
+      if (!API_BASE) return false;
+      const response = await fetch(getApiUrl("/database"), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(db)
+      });
+      if (!response.ok) {
+        throw new Error(`Database save failed with ${response.status}`);
+      }
+      return true;
+    }
+
+    function getActiveUser() {
+      return db.users.find(user => user.id === db.activeUserId) || db.users[0] || null;
+    }
+
+    function getLeaderboard() {
+      return [...db.users].sort((a, b) =>
+        b.points - a.points ||
+        b.bestScore - a.bestScore ||
+        b.totalScore - a.totalScore ||
+        a.username.localeCompare(b.username)
+      );
+    }
+
+    function isDefaultDatabase(database) {
+      if (!database || !Array.isArray(database.users) || database.users.length !== 1) return false;
+      const [user] = database.users;
+      return Boolean(user)
+        && user.id === "guest"
+        && user.username === "Guest"
+        && user.points === 0
+        && user.bestScore === 0
+        && user.lastScore === 0
+        && user.totalScore === 0
+        && user.runs === 0
+        && user.wins === 0;
+    }
+
+    function chooseDatabaseSnapshot(localDatabase, remoteSnapshot) {
+      if (!remoteSnapshot) return localDatabase;
+      const remoteDatabase = remoteSnapshot.database;
+      if (!remoteSnapshot.initialized || !remoteDatabase) return localDatabase;
+      if (isDefaultDatabase(localDatabase) && !isDefaultDatabase(remoteDatabase)) {
+        return remoteDatabase;
+      }
+      const localTime = Date.parse(localDatabase.updatedAt || "") || 0;
+      const remoteTime = Date.parse(remoteDatabase.updatedAt || "") || 0;
+      return remoteTime >= localTime ? remoteDatabase : localDatabase;
+    }
+
+    function touchDatabase() {
+      db.updatedAt = nowIso();
+    }
+
+    function persistDatabase() {
+      touchDatabase();
+      saveLocalDatabase();
+      refreshDatabaseUI();
+      if (backendState === "online") {
+        void saveRemoteDatabase().catch(() => {
+          backendState = "offline";
+          refreshDatabaseUI();
+        });
+      }
+    }
+
+    function applyVipStatus(user) {
+      user.vip = user.points >= VIP_THRESHOLD;
+      return user.vip;
+    }
+
+    function refreshDatabaseUI() {
+      const user = getActiveUser();
+      const leaderboard = getLeaderboard();
+      const backendLabel = backendState === "online" ? "Backend DB" : backendState === "checking" ? "Syncing backend..." : "Local DB";
+
+      if (dbSummaryEl) {
+        dbSummaryEl.textContent = `${db.users.length} users • ${leaderboard[0]?.username || "Guest"} leads • ${backendLabel}`;
+      }
+
+      if (activeUserCardEl) {
+        if (user) {
+          activeUserCardEl.innerHTML = "";
+          const title = document.createElement("div");
+          title.className = "db-user-title";
+          title.append(document.createTextNode(user.username));
+          if (user.vip) {
+            const badge = document.createElement("span");
+            badge.className = "db-vip";
+            badge.textContent = "VIP";
+            title.append(badge);
+          }
+
+          const sub = document.createElement("div");
+          sub.className = "db-user-sub";
+          sub.textContent = `Last score ${user.lastScore} • Total score ${user.totalScore} • Runs ${user.runs}`;
+
+          activeUserCardEl.append(title, sub);
+        } else {
+          activeUserCardEl.textContent = "No user loaded.";
+        }
+      }
+
+      if (activeBestScoreEl) activeBestScoreEl.textContent = String(user?.bestScore || 0);
+      if (activePointsEl) activePointsEl.textContent = String(user?.points || 0);
+      if (activeRunsEl) activeRunsEl.textContent = String(user?.runs || 0);
+      if (activeVipEl) activeVipEl.textContent = user?.vip ? "Yes" : "No";
+
+      if (leaderboardListEl) {
+        leaderboardListEl.innerHTML = "";
+        if (!leaderboard.length) {
+          const empty = document.createElement("div");
+          empty.className = "db-empty";
+          empty.textContent = "No registered users yet.";
+          leaderboardListEl.append(empty);
+        } else {
+          leaderboard.slice(0, 8).forEach((entry, index) => {
+            const row = document.createElement("div");
+            row.className = `db-user${entry.id === db.activeUserId ? " active" : ""}`;
+
+            const left = document.createElement("div");
+
+            const title = document.createElement("div");
+            title.className = "db-user-title";
+            title.append(document.createTextNode(`#${index + 1} ${entry.username}`));
+            if (entry.vip) {
+              const badge = document.createElement("span");
+              badge.className = "db-vip";
+              badge.textContent = "VIP";
+              title.append(badge);
+            }
+
+            const sub = document.createElement("div");
+            sub.className = "db-user-sub";
+            sub.textContent = `${entry.points} points • best ${entry.bestScore} • runs ${entry.runs}`;
+
+            left.append(title, sub);
+
+            const action = document.createElement("button");
+            action.type = "button";
+            action.textContent = entry.id === db.activeUserId ? "Active" : "Switch";
+            action.disabled = entry.id === db.activeUserId;
+            action.addEventListener("click", () => {
+              setActiveUser(entry.id);
+            });
+
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.textContent = "Delete";
+            remove.addEventListener("click", () => {
+              deleteUser(entry.id);
+            });
+
+            const actions = document.createElement("div");
+            actions.className = "db-row-actions";
+            actions.append(action, remove);
+
+            row.append(left, actions);
+            leaderboardListEl.append(row);
+          });
+        }
+      }
+    }
+
+    function syncDatabase() {
+      persistDatabase();
+      refreshDatabaseUI();
+    }
+
+    function setActiveUser(userId) {
+      const target = db.users.find(user => user.id === userId) || null;
+      if (!target) return null;
+      db.activeUserId = target.id;
+      target.lastLoginAt = nowIso();
+      target.runSavedScore = 0;
+      savedRunScore = 0;
+      touchDatabase();
+      syncDatabase();
+      return target;
+    }
+
+    function registerUser(username) {
+      const safeName = String(username || "").trim().replace(/\s+/g, " ").slice(0, 24);
+      if (!safeName) return null;
+      const normalizedId = slugify(safeName);
+      const existing = db.users.find(user => user.id === normalizedId || user.username.toLowerCase() === safeName.toLowerCase());
+      if (existing) {
+        existing.username = safeName;
+        existing.lastLoginAt = nowIso();
+        existing.updatedAt = existing.lastLoginAt;
+        db.activeUserId = existing.id;
+        existing.runSavedScore = 0;
+        savedRunScore = 0;
+        touchDatabase();
+        syncDatabase();
+        return existing;
+      }
+
+      const user = createUser(safeName);
+      db.users.unshift(user);
+      db.activeUserId = user.id;
+      savedRunScore = 0;
+      touchDatabase();
+      syncDatabase();
+      return user;
+    }
+
+    function setRunBaseline(score = player.score) {
+      const user = getActiveUser();
+      if (!user) return null;
+      user.runSavedScore = Math.max(0, Math.floor(score));
+      user.updatedAt = nowIso();
+      savedRunScore = user.runSavedScore;
+      touchDatabase();
+      persistDatabase();
+      return user;
+    }
+
+    function recordRunProgress({ completed = false, force = false } = {}) {
+      const user = getActiveUser();
+      if (!user) return null;
+
+      const scoreDelta = Math.max(0, Math.floor(player.score - (user.runSavedScore || 0)));
+      const pointsDelta = Math.max(0, Math.floor(scoreDelta / 100));
+      if (scoreDelta <= 0 && !completed && !force) return user;
+
+      user.lastScore = Math.max(0, Math.floor(player.score));
+      user.bestScore = Math.max(user.bestScore, Math.floor(player.score));
+      user.totalScore += scoreDelta;
+      user.points += pointsDelta;
+      user.runs += 1;
+      if (completed) user.wins += 1;
+      user.updatedAt = nowIso();
+      user.runSavedScore = Math.max(user.runSavedScore || 0, Math.floor(player.score));
+      applyVipStatus(user);
+      savedRunScore = user.runSavedScore;
+      syncDatabase();
+      return user;
+    }
+
+    function deleteUser(userId) {
+      const target = db.users.find(user => user.id === userId) || null;
+      if (!target) return null;
+      if (db.users.length === 1) {
+        db = normalizeDatabase(null);
+        savedRunScore = 0;
+        syncDatabase();
+        if (usernameInputEl) usernameInputEl.value = getActiveUser()?.username || "";
+        return target;
+      }
+
+      const wasActive = db.activeUserId === userId;
+      db.users = db.users.filter(user => user.id !== userId);
+      if (wasActive) {
+        db.activeUserId = db.users[0].id;
+      }
+
+      const active = getActiveUser();
+      if (active && wasActive) {
+        active.lastLoginAt = nowIso();
+        active.runSavedScore = Math.max(0, Math.floor(player.score));
+        savedRunScore = active.runSavedScore;
+      }
+
+      touchDatabase();
+      syncDatabase();
+      if (usernameInputEl) usernameInputEl.value = getActiveUser()?.username || "";
+      return target;
+    }
+
+    function exportDatabase() {
+      const snapshot = normalizeDatabase(db);
+      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+      anchor.href = url;
+      anchor.download = `zquest-database-${stamp}.json`;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function importDatabaseFile(file) {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      db = normalizeDatabase(parsed);
+      const active = getActiveUser();
+      if (active) {
+        active.lastLoginAt = nowIso();
+        active.runSavedScore = Math.max(0, Math.floor(player.score));
+        savedRunScore = active.runSavedScore;
+      }
+      touchDatabase();
+      syncDatabase();
+      if (usernameInputEl) usernameInputEl.value = active?.username || "";
+      return db;
+    }
+
+    async function bootstrapDatabase() {
+      const local = loadLocalDatabase();
+      db = local;
+      refreshDatabaseUI();
+
+      if (!API_BASE) {
+        backendState = "offline";
+        refreshDatabaseUI();
+        if (usernameInputEl && getActiveUser()) {
+          usernameInputEl.value = getActiveUser().username;
+        }
+        return;
+      }
+
+      try {
+        const remote = await fetchRemoteDatabase();
+        backendState = "online";
+        if (remote && remote.database) {
+          db = chooseDatabaseSnapshot(local, remote);
+        }
+        syncDatabase();
+      } catch {
+        backendState = "offline";
+        refreshDatabaseUI();
+      }
+
+      if (usernameInputEl && getActiveUser()) {
+        usernameInputEl.value = getActiveUser().username;
+      }
+    }
+
+    db = loadLocalDatabase();
+    refreshDatabaseUI();
+    void bootstrapDatabase();
+
+    function resizeCanvas() {
+      const shell = canvas.parentElement;
+      const shellWidth = shell ? shell.clientWidth : canvas.clientWidth;
+      const cssWidth = Math.max(320, Math.floor(shellWidth || W * BASE_SCALE));
+      const cssHeight = Math.max(180, Math.floor(cssWidth * H / W));
+      const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+      canvas.width = Math.max(1, Math.floor(cssWidth * dpr));
+      canvas.height = Math.max(1, Math.floor(cssHeight * dpr));
+      renderScale = canvas.width / W;
+
+      if (state !== "playing") render();
+    }
+
+    const levels = [
+      {
+        name: "Neon Meadow",
+        theme: "forest",
+        target: 8,
+        unlockText: "Dash Core acquired — press K to dash.",
+        map: [
+          "........................................................................................",
+          "........................................................................................",
+          "........................................................................................",
+          "........................................................................................",
+          ".................................................................C......................",
+          "............................................C..................#####....................",
+          ".........................C..............#######.........................................",
+          ".................C.....#####............................................................",
+          ".......................................................B................................",
+          "............####.................................C..............C.......................",
+          "............................C.................########.......#####......................",
+          ".....P..................K.....................................................G.........",
+          "###########....#####.............S........################....D.....####....############",
+          "###########....#####......................################..........####....############",
+          "###########....#####.......^^^^...........################..........####....############",
+          "###########....#####.......^^^^...........################..........####....############"
+        ]
+      },
+      {
+        name: "Crystal Ruins",
+        theme: "cave",
+        target: 10,
+        map: [
+          "........................................................................................",
+          "........................................................................................",
+          "........................................................................................",
+          "........................................................................................",
+          ".......................C...............................................................",
+          ".....................#####.......................C.......................B..............",
+          "...............................................#####....................................",
+          "...............C........................S..............................................",
+          ".............#####.............C......#####...................C........................",
+          "............................................................#####.......................",
+          ".....P..............B.........................C.................................G.......",
+          "#########....#####..............########....#####.......############.....K....##########",
+          "#########...............^^^^....########................############..........##########",
+          "#########.......C.......^^^^....########.........S......############.....D....##########",
+          "#########.....#####.............########......#####.....############..........##########",
+          "#########.....#####.............########......#####.....############..........##########"
+        ]
+      },
+      {
+        name: "Sky Fortress",
+        theme: "fortress",
+        target: 12,
+        boss: true,
+        map: [
+          "........................................................................................",
+          "........................................................................................",
+          "........................................................................................",
+          "........................................................................................",
+          ".....................................................C..................................",
+          ".............................B.....................#####.....................B..........",
+          "..................C..........................C.........................................",
+          "................#####.....................#######...............C.......................",
+          "..............................................................#####.....................",
+          "...........C....................C......................................................",
+          ".........#####..............########...................X........................G.......",
+          ".....P................K.................................................................",
+          "###########....#####............########......#####.....##############....D....#########",
+          "###########..............^^^^...########......#####.....##############.........#########",
+          "###########.......S......^^^^...########................##############.........#########",
+          "###########.....#####...........########................##############.........#########"
+        ]
+      }
+    ];
+
+    const world = {
+      index: 0,
+      name: "",
+      theme: "forest",
+      target: 0,
+      width: 0,
+      complete: false
+    };
+
+    const solids = [];
+    const spikes = [];
+    const coins = [];
+    const pickups = [];
+    const enemies = [];
+    let gate = null;
+    let checkpoint = null;
+    let boss = null;
+
+    const player = {
+      x: 80,
+      y: 260,
+      w: 24,
+      h: 42,
+      vx: 0,
+      vy: 0,
+      speed: 0.9,
+      jumpPower: 14.4,
+      facing: 1,
+      grounded: false,
+      coyote: 0,
+      jumpBuffer: 0,
+      jumps: 0,
+      maxJumps: 2,
+      hp: 6,
+      maxHp: 6,
+      armor: 0,
+      inv: 0,
+      attack: 0,
+      attackCooldown: 0,
+      combo: 0,
+      dashReady: false,
+      dashCooldown: 0,
+      dashTime: 0,
+      dashUnlocked: false,
+      score: 0,
+      totalCoins: 0,
+      levelCoins: 0,
+      gems: 0,
+      spawnX: 80,
+      spawnY: 260,
+      checkpointX: 80,
+      checkpointY: 260,
+      deaths: 0
+    };
+
+    let audioCtx = null;
+
+    function safeAudio() {
+      if (muted) return null;
+      if (!audioCtx) {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch {
+          return null;
+        }
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+      return audioCtx;
+    }
+
+    function sound(type) {
+      const ac = safeAudio();
+      if (!ac) return;
+      const now = ac.currentTime;
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      const configs = {
+        coin: [880, 1320, .045, "square", .04],
+        jump: [260, 460, .07, "triangle", .05],
+        slash: [520, 160, .08, "sawtooth", .045],
+        hit: [160, 70, .12, "square", .06],
+        dash: [720, 220, .09, "triangle", .05],
+        win: [440, 880, .24, "triangle", .06],
+        hurt: [130, 60, .17, "sawtooth", .05],
+        boss: [75, 45, .22, "square", .06],
+        pickup: [520, 980, .13, "sine", .05]
+      };
+      const [a, b, dur, wave, vol] = configs[type] || configs.coin;
+      osc.type = wave;
+      osc.frequency.setValueAtTime(a, now);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(20, b), now + dur);
+      gain.gain.setValueAtTime(vol, now);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + dur);
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.start(now);
+      osc.stop(now + dur + .02);
+    }
+
+    function rectsOverlap(a, b) {
+      return a.x < b.x + b.w &&
+             a.x + a.w > b.x &&
+             a.y < b.y + b.h &&
+             a.y + a.h > b.y;
+    }
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function addParticle(x, y, color, count = 8, spread = 3, life = 36) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x, y,
+          vx: rand(-spread, spread),
+          vy: rand(-spread, spread) - 1,
+          life: rand(life * .55, life),
+          maxLife: life,
+          color,
+          size: rand(1, 3)
+        });
+      }
+    }
+
+    function addText(text, x, y, color = COLORS.text) {
+      floatTexts.push({ text, x, y, vy: -0.7, life: 80, color });
+    }
+
+    function unlockAchievement(id, label) {
+      if (achievements.some(a => a.id === id)) return;
+      achievements.push({ id, label, life: 210 });
+      sound("pickup");
+    }
+
+    function drawRect(x, y, w, h, fill, stroke = null, line = 2) {
+      ctx.fillStyle = fill;
+      ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+      if (stroke) {
+        ctx.lineWidth = line;
+        ctx.strokeStyle = stroke;
+        ctx.strokeRect(Math.round(x) + .5, Math.round(y) + .5, Math.round(w), Math.round(h));
+      }
+    }
+
+    function drawText(text, x, y, size = 18, color = "#fff", align = "left") {
+      ctx.font = `900 ${size}px ui-monospace, Menlo, Consolas, monospace`;
+      ctx.textAlign = align;
+      ctx.textBaseline = "top";
+      ctx.fillStyle = "#050719";
+      ctx.fillText(text, x + 3, y + 3);
+      ctx.fillStyle = color;
+      ctx.fillText(text, x, y);
+    }
+
+    function parseLevel(index) {
+      const data = levels[index];
+      world.index = index;
+      world.name = data.name;
+      world.theme = data.theme;
+      world.target = data.target;
+      world.complete = false;
+
+      solids.length = 0;
+      spikes.length = 0;
+      coins.length = 0;
+      pickups.length = 0;
+      enemies.length = 0;
+      projectiles.length = 0;
+      storms.length = 0;
+      gate = null;
+      checkpoint = null;
+      boss = null;
+
+      const map = data.map;
+      const width = Math.max(...map.map(r => r.length));
+      world.width = width * TILE;
+
+      for (let y = 0; y < map.length; y++) {
+        const row = map[y].padEnd(width, ".");
+        for (let x = 0; x < row.length; x++) {
+          const ch = row[x];
+          const px = x * TILE;
+          const py = y * TILE;
+
+          if (ch === "#") solids.push({ x: px, y: py, w: TILE, h: TILE, kind: "ground" });
+          if (ch === "^") spikes.push({ x: px + 4, y: py + 10, w: 24, h: 22 });
+          if (ch === "C") coins.push({ x: px + 8, y: py + 6, w: 16, h: 20, got: false, bob: Math.random() * 10, value: 100 });
+          if (ch === "S") enemies.push(makeSlime(px, py - 8));
+          if (ch === "B") enemies.push(makeBat(px, py));
+          if (ch === "H") pickups.push({ type: "heart", x: px + 7, y: py + 6, w: 18, h: 18, got: false, bob: Math.random() * 8 });
+          if (ch === "D") pickups.push({ type: "dash", x: px + 6, y: py + 2, w: 20, h: 24, got: false, bob: Math.random() * 8 });
+          if (ch === "K") {
+            checkpoint = { x: px, y: py - 22, w: 24, h: 54, active: false };
+          }
+          if (ch === "G") {
+            gate = { x: px, y: py - 28, w: 30, h: 60, open: false };
+          }
+          if (ch === "X") {
+            boss = makeBoss(px - 24, py - 70);
+          }
+          if (ch === "P") {
+            player.spawnX = px;
+            player.spawnY = py - 14;
+            player.checkpointX = player.spawnX;
+            player.checkpointY = player.spawnY;
+          }
+        }
+      }
+
+      if (index === 0) {
+        enemies.push(makeSlime(575, 384));
+        enemies.push(makeBat(1715, 225));
+      }
+      if (index === 1) {
+        enemies.push(makeSlime(1390, 384));
+        enemies.push(makeBat(1960, 205));
+      }
+      if (index === 2) {
+        enemies.push(makeSlime(620, 384));
+        enemies.push(makeBat(2100, 210));
+      }
+
+      player.x = player.spawnX;
+      player.y = player.spawnY;
+      player.vx = 0;
+      player.vy = 0;
+      player.levelCoins = 0;
+      cameraX = clamp(player.x - W * .35, 0, Math.max(0, world.width - W));
+      cameraY = 0;
+      addText(`WORLD ${index + 1}: ${world.name}`, player.x + 12, player.y - 34, COLORS.cyan);
+    }
+
+    function startRun() {
+      player.hp = player.maxHp = difficulty === "hard" ? 4 : difficulty === "easy" ? 8 : 6;
+      player.armor = difficulty === "easy" ? 1 : 0;
+      player.score = 0;
+      player.totalCoins = 0;
+      player.gems = 0;
+      player.deaths = 0;
+      player.dashUnlocked = false;
+      player.dashReady = false;
+      runStartedAt = performance.now();
+      setRunBaseline(0);
+      parseLevel(0);
+      state = "playing";
+      sound("win");
+      unlockAchievement("start", "Quest Started");
+    }
+
+    function restartLevel() {
+      recordRunProgress({ force: true });
+      const savedScore = Math.max(0, player.score - player.levelCoins * 100);
+      const savedCoins = player.totalCoins - player.levelCoins;
+      player.score = savedScore;
+      player.totalCoins = Math.max(0, savedCoins);
+      parseLevel(world.index);
+      setRunBaseline(player.score);
+      state = "playing";
+    }
+
+    function nextLevel() {
+      if (world.index + 1 >= levels.length) {
+        winGame();
+        return;
+      }
+      player.score += 500 + player.hp * 50;
+      recordRunProgress({ force: true });
+      parseLevel(world.index + 1);
+      setRunBaseline(player.score);
+      state = "playing";
+      sound("win");
+      unlockAchievement(`world${world.index + 1}`, `Reached ${world.name}`);
+    }
+
+    function winGame() {
+      state = "win";
+      player.score += Math.max(0, Math.floor(10000 - (performance.now() - runStartedAt) / 100));
+      recordRunProgress({ completed: true, force: true });
+      highScore = Math.max(highScore, player.score);
+      store.set("codexQuestOmegaHighScore", highScore);
+      unlockAchievement("complete", "Omega Clear");
+      sound("win");
+    }
+
+    function makeSlime(x, y) {
+      return {
+        type: "slime",
+        x, y, w: 30, h: 24,
+        vx: 1.15,
+        vy: 0,
+        hp: difficulty === "hard" ? 3 : 2,
+        alive: true,
+        patrol: 130,
+        startX: x,
+        hurt: 0
+      };
+    }
+
+    function makeBat(x, y) {
+      return {
+        type: "bat",
+        x, y, w: 34, h: 26,
+        vx: 1.65,
+        vy: 0,
+        hp: difficulty === "hard" ? 2 : 1,
+        alive: true,
+        startX: x,
+        startY: y,
+        t: Math.random() * 100,
+        hurt: 0
+      };
+    }
+
+    function makeBoss(x, y) {
+      return {
+        type: "dragon",
+        x, y, w: 86, h: 74,
+        vx: 1.15,
+        vy: 0,
+        hp: difficulty === "hard" ? 28 : difficulty === "easy" ? 18 : 22,
+        maxHp: difficulty === "hard" ? 28 : difficulty === "easy" ? 18 : 22,
+        alive: true,
+        phase: 1,
+        t: 0,
+        hurt: 0,
+        cooldown: 90
+      };
+    }
+
+    function respawnPlayer() {
+      player.deaths++;
+      player.x = player.checkpointX;
+      player.y = player.checkpointY;
+      player.vx = 0;
+      player.vy = 0;
+      player.hp = Math.max(1, player.hp - 1);
+      player.inv = 120;
+      player.dashTime = 0;
+      shake = 18;
+      addParticle(player.x + player.w / 2, player.y + player.h / 2, COLORS.pink, 18, 4, 44);
+      addText("RESPAWN", player.x, player.y - 24, COLORS.pink);
+      sound("hurt");
+      if (player.hp <= 0) {
+        gameOver();
+      }
+    }
+
+    function damagePlayer(amount, sourceX = player.x) {
+      if (player.inv > 0 || state !== "playing") return;
+      const reduced = Math.max(1, amount - player.armor);
+      player.hp -= reduced;
+      player.inv = 75;
+      shake = 14;
+      player.vx = sourceX < player.x ? 7 : -7;
+      player.vy = -7;
+      addParticle(player.x + player.w / 2, player.y + 16, COLORS.pink, 16, 4, 36);
+      addText(`-${reduced} HP`, player.x, player.y - 20, COLORS.pink);
+      sound("hurt");
+      if (player.hp <= 0) gameOver();
+    }
+
+    function gameOver() {
+      state = "gameover";
+      recordRunProgress({ force: true });
+      highScore = Math.max(highScore, player.score);
+      store.set("codexQuestOmegaHighScore", highScore);
+      sound("boss");
+    }
+
+    function isJumpPressed() {
+      return keys.has("Space") || keys.has("KeyW") || keys.has("ArrowUp");
+    }
+
+    function collideX(entity) {
+      for (const s of solids) {
+        if (!rectsOverlap(entity, s)) continue;
+        if (entity.vx > 0) entity.x = s.x - entity.w;
+        if (entity.vx < 0) entity.x = s.x + s.w;
+        entity.vx = 0;
+      }
+    }
+
+    function collideY(entity) {
+      const wasGrounded = entity.grounded;
+      entity.grounded = false;
+      for (const s of solids) {
+        if (!rectsOverlap(entity, s)) continue;
+        if (entity.vy > 0) {
+          entity.y = s.y - entity.h;
+          entity.vy = 0;
+          entity.grounded = true;
+        } else if (entity.vy < 0) {
+          entity.y = s.y + s.h;
+          entity.vy = 0;
+        }
+      }
+      if (!wasGrounded && entity.grounded && entity === player) {
+        addParticle(player.x + player.w / 2, player.y + player.h, "#c7e7ff", 5, 1.6, 20);
+      }
+    }
+
+    function updatePlayer() {
+      const left = keys.has("KeyA") || keys.has("ArrowLeft");
+      const right = keys.has("KeyD") || keys.has("ArrowRight");
+
+      if (isJumpPressed()) player.jumpBuffer = PHYS.jumpBufferFrames;
+      else player.jumpBuffer = Math.max(0, player.jumpBuffer - 1);
+
+      if (player.grounded) {
+        player.coyote = PHYS.coyoteFrames;
+        player.jumps = 0;
+        player.dashReady = true;
+      } else {
+        player.coyote = Math.max(0, player.coyote - 1);
+      }
+
+      if (left) {
+        player.vx -= player.speed;
+        player.facing = -1;
+      }
+      if (right) {
+        player.vx += player.speed;
+        player.facing = 1;
+      }
+      if (!left && !right && player.dashTime <= 0) player.vx *= PHYS.friction;
+
+      const maxSpeed = player.dashTime > 0 ? 13 : 6.3;
+      player.vx = clamp(player.vx, -maxSpeed, maxSpeed);
+
+      if (player.jumpBuffer > 0 && (player.grounded || player.coyote > 0 || player.jumps < player.maxJumps)) {
+        player.vy = -player.jumpPower;
+        player.grounded = false;
+        player.coyote = 0;
+        player.jumpBuffer = 0;
+        player.jumps++;
+        addParticle(player.x + player.w / 2, player.y + player.h, "#b7f2ff", 10, 2.2, 28);
+        sound("jump");
+      }
+
+      if (keys.has("KeyK") && player.dashUnlocked && player.dashCooldown <= 0 && player.dashReady) {
+        player.dashTime = 12;
+        player.dashCooldown = 55;
+        player.dashReady = false;
+        player.vx = player.facing * 13.5;
+        player.vy *= .25;
+        addParticle(player.x + player.w / 2, player.y + 20, COLORS.cyan, 24, 5, 30);
+        sound("dash");
+      }
+
+      if (keys.has("KeyJ") && player.attackCooldown <= 0) {
+        player.attack = 18;
+        player.attackCooldown = 21;
+        player.combo = (player.combo + 1) % 3;
+        addParticle(player.x + player.w / 2 + player.facing * 20, player.y + 22, "#e7fbff", 8, 2.2, 18);
+        sound("slash");
+      }
+
+      if (player.dashTime > 0) {
+        player.dashTime--;
+        player.vy = Math.min(player.vy, 2);
+      } else {
+        player.vy = clamp(player.vy + PHYS.gravity, -40, PHYS.maxFall);
+      }
+
+      player.x += player.vx;
+      collideX(player);
+
+      player.y += player.vy;
+      collideY(player);
+
+      player.x = clamp(player.x, 0, world.width - player.w);
+      if (player.y > H + 220) respawnPlayer();
+
+      if (player.attack > 0) player.attack--;
+      if (player.attackCooldown > 0) player.attackCooldown--;
+      if (player.inv > 0) player.inv--;
+      if (player.dashCooldown > 0) player.dashCooldown--;
+
+      collectItems();
+      checkHazards();
+      checkGate();
+    }
+
+    function collectItems() {
+      for (const coin of coins) {
+        if (!coin.got && rectsOverlap(player, coin)) {
+          coin.got = true;
+          player.score += coin.value;
+          player.totalCoins++;
+          player.levelCoins++;
+          addParticle(coin.x + 8, coin.y + 10, COLORS.gold, 12, 3, 34);
+          addText("+100", coin.x - 2, coin.y - 8, COLORS.gold);
+          sound("coin");
+          if (player.totalCoins === 1) unlockAchievement("firstcoin", "First Coin");
+          if (player.levelCoins >= world.target) unlockAchievement("target", "Gate Ready");
+        }
+      }
+
+      for (const p of pickups) {
+        if (p.got || !rectsOverlap(player, p)) continue;
+        p.got = true;
+        if (p.type === "heart") {
+          player.hp = Math.min(player.maxHp, player.hp + 2);
+          addText("+HP", p.x, p.y - 12, COLORS.pink);
+        }
+        if (p.type === "dash") {
+          player.dashUnlocked = true;
+          player.dashReady = true;
+          addText("DASH UNLOCKED", p.x - 24, p.y - 18, COLORS.cyan);
+          unlockAchievement("dash", "Dash Core");
+        }
+        addParticle(p.x + p.w / 2, p.y + p.h / 2, p.type === "dash" ? COLORS.cyan : COLORS.pink, 18, 4, 42);
+        sound("pickup");
+      }
+
+      if (checkpoint && rectsOverlap(player, checkpoint) && !checkpoint.active) {
+        checkpoint.active = true;
+        player.checkpointX = checkpoint.x;
+        player.checkpointY = checkpoint.y - 18;
+        addText("CHECKPOINT", checkpoint.x - 20, checkpoint.y - 22, COLORS.green);
+        addParticle(checkpoint.x + 12, checkpoint.y + 10, COLORS.green, 18, 3, 45);
+        sound("pickup");
+      }
+    }
+
+    function checkHazards() {
+      for (const sp of spikes) {
+        if (rectsOverlap(player, sp)) {
+          damagePlayer(1, sp.x + sp.w / 2);
+        }
+      }
+    }
+
+    function gateOpen() {
+      const targetMet = player.levelCoins >= world.target;
+      const bossClear = !boss || !boss.alive;
+      return targetMet && bossClear;
+    }
+
+    function checkGate() {
+      if (!gate) return;
+      gate.open = gateOpen();
+      if (rectsOverlap(player, gate)) {
+        if (gate.open) nextLevel();
+        else {
+          const coinNeed = Math.max(0, world.target - player.levelCoins);
+          if (coinNeed > 0) addText(`Need ${coinNeed} more coins`, player.x - 24, player.y - 28, COLORS.gold);
+          else if (boss && boss.alive) addText("Defeat the boss", player.x - 24, player.y - 28, COLORS.pink);
+        }
+      }
+    }
+
+    function attackBox() {
+      if (player.attack <= 0) return null;
+      const reach = player.combo === 2 ? 48 : 40;
+      return {
+        x: player.facing > 0 ? player.x + player.w - 2 : player.x - reach + 2,
+        y: player.y + 12,
+        w: reach,
+        h: 21
+      };
+    }
+
+    function updateEnemies() {
+      const sword = attackBox();
+
+      for (const e of enemies) {
+        if (!e.alive) continue;
+
+        if (e.type === "slime") {
+          e.vy = clamp(e.vy + PHYS.gravity, -40, PHYS.maxFall);
+          e.x += e.vx;
+
+          if (Math.abs(e.x - e.startX) > e.patrol) e.vx *= -1;
+
+          collideX(e);
+          if (e.vx === 0) e.vx = e.x < e.startX ? 1.15 : -1.15;
+
+          e.y += e.vy;
+          collideY(e);
+        }
+
+        if (e.type === "bat") {
+          e.t += 0.06;
+          e.x += e.vx;
+          e.y = e.startY + Math.sin(e.t) * 38;
+          if (Math.abs(e.x - e.startX) > 150) e.vx *= -1;
+        }
+
+        if (sword && rectsOverlap(sword, e)) {
+          damageEnemy(e, player.combo === 2 ? 2 : 1);
+        }
+
+        if (rectsOverlap(player, e)) {
+          if (player.vy > 3 && player.y + player.h < e.y + 12) {
+            damageEnemy(e, 99);
+            player.vy = -10;
+          } else {
+            damagePlayer(1, e.x);
+          }
+        }
+
+        if (e.hurt > 0) e.hurt--;
+      }
+
+      updateBoss(sword);
+      updateProjectiles();
+    }
+
+    function damageEnemy(e, amount) {
+      if (e.hurt > 0 && amount < 99) return;
+      e.hp -= amount;
+      e.hurt = 12;
+      e.vx += player.facing * 3.2;
+      player.score += 25;
+      shake = Math.max(shake, 5);
+      addParticle(e.x + e.w / 2, e.y + e.h / 2, e.type === "bat" ? COLORS.purple : COLORS.green, 12, 3, 30);
+      sound("hit");
+      if (e.hp <= 0) {
+        e.alive = false;
+        player.score += e.type === "bat" ? 180 : 140;
+        addText(e.type === "bat" ? "+180" : "+140", e.x, e.y - 14, COLORS.gold);
+      }
+    }
+
+    function updateBoss(sword) {
+      if (!boss || !boss.alive) return;
+
+      boss.t++;
+      boss.phase = boss.hp < boss.maxHp * .45 ? 2 : 1;
+      const speed = boss.phase === 2 ? 2.0 : 1.2;
+      boss.x += Math.sin(boss.t * .025) * speed;
+      boss.y += Math.sin(boss.t * .04) * .45;
+
+      if (boss.cooldown > 0) boss.cooldown--;
+      if (boss.cooldown <= 0) {
+        const fireCount = boss.phase === 2 ? 3 : 1;
+        for (let i = 0; i < fireCount; i++) {
+          const dx = (player.x + player.w / 2) - (boss.x + boss.w / 2);
+          const dy = (player.y + player.h / 2) - (boss.y + boss.h / 2);
+          const mag = Math.max(1, Math.hypot(dx, dy));
+          const spread = (i - (fireCount - 1) / 2) * .16;
+          projectiles.push({
+            type: "fire",
+            x: boss.x + 12,
+            y: boss.y + 42,
+            w: 16,
+            h: 16,
+            vx: dx / mag * 4.2 + spread * 8,
+            vy: dy / mag * 4.2,
+            life: 180
+          });
+        }
+        boss.cooldown = boss.phase === 2 ? 70 : 105;
+        sound("boss");
+      }
+
+      if (sword && rectsOverlap(sword, boss)) {
+        if (boss.hurt <= 0) {
+          boss.hp -= player.combo === 2 ? 2 : 1;
+          boss.hurt = 10;
+          player.score += 35;
+          shake = 8;
+          addParticle(boss.x + boss.w / 2, boss.y + boss.h / 2, COLORS.pink, 16, 4, 34);
+          sound("hit");
+          if (boss.hp <= 0) {
+            boss.alive = false;
+            player.score += 1500;
+            addText("BOSS CLEAR +1500", boss.x - 20, boss.y - 18, COLORS.gold);
+            addParticle(boss.x + boss.w / 2, boss.y + boss.h / 2, COLORS.gold, 60, 6, 70);
+            unlockAchievement("boss", "Dragon Down");
+            sound("win");
+          }
+        }
+      }
+
+      if (rectsOverlap(player, boss)) {
+        damagePlayer(2, boss.x);
+      }
+
+      if (boss.hurt > 0) boss.hurt--;
+    }
+
+    function updateProjectiles() {
+      for (const p of projectiles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        addParticle(p.x + p.w / 2, p.y + p.h / 2, "#ff9b2f", 1, .8, 14);
+        if (rectsOverlap(player, p)) {
+          p.life = 0;
+          damagePlayer(1, p.x);
+        }
+      }
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const p = projectiles[i];
+        if (p.life <= 0 || p.x < cameraX - 80 || p.x > cameraX + W + 80 || p.y < -80 || p.y > H + 80) {
+          projectiles.splice(i, 1);
+        }
+      }
+    }
+
+    function updateFX() {
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += .06;
+        p.vx *= .98;
+        p.life--;
+      }
+      for (let i = particles.length - 1; i >= 0; i--) {
+        if (particles[i].life <= 0) particles.splice(i, 1);
+      }
+
+      for (const t of floatTexts) {
+        t.y += t.vy;
+        t.vy *= .98;
+        t.life--;
+      }
+      for (let i = floatTexts.length - 1; i >= 0; i--) {
+        if (floatTexts[i].life <= 0) floatTexts.splice(i, 1);
+      }
+
+      for (const a of achievements) a.life--;
+      while (achievements.length && achievements[0].life <= 0) achievements.shift();
+
+      if (world.theme === "fortress" && Math.random() < .08) {
+        storms.push({ x: cameraX + rand(0, W), y: rand(-30, 120), life: 30, len: rand(18, 44) });
+      }
+      for (const s of storms) s.life--;
+      for (let i = storms.length - 1; i >= 0; i--) {
+        if (storms[i].life <= 0) storms.splice(i, 1);
+      }
+    }
+
+    function updateCamera() {
+      const targetX = player.x + player.w / 2 - W * .42;
+      cameraX += (clamp(targetX, 0, Math.max(0, world.width - W)) - cameraX) * .1;
+      cameraY += (0 - cameraY) * .1;
+      if (shake > 0) shake--;
+    }
+
+    function update(dt) {
+      time += dt;
+      if (state !== "playing") {
+        updateFX();
+        return;
+      }
+      updatePlayer();
+      updateEnemies();
+      updateCamera();
+      updateFX();
+    }
+
+    function drawBackground() {
+      const theme = world.theme || "forest";
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      if (theme === "forest") {
+        g.addColorStop(0, "#071034");
+        g.addColorStop(.55, "#0d1b55");
+        g.addColorStop(1, "#0b183b");
+      } else if (theme === "cave") {
+        g.addColorStop(0, "#070719");
+        g.addColorStop(.55, "#171144");
+        g.addColorStop(1, "#24133b");
+      } else {
+        g.addColorStop(0, "#061433");
+        g.addColorStop(.55, "#13184f");
+        g.addColorStop(1, "#291044");
+      }
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      for (let i = 0; i < 120; i++) {
+        const sx = (i * 131 + Math.floor(cameraX * .05)) % W;
+        const sy = (i * 47) % 250;
+        const blink = ((i + Math.floor(time * .005)) % 5) === 0;
+        ctx.fillStyle = blink ? COLORS.gold : "#67d9ff";
+        ctx.fillRect(sx, sy, i % 4 === 0 ? 3 : 2, i % 4 === 0 ? 3 : 2);
+      }
+
+      drawMountains(.16, theme === "cave" ? "#14103c" : "#121f5c", 315);
+      drawMountains(.31, theme === "fortress" ? "#2b236d" : "#1d2c78", 365);
+      if (theme !== "cave") drawCastle();
+      if (theme === "cave") drawCrystals();
+      if (theme === "fortress") drawStorm();
+    }
+
+    function drawMountains(speed, color, baseY) {
+      ctx.fillStyle = color;
+      const off = -cameraX * speed % 360;
+      for (let x = off - 360; x < W + 360; x += 360) {
+        ctx.beginPath();
+        ctx.moveTo(x, baseY);
+        ctx.lineTo(x + 80, baseY - 72);
+        ctx.lineTo(x + 145, baseY - 20);
+        ctx.lineTo(x + 225, baseY - 95);
+        ctx.lineTo(x + 310, baseY - 15);
+        ctx.lineTo(x + 360, baseY);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function drawCastle() {
+      const x = 620 - cameraX * .22;
+      const y = 235;
+      ctx.fillStyle = "#223079";
+      ctx.fillRect(x, y + 75, 160, 80);
+      ctx.fillRect(x + 20, y + 35, 36, 120);
+      ctx.fillRect(x + 104, y + 22, 42, 133);
+      ctx.fillRect(x + 68, y + 54, 34, 101);
+      ctx.fillStyle = "#141b4c";
+      for (let i = 0; i < 8; i++) ctx.fillRect(x + 12 + i * 18, y + 92, 7, 14);
+      ctx.fillStyle = "#12163c";
+      ctx.beginPath();
+      ctx.moveTo(x + 20, y + 35);
+      ctx.lineTo(x + 38, y + 6);
+      ctx.lineTo(x + 56, y + 35);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 104, y + 22);
+      ctx.lineTo(x + 125, y - 12);
+      ctx.lineTo(x + 146, y + 22);
+      ctx.fill();
+    }
+
+    function drawCrystals() {
+      const off = -cameraX * .2 % 260;
+      for (let x = off - 260; x < W + 260; x += 260) {
+        drawRect(x + 50, 330, 18, 64, "rgba(24,216,255,.28)", "#18d8ff", 1);
+        drawRect(x + 120, 305, 24, 90, "rgba(155,92,255,.24)", "#9b5cff", 1);
+        drawRect(x + 190, 350, 16, 44, "rgba(255,213,31,.18)", "#ffd51f", 1);
+      }
+    }
+
+    function drawStorm() {
+      for (const s of storms) {
+        ctx.globalAlpha = Math.max(0, s.life / 30);
+        drawRect(s.x - cameraX * .04, s.y, 2, s.len, "#bfeeff");
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function drawTiles() {
+      for (const s of solids) {
+        const x = s.x - cameraX;
+        if (x < -TILE || x > W + TILE) continue;
+
+        if (world.theme === "cave") {
+          drawRect(x, s.y, TILE, TILE, "#4c3477");
+          drawRect(x, s.y, TILE, 8, "#8f65d8");
+          drawRect(x + 2, s.y + 12, 7, 5, "#372252");
+          drawRect(x + 18, s.y + 22, 9, 5, "#372252");
+        } else if (world.theme === "fortress") {
+          drawRect(x, s.y, TILE, TILE, "#333b78");
+          drawRect(x, s.y, TILE, 8, "#6c79d8");
+          drawRect(x + 3, s.y + 12, 10, 3, "#1f2550");
+          drawRect(x + 17, s.y + 22, 12, 3, "#1f2550");
+        } else {
+          drawRect(x, s.y, TILE, TILE, "#2d963f");
+          drawRect(x, s.y, TILE, 9, "#8bf15e");
+          drawRect(x, s.y + 9, TILE, TILE - 9, "#7b4c24");
+          drawRect(x + 2, s.y + 12, 6, 5, "#5f371c");
+          drawRect(x + 18, s.y + 22, 9, 5, "#5f371c");
+        }
+      }
+
+      for (const sp of spikes) {
+        const x = sp.x - cameraX;
+        if (x < -40 || x > W + 40) continue;
+        ctx.fillStyle = "#c9f7ff";
+        ctx.beginPath();
+        ctx.moveTo(x, sp.y + sp.h);
+        ctx.lineTo(x + 8, sp.y);
+        ctx.lineTo(x + 16, sp.y + sp.h);
+        ctx.lineTo(x + 24, sp.y);
+        ctx.lineTo(x + sp.w, sp.y + sp.h);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#3957b7";
+        ctx.stroke();
+      }
+    }
+
+    function drawCoins() {
+      const bobT = time * .004;
+      for (const c of coins) {
+        if (c.got) continue;
+        const x = c.x - cameraX;
+        if (x < -32 || x > W + 32) continue;
+        const y = c.y + Math.sin(bobT + c.bob) * 5;
+        drawRect(x + 2, y + 2, 14, 18, "#8b5300");
+        drawRect(x + 3, y, 12, 18, COLORS.gold);
+        drawRect(x + 6, y + 3, 3, 11, "#fff18e");
+        drawRect(x + 11, y + 4, 2, 10, "#b77800");
+      }
+    }
+
+    function drawPickups() {
+      const bobT = time * .004;
+      for (const p of pickups) {
+        if (p.got) continue;
+        const x = p.x - cameraX;
+        const y = p.y + Math.sin(bobT + p.bob) * 5;
+        if (p.type === "dash") {
+          drawRect(x + 4, y, 12, 24, "rgba(24,216,255,.22)", COLORS.cyan, 2);
+          drawRect(x + 8, y + 4, 4, 16, "#e7fbff");
+        } else {
+          drawRect(x + 5, y + 2, 8, 8, COLORS.pink);
+          drawRect(x + 1, y + 6, 16, 8, COLORS.pink);
+          drawRect(x + 4, y + 14, 10, 6, COLORS.pink);
+        }
+      }
+    }
+
+    function drawCheckpoint() {
+      if (!checkpoint) return;
+      const x = checkpoint.x - cameraX;
+      drawRect(x + 9, checkpoint.y, 4, 54, checkpoint.active ? COLORS.green : "#bfeeff");
+      drawRect(x + 13, checkpoint.y + 4, 26, 16, checkpoint.active ? COLORS.green : "#3949aa", "#071034", 1);
+      drawText("K", x + 17, checkpoint.y + 5, 12, "#071034");
+    }
+
+    function drawGate() {
+      if (!gate) return;
+      const x = gate.x - cameraX;
+      const open = gateOpen();
+      drawRect(x, gate.y, gate.w, gate.h, open ? "#135e6f" : "#33208c", open ? COLORS.green : "#b7dfff", 3);
+      drawRect(x + 8, gate.y + 14, 14, 36, open ? "#072b24" : "#071034");
+      drawRect(x - 7, gate.y - 16, 44, 16, open ? COLORS.green : COLORS.gold, "#7b4c24", 2);
+      drawText(open ? "GO" : "LOCK", x - 4, gate.y - 14, open ? 12 : 10, "#071034");
+    }
+
+    function drawPlayer() {
+      const x = Math.round(player.x - cameraX);
+      const y = Math.round(player.y);
+      const flicker = player.inv > 0 && Math.floor(player.inv / 5) % 2 === 0;
+      if (flicker) return;
+
+      const dir = player.facing;
+      const eyeX = dir > 0 ? x + 17 : x + 7;
+
+      drawRect(x + 2, y + 40, 25, 4, "rgba(0,0,0,.35)");
+
+      if (player.dashTime > 0) {
+        for (let i = 1; i <= 3; i++) {
+          drawRect(x - dir * i * 10, y + 11, 14, 26, `rgba(24,216,255,${.18 / i})`);
+        }
+      }
+
+      ctx.fillStyle = "#8b123f";
+      if (dir > 0) {
+        ctx.fillRect(x - 12, y + 12, 18, 27);
+        ctx.fillRect(x - 20, y + 22, 15, 11);
+        ctx.fillStyle = "#d71958";
+        ctx.fillRect(x - 9, y + 14, 8, 22);
+        ctx.fillStyle = "#ff5d8f";
+        ctx.fillRect(x - 5, y + 15, 2, 16);
+      } else {
+        ctx.fillRect(x + player.w - 4, y + 12, 18, 27);
+        ctx.fillRect(x + player.w + 2, y + 22, 15, 11);
+        ctx.fillStyle = "#d71958";
+        ctx.fillRect(x + player.w + 1, y + 14, 8, 22);
+        ctx.fillStyle = "#ff5d8f";
+        ctx.fillRect(x + player.w + 4, y + 15, 2, 16);
+      }
+
+      drawRect(x + 5, y + 31, 7, 10, "#263d8c");
+      drawRect(x + 15, y + 31, 7, 10, "#263d8c");
+      drawRect(x + 3, y + 39, 10, 5, "#3d2219");
+      drawRect(x + 14, y + 39, 11, 5, "#3d2219");
+      drawRect(x + 5, y + 38, 5, 2, "#7a4a2d");
+      drawRect(x + 16, y + 38, 5, 2, "#7a4a2d");
+
+      drawRect(x + 5, y + 14, 17, 18, "#0f4fdb", "#071034", 2);
+      drawRect(x + 8, y + 15, 8, 16, "#278dff");
+      drawRect(x + 17, y + 16, 4, 13, "#08318d");
+      drawRect(x + 10, y + 27, 9, 3, COLORS.gold);
+      if (player.armor > 0) drawRect(x + 7, y + 17, 13, 7, "#c9f7ff", "#5a89ff", 1);
+
+      drawRect(x + 11, y + 11, 6, 5, "#c98655");
+      drawRect(x + 6, y + 3, 16, 14, "#d8915d", "#071034", 2);
+      drawRect(x + 8, y + 4, 11, 12, "#ffca91");
+      drawRect(x + 19, y + 5, 3, 9, "#b97049");
+      drawRect(x + 9, y + 13, 8, 2, "#e4a06e");
+      drawRect(eyeX, y + 8, 3, 3, "#061126");
+      drawRect(eyeX + (dir > 0 ? 1 : -1), y + 8, 1, 1, "#e8f7ff");
+      drawRect(dir > 0 ? x + 14 : x + 9, y + 12, 5, 1, "#7a3225");
+
+      drawRect(x + 5, y, 18, 7, "#4b210f");
+      drawRect(x + 3, y + 4, 7, 8, "#5e2b12");
+      drawRect(x + 9, y - 1, 6, 5, "#7a3b13");
+      drawRect(x + 15, y, 8, 5, "#371608");
+      drawRect(x + 20, y + 4, 4, 7, "#371608");
+
+      drawRect(dir > 0 ? x + 22 : x - 4, y + 18, 5, 6, "#ffca91", "#071034", 1);
+      drawRect(dir > 0 ? x + 2 : x + 21, y + 18, 4, 6, "#d8915d");
+
+      if (player.attack > 0) {
+        const s = attackBox();
+        const sx = Math.round(s.x - cameraX);
+        const swordColor = player.combo === 2 ? COLORS.gold : "#e7fbff";
+        drawRect(sx, s.y + 6, s.w, 6, swordColor, "#008fd6", 2);
+        drawRect(sx + (dir > 0 ? s.w - 10 : 2), s.y + 3, 8, 2, "#ffffff");
+        drawRect(dir > 0 ? x + player.w : x - 9, y + 19, 9, 8, COLORS.gold, "#6d4200", 1);
+      } else {
+        drawRect(dir > 0 ? x + 22 : x - 4, y + 17, 7, 21, "#d8f9ff", "#008fd6", 1);
+        drawRect(dir > 0 ? x + 25 : x - 1, y + 19, 2, 15, "#ffffff");
+      }
+    }
+
+    function drawEnemies() {
+      for (const e of enemies) {
+        if (!e.alive) continue;
+        const x = Math.round(e.x - cameraX);
+        const y = Math.round(e.y);
+        if (x < -80 || x > W + 80) continue;
+
+        if (e.type === "slime") {
+          const body = e.hurt > 0 ? "#dfffd6" : "#5fe14f";
+          drawRect(x + 2, y + 8, 26, 16, body, "#0a2d12", 3);
+          drawRect(x + 7, y + 3, 16, 10, body);
+          drawRect(x + 8, y + 11, 4, 4, "#061f12");
+          drawRect(x + 20, y + 11, 4, 4, "#061f12");
+          drawRect(x + 12, y + 19, 9, 3, "#061f12");
+          drawRect(x + 8, y + 5, 9, 2, "#b7ff8f");
+          drawRect(x + 24, y + 15, 3, 7, "#27933c");
+        }
+
+        if (e.type === "bat") {
+          const body = e.hurt > 0 ? "#eedfff" : "#8d52ff";
+          drawRect(x + 13, y + 6, 13, 15, body, "#170833", 2);
+          drawRect(x + 17, y + 9, 3, 3, COLORS.gold);
+          drawRect(x + 23, y + 9, 3, 3, COLORS.gold);
+          drawRect(x, y + 4, 14, 10, "#6930d4", "#170833", 2);
+          drawRect(x + 25, y + 4, 14, 10, "#6930d4", "#170833", 2);
+          drawRect(x + 18, y + 21, 4, 5, "#170833");
+          drawRect(x + 6, y + 7, 6, 2, "#b08cff");
+          drawRect(x + 29, y + 7, 6, 2, "#b08cff");
+        }
+      }
+
+      drawBoss();
+      drawProjectiles();
+    }
+
+    function drawBoss() {
+      if (!boss || !boss.alive) return;
+      const x = Math.round(boss.x - cameraX);
+      const y = Math.round(boss.y);
+      if (x < -160 || x > W + 160) return;
+
+      const main = boss.hurt > 0 ? "#ffd6e8" : "#7d2cff";
+      const wing = boss.phase === 2 ? "#ff4f8f" : "#5b23bf";
+
+      drawRect(x + 10, y + 35, 66, 28, main, "#160833", 3);
+      drawRect(x + 55, y + 20, 32, 32, main, "#160833", 3);
+      drawRect(x + 62, y + 30, 4, 4, COLORS.gold);
+      drawRect(x + 77, y + 34, 8, 5, "#ffffff");
+      drawRect(x - 10, y + 18, 38, 28, wing, "#160833", 2);
+      drawRect(x + 18, y + 10, 38, 28, wing, "#160833", 2);
+      drawRect(x + 16, y + 62, 9, 14, "#160833");
+      drawRect(x + 52, y + 62, 9, 14, "#160833");
+      drawRect(x + 2, y + 40, 10, 11, "#ff9b2f");
+
+      drawRect(300, 64, 360, 16, "rgba(0,0,0,.42)", "#7d2cff", 2);
+      drawRect(304, 68, 352 * (boss.hp / boss.maxHp), 8, boss.phase === 2 ? COLORS.pink : COLORS.purple);
+      drawText("OMEGA DRAGON", 374, 42, 18, COLORS.pink);
+    }
+
+    function drawProjectiles() {
+      for (const p of projectiles) {
+        const x = p.x - cameraX;
+        drawRect(x, p.y, p.w, p.h, "#ff6a2a", "#ffd51f", 2);
+        drawRect(x + 4, p.y + 4, 6, 6, "#fff18e");
+      }
+    }
+
+    function drawFX() {
+      for (const p of particles) {
+        const alpha = clamp(p.life / p.maxLife, 0, 1);
+        ctx.globalAlpha = alpha;
+        drawRect(p.x - cameraX, p.y - cameraY, p.size, p.size, p.color);
+        ctx.globalAlpha = 1;
+      }
+
+      for (const t of floatTexts) {
+        const alpha = clamp(t.life / 80, 0, 1);
+        ctx.globalAlpha = alpha;
+        drawText(t.text, t.x - cameraX, t.y, 12, t.color);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function drawHUD() {
+      drawRect(16, 14, 386, 54, "rgba(5,7,25,.75)", "#2440a3", 2);
+
+      for (let i = 0; i < player.maxHp; i++) {
+        const x = 30 + i * 23;
+        ctx.fillStyle = i < player.hp ? COLORS.pink : "#3b2350";
+        ctx.fillRect(x + 5, 24, 9, 9);
+        ctx.fillRect(x, 29, 19, 11);
+        ctx.fillRect(x + 3, 40, 13, 7);
+      }
+
+      drawText(`COINS ${player.levelCoins}/${world.target}`, 190, 23, 15, COLORS.gold);
+      drawText(`SCORE ${player.score}`, 730, 20, 18, COLORS.cyan);
+      drawText(`BEST ${highScore}`, 730, 44, 12, "#ffffff");
+      drawText(`WORLD ${world.index + 1}: ${world.name}`, 18, 76, 15, "#e7f6ff");
+
+      const dashText = player.dashUnlocked ? (player.dashCooldown <= 0 ? "DASH READY" : "DASH " + player.dashCooldown) : "DASH LOCKED";
+      drawText(dashText, 18, 98, 13, player.dashCooldown <= 0 && player.dashUnlocked ? COLORS.cyan : "#a9b7df");
+
+      const gateText = gateOpen() ? "GATE OPEN" : "OBJECTIVE: COINS + BOSS";
+      drawText(gateText, 18, 118, 13, gateOpen() ? COLORS.green : COLORS.gold);
+
+      for (let i = 0; i < achievements.length; i++) {
+        const a = achievements[i];
+        const y = 92 + i * 38;
+        ctx.globalAlpha = clamp(a.life / 45, 0, 1);
+        drawRect(W - 326, y, 306, 30, "rgba(10,14,48,.88)", COLORS.gold, 2);
+        drawText("ACHIEVEMENT: " + a.label, W - 314, y + 7, 12, COLORS.gold);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function drawOverlay(title, lines, footer = "Press ENTER to play") {
+      ctx.fillStyle = "rgba(3,5,18,.75)";
+      ctx.fillRect(0, 0, W, H);
+
+      drawRect(112, 72, W - 224, 390, "rgba(10,14,48,.94)", "#5f35d8", 4);
+      drawText(title, W / 2, 108, 38, COLORS.gold, "center");
+
+      let y = 178;
+      for (const line of lines) {
+        drawText(line, W / 2, y, 18, "#e7f6ff", "center");
+        y += 30;
+      }
+
+      drawText(footer, W / 2, 410, 20, COLORS.cyan, "center");
+    }
+
+    function drawTitle() {
+      drawOverlay("CODEX QUEST OMEGA", [
+        "Master Omega Advanced Professional Final Release",
+        "3 worlds, boss battle, checkpoints, dash core, particles, achievements, mobile controls.",
+        "Register a user to save scores, points, VIP status, and the leaderboard. Export, import, and delete are available from the database panel.",
+        "Choose difficulty: [1] Easy  [2] Normal  [3] Hard",
+        "Current difficulty: " + difficulty.toUpperCase(),
+        "Controls: Move A/D, Jump Space, Attack J, Dash K, Pause P, Mute M.",
+        "No external libraries. Offline mode requires no network. No API keys. No secrets."
+      ], "Press ENTER or tap canvas to start");
+    }
+
+    function drawPause() {
+      drawOverlay("PAUSED", [
+        "Press P to resume.",
+        "Press R to restart current run.",
+        "Press M to toggle sound.",
+        "Press F for fullscreen.",
+        "Current quality: " + quality.toUpperCase()
+      ], "Press P to continue");
+    }
+
+    function drawGameOver() {
+      drawOverlay("GAME OVER", [
+        `Score: ${player.score}`,
+        `Best: ${highScore}`,
+        `Deaths: ${player.deaths}`,
+        "Press ENTER to restart from World 1.",
+        "Press R to restart current world."
+      ], "ENTER = new run · R = retry world");
+    }
+
+    function drawWin() {
+      const seconds = Math.floor((performance.now() - runStartedAt) / 1000);
+      drawOverlay("OMEGA CLEAR!", [
+        `Final Score: ${player.score}`,
+        `Best Score: ${highScore}`,
+        `Total Coins: ${player.totalCoins}`,
+        `Clear Time: ${seconds}s`,
+        "Your game is ready to deploy and submit.",
+        "Recommended: GitHub Pages, Vercel, Netlify, or itch.io."
+      ], "Press ENTER to replay");
+    }
+
+    function render() {
+      ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+
+      drawBackground();
+
+      ctx.save();
+      if (shake > 0) {
+        ctx.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
+      }
+
+      drawTiles();
+      drawCoins();
+      drawPickups();
+      drawCheckpoint();
+      drawGate();
+      drawEnemies();
+      drawPlayer();
+      drawFX();
+      ctx.restore();
+
+      drawHUD();
+
+      if (state === "title") drawTitle();
+      if (state === "paused") drawPause();
+      if (state === "gameover") drawGameOver();
+      if (state === "win") drawWin();
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+    function loop(now) {
+      const dt = Math.min(33, now - last);
+      last = now;
+      update(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    function hardReset() {
+      startRun();
+    }
+
+    window.addEventListener("keydown", e => {
+      if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) e.preventDefault();
+
+      if (e.code === "Digit1") difficulty = "easy";
+      if (e.code === "Digit2") difficulty = "normal";
+      if (e.code === "Digit3") difficulty = "hard";
+
+      if (e.code === "KeyM") {
+        muted = !muted;
+        addText(muted ? "MUTED" : "SOUND ON", player.x, player.y - 30, COLORS.cyan);
+      }
+
+      if (e.code === "KeyF") {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+
+      if (e.code === "Enter") {
+        if (state === "title" || state === "gameover" || state === "win") hardReset();
+      } else if (e.code === "KeyP") {
+        if (state === "playing") state = "paused";
+        else if (state === "paused") state = "playing";
+      } else if (e.code === "KeyR") {
+        if (state === "playing" || state === "paused" || state === "gameover") restartLevel();
+      } else {
+        keys.add(e.code);
+      }
+    });
+
+    window.addEventListener("keyup", e => keys.delete(e.code));
+
+    canvas.addEventListener("pointerdown", () => {
+      safeAudio();
+      if (state === "title" || state === "gameover" || state === "win") {
+        hardReset();
+        return;
+      }
+      if (state === "playing" && player.attackCooldown <= 0) {
+        keys.add("KeyJ");
+        setTimeout(() => keys.delete("KeyJ"), 80);
+      }
+    });
+
+    for (const btn of document.querySelectorAll(".touch-btn")) {
+      const code = btn.getAttribute("data-code");
+      const down = e => {
+        e.preventDefault();
+        safeAudio();
+        keys.add(code);
+        if (state === "title") hardReset();
+      };
+      const up = e => {
+        e.preventDefault();
+        keys.delete(code);
+      };
+      btn.addEventListener("pointerdown", down);
+      btn.addEventListener("pointerup", up);
+      btn.addEventListener("pointercancel", up);
+      btn.addEventListener("pointerleave", up);
+    }
+
+    if (registerFormEl) {
+      registerFormEl.addEventListener("submit", e => {
+        e.preventDefault();
+        const user = registerUser(usernameInputEl ? usernameInputEl.value : "");
+        if (!user) {
+          if (usernameInputEl) usernameInputEl.focus();
+          return;
+        }
+        if (usernameInputEl) usernameInputEl.value = user.username;
+        sound("pickup");
+      });
+    }
+
+    if (exportDbBtnEl) {
+      exportDbBtnEl.addEventListener("click", () => {
+        exportDatabase();
+        sound("pickup");
+      });
+    }
+
+    if (importDbBtnEl && importDbInputEl) {
+      importDbBtnEl.addEventListener("click", () => {
+        importDbInputEl.click();
+      });
+      importDbInputEl.addEventListener("change", async e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          await importDatabaseFile(file);
+          sound("pickup");
+        } catch (error) {
+          console.error(error);
+          window.alert("Failed to import database JSON.");
+        } finally {
+          e.target.value = "";
+        }
+      });
+    }
+
+    if (deleteActiveUserBtnEl) {
+      deleteActiveUserBtnEl.addEventListener("click", () => {
+        const active = getActiveUser();
+        if (!active) return;
+        const confirmed = window.confirm(`Delete user \"${active.username}\" from the database?`);
+        if (!confirmed) return;
+        deleteUser(active.id);
+        sound("hurt");
+      });
+    }
+
+    if (resetDbBtnEl) {
+      resetDbBtnEl.addEventListener("click", () => {
+        const confirmed = window.confirm("Reset the ZQuest database? This removes all users, points, and leaderboard entries in this browser and backend snapshot.");
+        if (!confirmed) return;
+        db = normalizeDatabase(null);
+        savedRunScore = 0;
+        syncDatabase();
+        if (usernameInputEl) usernameInputEl.value = getActiveUser()?.username || "";
+      });
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("orientationchange", resizeCanvas);
+
+    resizeCanvas();
+    parseLevel(0);
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

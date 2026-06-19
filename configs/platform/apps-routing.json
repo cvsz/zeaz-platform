@@ -9,11 +9,11 @@
   "apps": [
     {
       "app_id": "root",
-      "path": ".",
-      "type": "landing",
+      "path": "apps/zeaz-web",
+      "type": "ui",
       "hostnames": ["zeaz.dev", "www.zeaz.dev"],
-      "origin": "http://127.0.0.1:8787",
-      "port": 8787,
+      "origin": "http://127.0.0.1:3003",
+      "port": 3003,
       "status": "active"
     },
     {
@@ -26,8 +26,8 @@
       "status": "active"
     },
     {
-      "app_id": "web",
-      "path": "apps/web",
+      "app_id": "zwallet",
+      "path": "apps/zwallet",
       "type": "ui",
       "hostnames": ["app.zeaz.dev"],
       "origin": "http://127.0.0.1:3003",
@@ -36,7 +36,7 @@
     },
     {
       "app_id": "studio",
-      "path": "apps/web",
+      "path": "apps/zoffice",
       "type": "ui",
       "hostnames": ["studio.zeaz.dev"],
       "origin": "http://127.0.0.1:3001",

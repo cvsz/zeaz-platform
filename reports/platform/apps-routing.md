@@ -2,10 +2,10 @@
 
 | App | Path | Type | Hostname(s) | Origin | Port | Status | API Prefix |
 |---|---|---|---|---|---:|---|---|
-| root | `.` | landing | `zeaz.dev, www.zeaz.dev` | `http://127.0.0.1:8787` | `8787` | active | `` |
+| root | `apps/zeaz-web` | ui | `zeaz.dev, www.zeaz.dev` | `http://127.0.0.1:3003` | `3003` | active | `` |
 | ssh | `system/ssh` | tcp | `ssh.zeaz.dev` | `ssh://127.0.0.1:22022` | `22022` | active | `` |
-| web | `apps/web` | ui | `app.zeaz.dev` | `http://127.0.0.1:3003` | `3003` | active | `` |
-| studio | `apps/web` | ui | `studio.zeaz.dev` | `http://127.0.0.1:3001` | `3001` | active | `` |
+| zwallet | `apps/zwallet` | ui | `app.zeaz.dev` | `http://127.0.0.1:3003` | `3003` | active | `` |
+| studio | `apps/zoffice` | ui | `studio.zeaz.dev` | `http://127.0.0.1:3001` | `3001` | active | `` |
 | zveo | `apps/zveo` | ui | `zveo.zeaz.dev` | `http://127.0.0.1:3002` | `3002` | active | `` |
 | zveo-api | `apps/zveo` | api | `api-zveo.zeaz.dev` | `http://127.0.0.1:8090` | `8090` | active | `/v1/zveo` |
 | cctv | `apps/cctv` | ui | `cctv.zeaz.dev` | `http://127.0.0.1:9292` | `9292` | active | `/v1/cctv` |
@@ -28,12 +28,11 @@
 | 3000 | zcino |
 | 3001 | studio, ABTPi18n |
 | 3002 | zveo |
-| 3003 | web |
+| 3003 | root, zwallet |
 | 5172 | release |
 | 5173 | zdash |
 | 8004 | zkbtrader |
 | 8005 | zdash-api |
 | 8090 | zveo-api, zoffice |
-| 8787 | root |
 | 9292 | cctv |
 | 22022 | ssh |

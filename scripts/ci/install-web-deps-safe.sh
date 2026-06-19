@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-WEB="$ROOT/apps/web"
+WEB="$ROOT/apps/zeaz-web"
 
 cd "$WEB"
 

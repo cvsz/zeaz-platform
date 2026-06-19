@@ -1,0 +1,75 @@
+graph TB
+  subgraph "Presentation Layer"
+    OW_UI[OpenWork UI - Vite/React 19]
+    DEN_WEB[Den Web - Next.js Dashboard]
+    LANDING[Landing Page - Next.js Marketing]
+  end
+
+  subgraph "Desktop Layer"
+    ELECTRON[Electron Desktop App]
+    CDP_DEVTOOLS[Chrome DevTools Plugin]
+    HANDSFREE[Handsfree Mode]
+  end
+
+  subgraph "API Gateway Layer"
+    DEN_API[Den API - Hono Server]
+    BETTER_AUTH[Better-Auth Auth]
+    STRIPE[Stripe Billing]
+    MCP_GATEWAY[MCP Gateway]
+  end
+
+  subgraph "Inference Layer"
+    INFERENCE[MCP/Inference Proxy]
+    LLM_ROUTER[LLM Router]
+    MODEL_CATALOG[Model Catalog]
+  end
+
+  subgraph "Worker Layer"
+    WORKER_PROXY[Worker Proxy - Daytona]
+    WORKER_RUNTIME[Worker Runtime]
+    PROVISIONER[Provisioner]
+  end
+
+  subgraph "Data Layer"
+    POSTGRES[(PostgreSQL)]
+    REDIS[(Redis)]
+    DRIZZLE[Drizzle ORM]
+  end
+
+  subgraph "Runtime OS Layer"
+    SWARM[Agent Swarm]
+    LLM[Multi-LLM Router]
+    SELF_HEAL[Self-Healing Runtime]
+    POLICY[Policy Engine]
+    EVENT_BUS[Event Bus]
+    GOV[Governance Layer]
+  end
+
+  ELECTRON --> OW_UI
+  OW_UI --> DEN_API
+  DEN_WEB --> DEN_API
+  LANDING --> DEN_API
+
+  DEN_API --> BETTER_AUTH
+  DEN_API --> STRIPE
+  DEN_API --> MCP_GATEWAY
+  DEN_API --> INFERENCE
+
+  MCP_GATEWAY --> POSTGRES
+  INFERENCE --> LLM_ROUTER
+  INFERENCE --> MODEL_CATALOG
+
+  WORKER_PROXY --> DEN_API
+  WORKER_RUNTIME --> PROVISIONER
+
+  SWARM --> LLM
+  SWARM --> EVENT_BUS
+  LLM --> INFERENCE
+  SELF_HEAL --> EVENT_BUS
+  SELF_HEAL --> POLICY
+  POLICY --> GOV
+  EVENT_BUS --> REDIS
+
+  style SWARM fill:#f9f,stroke:#333,stroke-width:2px
+  style LLM fill:#f9f,stroke:#333,stroke-width:2px
+  style SELF_HEAL fill:#9cf,stroke:#333,stroke-width:2px

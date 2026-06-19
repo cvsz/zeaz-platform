@@ -18,6 +18,9 @@ DATABASE_URL = os.getenv(
     "DATABASE_URL", "postgresql+asyncpg://abtuser:abtpassword@postgres:5432/abtpro_db"
 )
 
+if DATABASE_URL.startswith("postgresql://") and not DATABASE_URL.startswith("postgresql+asyncpg://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+
 engine = create_async_engine(
     DATABASE_URL,
     poolclass=NullPool,

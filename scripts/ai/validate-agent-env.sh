@@ -2,9 +2,35 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
+usage() {
+  cat <<'USAGE'
+Usage: scripts/ai/validate-agent-env.sh [--help]
+
+Validate the AI/Cloudflare agent runtime environment without printing secret
+values. This check is offline only and does not call external APIs.
+USAGE
+}
+
 log() {
   printf '[%s] %s\n' "$1" "$2"
 }
+
+on_error() {
+  local exit_code=$?
+  log ERROR "agent environment validation crashed at line ${BASH_LINENO[0]} with exit code ${exit_code}"
+  exit "$exit_code"
+}
+trap on_error ERR
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
 
 require_var() {
   local name="$1"

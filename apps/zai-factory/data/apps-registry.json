@@ -1,0 +1,1508 @@
+{
+  "generated_at": "2026-06-18T22:27:09.501466+00:00",
+  "source": "apps",
+  "apps": [
+    {
+      "id": "zai-factory",
+      "path": "apps/zai-factory",
+      "package_name": "@zeaz/zai-factory",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "dev": "node server.mjs --host 127.0.0.1 --port 4191",
+        "start": "node server.mjs --host 127.0.0.1 --port 4191",
+        "validate": "node scripts/validate-apps-registry.mjs",
+        "build": "node scripts/validate-apps-registry.mjs"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zaiz-.agent-skills-playwright-skill",
+      "path": "apps/zaiz/.agent/skills/playwright-skill",
+      "package_name": "playwright-skill",
+      "version": "4.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "setup": "npm install && npx playwright install chromium",
+        "install-all-browsers": "npx playwright install chromium firefox webkit"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zcino-frontend",
+      "path": "apps/zcino/frontend",
+      "package_name": "zcino-lobby-ui",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "node .next/standalone/server.js",
+        "lint": "next lint",
+        "typecheck": "tsc --noEmit"
+      },
+      "configs": [
+        "apps/zcino/frontend/next.config.mjs",
+        "apps/zcino/frontend/tsconfig.json",
+        "apps/zcino/frontend/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zcino-sdk-typescript",
+      "path": "apps/zcino/sdk/typescript",
+      "package_name": "@zcino/zeaz-sdk",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zcino/sdk/typescript/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zcloud",
+      "path": "apps/zcloud",
+      "package_name": "@zeaz/zcloud",
+      "version": "1.0.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev -p 3004",
+        "build": "NODE_ENV=production next build",
+        "start": "next start -p 3004",
+        "start:static": "python3 -m http.server 4177 --directory .",
+        "validate": "node scripts/validate-zcloud.mjs",
+        "lint": "next lint"
+      },
+      "configs": [
+        "apps/zcloud/next.config.ts",
+        "apps/zcloud/eslint.config.mjs",
+        "apps/zcloud/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zdash-frontend",
+      "path": "apps/zdash/frontend",
+      "package_name": "zdash-frontend",
+      "version": "2.0.2",
+      "frameworks": [
+        "vite",
+        "react"
+      ],
+      "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test": "vitest --run --passWithNoTests"
+      },
+      "configs": [
+        "apps/zdash/frontend/vite.config.ts",
+        "apps/zdash/frontend/tsconfig.json",
+        "apps/zdash/frontend/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zdev",
+      "path": "apps/zdev",
+      "package_name": "@zeaz/zdev",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "start": "python3 -m http.server 4181 --directory ../..",
+        "validate": "node scripts/validate-zdev.mjs",
+        "build": "exit 0"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zlms-app-assets-global-plugins-bootstrap-markdown",
+      "path": "apps/zlms/app/assets/global/plugins/bootstrap-markdown",
+      "package_name": "bootstrap-markdown",
+      "version": "2.9.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {},
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zlms-app-bin-Release-Publish-assets-global-plugins-bootstrap-markdown",
+      "path": "apps/zlms/app/bin/Release/Publish/assets/global/plugins/bootstrap-markdown",
+      "package_name": "bootstrap-markdown",
+      "version": "2.9.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {},
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zlms-app-obj-Release-Package-PackageTmp-assets-global-plugins-bootstrap-markdown",
+      "path": "apps/zlms/app/obj/Release/Package/PackageTmp/assets/global/plugins/bootstrap-markdown",
+      "package_name": "bootstrap-markdown",
+      "version": "2.9.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {},
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zlms",
+      "path": "apps/zlms",
+      "package_name": "zlms-frontend-runtime-migration",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "audit:frontend-runtime": "node scripts/frontend-runtime-migration-audit.mjs",
+        "codemod:frontend-runtime": "node scripts/run-frontend-codemods.mjs",
+        "typecheck:frontend-runtime": "tsc -p tsconfig.strict.json --noEmit",
+        "migration:phase-abcd": "node scripts/execute-phase-abcd-migration.mjs",
+        "build": "exit 0"
+      },
+      "configs": [
+        "apps/zlms/next.config.ts"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ztrader-backend-scripts-legacy_tools",
+      "path": "apps/ztrader/backend/scripts/legacy_tools",
+      "package_name": "abtpi18n-tools",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "screenshot": "node screenshot_pages.js",
+        "screenshot:help": "echo 'Usage: npm run screenshot [-- --url=http://localhost:3000]'",
+        "test": "node test_setup.js",
+        "demo": "node generate_demo.js"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": false
+      }
+    },
+    {
+      "id": "ztrader-backend-src-ztrader-abt-tools",
+      "path": "apps/ztrader/backend/src/ztrader/abt/tools",
+      "package_name": "abtpi18n-tools",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "screenshot": "node screenshot_pages.js",
+        "screenshot:help": "echo 'Usage: npm run screenshot [-- --url=http://localhost:3000]'",
+        "test": "node test_setup.js",
+        "demo": "node generate_demo.js"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": false
+      }
+    },
+    {
+      "id": "ztrader-frontend",
+      "path": "apps/ztrader/frontend",
+      "package_name": "ztrader-frontend",
+      "version": "1.0.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}",
+        "build": "next build",
+        "start": "next start --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}",
+        "test:e2e": "playwright test"
+      },
+      "configs": [
+        "apps/ztrader/frontend/next.config.js",
+        "apps/ztrader/frontend/next.config.mjs",
+        "apps/ztrader/frontend/tsconfig.json",
+        "apps/ztrader/frontend/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ztrader-merge-sources-platform",
+      "path": "apps/ztrader/merge-sources/platform",
+      "package_name": "zeaZdev-abtpro-i18n-monorepo",
+      "version": "1.0.1",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "dev:frontend": "pnpm --filter frontend dev",
+        "dev:backend": "cd apps/backend && uvicorn main:app --reload --port 8000",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:generate": "prisma generate",
+        "generate-metaultra": "bash scripts/zeaz_meta_installer.sh --generate",
+        "install-metaultra": "bash scripts/zeaz_meta_installer.sh --install",
+        "preview-metaultra": "bash scripts/zeaz_meta_installer.sh --preview",
+        "validate-metaultra": "bash scripts/validate-metaultra.sh",
+        "lint:py": "ruff check .",
+        "format:py": "ruff format . && black .",
+        "lint:js": "eslint --ext .js,.ts,.tsx . || true",
+        "format:js": "prettier --write .",
+        "lint": "pnpm -s run lint:js && pnpm -s run lint:py",
+        "format": "pnpm -w -s run format:js && pnpm -s run format:py",
+        "test:py": "pytest -q",
+        "test:js": "jest --runInBand"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zveo-api-gateway",
+      "path": "apps/zveo/apps/api-gateway",
+      "package_name": "@zveo/api-gateway",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "start": "node dist/server.js"
+      },
+      "configs": [
+        "apps/zveo/apps/api-gateway/tsconfig.json",
+        "apps/zveo/apps/api-gateway/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-dashboard",
+      "path": "apps/zveo/apps/dashboard",
+      "package_name": "@zveo/dashboard",
+      "version": "1.0.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "typecheck": "tsc --noEmit"
+      },
+      "configs": [
+        "apps/zveo/apps/dashboard/next.config.ts",
+        "apps/zveo/apps/dashboard/tsconfig.json",
+        "apps/zveo/apps/dashboard/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-render-worker",
+      "path": "apps/zveo/apps/render-worker",
+      "package_name": "@zveo/render-worker",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "start": "node dist/worker.js",
+        "test": "pnpm run build && node --test dist/tests/*.test.js"
+      },
+      "configs": [
+        "apps/zveo/apps/render-worker/tsconfig.json",
+        "apps/zveo/apps/render-worker/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo",
+      "path": "apps/zveo",
+      "package_name": "zveo",
+      "version": "0.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "dev:dashboard": "pnpm --filter @zveo/dashboard dev",
+        "build": "pnpm --filter @zveo/dashboard build",
+        "typecheck": "pnpm --filter @zveo/dashboard typecheck",
+        "build:scene-graph": "pnpm --filter @zveo/scene-graph build",
+        "test:scene-graph": "pnpm --filter @zveo/scene-graph test",
+        "typecheck:scene-graph": "pnpm --filter @zveo/scene-graph typecheck",
+        "build:core": "pnpm --filter @zveo/core build",
+        "typecheck:core": "pnpm --filter @zveo/core typecheck",
+        "build:queue": "pnpm --filter @zveo/queue build",
+        "typecheck:queue": "pnpm --filter @zveo/queue typecheck",
+        "build:api": "pnpm --filter @zveo/api-gateway build",
+        "typecheck:api": "pnpm --filter @zveo/api-gateway typecheck",
+        "build:render-worker": "pnpm --filter @zveo/render-worker build",
+        "typecheck:render-worker": "pnpm --filter @zveo/render-worker typecheck",
+        "build:prompt-compiler": "pnpm --filter @zveo/prompt-compiler build",
+        "typecheck:prompt-compiler": "pnpm --filter @zveo/prompt-compiler typecheck",
+        "build:foundation": "pnpm -r --filter @zveo/contracts --filter @zveo/ai-script-generator --filter @zveo/core --filter @zveo/db --filter @zveo/queue --filter @zveo/prompt-compiler --filter @zveo/api-gateway --filter @zveo/render-worker --filter @zveo/scene-graph --filter @zveo/media-pipeline --filter @zveo/workflow-engine --filter @zveo/scene-memory --filter @zveo/providers --filter @zveo/telemetry build",
+        "typecheck:foundation": "pnpm build:foundation && pnpm -r --filter @zveo/contracts --filter @zveo/ai-script-generator --filter @zveo/core --filter @zveo/db --filter @zveo/queue --filter @zveo/prompt-compiler --filter @zveo/api-gateway --filter @zveo/render-worker --filter @zveo/scene-graph --filter @zveo/media-pipeline --filter @zveo/workflow-engine --filter @zveo/scene-memory --filter @zveo/providers --filter @zveo/telemetry typecheck",
+        "build:media-pipeline": "pnpm --filter @zveo/media-pipeline build",
+        "typecheck:media-pipeline": "pnpm --filter @zveo/media-pipeline typecheck",
+        "test:media-pipeline": "pnpm --filter @zveo/media-pipeline test",
+        "build:contracts": "pnpm --filter @zveo/contracts build",
+        "typecheck:contracts": "pnpm --filter @zveo/contracts typecheck",
+        "build:workflow-engine": "pnpm --filter @zveo/workflow-engine build",
+        "typecheck:workflow-engine": "pnpm --filter @zveo/workflow-engine typecheck",
+        "build:scene-memory": "pnpm --filter @zveo/scene-memory build",
+        "typecheck:scene-memory": "pnpm --filter @zveo/scene-memory typecheck",
+        "build:providers": "pnpm --filter @zveo/providers build",
+        "typecheck:providers": "pnpm --filter @zveo/providers typecheck",
+        "build:telemetry": "pnpm --filter @zveo/telemetry build",
+        "typecheck:telemetry": "pnpm --filter @zveo/telemetry typecheck",
+        "migrate:contracts": "node scripts/migrations/migrate-contract-imports.mjs",
+        "migrate:monorepo": "node scripts/migrations/standardize-package-names.mjs",
+        "queue:monitor": "node scripts/queue-monitor.mjs",
+        "verify:foundation": "pnpm build:foundation && pnpm typecheck:foundation",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio",
+        "db:check": "drizzle-kit check",
+        "db:seed": "node packages/db/src/scripts/seed.mjs",
+        "db:smoke": "bash scripts/db-smoke.sh",
+        "dev:node": "docker compose -f infra/docker/docker-compose.yml --profile node up --build",
+        "build:node": "pnpm build:foundation && pnpm --filter @zveo/dashboard build",
+        "typecheck:node": "pnpm typecheck:foundation && pnpm --filter @zveo/dashboard typecheck",
+        "test:node": "pnpm -r --filter @zveo/ai-script-generator --filter @zveo/core --filter @zveo/media-pipeline --filter @zveo/publisher-meta --filter @zveo/render-worker --filter @zveo/scene-graph test",
+        "verify:node": "pnpm build:node && pnpm typecheck:node && pnpm test:node"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-ai-script-generator",
+      "path": "apps/zveo/packages/ai-script-generator",
+      "package_name": "@zveo/ai-script-generator",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "pnpm run build && node --test dist/tests/*.test.js"
+      },
+      "configs": [
+        "apps/zveo/packages/ai-script-generator/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-contracts",
+      "path": "apps/zveo/packages/contracts",
+      "package_name": "@zveo/contracts",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/contracts/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-core",
+      "path": "apps/zveo/packages/core",
+      "package_name": "@zveo/core",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "pnpm run build && node --test dist/tests/*.test.js"
+      },
+      "configs": [
+        "apps/zveo/packages/core/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-db",
+      "path": "apps/zveo/packages/db",
+      "package_name": "@zveo/db",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/db/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-media-pipeline",
+      "path": "apps/zveo/packages/media-pipeline",
+      "package_name": "@zveo/media-pipeline",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "pnpm run build && node --test dist/tests/*.test.js"
+      },
+      "configs": [
+        "apps/zveo/packages/media-pipeline/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-prompt-compiler",
+      "path": "apps/zveo/packages/prompt-compiler",
+      "package_name": "@zveo/prompt-compiler",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/prompt-compiler/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-providers",
+      "path": "apps/zveo/packages/providers",
+      "package_name": "@zveo/providers",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/providers/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-publisher-meta",
+      "path": "apps/zveo/packages/publisher-meta",
+      "package_name": "@zveo/publisher-meta",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "node --test --experimental-strip-types tests/publisher-meta.test.ts"
+      },
+      "configs": [
+        "apps/zveo/packages/publisher-meta/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-queue-ts",
+      "path": "apps/zveo/packages/queue-ts",
+      "package_name": "@zveo/queue",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/queue-ts/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-scene-graph",
+      "path": "apps/zveo/packages/scene-graph",
+      "package_name": "@zveo/scene-graph",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "test": "pnpm run build && node --test dist/tests/*.test.js",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/scene-graph/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-scene-memory",
+      "path": "apps/zveo/packages/scene-memory",
+      "package_name": "@zveo/scene-memory",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/scene-memory/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-telemetry-ts",
+      "path": "apps/zveo/packages/telemetry-ts",
+      "package_name": "@zveo/telemetry",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/telemetry-ts/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zveo-packages-workflow-engine",
+      "path": "apps/zveo/packages/workflow-engine",
+      "package_name": "@zveo/workflow-engine",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit"
+      },
+      "configs": [
+        "apps/zveo/packages/workflow-engine/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-android",
+      "path": "apps/zwallet/apps/android",
+      "package_name": "@zwallet/android",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "typecheck": "echo 'android app managed outside TypeScript workspace'"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-api",
+      "path": "apps/zwallet/apps/api",
+      "package_name": "@zwallet/api",
+      "version": "0.1.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/apps/api/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-world",
+      "path": "apps/zwallet/apps/world",
+      "package_name": "@zwallet/world",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "start": "python -m http.server 4173 -d .",
+        "check": "node --check src/main.js",
+        "typecheck": "echo \"No TypeScript sources in world portal\"",
+        "build": "node scripts/build.mjs"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend",
+      "path": "apps/zwallet/backend",
+      "package_name": "zwallet-backend",
+      "version": "0.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "npm run -ws build",
+        "dev": "npm run -ws dev",
+        "lint": "npm run -ws lint",
+        "test:tx-flow": "node scripts/tx-lifecycle-test.mjs",
+        "test:swap-flow": "node scripts/swap-execution-test.mjs"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-packages-shared",
+      "path": "apps/zwallet/backend/packages/shared",
+      "package_name": "@zwallet/shared",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsc -w -p tsconfig.json",
+        "lint": "echo lint-shared"
+      },
+      "configs": [
+        "apps/zwallet/backend/packages/shared/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-gateway",
+      "path": "apps/zwallet/backend/services/gateway",
+      "package_name": "@zwallet/gateway",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "prisma:generate": "prisma generate",
+        "lint": "echo lint-gateway"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/gateway/tsconfig.json",
+        "apps/zwallet/backend/services/gateway/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-indexer-service",
+      "path": "apps/zwallet/backend/services/indexer-service",
+      "package_name": "@zwallet/indexer-service",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-indexer-service"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/indexer-service/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-notify-service",
+      "path": "apps/zwallet/backend/services/notify-service",
+      "package_name": "@zwallet/notify-service",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-notify-service"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/notify-service/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-policy-service",
+      "path": "apps/zwallet/backend/services/policy-service",
+      "package_name": "@zwallet/policy-service",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-policy-service"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/policy-service/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-portfolio-service",
+      "path": "apps/zwallet/backend/services/portfolio-service",
+      "package_name": "@zwallet/portfolio-service",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-portfolio-service"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/portfolio-service/tsconfig.json",
+        "apps/zwallet/backend/services/portfolio-service/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-swap-service",
+      "path": "apps/zwallet/backend/services/swap-service",
+      "package_name": "@zwallet/swap-service",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-swap-service"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/swap-service/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-tx-orchestrator",
+      "path": "apps/zwallet/backend/services/tx-orchestrator",
+      "package_name": "@zwallet/tx-orchestrator",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-tx-orchestrator"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/tx-orchestrator/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-backend-services-wallet-service",
+      "path": "apps/zwallet/backend/services/wallet-service",
+      "package_name": "@zwallet/wallet-service",
+      "version": "1.0.0",
+      "frameworks": [
+        "fastify"
+      ],
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "lint": "echo lint-wallet-service"
+      },
+      "configs": [
+        "apps/zwallet/backend/services/wallet-service/tsconfig.json",
+        "apps/zwallet/backend/services/wallet-service/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-mobile",
+      "path": "apps/zwallet/mobile",
+      "package_name": "zwallet-mobile",
+      "version": "1.0.0",
+      "frameworks": [
+        "react"
+      ],
+      "scripts": {
+        "start": "expo start",
+        "android": "expo run:android",
+        "ios": "expo run:ios"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet",
+      "path": "apps/zwallet",
+      "package_name": "zwallet",
+      "version": "0.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "typecheck": "pnpm -r --if-present run typecheck",
+        "lint": "pnpm -r --if-present run lint",
+        "check:circular": "madge --circular --extensions ts apps/zeaz-api/src services/wallet-engine/src services/swap-engine/src services/indexer/src packages/crypto-core/src packages/chain-adapters/src packages/shared-types/src",
+        "setup:auto": "node scripts/run-installer.mjs",
+        "generate:releases": "node scripts/generate-releases.mjs",
+        "build": "exit 0"
+      },
+      "configs": [
+        "apps/zwallet/eslint.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zwallet-packages-chain-adapters",
+      "path": "apps/zwallet/packages/chain-adapters",
+      "package_name": "@zwallet/chain-adapters",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/packages/chain-adapters/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-packages-crypto",
+      "path": "apps/zwallet/packages/crypto",
+      "package_name": "@zwallet/crypto",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "typecheck:test": "tsc -p tsconfig.test.json --noEmit"
+      },
+      "configs": [
+        "apps/zwallet/packages/crypto/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-packages-crypto-core",
+      "path": "apps/zwallet/packages/crypto-core",
+      "package_name": "@zwallet/crypto-core",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/packages/crypto-core/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-packages-events",
+      "path": "apps/zwallet/packages/events",
+      "package_name": "@zwallet/events",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {},
+      "configs": [
+        "apps/zwallet/packages/events/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-packages-rpc",
+      "path": "apps/zwallet/packages/rpc",
+      "package_name": "@zwallet/rpc",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/packages/rpc/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-packages-shared-types",
+      "path": "apps/zwallet/packages/shared-types",
+      "package_name": "@zwallet/shared-types",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/packages/shared-types/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-card",
+      "path": "apps/zwallet/services/card",
+      "package_name": "@zwallet/card",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/card/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-compliance",
+      "path": "apps/zwallet/services/compliance",
+      "package_name": "@zwallet/compliance",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/compliance/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-event-workers",
+      "path": "apps/zwallet/services/event-workers",
+      "package_name": "@zwallet/event-workers",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/event-workers/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-indexer",
+      "path": "apps/zwallet/services/indexer",
+      "package_name": "@zwallet/indexer",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/indexer/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-liquidity",
+      "path": "apps/zwallet/services/liquidity",
+      "package_name": "@zwallet/liquidity",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/liquidity/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-router",
+      "path": "apps/zwallet/services/router",
+      "package_name": "@zwallet/router",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/router/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-swap-engine",
+      "path": "apps/zwallet/services/swap-engine",
+      "package_name": "@zwallet/swap-engine",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/swap-engine/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zwallet-services-wallet-engine",
+      "path": "apps/zwallet/services/wallet-engine",
+      "package_name": "@zwallet/wallet-engine",
+      "version": "0.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "lint": "eslint \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit -p tsconfig.json"
+      },
+      "configs": [
+        "apps/zwallet/services/wallet-engine/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    }
+  ]
+}

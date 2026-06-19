@@ -1,60 +1,61 @@
 import json
-import logging
+import uuid
 import time
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
+# Assuming redis-py is available in the platform environment
 import redis
 
-logger = logging.getLogger("TaskMarketplace")
-
 class TaskMarketplace:
-    def __init__(self, redis_url: str = "redis://localhost:6379/0"):
-        self.redis = redis.from_url(redis_url)
-        self.marketplace_stream = "swarm:marketplace"
-        self._setup_marketplace()
+    def __init__(self, redis_client: redis.Redis, stream_name: str = "task_marketplace"):
+        self.redis = redis_client
+        self.stream_name = stream_name
 
-    def _setup_marketplace(self):
+    def publish_task(self, task_type: str, payload: Dict[str, Any]) -> str:
+        task_id = str(uuid.uuid4())
+        task_data = {
+            "task_id": task_id,
+            "task_type": task_type,
+            "payload": json.dumps(payload),
+            "status": "pending"
+        }
+        self.redis.xadd(self.stream_name, task_data)
+        return task_id
+
+    def poll_and_lease_task(self, consumer_group: str, consumer_id: str) -> Optional[Dict[str, Any]]:
+        # Read from Redis stream using consumer group for exclusive task distribution
         try:
-            self.redis.xgroup_create(self.marketplace_stream, "marketplace_group", id="0", mkstream=True)
+            # Create group if not exists
+            self.redis.xgroup_create(self.stream_name, consumer_group, id="0", mkstream=True)
         except redis.exceptions.ResponseError:
             pass # Group already exists
 
-    def submit_task(self, task_id: str, task_type: str, requirements: List[str], payload: Dict[str, Any]):
-        task = {
-            "task_id": task_id,
-            "task_type": task_type,
-            "requirements": requirements,
-            "payload": payload,
-            "status": "OPEN",
-            "timestamp": time.time()
+        messages = self.redis.xreadgroup(consumer_group, consumer_id, {self.stream_name: ">"}, count=1)
+        
+        if not messages:
+            return None
+            
+        _, message_list = messages[0]
+        message_id, data = message_list[0]
+        
+        return {
+            "message_id": message_id,
+            "task_id": data[b"task_id"].decode(),
+            "task_type": data[b"task_type"].decode(),
+            "payload": json.loads(data[b"payload"].decode())
         }
-        self.redis.xadd(self.marketplace_stream, {"data": json.dumps(task)})
-        logger.info(f"Task {task_id} ({task_type}) submitted to marketplace.")
 
-    def bid_on_task(self, task_id: str, agent_id: str, bid_value: float = 1.0):
-        """
-        Agents bid on tasks. Bid value can represent readiness or cost.
-        """
-        bid = {
-            "agent_id": agent_id,
-            "bid_value": bid_value,
-            "timestamp": time.time()
-        }
-        self.redis.hset(f"swarm:task_bids:{task_id}", agent_id, json.dumps(bid))
-        self.redis.expire(f"swarm:task_bids:{task_id}", 300) # 5 min cleanup
-        logger.info(f"Agent {agent_id} bid on task {task_id}")
+    def bid_for_task(self, task_id: str, agent_id: str, capability_score: float, bid_window: int = 5):
+        """Submit a bid for a task."""
+        bid_key = f"bids:{task_id}"
+        self.redis.hset(bid_key, agent_id, capability_score)
+        self.redis.expire(bid_key, bid_window)
 
-    def get_bids(self, task_id: str) -> Dict[str, Dict[str, Any]]:
-        bids = self.redis.hgetall(f"swarm:task_bids:{task_id}")
-        return {k.decode(): json.loads(v.decode()) for k, v in bids.items()}
-
-    def assign_task(self, task_id: str, agent_id: str):
-        assignment = {
-            "agent_id": agent_id,
-            "assigned_at": time.time()
-        }
-        self.redis.set(f"swarm:task_assignment:{task_id}", json.dumps(assignment), ex=3600)
-        logger.info(f"Task {task_id} assigned to agent {agent_id}")
-
-    def get_assignment(self, task_id: str) -> Optional[Dict[str, Any]]:
-        data = self.redis.get(f"swarm:task_assignment:{task_id}")
-        return json.loads(data.decode()) if data else None
+    def get_best_bid(self, task_id: str) -> Optional[str]:
+        """Retrieve the best bid (lowest score) for a task."""
+        bid_key = f"bids:{task_id}"
+        bids = self.redis.hgetall(bid_key)
+        if not bids:
+            return None
+        # Return agent_id with the lowest score
+        best_agent = min(bids, key=lambda k: float(bids[k]))
+        return best_agent.decode()

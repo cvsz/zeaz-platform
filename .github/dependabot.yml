@@ -6,9 +6,9 @@ updates:
     schedule:
       interval: "weekly"
 
-  # apps/web (Next.js)
+  # apps/zeaz-web (Next.js)
   - package-ecosystem: "npm"
-    directory: "/apps/web"
+    directory: "/apps/zeaz-web"
     schedule:
       interval: "weekly"
 
@@ -41,9 +41,9 @@ updates:
     schedule:
       interval: "weekly"
 
-  # apps/api (Python FastAPI)
+  # apps/zeaz-api (Python FastAPI)
   - package-ecosystem: "pip"
-    directory: "/apps/api"
+    directory: "/apps/zeaz-api"
     schedule:
       interval: "weekly"
 

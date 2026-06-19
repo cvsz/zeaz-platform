@@ -48,7 +48,7 @@ This document is the **fully generated execution form** for every checklist item
 ## Section 1 — Monorepo Foundation
 
 ### 1.1 Structure alignment
-- 1.1.1 Verify/create target folders (`/apps/android`, `/apps/api`, `/services/wallet-engine`, `/services/swap-engine`, `/services/indexer`, `/packages/crypto-core`, `/packages/chain-adapters`, `/packages/shared-types`).
+- 1.1.1 Verify/create target folders (`/apps/android`, `/apps/zeaz-api`, `/services/wallet-engine`, `/services/swap-engine`, `/services/indexer`, `/packages/crypto-core`, `/packages/chain-adapters`, `/packages/shared-types`).
   - Status: Done
 - 1.1.2 Consolidate legacy duplicates with migration notes.
   - Status: Not started
@@ -212,5 +212,5 @@ This document is the **fully generated execution form** for every checklist item
 - 2026-05-03 23:02 UTC — `pnpm check:circular` — Passed; no circular dependencies found.
 
 - 2026-05-03 23:46 UTC — `pnpm lint` — Passed across all TypeScript workspaces.
-- 2026-05-03 23:46 UTC — `pnpm typecheck` — Failed in `apps/api` (missing `fastify`, `@fastify/rate-limit`, `zod`; ESM extension + implicit `any` issues).
+- 2026-05-03 23:46 UTC — `pnpm typecheck` — Failed in `apps/zeaz-api` (missing `fastify`, `@fastify/rate-limit`, `zod`; ESM extension + implicit `any` issues).
 - 2026-05-03 23:46 UTC — `pnpm check:circular` — Not run due to prior `pnpm typecheck` failure in chained command.

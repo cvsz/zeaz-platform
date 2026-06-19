@@ -1,0 +1,18 @@
+version: 1
+plan_gating:
+  enterprise_features:
+    - api_shield
+    - mtls
+  fallback_on_non_enterprise:
+    - js_challenge
+    - block
+rules:
+  - id: fintech-geo-restriction
+    action: block
+    expression: "(http.host in {\"app.zeaz.dev\", \"pay.zeaz.dev\", \"treasury.zeaz.dev\", \"admin-wallet.zeaz.dev\"}) and not (ip.geoip.country in {\"TH\"})"
+  - id: fintech-sensitive-path-access
+    action: js_challenge
+    expression: "(http.host in {\"app.zeaz.dev\", \"pay.zeaz.dev\", \"treasury.zeaz.dev\", \"admin-wallet.zeaz.dev\"}) and (http.request.uri.path contains \"/admin/\" or http.request.uri.path contains \"/treasury/\") and cf.threat_score gt 5"
+  - id: fintech-api-shield-fallback
+    action: managed_challenge
+    expression: "(http.host in {\"api.zeaz.dev\", \"pay.zeaz.dev\"}) and (http.request.uri.path contains \"/v1/transfer\" or http.request.uri.path contains \"/v1/withdraw\") and not (http.request.method in {\"POST\", \"PUT\"})"

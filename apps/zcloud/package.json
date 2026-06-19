@@ -6,29 +6,29 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p 3004",
-    "build": "next build",
+    "build": "NODE_ENV=production next build",
     "start": "next start -p 3004",
     "start:static": "python3 -m http.server 4177 --directory .",
     "validate": "node scripts/validate-zcloud.mjs",
-    "lint": "eslint ."
+    "lint": "eslint . --max-warnings=0"
   },
   "dependencies": {
+    "next": "16.2.9",
     "pg": "^8.13.0",
-    "next": "15.5.18",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.5.18",
+    "eslint-config-next": "16.2.9",
     "typescript": "^5"
   },
   "engines": {
     "node": ">=18"
   }
 }
-

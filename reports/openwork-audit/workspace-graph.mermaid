@@ -1,0 +1,58 @@
+graph TB
+  subgraph "zeaz-platform (Monorepo Root)"
+    APPS[apps/ - 18 Application Stacks]
+    RUNTIME[runtime/ - Python AI Runtime]
+    SCRIPTS[scripts/ - Automation]
+    INFRA[infra/ - Infrastructure]
+    CONFIGS[configs/ - Configuration]
+    POLICIES[policies/ - Security Policies]
+    OPS[ops/ - Operational Tools]
+    TESTS[tests/ - Platform Tests]
+    WORKERS[workers/ - Cloudflare Workers]
+    TERRAFORM[terraform/ - IaC]
+    OPENTOFU[opentofu/ - IaC]
+  end
+
+  subgraph "apps/ Directory"
+    OPENWORK[openwork/ - AI OS Target]
+    WEB[web/ - Next.js Portal]
+    API[api/ - FastAPI]
+    ZDASH[zdash/ - AI Trading]
+    ZTRADER[ztrader/ - Algo Trading]
+    ZWALLET[zwallet/ - DeFi Wallet]
+    ZVEO[zveo/ - Video AI]
+    ZSP[zsp-aitool/ - Shopee AI]
+    ZCINO[zcino/ - Go Service]
+    ZOFFICE[zoffice/ - AI Office]
+    ZACADEMY[zAcademy/ - LMS]
+    ZLMS[zlms/ - Legacy LMS]
+    ZCLOUD[zcloud/ - CloudPanel]
+    ZSTICKER[zsticker/ - Sticker Gen]
+    ZLINEBOT[zLinebot/ - LINE Bot]
+    ZDEV[zdev/ - Developer Tools]
+    ZCFDASH[zcfdash/ - CF Dashboard]
+    ZCINO_MODERN[zcino-modern/ - Go v2]
+  end
+
+  subgraph "openwork/ Internal Structure"
+    EE[ee/ - Enterprise Edition]
+    APPS_INTERNAL[apps/ - 6 Workspace Apps]
+    PACKAGES[packages/ - 7 Shared Packages]
+    ZEAZ[zeaz/ - ZEAZ AI OS Extension]
+  end
+
+  ZEAZ --> AGENTS[agents/ - Agent Framework]
+  ZEAZ --> SKILLS[skills/ - Skill Registry]
+  ZEAZ --> PROVIDERS[providers/ - LLM Providers]
+  ZEAZ --> RUNTIME_Z[runtime/ - Runtime Integration]
+  ZEAZ --> MEMORY[memory/ - Memory System]
+  ZEAZ --> WORKFLOWS[workflows/ - Auto Workflows]
+  ZEAZ --> MCP_Z[mcp/ - MCP Marketplace]
+  ZEAZ --> INSTALLER[installer/ - Bootstrap]
+
+  RUNTIME --> OPENWORK
+  SCRIPTS --> OPENWORK
+  POLICIES --> OPENWORK
+
+  style ZEAZ fill:#f9f,stroke:#333,stroke-width:3px
+  style OPENWORK fill:#9cf,stroke:#333,stroke-width:2px

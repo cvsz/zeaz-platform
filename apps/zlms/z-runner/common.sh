@@ -145,6 +145,6 @@ removal_token() {
 
 safe_runner_name() {
   local suffix
-  suffix="$(hostname)-$(date -u +%Y%m%d%H%M%S)-$$"
+  suffix="$(hostname)-$(date -u +%Y%m%d%H%M%S)-$"
   printf '%s-%s' "${RUNNER_NAME_PREFIX:-zrunner}" "$suffix" | tr -cd 'A-Za-z0-9_.:-' | cut -c1-64
 }

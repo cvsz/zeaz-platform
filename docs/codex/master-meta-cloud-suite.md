@@ -7,6 +7,7 @@ This suite is the repository-local Codex Cloud operating pack for `cvsz/cloudfla
 - A machine-readable suite manifest at `.codex/suite/master-meta-cloud-suite.json`.
 - Additional read-only Codex roles for phase planning, security review, and validation planning.
 - Phase prompt templates under `docs/codex/prompts/` for F0 through F12.
+- A searchable skills catalog at `docs/codex/skills-catalog.md`.
 - An offline validator at `docs/codex/scripts/validate_codex_suite.py`.
 
 ## Operating principles

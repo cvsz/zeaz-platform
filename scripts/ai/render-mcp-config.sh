@@ -3,7 +3,12 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-OUTPUT_FILE="${ROOT_DIR}/../.mcp.json"
+# shellcheck source=../lib/gemini-sandbox.sh
+source "${ROOT_DIR}/scripts/lib/gemini-sandbox.sh"
+gemini_init_sandbox_paths "${ROOT_DIR}"
+
+OUTPUT_FILE="${OUTPUT_FILE:-${ROOT_DIR}/../.mcp.json}"
+OUTPUT_FILE="$(gemini_resolve_output_file "${OUTPUT_FILE}" ".mcp.json")"
 
 log() {
   printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"
@@ -40,6 +45,7 @@ validate_environment() {
 main() {
   validate_environment
 
+  mkdir -p "$(dirname "${OUTPUT_FILE}")"
   cat > "${OUTPUT_FILE}" <<JSON
 {
   "servers": {

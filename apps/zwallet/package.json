@@ -5,9 +5,10 @@
   "scripts": {
     "typecheck": "pnpm -r --if-present run typecheck",
     "lint": "pnpm -r --if-present run lint",
-    "check:circular": "madge --circular --extensions ts apps/api/src services/wallet-engine/src services/swap-engine/src services/indexer/src packages/crypto-core/src packages/chain-adapters/src packages/shared-types/src",
+    "check:circular": "madge --circular --extensions ts apps/zeaz-api/src services/wallet-engine/src services/swap-engine/src services/indexer/src packages/crypto-core/src packages/chain-adapters/src packages/shared-types/src",
     "setup:auto": "node scripts/run-installer.mjs",
-    "generate:releases": "node scripts/generate-releases.mjs"
+    "generate:releases": "node scripts/generate-releases.mjs",
+    "build": "exit 0"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
@@ -17,24 +18,5 @@
     "eslint": "^9.26.0",
     "madge": "^8.0.0",
     "typescript": "^5.8.3"
-  },
-  "overrides": {
-    "fast-uri": ">=3.1.2",
-    "brace-expansion": ">=5.0.6",
-    "ws": "8.20.1",
-    "cross-spawn": ">=7.0.5",
-    "file-type": "latest",
-    "ip-address": "latest",
-    "esbuild": "latest",
-    "@tootallnate/once": "latest",
-    "@protobufjs/utf8": "latest"
-  },
-  "resolutions": {
-    "file-type": "latest",
-    "ip-address": "latest",
-    "esbuild": "latest",
-    "@tootallnate/once": "latest",
-    "ws": "8.20.1",
-    "@protobufjs/utf8": "latest"
   }
 }

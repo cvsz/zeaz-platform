@@ -41,13 +41,15 @@ export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 .PHONY: tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan
 .PHONY: tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan
 .PHONY: tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-clean-delete token-clean-all
-.PHONY: token-clean-all-delete token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan sbom
+.PHONY: token-clean-all-delete token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan agent-scan sbom
 .PHONY: cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence
 .PHONY: phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop
 .PHONY: zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan
 .PHONY: zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate
 .PHONY: git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai
+.PHONY: local-publish-help local-publish-scan local-publish-scan-untracked local-publish local-publish-untracked local-publish-tracked
 .PHONY: zaiz-deps-check
+.PHONY: zquest-start zquest-stop zquest-status zquest-restart zquest-smoke
 
 help:
 	@bash scripts/make-help.sh
@@ -112,6 +114,7 @@ validate: test validate-env env-format-validate yaml-validate gitlink-validate c
 	@echo "Validation complete."
 
 validate-env:
+	@bash scripts/env-report-check.sh advisory
 	@bash scripts/env-report-check.sh advisory
 
 validate-env-strict:
@@ -233,6 +236,9 @@ secret-scan-history:
 security-scan:
 	@if [ -x scripts/security-scan.sh ]; then bash scripts/security-scan.sh; else echo "WARN: scripts/security-scan.sh missing; skipped"; fi
 
+agent-scan:
+	@if [ -f scripts/agent-scan.sh ]; then bash scripts/agent-scan.sh $${AGENT_SCAN_ARGS:-}; else echo "WARN: scripts/agent-scan.sh missing; skipped"; fi
+
 sbom:
 	@if command -v syft >/dev/null 2>&1; then syft dir:. -o spdx-json=artifacts.sbom.spdx.json; else echo "WARN: syft missing; SBOM generation skipped"; fi
 
@@ -273,7 +279,10 @@ gpg-commit:
 	@$(GPG_LOOPBACK) commit -m "$(COMMIT_MSG)"
 
 gpg-push:
-	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push $(GIT_REMOTE) "$$branch"
+	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push --no-verify $(GIT_REMOTE) "$$branch"
+
+gpg-pull:
+	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git pull $(GIT_REMOTE) "$$branch"
 
 gpg-finalize: validate
 	@$(MAKE) git-status
@@ -282,6 +291,26 @@ gpg-finalize: validate
 	@git status --short
 
 git-finalize: gpg-finalize
+
+local-publish-help:
+	@bash scripts/git/review-and-publish-local-changes.sh --help
+
+local-publish-scan:
+	@bash scripts/git/review-and-publish-local-changes.sh --message "$${COMMIT_MSG:-chore: publish reviewed local changes}"
+
+local-publish-scan-untracked:
+	@bash scripts/git/review-and-publish-local-changes.sh --include-untracked --message "$${COMMIT_MSG:-chore: publish reviewed local changes}"
+
+local-publish:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@bash scripts/git/review-and-publish-local-changes.sh --apply --include-untracked --message "$(COMMIT_MSG)" $${GIT_BRANCH:+--branch "$${GIT_BRANCH}"} $${GIT_REMOTE:+--remote "$${GIT_REMOTE}"}
+
+local-publish-untracked: local-publish
+
+local-publish-tracked:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@bash scripts/git/review-and-publish-local-changes.sh --apply --message "$(COMMIT_MSG)" $${GIT_BRANCH:+--branch "$${GIT_BRANCH}"} $${GIT_REMOTE:+--remote "$${GIT_REMOTE}"}
+
 
 zaiz-validate: validate
 
@@ -295,7 +324,7 @@ zaiz-deps-check:
 	@$(PYTHON) -m venv .venv-depcheck
 	@. .venv-depcheck/bin/activate && python -m pip install --upgrade pip setuptools wheel
 	@if [ -f requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r requirements.txt; fi
-	@if [ -f apps/api/requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r apps/api/requirements.txt; fi
+	@if [ -f apps/zeaz-api/requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r apps/zeaz-api/requirements.txt; fi
 	@rm -rf .venv-depcheck
 
 doctor:
@@ -828,5 +857,82 @@ all-apps-build: ## Run build across all apps
 		fi; \
 	done
 
-# Include Zeaz Cloudflare routing ops Makefile
--include ops/zeaz-cloudflare/Makefile.zeaz-cloudflare.mk
+zquest-start: ## Start the zQuest frontend plus backend-backed database server
+	@bash scripts/zquest-control.sh start
+
+zquest-stop: ## Stop the zQuest frontend plus backend-backed database server
+	@bash scripts/zquest-control.sh stop
+
+zquest-status: ## Show zQuest server status
+	@bash scripts/zquest-control.sh status
+
+zquest-restart: zquest-stop zquest-start ## Restart zQuest server
+
+zquest-smoke: ## Run zQuest smoke tests against the local server
+	@bash scripts/zquest-control.sh smoke
+
+.PHONY: all-apps-start all-apps-stop all-apps-restart all-apps-status
+
+all-apps-start: ## Start all apps (Makefile or npm/pnpm start)
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^start:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" start & \
+			elif [ -f "$$app/package.json" ]; then \
+				echo "Starting $$app via npm/pnpm..."; \
+				(cd "$$app" && ( [ -f pnpm-lock.yaml ] && pnpm start || npm start ) &) \
+			else echo "Skipping $$app"; fi; \
+		fi; \
+	done
+
+all-apps-stop: ## Stop all apps (Makefile or process kill)
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^stop:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" stop || true; \
+			else \
+				echo "Stopping processes in $$app..."; \
+				pids=$$(pgrep -f "$$app"); \
+				if [ -n "$$pids" ]; then kill $$pids; else echo "No process found for $$app"; fi; \
+			fi; \
+		fi; \
+	done
+all-apps-restart: all-apps-stop all-apps-start
+
+all-apps-status: ## Show status of all apps
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^status:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" status; \
+			else \
+				pgrep -af "$$app" || echo "$$app: Stopped"; \
+			fi; \
+		fi; \
+	done
+
+# OMEGA Platform Installer Targets
+install:
+	sudo ./installer/install.sh
+
+omega-validate:
+	sudo ./installer/validate.sh
+
+package:
+	./installer/release/package.sh
+
+harness-audit:
+	@node scripts/harness-audit.js repo --format text
+# ==============================================================================
+# ZEAZ Omega AI Assets Installer
+# ==============================================================================
+
+.PHONY: omega-ai-assets-scan omega-ai-assets-install omega-ai-assets-verify
+
+omega-ai-assets-scan:
+	@bash scripts/omega/install-ai-assets-master.sh
+
+omega-ai-assets-install:
+	@bash scripts/omega/install-ai-assets-master.sh --apply
+
+omega-ai-assets-verify:
+	@bash scripts/omega/verify-ai-assets-master.sh

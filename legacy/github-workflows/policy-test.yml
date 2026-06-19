@@ -1,0 +1,45 @@
+name: Policy Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: policy-test-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  policy-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Python test dependencies
+        run: python3 -m pip install --user pytest
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
+
+      - name: Execute policy tests
+        run: python3 -m pytest -q tests/test_fintech_policy.py tests/test_identity_policy.py tests/test_ai_policy.py
+
+      - name: Upload policy test reports
+        if: ${{ hashFiles('reports/policy/**', 'tests/reports/policy/**') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: policy-test-artifacts
+          path: |
+            reports/policy
+            tests/reports/policy
+          if-no-files-found: warn
