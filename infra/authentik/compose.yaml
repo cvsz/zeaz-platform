@@ -12,9 +12,9 @@ services:
     volumes:
       - database:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: $${PG_PASS:?database password required}
-      POSTGRES_USER: $${PG_USER:-authentik}
-      POSTGRES_DB: $${PG_DB:-authentik}
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
     networks:
       - authentik_internal
 
@@ -34,20 +34,21 @@ services:
       - authentik_internal
 
   server:
-    image: $${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:$${AUTHENTIK_TAG:-2024.4.2}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.4.2}
     restart: unless-stopped
     command: server
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/-/health/live/"]
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9000/-/health/live/')"]
       interval: 10s
       timeout: 5s
       retries: 5
     environment:
       AUTHENTIK_REDIS__HOST: authentik-redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
-      AUTHENTIK_POSTGRESQL__USER: $${PG_USER:-authentik}
-      AUTHENTIK_POSTGRESQL__NAME: $${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: $${PG_PASS}
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
       AUTHENTIK_HOST: https://auth.zeaz.dev
       AUTHENTIK_COOKIE_DOMAIN: .zeaz.dev
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
@@ -60,20 +61,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authentik.rule=Host(`auth.zeaz.dev`) || HostRegexp(`{subdomain:[a-z0-9-]+}.zeaz.dev`) && PathPrefix(`/outpost.goauthentik.io/`)"
-      - "traefik.http.routers.authentik.entrypoints=websecure"
-      - "traefik.http.routers.authentik.tls=true"
+      - "traefik.http.routers.authentik.entrypoints=web,websecure"
       - "traefik.http.services.authentik.loadbalancer.server.port=9000"
 
   worker:
-    image: $${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:$${AUTHENTIK_TAG:-2024.4.2}
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.4.2}
     restart: unless-stopped
     command: worker
     environment:
       AUTHENTIK_REDIS__HOST: authentik-redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
-      AUTHENTIK_POSTGRESQL__USER: $${PG_USER:-authentik}
-      AUTHENTIK_POSTGRESQL__NAME: $${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: $${PG_PASS}
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
       AUTHENTIK_HOST: https://auth.zeaz.dev
       AUTHENTIK_COOKIE_DOMAIN: .zeaz.dev
     user: root

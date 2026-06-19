@@ -111,7 +111,7 @@ cat > scripts/ci/install-web-deps-safe.sh <<'EOF'
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/apps/web"
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)/apps/zeaz-web"
 
 node -v
 npm -v
@@ -141,4 +141,4 @@ echo
 echo "Next:"
 echo "  make phase51-validate"
 echo "  make phase52-validate"
-echo "  scripts/ci/install-web-deps-safe.sh && cd apps/web && npm run build"
+echo "  scripts/ci/install-web-deps-safe.sh && cd apps/zeaz-web && npm run build"

@@ -4,10 +4,13 @@ IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+# shellcheck source=../lib/gemini-sandbox.sh
+source "${PROJECT_ROOT}/scripts/lib/gemini-sandbox.sh"
+gemini_init_sandbox_paths "${PROJECT_ROOT}"
 
 ECC_REPO_URL="${ECC_REPO_URL:-https://github.com/affaan-m/ECC.git}"
 ECC_REF="${ECC_REF:-main}"
-ECC_CACHE_DIR="${ECC_CACHE_DIR:-${PROJECT_ROOT}/.cache/ecc}"
+ECC_CACHE_DIR="${ECC_CACHE_DIR:-${GEMINI_CACHE_DIR}}"
 ECC_PROFILE="${ECC_PROFILE:-minimal}"
 ECC_TARGETS="${ECC_TARGETS:-claude-project}"
 ECC_APPLY=false
@@ -36,7 +39,7 @@ Options:
   --locale CODE           Forward ECC --locale code.
   --ref REF               ECC git ref, branch, tag, or commit. Default: main.
   --repo URL              ECC git repository URL. Default: https://github.com/affaan-m/ECC.git
-  --cache-dir PATH        Local ECC clone cache. Default: .cache/ecc.
+  --cache-dir PATH        Local ECC clone cache. Default: writable .cache/ecc or /tmp/gemini-pack/cache.
   --json                  Forward ECC --json output.
   --force-refresh         Remove the local ECC cache before cloning.
   --allow-full            Allow --profile full without ECC_ALLOW_FULL_INSTALL=yes.
@@ -141,6 +144,8 @@ while (($#)); do
   shift
 done
 
+ECC_CACHE_DIR="$(gemini_get_writable_dir "${ECC_CACHE_DIR}" "${GEMINI_PACK_ROOT}/ecc")"
+
 if [[ "${ECC_PROFILE}" == "full" && "${ECC_APPLY}" == "true" && "${ECC_ALLOW_FULL}" != "true" && "${ECC_ALLOW_FULL_INSTALL:-no}" != "yes" ]]; then
   fail "profile full is intentionally guarded. Use --allow-full or ECC_ALLOW_FULL_INSTALL=yes after reviewing docs/ecc-integration.md"
 fi
@@ -172,6 +177,7 @@ fi
 
 log "ECC ref: $(git -C "${ECC_CACHE_DIR}" rev-parse --short HEAD)"
 log "project root: ${PROJECT_ROOT}"
+log "cache dir: ${ECC_CACHE_DIR}"
 log "profile: ${ECC_PROFILE}"
 log "targets: ${ECC_TARGETS}"
 

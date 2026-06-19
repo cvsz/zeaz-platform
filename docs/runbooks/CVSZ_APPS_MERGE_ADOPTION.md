@@ -8,8 +8,8 @@ Phase 58 creates the local adoption system for cvsz application repositories tha
 
 Internal root apps are excluded by default:
 
-- `apps/api`
-- `apps/web`
+- `apps/zeaz-api`
+- `apps/zeaz-web`
 
 Protected app:
 

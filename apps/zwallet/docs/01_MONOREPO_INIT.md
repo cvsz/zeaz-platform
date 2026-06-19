@@ -2,7 +2,7 @@
 Refactor repo into:
 
 /apps/android
-/apps/api
+/apps/zeaz-api
 /services/wallet-engine
 /services/swap-engine
 /services/indexer

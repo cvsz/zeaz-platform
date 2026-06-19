@@ -3,6 +3,8 @@ services:
   traefik:
     image: docker.io/library/traefik:v3.0
     restart: unless-stopped
+    environment:
+      - DOCKER_API_VERSION=1.41
     command:
       - "--api.dashboard=true"
       - "--providers.docker=true"

@@ -2,66 +2,34 @@
 
 ## Definition
 
-Cross-environment drift is any repo intent, Cloudflare routing rule, Worker route,
-Access policy, tunnel mapping, or Terraform/OpenTofu resource that crosses the
-intended ownership boundary between `dev`, `staging`, and `prod`.
-
-Drift is Critical by default because it can route production traffic to the wrong
-environment or allow non-production changes to affect live services.
+Cross-environment drift occurs when Cloudflare configurations unintendedly leak or share resources across environment boundaries (dev, staging, production).
 
 ## Drift Examples
 
-| Example | Severity | Why It Matters |
-|---|---|---|
-| Production hostname appears in dev intent | Critical | Dev changes could influence live routing decisions |
-| Production hostname appears in staging intent | Critical | Staging promotion could overwrite live ownership |
-| Tunnel runtime auth material reused across environments | Critical | One environment could affect another environment's routing |
-| Worker route missing an `env` tag | High | Route ownership cannot be proven during review |
-| Worker route `env` tag does not match the file environment | High | A route may be promoted to the wrong environment |
-| Terraform resource missing an environment tag | High | State ownership and review gates become ambiguous |
-| Prod YAML missing promotion evidence reference | High | Production change lineage is incomplete |
-| Hostname appears in two environment files | High | Ownership is ambiguous and drift-prone |
+- **Hostname Leak**: Production domain hostnames (`*.zeaz.dev`) appearing in a dev-environment configuration without an explicit `env: dev` DNS tag.
+- **Credential Sharing**: Using the same Tunnel token or API key for both staging and production.
+- **Tagging Gaps**: Worker routes or Terraform resources missing the mandatory `environment` tag.
+- **Routing Overlap**: Dev traffic accidentally being routed to production backend services.
 
 ## Detection Method
 
-Run the offline boundary scanner:
+Detection is primarily performed by the `infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh` tool.
 
-```bash
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --json
-infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --strict
-```
-
-The scanner checks:
-
-- Duplicate hostnames across environment YAML files.
-- Production domain names in dev or staging intent.
-- Missing or mismatched Worker route `env` tags.
-- Missing top-level owner fields.
-- Missing production promotion evidence reference.
-
-The scanner is offline only. It does not call Cloudflare APIs.
+This scanner:
+- Identifies duplicate hostnames across environment YAML files.
+- Flags production apex domains in dev/staging files.
+- Checks for missing `env:` tags in Worker route definitions.
 
 ## Remediation Process
 
-1. Stop promotion for the affected change.
-2. Assign a single owner for the affected environment and resource type.
-3. Remove the cross-environment reference from the wrong intent file.
-4. Add or correct the `env` and Terraform/OpenTofu environment tags.
-5. Re-run the boundary scanner with `--strict`.
-6. Attach the scanner output to the relevant evidence record when prod is affected.
-7. For production impact, update the Phase 15 drift register and Phase 16 evidence
-   archive.
+1. **Alert**: Scanner returns a non-zero exit code during CI or manual check.
+2. **Triage**: DevOps Lead identifies the source of the leak.
+3. **Isolation**: Immediately redact or rotate shared credentials.
+4. **Correction**: Fix the configuration YAML to respect boundary rules.
+5. **Validation**: Re-run scanner to confirm resolution.
 
-## SLA
+## SLA for Remediation
 
-| Drift Class | Default Severity | Response Target | Resolution Target |
-|---|---|---|---|
-| Prod hostname in dev or staging | Critical | Same business day | 24 hours |
-| Shared tunnel auth material | Critical | Same business day | 24 hours |
-| Missing prod evidence reference | High | 1 business day | 3 business days |
-| Missing route or Terraform environment tag | High | 1 business day | 5 business days |
-| Duplicate non-prod hostname | Medium | 3 business days | 10 business days |
-
-Accepted exceptions must be documented in
-`docs/infra/cloudflare-drift-exception-register.md`.
+- **Critical**: Cross-environment credential sharing (Rotation required within 4 hours).
+- **High**: Production hostname in dev config (Remediation required within 24 hours).
+- **Medium**: Missing environment tags (Remediation required before next promotion).

@@ -26,7 +26,7 @@ SKIP_PARTS = {
 }
 
 SKIP_PREFIXES = (
-    "apps/web/node_modules/",
+    "apps/zeaz-web/node_modules/",
     "apps/openwork/node_modules/",
     "apps/ABTPi18n/node_modules/",
     "apps/ABTPi18n/.copilot/",

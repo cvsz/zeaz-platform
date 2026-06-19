@@ -1,14 +1,49 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+const ignores = [
+  ".next/**",
+  "node_modules/**",
+  "dist/**",
+  "build/**",
+  "coverage/**",
+  "out/**"
+];
 
 export default [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores
+  },
+  {
+    files: ["**/*.{js,mjs,cjs,jsx}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
+      globals: {
+        React: "readonly",
+        console: "readonly",
+        process: "readonly",
+        window: "readonly",
+        document: "readonly",
+        navigator: "readonly",
+        localStorage: "readonly",
+        fetch: "readonly",
+        Request: "readonly",
+        Response: "readonly",
+        Headers: "readonly"
+      }
+    },
+    rules: {
+      "no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_"
+        }
+      ],
+      "no-undef": "off"
+    }
+  }
 ];

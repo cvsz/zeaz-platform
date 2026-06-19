@@ -50,7 +50,7 @@ The lifecycle and several business flows rely on process memory stores (`store.*
 Gateway defaults to local Redis and local service base URLs/keys for issuer and KYC. This is useful for local development, but risky if environment hardening checks are missing in deployment.
 
 ### E) Multi-stack duplication risk (Medium)
-The repo contains multiple partially overlapping implementations (`backend/services/*`, `services/*`, `apps/api`, `api/`). Without a strict deployment authority matrix, teams risk drift in controls and inconsistent behavior.
+The repo contains multiple partially overlapping implementations (`backend/services/*`, `services/*`, `apps/zeaz-api`, `api/`). Without a strict deployment authority matrix, teams risk drift in controls and inconsistent behavior.
 
 ## Policy conformance snapshot (AGENTS.md)
 

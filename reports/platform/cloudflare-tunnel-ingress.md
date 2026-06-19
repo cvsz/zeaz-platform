@@ -1,7 +1,7 @@
 # Cloudflare Tunnel ingress intent
 
-- `zeaz.dev` -> `http://127.0.0.1:8787`
-- `www.zeaz.dev` -> `http://127.0.0.1:8787`
+- `zeaz.dev` -> `http://127.0.0.1:3003`
+- `www.zeaz.dev` -> `http://127.0.0.1:3003`
 - `ssh.zeaz.dev` -> `ssh://127.0.0.1:22022`
 - `app.zeaz.dev` -> `http://127.0.0.1:3003`
 - `studio.zeaz.dev` -> `http://127.0.0.1:3001`
@@ -19,4 +19,3 @@
 - `zlms.zeaz.dev` -> `reserved`
 - `academy.zeaz.dev` -> `reserved`
 - `zsticker.zeaz.dev` -> `reserved`
-- `zcino-modern.zeaz.dev` -> `reserved`

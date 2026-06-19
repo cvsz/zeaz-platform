@@ -1,0 +1,12 @@
+# Local generated AI asset registries/reports
+data/zai-factory-skills-registry.json
+data/ai-assets-duplicates-clean-report-*.json
+reports/
+
+# Local vendored/symlinked AI assets
+vendor/ai-assets/
+
+# Runtime/build/cache
+logs/*.log
+dist/
+node_modules/

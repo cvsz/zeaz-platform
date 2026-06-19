@@ -4,8 +4,8 @@
 |---|---|---|---|
 | zcfdash | `/home/zeazdev/zeaz-platform` | `zcfdash.zeaz.dev` | `protected-admin` |
 | openwork | `/home/zeazdev/zeaz-platform/apps/openwork` | `openwork.zeaz.dev` | `public-or-team` |
-| web | `/home/zeazdev/zeaz-platform/apps/web` | `www.zeaz.dev, zeaz.dev` | `public` |
-| api | `/home/zeazdev/zeaz-platform/apps/api` | `api.zeaz.dev` | `protected-api` |
+| web | `/home/zeazdev/zeaz-platform/apps/zeaz-web` | `www.zeaz.dev, zeaz.dev` | `public` |
+| api | `/home/zeazdev/zeaz-platform/apps/zeaz-api` | `api.zeaz.dev` | `protected-api` |
 | zcino | `/home/zeazdev/zeaz-platform/apps/zcino` | `zcino.zeaz.dev` | `public-or-team` |
 | zdash | `/home/zeazdev/zeaz-platform/apps/zdash` | `zdash.zeaz.dev, api-zdash.zeaz.dev` | `mixed-public-api` |
 | zlms | `/home/zeazdev/zeaz-platform/apps/zlms` | `zlms.zeaz.dev` | `protected-team` |

@@ -12,8 +12,13 @@ class Base(DeclarativeBase):
     pass
 
 # Create async engine with connection pooling config
+print(f"DEBUG: DATABASE_URL={settings.DATABASE_URL}")
+db_url = settings.DATABASE_URL
+if db_url.startswith("postgresql://") and not db_url.startswith("postgresql+asyncpg://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://")
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     pool_size=10,
     max_overflow=20,
     pool_recycle=3600,

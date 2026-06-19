@@ -8,7 +8,7 @@
 
 This monorepo is organized as a multi-surface wallet and payments platform with:
 - frontend clients (`apps`, `android-app`, `mobile`)
-- backend microservices (`backend/services`, `services`, `api`, `apps/api`)
+- backend microservices (`backend/services`, `services`, `api`, `apps/zeaz-api`)
 - shared libraries (`packages`, `backend/packages/shared`)
 - infra/deployment stacks (`k8s`, `infra`, `terraform`, `docker-compose`)
 - architecture and implementation documentation (`docs`, root markdown specs)

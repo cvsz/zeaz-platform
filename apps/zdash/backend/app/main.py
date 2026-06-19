@@ -54,6 +54,7 @@ from app.api import (
     team,
     tenancy,
     workers,
+    workflows,
 )
 from app.api.routes import incidents
 
@@ -201,3 +202,4 @@ app.include_router(tenancy.router)
 app.include_router(sovereign.router)
 app.include_router(edge.router)
 app.include_router(global_ops.router)
+app.include_router(workflows.router)

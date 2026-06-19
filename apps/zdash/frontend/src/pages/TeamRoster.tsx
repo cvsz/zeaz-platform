@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import AgentAssignmentBoard from "../components/team/AgentAssignmentBoard";
+import GlassCard from "../components/ui/GlassCard";
+import PageHeader from "../components/layout/PageHeader";
 import { useTeam } from "../hooks/useTeam";
 import { useT } from "../hooks/useT";
 import type { TeamMember } from "../api/types";
@@ -132,39 +134,46 @@ export default function TeamRoster() {
 
   return (
     <section className="mx-auto flex w-full max-w-[112rem] flex-col gap-6 px-1 py-2 text-text-primary sm:px-2 lg:px-4">
-      <div className="rounded-3xl border border-border/70 bg-canvas-lighter/60 p-6 shadow-glass-lg backdrop-blur">
-        <p className="text-xs font-bold uppercase tracking-[0.32em] text-cyan-300">zDash</p>
-        <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <PageHeader
+        eyebrow="People Ops"
+        title="Team Workspace"
+        subtitle="Manage team members, invitations, workspace access, and AI agent assignments."
+      />
+
+      <GlassCard className="p-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-text-primary md:text-4xl">Team Workspace</h1>
+            <p className="text-xs font-bold uppercase tracking-[0.32em] text-cyan-300">zDash</p>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
-              Manage team members, invitations, workspace access, and AI agent assignments.
+              Operator-facing controls for membership, access, and assignment workflows.
             </p>
           </div>
+          {error ? (
+            <div className="rounded-md border border-rose-500/40 bg-rose-500/10 px-4 py-2 text-sm text-rose-200">
+              {error}
+            </div>
+          ) : null}
         </div>
-        {error ? (
-          <div className="mt-4 rounded-md border border-rose-500/40 bg-rose-500/10 px-4 py-2 text-sm text-rose-200">
-            {error}
-          </div>
-        ) : null}
-      </div>
+      </GlassCard>
 
-      <div className="flex flex-wrap gap-1 rounded-2xl border border-border bg-panel-hover p-1">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${
-              activeTab === tab
-                ? "bg-cyan-500/20 text-cyan-100"
-                : "text-text-dim hover:text-text-secondary"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <GlassCard className="p-1">
+        <div className="flex flex-wrap gap-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${
+                activeTab === tab
+                  ? "bg-cyan-500/20 text-cyan-100"
+                  : "text-text-dim hover:text-text-secondary"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </GlassCard>
 
       {activeTab === "Overview" && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

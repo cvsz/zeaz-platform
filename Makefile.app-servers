@@ -24,7 +24,7 @@ apps-server-status: ## Show all app server status from configs/platform/apps-por
 apps-server-report: ## Write app server status report
 	@bash scripts/platform/apps-server-control.sh report
 
-zcfdash-control-start: ## Start complete zcfdash Cloudflare control panel: apps/web + apps/api using app route list ports
+zcfdash-control-start: ## Start complete zcfdash Cloudflare control panel: apps/zeaz-web + apps/zeaz-api using app route list ports
 	@bash scripts/platform/zcfdash-control-panel.sh start
 
 zcfdash-control-stop: ## Stop complete zcfdash Cloudflare control panel

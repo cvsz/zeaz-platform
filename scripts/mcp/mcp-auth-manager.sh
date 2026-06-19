@@ -31,10 +31,10 @@ main() {
     while IFS= read -r var; do
       [[ -z "$var" ]] && continue
       if resolve_env "$var"; then
-        log "  ✓ ${name}: \$${var} resolved"
+        log "  ✓ ${name}: \${var} resolved"
       else
-        warn "  ✗ ${name}: \$${var} not set"
-        prompt_value "$var" "Enter value for \$${var}" || true
+        warn "  ✗ ${name}: \${var} not set"
+        prompt_value "$var" "Enter value for \${var}" || true
       fi
     done <<< "$var_list"
 

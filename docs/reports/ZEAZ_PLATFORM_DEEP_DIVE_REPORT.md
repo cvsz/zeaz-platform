@@ -18,8 +18,8 @@ Read-only audit of `/home/zeazdev/zeaz-platform` before platform refactor mutati
 | App | Path | Framework / Runtime Detected | Start Command | Build Command | Canonical Port | Domain | Env Template | DB Usage Signals | Docker Service Signals | Health Endpoint |
 | --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | openwork | `apps/openwork` | pnpm monorepo, Electron/Next-like web workspaces | `pnpm dev` / filtered scripts | `pnpm build` | 4101 | `zow.zeaz.dev` | not found at app root | MySQL defaults in dev scripts; needs DATABASE_URL review before PostgreSQL cutover | packaging compose files | `/` fallback |
-| api | `apps/api` | Python FastAPI-style (`main.py`, requirements) | `uvicorn main:app --host 0.0.0.0 --port ${PORT}` | none detected | 4102 | `api-zcfdash.zeaz.dev` | not found | Python app requires inspection; PostgreSQL env to be standardized | no root service found | `/health` expected |
-| web | `apps/web` | Next.js | `npm run dev -- --port ${PORT}` or `next start -p ${PORT}` | `npm run build` | 4103 | `zcfdash.zeaz.dev` | not found | frontend only; API-backed | no root service found | `/` fallback |
+| api | `apps/zeaz-api` | Python FastAPI-style (`main.py`, requirements) | `uvicorn main:app --host 0.0.0.0 --port ${PORT}` | none detected | 4102 | `api-zcfdash.zeaz.dev` | not found | Python app requires inspection; PostgreSQL env to be standardized | no root service found | `/health` expected |
+| web | `apps/zeaz-web` | Next.js | `npm run dev -- --port ${PORT}` or `next start -p ${PORT}` | `npm run build` | 4103 | `zcfdash.zeaz.dev` | not found | frontend only; API-backed | no root service found | `/` fallback |
 | zoffice | `apps/zoffice` | Python app plus website Dockerfile | app server via Python/Docker | Docker build | 4104 | `zoffice.zeaz.dev` | `apps/zoffice/.env.example` | likely app persistence via external services | `apps/zoffice/docker-compose.yml` | `/health` expected |
 | zwallet | `apps/zwallet` | pnpm/TypeScript monorepo plus Python API | app-specific scripts | typecheck/lint | 4105 | `app.zeaz.dev` | `apps/zwallet/.env.example` | PostgreSQL/Kubernetes manifests detected | `apps/zwallet/docker-compose.yml` | `/health` expected |
 | ztrader | `apps/ztrader` | Next.js frontend + Python backend | compose/app-specific | frontend build | 4106 | `ztrader.zeaz.dev` | `apps/ztrader/.env.example` | backend persistence signals need migration validation | `apps/ztrader/docker-compose.yml` | `/health` expected |
@@ -42,9 +42,9 @@ Read-only audit of `/home/zeazdev/zeaz-platform` before platform refactor mutati
 
 ## Framework and Tooling Signals
 
-- Next.js: `apps/web`, `apps/ztrader/frontend`, `apps/zcino/frontend`, `apps/zcino-modern/frontend`, `apps/zlms`.
+- Next.js: `apps/zeaz-web`, `apps/ztrader/frontend`, `apps/zcino/frontend`, `apps/zcino-modern/frontend`, `apps/zlms`.
 - Vite: `apps/zdash/frontend`.
-- Python/FastAPI-style: `apps/api`, `apps/zoffice/app`, `apps/zsticker`, `apps/zdash/backend`, `apps/ztrader/backend`, `apps/zwallet/api`.
+- Python/FastAPI-style: `apps/zeaz-api`, `apps/zoffice/app`, `apps/zsticker`, `apps/zdash/backend`, `apps/ztrader/backend`, `apps/zwallet/api`.
 - Go: `apps/zcino`, `apps/zcino-modern`.
 - PHP legacy: `apps/zcino`.
 - Docker Compose: root and multiple app/infra compose files.

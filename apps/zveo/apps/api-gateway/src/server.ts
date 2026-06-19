@@ -29,13 +29,36 @@ const rateLimiter = new TokenBucketRateLimiter({
 
 const MAX_REQUEST_BODY_BYTES = 2_000_000;
 const campaigns = new InMemoryCampaignStore();
+// Added Prompt Sanitizer to mitigate prompt injection
+function sanitizePrompt(prompt: string): string {
+  const forbiddenPatterns = [/ignore previous/gi, /prompt injection/gi, /jailbreak/gi];
+  let sanitized = prompt;
+  forbiddenPatterns.forEach(pattern => {
+    sanitized = sanitized.replace(pattern, "[BLOCKED]");
+  });
+  return sanitized;
+}
+
+// Added basic Content Moderation hook
+function moderateContent(content: string): boolean {
+  const blockedContent = [/harmful/gi, /illegal/gi];
+  return !blockedContent.some(pattern => pattern.test(content));
+}
+
 const scriptAdapter: ScriptModelAdapter = {
   async generateCampaignScript(input) {
-    return {
-      title: `${input.topic} for ${input.audience}`, hook: `Stop scrolling: ${input.topic}`, script: `Quick hit on ${input.topic} for ${input.audience}.`,
-      scene_by_scene: [{ scene: 1, duration: "0-3s", visual: `${input.niche} visual`, voiceover: `Learn ${input.topic}`, text_on_screen: input.topic }],
-      caption: `${input.topic} in ${input.durationSeconds}s`, hashtags: ["#viral", "#zveo"], cta: "Follow for more", video_style: input.tone, safety_note: "Fact-check claims before publishing"
+    const sanitizedTopic = sanitizePrompt(input.topic);
+    const scriptResult = {
+      title: `${sanitizedTopic} for ${input.audience}`, hook: `Stop scrolling: ${sanitizedTopic}`, script: `Quick hit on ${sanitizedTopic} for ${input.audience}.`,
+      scene_by_scene: [{ scene: 1, duration: "0-3s", visual: `${input.niche} visual`, voiceover: `Learn ${sanitizedTopic}`, text_on_screen: sanitizedTopic }],
+      caption: `${sanitizedTopic} in ${input.durationSeconds}s`, hashtags: ["#viral", "#zveo"], cta: "Follow for more", video_style: input.tone, safety_note: "Fact-check claims before publishing"
     };
+
+    if (!moderateContent(scriptResult.script)) {
+      throw new Error("Generated content violated safety policies.");
+    }
+
+    return scriptResult;
   }
 };
 const publisherStore = new InMemoryPublisherStore();

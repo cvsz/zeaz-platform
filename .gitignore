@@ -66,6 +66,12 @@ package-lock.json
 .idea/
 .agent/
 .agents/
+!.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/agent-scan/
+!.agents/skills/agent-scan/**
 .gemini/
 .codex/
 .cursor/
@@ -74,6 +80,16 @@ package-lock.json
 .joycode/
 .zed/
 apps/zdash/*
+!apps/zdash/backend/
+!apps/zdash/backend/app/
+!apps/zdash/backend/app/api/
+!apps/zdash/backend/app/api/subagent_results.py
+!apps/zdash/backend/app/tests/
+!apps/zdash/backend/app/tests/test_subagent_results_api.py
+!apps/zdash/frontend/
+!apps/zdash/frontend/src/
+!apps/zdash/frontend/src/pages/
+!apps/zdash/frontend/src/pages/SubagentResults.tsx
 
 # Backups and generated repair artifacts
 .backup/
@@ -116,6 +132,7 @@ supabase/.temp/
 !reports/platform/*.yml
 !reports/platform/*.yaml
 !reports/platform/*.json
+reports/platform/build-logs/*.log
 
 # Allow verification summary output
 !reports/verify/
@@ -182,3 +199,80 @@ apps/zsticker/credentials.json
 backups/snapshots/*.tar.gz
 backups/snapshots/*.sha256
 !backups/snapshots/.gitkeep
+
+# Omega Platform
+.gemini/plans/imported-*
+.gemini/mcp-configs/
+.gemini/settings.json
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# local sensitive files
+secrets/
+.env
+.env.*
+*.pem
+*.key
+*.tfvars
+*.tfstate
+
+# Protect large binary/vendor directories (zlms)
+apps/zlms/app/bin/**
+apps/zlms/app/bin/Release/**
+!apps/zlms/app/bin/Release/Publish/.gitkeep  # if needed
+
+# Generated / temporary files
+.factory/
+reports/
+*.log
+fix-*.sh
+status.log
+pnpm-debug.log
+**/.DS_Store
+
+# Build artifacts (already partially covered)
+**/dist/
+**/build/
+**/node_modules/
+
+# Binary / Generated files - NEVER commit
+apps/zlms/app/bin/**
+apps/zlms/app/bin/Release/**
+!apps/zlms/app/bin/Release/.gitkeep
+
+# Temporary / Reports
+.factory/
+reports/
+*.log
+status.log
+fix-*.sh
+pnpm-debug.log
+
+# Build artifacts
+**/dist/
+**/build/

@@ -5,5 +5,5 @@ if [[ -d ".venv" ]]; then
   source .venv/bin/activate
 fi
 
-cd backend
+cd ../backend
 uvicorn app.main:app --reload

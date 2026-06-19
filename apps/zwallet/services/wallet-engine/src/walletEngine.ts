@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { assertTransferRequest, type TransferRequest } from '@zwallet/shared-types/wallet';
-import { wipeBuffer } from '@zwallet/crypto';
+import { logAuditEvent } from '@zwallet/packages/events/audit';
+
 
 export interface TransferPreview { id: string; digest: string; canonical: string }
 
@@ -18,7 +19,14 @@ export function buildTransferDigest(request: unknown): TransferPreview {
 
   const digest = createHash('sha256').update(canonical).digest('hex');
 
-  // Note: canonical is a string, but the digest is already computed.
-  // We return the preview and assume the caller will clear sensitive data if needed.
+  // Audit the digest creation
+  logAuditEvent({
+    action: 'TRANSFER_DIGEST_CREATED',
+    actor: payload.from,
+    target: payload.to,
+    details: { chain: payload.chain, digest },
+    timestamp: new Date().toISOString()
+  });
+
   return { id: randomUUID(), digest, canonical };
 }

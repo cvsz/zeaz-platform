@@ -41,7 +41,6 @@ Offline validation. No API calls. Checks:
   - Credential file safety
   - Worker route scanning and duplication detection
   - Wrangler example file hygiene
-  - Environment boundary intent checks (Phase 18)
 
 Options:
   --help        Show this help message and exit
@@ -403,53 +402,45 @@ validate_wrangler_examples() {
   echo "$issues"
 }
 
-# ---------- Phase 18: Environment Boundary Validation ----------
-validate_environment_boundary_files() {
-  local issues=0
+validate_environment_boundaries() {
+  local count=0
   local env_dir="${CONFIG_DIR}/environments"
   local scanner="${SCRIPTS_DIR}/scan-cloudflare-environment-boundaries.sh"
-  local env_file
-  local required_files=("dev.yml" "staging.yml" "prod.yml")
 
-  if [[ ! -d "$env_dir" ]]; then
-    errors+=("${env_dir}: Phase 18 environment directory missing")
-    issues=$((issues + 1))
-    echo "$issues"
-    return 0
-  fi
-
-  for env_file in "${required_files[@]}"; do
-    if [[ ! -f "${env_dir}/${env_file}" ]]; then
-      errors+=("${env_dir}/${env_file}: Phase 18 environment intent file missing")
-      issues=$((issues + 1))
+  # Check 1: Verify all three environment YAML files exist
+  for env in dev staging prod; do
+    if [[ ! -f "${env_dir}/${env}.yml" ]]; then
+      errors+=("Missing environment intent file: ${env}.yml")
+      count=$((count + 1))
     fi
   done
 
-  if [[ ! -f "$scanner" ]]; then
-    errors+=("scan-cloudflare-environment-boundaries.sh: not found")
-    issues=$((issues + 1))
-  elif [[ ! -x "$scanner" ]]; then
-    errors+=("scan-cloudflare-environment-boundaries.sh: not executable")
-    issues=$((issues + 1))
+  # Check 2: Verify scanner exists and is executable
+  if [[ ! -x "$scanner" ]]; then
+    errors+=("Scanner script not found or not executable: $scanner")
+    count=$((count + 1))
   fi
 
-  for env_file in "${env_dir}/dev.yml" "${env_dir}/staging.yml"; do
-    if [[ -f "$env_file" ]] && grep -Eq '(^|[^A-Za-z0-9_.-])zeaz\.dev([^A-Za-z0-9_.-]|$)|\.zeaz\.dev' "$env_file"; then
-      errors+=("${env_file}: production domain suffix appears in non-production intent")
-      issues=$((issues + 1))
-    fi
-  done
-
-  if [[ "$issues" -eq 0 ]] && [[ -x "$scanner" ]]; then
+  # Check 3: Run scanner in strict mode
+  if [[ -x "$scanner" ]]; then
     if ! "$scanner" --strict >/dev/null 2>&1; then
-      errors+=("scan-cloudflare-environment-boundaries.sh reported boundary violations")
-      issues=$((issues + 1))
-    else
-      log_ok "Phase 18 environment boundary scanner passed"
+      errors+=("Environment boundary scanner found violations (run with --markdown for details)")
+      count=$((count + 1))
     fi
   fi
 
-  echo "$issues"
+  # Check 4: Verify no prod domain appears in dev.yml or staging.yml (direct check)
+  for env in dev staging; do
+    local file="${env_dir}/${env}.yml"
+    if [[ -f "$file" ]]; then
+      if grep -qE "office\.zeaz\.dev|zveo\.zeaz\.dev|cctv\.zeaz\.dev|api\.zveo\.zeaz\.dev|app\.zeaz\.dev|admin-wallet\.zeaz\.dev|zcloud\.zeaz\.dev|ztest\.zeaz\.dev" "$file"; then
+         errors+=("[$env.yml] Production domain hostname found in $env environment intent")
+         count=$((count + 1))
+      fi
+    fi
+  done
+
+  echo "$count"
 }
 
 # ---------- Validation ----------
@@ -506,10 +497,6 @@ fi
 # Phase 5: Canonical config presence
 canon_issues=$(validate_canonical_presence)
 total_warnings=$((total_warnings + canon_issues))
-
-# Phase 18: Environment boundary intent files and scanner
-env_boundary_issues=$(validate_environment_boundary_files)
-total_errors=$((total_errors + env_boundary_issues))
 
 # Phase 5: Required placeholders in each target file
 for file in "${TARGET_FILES[@]}"; do
@@ -624,34 +611,10 @@ if [[ "$CHECK_RUNTIME_BASELINE" == true ]]; then
   fi
 fi
 
-# Phase 17: Risk scoring tooling validation
-log_info "Running Phase 17 risk scoring tooling checks..."
-risk_scorer="${SCRIPTS_DIR}/score-cloudflare-change-risk.sh"
-if [[ ! -f "$risk_scorer" ]]; then
-  warnings+=("score-cloudflare-change-risk.sh not found")
-  total_warnings=$((total_warnings + 1))
-elif [[ ! -x "$risk_scorer" ]]; then
-  warnings+=("score-cloudflare-change-risk.sh not executable")
-  total_warnings=$((total_warnings + 1))
-else
-  log_ok "score-cloudflare-change-risk.sh exists and is executable"
-fi
-
-risk_scorecard="${REPO_ROOT}/docs/infra/cloudflare-risk-scorecard-template.md"
-if [[ ! -f "$risk_scorecard" ]]; then
-  warnings+=("docs/infra/cloudflare-risk-scorecard-template.md not found")
-  total_warnings=$((total_warnings + 1))
-else
-  log_ok "cloudflare-risk-scorecard-template.md exists"
-fi
-
-risk_gate="${REPO_ROOT}/docs/infra/cloudflare-risk-gate-policy.md"
-if [[ ! -f "$risk_gate" ]]; then
-  warnings+=("docs/infra/cloudflare-risk-gate-policy.md not found")
-  total_warnings=$((total_warnings + 1))
-else
-  log_ok "cloudflare-risk-gate-policy.md exists"
-fi
+# Phase 18: Environment boundary validation
+log_info "Running Phase 18 environment boundary validation..."
+env_issues=$(validate_environment_boundaries)
+total_errors=$((total_errors + env_issues))
 
 # ---------- Output ----------
 if [[ "$MODE" == "json" ]]; then

@@ -133,12 +133,17 @@ function copyDir(source, destination, overwrite) {
 }
 
 function agentTomlFromJson(agentJson) {
-  const data = JSON.parse(fs.readFileSync(agentJson, "utf8"));
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(agentJson, "utf8"));
+  } catch (error) {
+    fail(`invalid agent json: ${agentJson}: ${error.message}`);
+  }
   const name = data.name || path.basename(path.dirname(agentJson));
   const description = data.description || "";
   const instructions = data.instructions || "";
   if (!instructions) {
-    fail(`agent has no instructions: ${agentJson}`);
+    return null;
   }
   return {
     name,
@@ -166,12 +171,19 @@ function extractTomlString(text, key) {
 function installRepoAgents() {
   let copied = 0;
   let preserved = 0;
+  let skipped = 0;
   for (const sourceDir of listDirs(repoAgentsDir)) {
     const agentJson = path.join(sourceDir, "agent.json");
     if (!fs.existsSync(agentJson)) {
       continue;
     }
-    const { name, text } = agentTomlFromJson(agentJson);
+    const agent = agentTomlFromJson(agentJson);
+    if (!agent) {
+      skipped += 1;
+      log(`WARN: skipped agent with no instructions: ${agentJson}`);
+      continue;
+    }
+    const { name, text } = agent;
     const destination = path.join(targetAgentsDir, `${name}.toml`);
     if (fs.existsSync(destination) && !overwriteAgents) {
       preserved += 1;
@@ -196,7 +208,7 @@ function installRepoAgents() {
     log(`${dryRun ? "would install" : "installed"} project agent: ${path.basename(source, ".toml")}`);
   }
 
-  log(`agents copied=${copied} preserved=${preserved}`);
+  log(`agents copied=${copied} preserved=${preserved} skipped=${skipped}`);
 }
 
 function installSkills() {

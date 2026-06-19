@@ -1,11 +1,6 @@
-// ZeaZDev [Notification Preferences Component] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Unified Scaffolding - Notification Preferences) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface NotificationPreferencesProps {
@@ -19,7 +14,9 @@ interface Preferences {
   dailySummary: boolean;
 }
 
-export function NotificationPreferences({ userId = "user-default" }: NotificationPreferencesProps) {
+export function NotificationPreferences({
+  userId = 'user-default',
+}: NotificationPreferencesProps) {
   const { t } = useTranslation();
   const [preferences, setPreferences] = useState<Preferences>({
     tradeAlerts: true,
@@ -28,155 +25,214 @@ export function NotificationPreferences({ userId = "user-default" }: Notificatio
     dailySummary: true,
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
-  useEffect(() => {
-    loadPreferences();
-  }, [userId]);
+  const [prefsError, setPrefsError] = useState(false);
 
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/v1/user/notifications/preferences/${userId}`);
+      setPrefsError(false);
+      const response = await fetch(
+        `${backendUrl}/api/v1/user/notifications/preferences/${userId}`,
+      );
       if (response.ok) {
         const data = await response.json();
         setPreferences(data);
+      } else {
+        setPrefsError(true);
       }
-    } catch (error) {
-      console.error('Failed to load notification preferences:', error);
+    } catch {
+      setPrefsError(true);
     }
-  };
+  }, [backendUrl, userId]);
+
+  useEffect(() => {
+    loadPreferences();
+  }, [loadPreferences]);
 
   const handleSave = async () => {
     setLoading(true);
     setMessage(null);
-
     try {
-      const response = await fetch(`${backendUrl}/api/v1/user/notifications/preferences`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          trade_alerts: preferences.tradeAlerts,
-          risk_alerts: preferences.riskAlerts,
-          system_alerts: preferences.systemAlerts,
-          daily_summary: preferences.dailySummary,
-        }),
-      });
-
+      const response = await fetch(
+        `${backendUrl}/api/v1/user/notifications/preferences`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            trade_alerts: preferences.tradeAlerts,
+            risk_alerts: preferences.riskAlerts,
+            system_alerts: preferences.systemAlerts,
+            daily_summary: preferences.dailySummary,
+            tradeAlerts: preferences.tradeAlerts,
+            riskAlerts: preferences.riskAlerts,
+            systemAlerts: preferences.systemAlerts,
+            dailySummary: preferences.dailySummary,
+          }),
+        },
+      );
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Notification preferences saved successfully!' });
+        setMessage({
+          type: 'success',
+          text: t('notifications.saved'),
+        });
         setTimeout(() => setMessage(null), 3000);
       } else {
         const err = await response.json();
-        setMessage({ type: 'error', text: err.detail || 'Failed to save preferences' });
+        setMessage({
+          type: 'error',
+          text: err.detail || t('notifications.save_failed'),
+        });
       }
     } catch (error) {
-      // Mock for UI show
-      setMessage({ type: 'success', text: 'Notification preferences saved successfully (Simulated).' });
-      setTimeout(() => setMessage(null), 3000);
+      console.error('Failed to save preferences:', error);
+      setMessage({
+        type: 'error',
+        text: t('notifications.save_failed_try'),
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const togglePreference = (key: keyof Preferences) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const items = [
+    {
+      key: 'tradeAlerts' as keyof Preferences,
+      label: t('notifications.trade_alerts'),
+      desc: t('notifications.trade_alerts_desc'),
+    },
+    {
+      key: 'riskAlerts' as keyof Preferences,
+      label: t('notifications.risk_alerts'),
+      desc: t('notifications.risk_alerts_desc'),
+    },
+    {
+      key: 'systemAlerts' as keyof Preferences,
+      label: t('notifications.system_alerts'),
+      desc: t('notifications.system_alerts_desc'),
+    },
+    {
+      key: 'dailySummary' as keyof Preferences,
+      label: t('notifications.daily_summary'),
+      desc: t('notifications.daily_summary_desc'),
+    },
+  ];
+
   return (
-    <div style={{
-      padding: '24px',
-      backgroundColor: 'rgba(17, 24, 39, 0.4)',
-      backdropFilter: 'blur(16px)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      borderRadius: '12px',
-      boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-      color: '#f3f4f6',
-      fontFamily: "'Outfit', sans-serif"
-    }}>
-      <h3 style={{ marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>{t('notifications.title')}</h3>
+    <div className="glass-card-static animate-fade-in">
+      <h3 className="h3" style={{ marginBottom: '20px' }}>
+        {t('notifications.title')}
+      </h3>
 
-      <div style={{ display: 'grid', gap: '12px', marginBottom: '24px' }}>
-        {[
-          { key: 'tradeAlerts', label: t('notifications.trade_alerts'), desc: 'Get notified when trades are executed' },
-          { key: 'riskAlerts', label: t('notifications.risk_alerts'), desc: 'Get alerted when risk thresholds are exceeded' },
-          { key: 'systemAlerts', label: t('notifications.system_alerts'), desc: 'Receive system status and important updates' },
-          { key: 'dailySummary', label: t('notifications.daily_summary'), desc: 'Get daily performance summaries' },
-        ].map((item) => (
-          <label
-            key={item.key}
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              padding: '14px',
-              backgroundColor: 'rgba(31, 41, 55, 0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.03)',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(31, 41, 55, 0.6)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(31, 41, 55, 0.4)'}
+      <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+          <legend className="visually-hidden">{t('notifications.title')}</legend>
+          <div style={{ display: 'grid', gap: '10px', marginBottom: '24px' }}>
+            {items.map((item) => (
+              <label
+                key={item.key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: '14px',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  cursor: 'pointer',
+                  transition: 'var(--transition-fast)',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={preferences[item.key]}
+                  onChange={() => togglePreference(item.key)}
+                  style={{
+                    marginRight: '14px',
+                    width: '18px',
+                    height: '18px',
+                    marginTop: '2px',
+                    cursor: 'pointer',
+                    accentColor: 'var(--color-primary)',
+                  }}
+                />
+                <div>
+                  <div
+                    style={{
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    {item.label}
+                  </div>
+                  <div
+                    className="text-secondary"
+                    style={{ fontSize: '12px', marginTop: '3px' }}
+                  >
+                    {item.desc}
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-base btn-primary btn-full"
+        >
+          {loading ? t('notifications.saving') : t('notifications.save')}
+        </button>
+      </form>
+
+      {prefsError && (
+        <div
+          role="alert"
+          className="badge badge-danger"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            marginTop: '16px',
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-md)',
+          }}
+        >
+          <span>Failed to load preferences</span>
+          <button
+            onClick={loadPreferences}
+            className="btn-base btn-sm"
+            style={{ color: 'var(--color-primary)', marginLeft: 'auto' }}
           >
-            <input
-              type="checkbox"
-              checked={preferences[item.key as keyof Preferences]}
-              onChange={() => togglePreference(item.key as keyof Preferences)}
-              style={{ marginRight: '14px', width: '18px', height: '18px', marginTop: '2px', cursor: 'pointer' }}
-            />
-            <div>
-              <div style={{ fontWeight: '600', fontSize: '14px', color: '#f3f4f6' }}>{item.label}</div>
-              <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '3px' }}>
-                {item.desc}
-              </div>
-            </div>
-          </label>
-        ))}
-      </div>
-
-      <button
-        onClick={handleSave}
-        disabled={loading}
-        style={{
-          width: '100%',
-          padding: '12px',
-          backgroundColor: '#3B82F6',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          fontWeight: '600',
-          fontSize: '14px',
-          transition: 'background-color 0.2s',
-        }}
-        onMouseEnter={(e) => {
-          if (!loading) e.currentTarget.style.backgroundColor = '#2563EB';
-        }}
-        onMouseLeave={(e) => {
-          if (!loading) e.currentTarget.style.backgroundColor = '#3B82F6';
-        }}
-      >
-        {loading ? 'Saving Preferences...' : 'Save Preferences'}
-      </button>
+            Retry
+          </button>
+        </div>
+      )}
 
       {message && (
         <div
+          role="alert"
+          className={`badge ${message.type === 'success' ? 'badge-accent' : 'badge-danger'}`}
           style={{
+            display: 'flex',
             marginTop: '16px',
-            padding: '12px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            backgroundColor: message.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-            color: message.type === 'success' ? '#10B981' : '#EF4444',
-            border: message.type === 'success' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)'
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-md)',
           }}
         >
-          {message.text}
+          <span>{message.text}</span>
         </div>
       )}
     </div>
