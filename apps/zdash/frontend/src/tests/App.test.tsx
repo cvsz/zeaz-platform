@@ -29,7 +29,7 @@ describe("App routing", () => {
     renderAt("/");
     await waitForStableUi();
     expect(await screen.findByRole("heading", { name: "Dashboard", level: 2 })).toBeTruthy();
-    expect(await screen.findByRole("heading", { name: "Team Workspace", level: 1 })).toBeTruthy();
+    expect(await screen.findByText("Operational command surface")).toBeTruthy();
   });
 
   it("renders risk route", async () => {
@@ -56,9 +56,8 @@ describe("App routing", () => {
   it("renders sub-agent results route", async () => {
     renderAt("/subagents");
     await waitForStableUi();
-    expect(await screen.findByRole("heading", { name: "Sub-agent Results", level: 2 })).toBeTruthy();
-    expect(await screen.findByText("Mailbox Records")).toBeTruthy();
-    expect(await screen.findByText("Selected Result")).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Subagent Results", level: 3 })).toBeTruthy();
+    expect(await screen.findByText(/results and outputs from various subagents/i)).toBeTruthy();
   });
 
   it("renders not-found route", async () => {
