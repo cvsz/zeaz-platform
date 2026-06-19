@@ -1,5 +1,8 @@
 package zeaz.evolution
 
+import future.keywords.if
+import future.keywords.contains
+
 default allow := false
 
 allow if {
@@ -8,6 +11,10 @@ allow if {
 
 deny contains "tenant id is required" if {
   not input.tenant_id
+}
+
+deny contains "tenant id is required" if {
+  input.tenant_id == ""
 }
 
 deny contains "real-money activity is blocked in Thailand" if {
