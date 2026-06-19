@@ -72,6 +72,5 @@ safety-scan:
 	@echo "Running safety scan..."
 	@echo "Safety scan passed."
 
-validate-fast:
-	@echo "Running fast validation..."
+validate-fast: lint test
 	@echo "Fast validation passed."
