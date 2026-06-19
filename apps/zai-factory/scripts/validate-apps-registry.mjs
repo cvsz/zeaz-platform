@@ -110,8 +110,22 @@ if (!fs.existsSync(REGISTRY_PATH)) {
   process.exit();
 }
 
+// Add schema validation logic
+function validateRegistrySchema(registry) {
+  if (!Array.isArray(registry.apps)) {
+    throw new Error("Registry apps must be an array");
+  }
+  for (const app of registry.apps) {
+    if (typeof app.id !== 'string' || typeof app.path !== 'string') {
+        throw new Error(`Invalid app entry: ${JSON.stringify(app)}`);
+    }
+  }
+}
+
+// ... in the main validation block:
 const registry = readJson(REGISTRY_PATH);
-const registryApps = Array.isArray(registry.apps) ? registry.apps : [];
+validateRegistrySchema(registry);
+const registryApps = registry.apps;
 
 const ids = new Set();
 const registeredPaths = new Set();

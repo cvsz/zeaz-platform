@@ -35,7 +35,7 @@ case "$1" in
     status) APP="$2" ./scripts/platform/apps-server-control.sh status ;;
     start)  APP="$2" ./scripts/platform/apps-server-control.sh start ;;
     stop)   APP="$2" ./scripts/platform/apps-server-control.sh stop ;;
-    factory) ./apps/zai-factory/bin/ai-factory.js "${@:2}" ;;
+    factory) ./apps/zai-factory/bin/zai-factory.js "${@:2}" ;;
     audit)  gemini -p "run workspace-surface-audit skill" ;;
     report)
         GREEN='\033[0;32m'
@@ -68,6 +68,9 @@ case "$1" in
         ;;
     cf)     npx wrangler "${@:2}" ;;
     cf-zt)  npx wrangler access "${@:2}" ;;
+    zai-factory)
+        ./apps/zai-factory/scripts/run.sh "${@:2}"
+        ;;
     zdash)
         case "$2" in
             start)
