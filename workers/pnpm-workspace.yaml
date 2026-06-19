@@ -1,0 +1,11 @@
+packages:
+  - '.'
+  - 'edge-gateway'
+  - 'zeaz-loading'
+
+allowBuilds:
+  esbuild: true
+
+overrides:
+  postcss: "8.5.15"
+  esbuild: "0.28.1"

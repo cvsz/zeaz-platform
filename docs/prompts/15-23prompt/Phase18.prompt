@@ -1,0 +1,264 @@
+# Phase 18 — Cloudflare Multi-Environment Separation
+
+## Objective
+
+Define and enforce ownership boundaries between dev, staging, and production Cloudflare environments. Prevent cross-environment drift, credential sharing, and misconfigured hostname routing within the ZeaZ Platform.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-multi-environment-separation
+```
+
+## Commit Message
+
+```
+docs(cloudflare): define multi-environment ownership boundaries
+```
+
+---
+
+## Scope
+
+- Document environment boundary rules for dev, staging, and prod
+- Create ownership matrix per environment
+- Define cross-environment drift detection policy
+- Define environment promotion policy (dev → staging → prod)
+- Create sanitized environment config files (YAML intent, not live config)
+- Create `infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh`
+- Extend `infra/cloudflare/scripts/validate-cloudflare-config.sh`
+- Update `infra/cloudflare/README.md` with Phase 18 entry
+
+---
+
+## Non-Goals
+
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT commit actual production credentials or tunnel tokens
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT start or restart any services
+- Do NOT mix environment configs with live configuration files
+- Do NOT modify files outside Phase 18 scope
+
+---
+
+## Safety Rules
+
+1. Environment YAML files (`dev.yml`, `staging.yml`, `prod.yml`) must NOT contain real credentials, tokens, or tunnel IDs in committed form
+2. All environment files must use placeholder values or `<REDACTED>` for sensitive fields
+3. Scanner must be shell-safe (`set -euo pipefail`) and offline by default
+4. Scanner must support `--help`, `--markdown`, `--json`, `--strict`
+5. Scanner must NEVER print secrets
+6. All docs must clearly separate: live runtime facts | repo intent | environment boundary policy | manual review actions
+7. Prod environment must explicitly require stronger review gates than dev/staging
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live ingress hostnames (prod): office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Old orphaned credential: `/etc/cloudflared/22bd858b-7cd2-4b54-91a7-9365cdb9eb80.json`
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Environment Rules
+
+### dev environment
+- May use test-only hostnames (e.g., `*.dev.zeaz.internal`, `*.local`)
+- Must NOT use production domain hostnames (`*.zeaz.dev`) unless explicitly tagged as dev-only in DNS
+- Must NOT share tunnel credentials with staging or prod
+- Worker routes must be tagged `env: dev`
+- Terraform resources must have `environment = "dev"` tag
+- No evidence archive required for dev-only changes
+
+### staging environment
+- Must NOT share prod tunnel credentials
+- Must NOT use prod apex or wildcard domains
+- Hostnames must be clearly separate from prod (e.g., `staging.zeaz.dev`)
+- Worker routes must be tagged `env: staging`
+- Terraform resources must have `environment = "staging"` tag
+- Light evidence required (summary + sign-off)
+
+### prod environment
+- Requires Phase 17 risk scoring before any change
+- Requires Phase 16 evidence archive entry
+- Requires Phase 15 review board sign-off for High/Critical changes
+- Hostnames must not point to dev or staging services
+- Worker routes must be tagged `env: prod`
+- Terraform resources must have `environment = "prod"` tag
+- Full evidence required (CI report, baseline diff, release approval, post-release verification)
+- Rollback plan required
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-environment-boundaries.md`**
+   - Overview of three-environment model
+   - Rules per environment (as above)
+   - How hostname routing is separated
+   - How Worker routes are tagged
+   - How Terraform resources are tagged
+   - What shared resources are prohibited between environments
+
+2. **`docs/infra/cloudflare-environment-ownership-matrix.md`**
+   - Table: environment × resource type × owner × approval requirement
+   - Columns: Environment | Resource Type | Owner | Approval Required | Evidence Required
+
+3. **`docs/infra/cloudflare-cross-environment-drift-policy.md`**
+   - Definition of cross-environment drift
+   - Examples: prod hostname in dev config, shared tunnel credentials, missing env tags
+   - Detection method (scanner)
+   - Remediation process
+   - SLA for cross-environment drift (Critical by default — see Phase 15)
+
+4. **`docs/infra/cloudflare-environment-promotion-policy.md`**
+   - Promotion gates: dev → staging
+   - Promotion gates: staging → prod
+   - Required evidence per promotion
+   - Who approves each promotion
+   - Rollback policy per environment
+
+5. **`infra/cloudflare/environments/dev.yml`**
+   - Intent-only YAML (NOT live config)
+   - Fields: environment, hostnames (placeholder), tunnel_id (placeholder `<REDACTED>`), worker_routes (tagged env:dev), terraform_workspace, owner, review_required
+   - Clearly marked as documentation intent only
+
+6. **`infra/cloudflare/environments/staging.yml`**
+   - Same structure as dev.yml with staging values
+
+7. **`infra/cloudflare/environments/prod.yml`**
+   - Same structure with prod values
+   - Additional fields: risk_scoring_required: true, evidence_archive_required: true, review_board_required: true
+   - Known prod hostnames listed (from runtime context above)
+
+8. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 18 entry
+
+### Script
+
+9. **`infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh`**
+
+   Requirements:
+   - `#!/usr/bin/env bash` with `set -euo pipefail`
+   - `--help` prints usage and exits 0
+   - `--markdown` outputs boundary scan results in markdown table
+   - `--json` outputs results as JSON
+   - `--strict` exits non-zero on any boundary violation found
+   - Offline by default (no network calls)
+   - Detects:
+     - Duplicate hostnames across environment YAML files
+     - Prod domain hostnames present in dev or staging YAML
+     - Missing `env:` tag on Worker routes in environment YAML
+     - Missing owner field in environment YAML
+     - Missing promotion evidence reference in prod YAML
+   - Never prints secrets or credentials
+   - Returns structured output: violations found, environment checked, recommendations
+
+10. **`infra/cloudflare/scripts/validate-cloudflare-config.sh`** *(extend)*
+    - Add check: verify all three environment YAML files exist
+    - Add check: verify `scan-cloudflare-environment-boundaries.sh` exists and is executable
+    - Add check: verify no prod domain appears in dev.yml or staging.yml
+
+---
+
+## Evidence Outputs
+
+- Scanner passes `bash -n` syntax check
+- `--help` produces usage output
+- `--markdown` produces boundary scan table
+- `--json` produces valid JSON
+- `--strict` exits non-zero on violations (documented)
+- All environment YAML files use placeholder values only
+- No secrets found in any new file
+- `git diff --name-only` shows only Phase 18 files
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-environment-boundaries.md` exists with rules for all three environments
+- [ ] `docs/infra/cloudflare-environment-ownership-matrix.md` exists with ownership table
+- [ ] `docs/infra/cloudflare-cross-environment-drift-policy.md` exists with detection and remediation
+- [ ] `docs/infra/cloudflare-environment-promotion-policy.md` exists with promotion gates
+- [ ] `infra/cloudflare/environments/dev.yml` exists (intent only, no real credentials)
+- [ ] `infra/cloudflare/environments/staging.yml` exists (intent only, no real credentials)
+- [ ] `infra/cloudflare/environments/prod.yml` exists (intent only, no real credentials)
+- [ ] `infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh` exists, executable, passes `bash -n`
+- [ ] `infra/cloudflare/scripts/validate-cloudflare-config.sh` extended
+- [ ] `infra/cloudflare/README.md` updated with Phase 18 section
+- [ ] No deployment, apply, or Cloudflare write performed
+- [ ] No real credentials in any file
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-multi-environment-separation
+
+# Create directories
+mkdir -p infra/cloudflare/environments
+
+# After writing files
+chmod +x infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh
+bash -n infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --help
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --json | python3 -m json.tool
+
+# Verify no prod domains in dev/staging
+grep -E '\.zeaz\.dev' infra/cloudflare/environments/dev.yml || echo "OK: no prod domains in dev.yml"
+grep -E '\.zeaz\.dev' infra/cloudflare/environments/staging.yml || echo "OK: no prod domains in staging.yml"
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  infra/cloudflare/environments/ \
+  docs/infra/cloudflare-environment-boundaries.md || echo "No secrets found"
+
+# Commit
+git add docs/infra/cloudflare-environment-boundaries.md \
+        docs/infra/cloudflare-environment-ownership-matrix.md \
+        docs/infra/cloudflare-cross-environment-drift-policy.md \
+        docs/infra/cloudflare-environment-promotion-policy.md \
+        infra/cloudflare/environments/dev.yml \
+        infra/cloudflare/environments/staging.yml \
+        infra/cloudflare/environments/prod.yml \
+        infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh \
+        infra/cloudflare/scripts/validate-cloudflare-config.sh \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): define multi-environment ownership boundaries"
+
+git push origin fix/cloudflare-multi-environment-separation
+gh pr create --title "docs(cloudflare): define multi-environment ownership boundaries" \
+  --body "Phase 18: Adds multi-environment separation model (dev/staging/prod), ownership matrix, promotion policy, boundary scanner, and environment intent YAMLs. Read-only. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Scanner flags supported and example outputs
+4. Validation commands run and their output summary
+5. Any warnings (missing env tags, placeholder issues)
+6. Git status summary (`git diff --stat`)
+7. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**
+**Do not commit real tunnel credentials or API tokens in environment YAML files.**

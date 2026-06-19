@@ -40,7 +40,7 @@ export default {
 
 function renderLoadingPage(env) {
   const brandName = escapeHtml(env.BRAND_NAME || "ZeaZ");
-  const appUrl = escapeAttribute(env.APP_URL || "https://app.zeaz.dev");
+  const appUrl = escapeAttribute(env.APP_URL || "https://www.zeaz.dev");
   const statusTh = escapeHtml(env.STATUS_TEXT_TH || "กำลังเริ่มต้นระบบ Cloud");
   const statusEn = escapeHtml(env.STATUS_TEXT_EN || "Initializing Cloud Stack");
 

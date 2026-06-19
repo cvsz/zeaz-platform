@@ -1,0 +1,25 @@
+services:
+  dashboard:
+    image: node:22-alpine
+    working_dir: /app/apps/dashboard
+    volumes:
+      - .:/app
+    command: sh -c "npm install -g pnpm && cd /app && pnpm install && cd /app/apps/dashboard && pnpm build && pnpm start"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+    expose:
+      - "3000"
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.zveo.rule=Host(`zveo.zeaz.dev`)"
+      - "traefik.http.routers.zveo.entrypoints=web"
+      - "traefik.http.services.zveo.loadbalancer.server.port=3000"
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true

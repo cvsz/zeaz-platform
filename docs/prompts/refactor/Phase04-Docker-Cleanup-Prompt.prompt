@@ -1,0 +1,43 @@
+Safely clean unused Docker resources.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Important:
+  Do not delete active project data.
+  Do not delete named database volumes unless proven unused and backed up.
+
+Tasks:
+1. List Docker containers:
+   docker ps -a
+2. List images:
+   docker images
+3. List volumes:
+   docker volume ls
+4. List networks:
+   docker network ls
+5. Identify unused resources.
+6. Create a safe cleanup script:
+   scripts/docker/docker-safe-cleanup.sh
+
+The script should:
+  - show disk usage before cleanup
+  - prune stopped containers
+  - prune dangling images
+  - prune unused build cache
+  - prune unused networks
+  - avoid deleting named volumes by default
+  - require explicit flag --include-volumes for volume cleanup
+  - show disk usage after cleanup
+
+Required safe commands:
+  docker system df
+  docker container prune -f
+  docker image prune -f
+  docker builder prune -f
+  docker network prune -f
+
+Do not run destructive volume cleanup by default.
+
+Generate report:
+  docs/reports/DOCKER_CLEANUP_REPORT.md

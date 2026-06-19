@@ -4,5 +4,5 @@ useDefault = true
 [[rules]]
 id = "cloudflare-token"
 description = "Cloudflare API token"
-regex = '''(?i)cf_[a-z0-9]{30,}'''
+regex = '''(?i)(?:CFAT|cfa_|cf_)[a-z0-9_-]{30,}'''
 secretGroup = 0

@@ -1,0 +1,166 @@
+{
+  "$schema": "https://zeaz.dev/schemas/cvsz-apps-merge-map.v1.json",
+  "phase": "58",
+  "owner": "cvsz",
+  "mode": "local-apps-adoption",
+  "operator_repo": "cvsz/zeaz-platform",
+  "apps_dir": "apps",
+  "report_dir": "reports/cvsz-apps-merge",
+  "internal_apps": [
+    "api",
+    "web"
+  ],
+  "protected_apps": [
+    "zdash"
+  ],
+  "critical_deep_dive_apps": [
+    "ABTPi18n",
+    "zkbtrader"
+  ],
+  "adoption_policy": {
+    "remove_nested_git_requires": {
+      "APPLY": "true",
+      "CONFIRM_CVSZ_APPS_MERGE": "yes"
+    },
+    "write_import_source_before_git_removal": true,
+    "auto_stage": false,
+    "auto_commit": false,
+    "external_mutations": false,
+    "operator_repo_remains_control_plane": true
+  },
+  "apps": [
+    {
+      "app_id": "ABTPi18n",
+      "repo": "git@github.com:cvsz/ABTPi18n.git",
+      "target_path": "apps/ABTPi18n",
+      "mode": "adopt-local",
+      "priority": "P1",
+      "deep_dive": true,
+      "safety_notes": [
+        "Trading platform claims and exchange connectivity require runtime isolation.",
+        "Do not run trading bots, exchange automation, social posting, or deployment as part of adoption."
+      ]
+    },
+    {
+      "app_id": "zkbtrader",
+      "repo": "git@github.com:cvsz/zkbtrader.git",
+      "target_path": "apps/zkbtrader",
+      "mode": "adopt-local",
+      "priority": "P1",
+      "deep_dive": true,
+      "safety_notes": [
+        "Paper-only and public-data-only boundaries must remain visible and enforced.",
+        "Do not run live trading, token rotation, deployment, or exchange-authenticated workflows."
+      ]
+    },
+    {
+      "app_id": "zdash",
+      "repo": "git@github.com:cvsz/zdash.git",
+      "target_path": "apps/zdash",
+      "mode": "already-integrated",
+      "priority": "P0",
+      "protected": true,
+      "safety_notes": [
+        "Already integrated into zeaz-platform.",
+        "Do not alter zDash adoption state as part of the cvsz apps merge."
+      ]
+    },
+    {
+      "app_id": "zlms",
+      "repo": "git@github.com:cvsz/zlms.git",
+      "target_path": "apps/zlms",
+      "mode": "adopt-local",
+      "priority": "P2"
+    },
+    {
+      "app_id": "zwallet",
+      "repo": "git@github.com:cvsz/zwallet.git",
+      "target_path": "apps/zwallet",
+      "mode": "adopt-local",
+      "priority": "P2"
+    },
+    {
+      "app_id": "zAcademy",
+      "repo": "git@github.com:cvsz/zAcademy.git",
+      "target_path": "apps/zAcademy",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zcino",
+      "repo": "git@github.com:cvsz/zcino.git",
+      "target_path": "apps/zcino",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zcino-modern",
+      "repo": "git@github.com:cvsz/zcino-modern.git",
+      "target_path": "apps/zcino-modern",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zoffice",
+      "repo": "git@github.com:cvsz/zoffice.git",
+      "target_path": "apps/zoffice",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "zsticker",
+      "repo": "git@github.com:cvsz/zsticker.git",
+      "target_path": "apps/zsticker",
+      "mode": "adopt-local",
+      "priority": "P3"
+    },
+    {
+      "app_id": "openwork",
+      "repo": "https://github.com/different-ai/openwork.git",
+      "target_path": "apps/openwork",
+      "mode": "adopt-local",
+      "priority": "P3"
+    }
+  ],
+  "exclude_dirs": [
+    ".git",
+    "node_modules",
+    ".pnpm-store",
+    ".venv",
+    "venv",
+    "env",
+    "dist",
+    "build",
+    ".next",
+    ".nuxt",
+    "coverage",
+    ".turbo",
+    ".cache",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".terraform",
+    ".agent",
+    ".agents",
+    ".gemini",
+    ".claude",
+    ".codex"
+  ],
+  "exclude_files": [
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.cloudflare",
+    "terraform.tfstate",
+    "terraform.tfstate.backup",
+    "*.tfstate",
+    "*.tfstate.backup",
+    "*.tfvars",
+    "*.tfplan",
+    ".terraform.tfstate.lock.info",
+    "*.sqlite",
+    "*.db",
+    "*.log"
+  ]
+}

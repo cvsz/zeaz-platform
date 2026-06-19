@@ -1,0 +1,228 @@
+# Cloudflare Configuration Drift Report — Phase 5
+
+## Summary
+
+| Metric | Phase 4 | Phase 5 | Change |
+|---|---|---|---|
+| Config files inventoried | 13 | 13 | No change |
+| Secret files tracked in git | 1 (creds.json, assumed) | **0** | False positive corrected — creds.json was never committed |
+| Hardcoded tunnel IDs found | 2 files | **2 files** (infrastructure/cloudflare/, apps/zLinebot/) | No new hardcodes |
+| Hardcoded credentials paths | 2 files | **2 files** | Unchanged (Phase 4 partially fixed ingress.yml) |
+| Duplicate hostnames across configs | 20 hostnames | **20 hostnames** | No new duplicates |
+| DNS ownership conflicts (TF modules) | Not tracked | **3** | New: TC, TA, TZ overlap |
+| Live tunnel vs repo alignment | Not tracked | **Complete mismatch** | Live config (8 hostnames) vs repo (all different) |
+
+## Phase 5 Actions Completed
+
+### ✅ Credential Containment
+
+- Verified `infra/cloudflare/creds.json` was **never committed** to git history
+- Already covered by `.gitignore` patterns
+- Added `infra/cloudflare/examples/creds.example.json` with placeholder values
+- Created `docs/infra/cloudflare-secret-containment-plan.md`
+- Created `infra/cloudflare/scripts/check-secret-leaks.sh`
+- Updated `.gitignore` with additional secret patterns
+
+### ✅ DNS Ownership Mapping
+
+- Created `docs/infra/cloudflare-dns-ownership-matrix.md` — 41 hostnames across 12+ sources
+- Created `docs/infra/cloudflare-dns-consolidation-plan.md`
+- Created `infra/cloudflare/scripts/scan-dns-ownership.sh`
+- Identified **3 overlapping Terraform modules** managing DNS records
+- Identified **20 duplicate hostnames** across sources
+
+### ✅ Remaining Hardcoded Config Files
+
+| File | Issue | Severity |
+|---|---|---|
+| `infrastructure/cloudflare/config.yml` | Hardcoded tunnel name `zeaz-platform` | Medium |
+| `apps/zLinebot/cloudflared/config.yml` | Hardcoded tunnel name `zlinebot` | Low |
+| `tunnels/cloudflared/config.yml` | Empty tunnel name, malformed cred path | Low |
+
+### ✅ Duplicate Hostname Count: 20
+
+### Top 10 Duplicated Hostnames
+
+| Hostname | Duplicates | Sources | Risk |
+|---|---|---|---|
+| `app.zeaz.dev` | 8 | L, TA, T1, T2, T3, T4, I1, IS | HIGH |
+| `zveo.zeaz.dev` | 7 | L, TA, T1, T3, T4, I1, IS | HIGH |
+| `zcino.zeaz.dev` | 5 | TA, TZ, T1, I1, IS | HIGH |
+| `api.zeaz.dev` | 5 | TC, T1, T3, T4, I2 | HIGH |
+| `auth.zeaz.dev` | 5 | TC, T1, T3, T4, I2 | HIGH |
+| `grafana.zeaz.dev` | 4 | TC, T1, T3, I2 | MEDIUM |
+| `loki.zeaz.dev` | 4 | TC, T1, T3, I2 | MEDIUM |
+| `ztrader.zeaz.dev` | 3 | TA, I1, IS | MEDIUM |
+| `zcfdash.zeaz.dev` | 3 | TA, I1, IS | MEDIUM |
+| `admin-wallet.zeaz.dev` | 3 | L, T2, T4 | MEDIUM |
+
+### Terraform Overlap Risks
+
+- `terraform/cloudflare` (TC) defines 13 subdomains as tunnel CNAME records
+- `terraform/cloudflare-apps` (TA) defines 20 app routes with port mappings
+- `terraform/zdash` (TZ) defines 4 records that overlap with TA
+- `release.zeaz.dev` and `zcino.zeaz.dev` are managed by both TA and TZ
+- **7 TC subdomains** have no tunnel ingress rule — will return 404
+
+### Live Tunnel vs Repo
+
+The live tunnel (`ef0355dd`, token-based at `/etc/cloudflared/config.yml`) is **completely different** from all repo configs:
+
+- 8 hostnames in live config (office, zveo, cctv, api.zveo, app, admin-wallet, zcloud, ztest)
+- No matching port scheme with any repo file
+- Repo files reference Docker service names, .internal hosts, or different port ranges
+
+## Recommendations by Severity
+
+### HIGH
+1. Resolve Terraform module overlap (TC → TA consolidation)
+2. Add DNS records for live-only hostnames (office, admin-wallet)
+3. Add tunnel ingress rules for TC-only hostnames (panel, agents, risk, memory, etc.)
+
+### MEDIUM
+1. Convert remaining hardcoded tunnel names to env var placeholders
+2. Resolve `release.zeaz.dev` ownership between TA and TZ
+3. Resolve `zcino.zeaz.dev` origin port conflicts (3 variants)
+4. Clean up stale tunnel configs after operator verification
+
+### LOW
+1. Create canonical `infra/cloudflare/config/domains.yml` with full inventory
+2. Add canonical `infra/cloudflare/config/tunnels.yml` matching live config
+3. Remove orphaned credential file `22bd858b` from disk
+
+## Phase 6 — Workers/Wrangler Route Ownership Cleanup
+
+### Summary
+
+| Metric | Value | Status |
+|---|---|---|
+| Worker/wrangler configs found | 4 (3 live + 1 example) | ✅ Scan created |
+| Wrangler route scan script | `infra/cloudflare/scripts/scan-workers-routes.sh` | ✅ Created |
+| Wrangler example checker | `infra/cloudflare/scripts/check-wrangler-examples.sh` | ✅ Created |
+| Validator integration | `validate-cloudflare-config.sh --workers` | ✅ Updated |
+| Route ownership plan doc | `docs/infra/cloudflare-workers-route-ownership-plan.md` | ✅ Created |
+| Worker inventory doc | `docs/infra/cloudflare-workers-route-inventory.md` | ✅ Created |
+
+### Phase 6 Findings
+
+#### Workers Discovered
+
+| Worker | File | Routes | Status |
+|---|---|---|---|
+| `zeaz-platform` | `wrangler.toml` (root) | None (dev only) | Clean |
+| `zeaz-loading` | `workers/zeaz-loading/wrangler.toml` | `www.zeaz.dev/*` | Production |
+| `edge-gateway` | `workers/edge-gateway/wrangler.toml` | None (dev only) | Placeholder KV ID |
+| `edge-gateway` (example) | `workers/edge-gateway/wrangler.toml.example` | None | Exact copy of live |
+
+Key findings:
+- **`www.zeaz.dev` triple ownership**: Worker route (zeaz-loading) + DNS CNAME (terraform/cloudflare-apps) + tunnel domain reference
+- **`edge-gateway` example**: `wrangler.toml` and `wrangler.toml.example` are **identical** — example has no value
+- **`edge-gateway` placeholder KV**: `EDGE_RATE_LIMIT_KV` binding with `00000000000000000000000000000000`
+- **No Terraform worker route resources**: `cloudflare_worker_route` resources absent from all TF/OpenTofu modules
+- **OpenTofu module**: `opentofu/modules/cloudflare-workers/` is a skeleton with `cloudflare_worker_script` only — not wired into any root module
+- **Missing examples**: Root `wrangler.toml` and `workers/zeaz-loading/wrangler.toml` have no `.example` counterparts
+- **No route/tunnel overlaps discovered**: The sole worker production route (`www.zeaz.dev`) is not in the known tunnel hostname set
+
+### Actions Completed
+
+1. **Scripts created**:
+   - `infra/cloudflare/scripts/scan-workers-routes.sh` — read-only scanner for all wrangler configs
+   - `infra/cloudflare/scripts/check-wrangler-examples.sh` — example file hygiene checker
+   - `infra/cloudflare/scripts/validate-cloudflare-config.sh --workers` — integrated Phase 6 validation
+
+2. **Documentation created**:
+   - `docs/infra/cloudflare-workers-route-inventory.md` — full worker inventory
+   - `docs/infra/cloudflare-workers-route-ownership-plan.md` — ownership rules and migration path
+
+3. **Validation integrated**:
+   - Worker route scanning via `--workers` flag
+   - Duplicate route detection
+   - Route/tunnel overlap detection
+   - Example file hygiene checking
+
+## Phase 7 Recommendation
+
+**Phase 7 — Workers, Edge, and AI Gateway**
+
+Build Workers foundation, AI Gateway config, rate limiting, JWT hooks, abuse controls, docs, and tests.
+
+## Phase 8 — Terraform and Live Runtime Reconciliation
+
+### Summary
+
+| Metric | Value | Status |
+|---|---|---|
+| Terraform files with Cloudflare resources | Multiple | ✅ Inventoried |
+| Live runtime config | `/etc/cloudflared/config.yml` | ✅ Inventoried |
+| Terraform Ownership Scanner | `scan-terraform-cloudflare-ownership.sh` | ✅ Created |
+| Validator integration | `validate-cloudflare-config.sh --terraform` | ✅ Updated |
+| Reconciliation Plan | `docs/infra/cloudflare-terraform-reconciliation-plan.md` | ✅ Created |
+
+### Phase 8 Findings
+
+#### Terraform vs Live Runtime Conflicts
+
+- **DNS Management Overlap**: The legacy `terraform/cloudflare/main.tf` and `terraform/zdash/main.tf` contain DNS records that conflict with `terraform/cloudflare-apps/main.tf`.
+- **Live Runtime Drift**: The live `/etc/cloudflared/config.yml` uses a token and defines hostnames that are not accurately reflected in the Terraform modules.
+- **Worker Route Conflict**: `www.zeaz.dev` is defined as a CNAME in Terraform but also has a Worker route. The DNS record should be removed from Terraform to avoid conflict.
+
+### Actions Completed
+
+1. **Scripts created**:
+   - `infra/cloudflare/scripts/scan-terraform-cloudflare-ownership.sh` — detects hostnames in `.tf` files and checks for conflicts against live runtime and canonical configs.
+2. **Documentation created**:
+   - `docs/infra/cloudflare-live-runtime-inventory.md` — absolute source of truth for current active routing.
+   - `docs/infra/cloudflare-terraform-ownership-matrix.md` — inventories all Terraform resources.
+   - `docs/infra/cloudflare-terraform-reconciliation-plan.md` — safe path to apply fixes.
+3. **Validation integrated**:
+   - Terraform ownership scanning via `--terraform` flag.
+
+## Phase 9 Recommendation
+
+**Phase 9 — Controlled Terraform Drift Remediation**
+
+Execute the Phase 8 reconciliation plan: manually import missing records, remove conflicting legacy modules, and run `terraform plan` to verify a zero-destruction dry-run before moving to a fully managed GitOps workflow.
+
+---
+
+## Phase 15 — Drift SLA Governance Fields
+
+> Added by Phase 15: Runtime Drift SLA + Ownership Review Board
+> All drift items must be classified with these fields from Phase 15 onward.
+
+### SLA Field Reference
+
+Each active drift item must carry the following fields (add to any existing item above when re-reviewed):
+
+```yaml
+sla_class: Critical | High | Medium | Low | Accepted Exception
+aging_bucket: Fresh (0-7d) | Aging (8-14d) | Stale (15-30d) | Overdue (31+d)
+detected_date: YYYY-MM-DD
+last_reviewed: YYYY-MM-DD
+exception_id: CF-DRIFT-YYYY-NNN  # only if Accepted Exception
+owner: <role name>
+status: OPEN | IN_PROGRESS | ESCALATED | CLOSED | ACCEPTED_EXCEPTION
+```
+
+### Known Open Drift Items — Phase 15 SLA Classification
+
+| Drift Item | System Area | SLA Class | Aging Bucket | Owner | Status |
+|---|---|---|---|---|---|
+| Orphaned credential file `/etc/cloudflared/22bd858b-7cd2-4b54-91a7-9365cdb9eb80.json` | Tunnel / Secret | Medium | (set when reviewed) | Cloudflare Runtime Owner | OPEN |
+| `infrastructure/cloudflare/config.yml` hardcoded tunnel name `zeaz-platform` | IaC | Low | (set when reviewed) | Terraform Owner | OPEN |
+| `apps/zLinebot/cloudflared/config.yml` hardcoded tunnel name `zlinebot` | IaC | Low | (set when reviewed) | Worker Owner | OPEN |
+| `tunnels/cloudflared/config.yml` empty tunnel name, malformed cred path | IaC | Low | (set when reviewed) | Cloudflare Runtime Owner | OPEN |
+| 20 duplicate hostnames across repo config files | DNS / IaC | Medium | (set when reviewed) | DNS Owner | OPEN |
+| Live tunnel (8 hostnames) vs repo config complete mismatch | Tunnel / DNS | High | (set when reviewed) | Cloudflare Runtime Owner | OPEN |
+| 3 overlapping Terraform modules managing DNS records | IaC | High | (set when reviewed) | Terraform Owner | OPEN |
+
+> **Note:** `detected_date`, `last_reviewed`, and `aging_bucket` must be filled by the assigned owner
+> at the next weekly drift triage meeting.
+
+### Phase 15 Documents
+
+- SLA classes and aging buckets: `docs/infra/cloudflare-runtime-drift-sla.md`
+- Ownership review board: `docs/infra/cloudflare-ownership-review-board.md`
+- Exception register: `docs/infra/cloudflare-drift-exception-register.md`
+- Monthly evidence template: `docs/infra/cloudflare-monthly-governance-evidence.md`
+

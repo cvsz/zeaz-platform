@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zveo-media-worker
+  labels:
+    app.kubernetes.io/name: zveo
+    app.kubernetes.io/component: media-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zveo
+      app.kubernetes.io/component: media-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zveo
+        app.kubernetes.io/component: media-worker
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      serviceAccountName: zveo-worker
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: media-worker
+          image: ghcr.io/zveo/media-worker:1.0.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: zveo-secrets
+                  key: redis-url
+            - name: MEDIA_EXPORT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: zveo-config
+                  key: media-export-bucket
+            - name: MEDIA_PIPELINE_MAX_CONCURRENCY
+              value: "2"
+            - name: FFMPEG_PATH
+              value: /usr/local/bin/ffmpeg
+          resources:
+            requests:
+              cpu: "2"
+              memory: 4Gi
+              ephemeral-storage: 20Gi
+            limits:
+              cpu: "8"
+              memory: 16Gi
+              ephemeral-storage: 100Gi
+          ports:
+            - name: metrics
+              containerPort: 9090
+          volumeMounts:
+            - name: scratch
+              mountPath: /scratch
+      volumes:
+        - name: scratch
+          emptyDir:
+            sizeLimit: 100Gi
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: zveo-media-worker
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: zveo-media-worker
+  minReplicas: 2
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

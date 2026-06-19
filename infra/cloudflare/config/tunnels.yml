@@ -1,0 +1,70 @@
+# Canonical Tunnel Ingress Configuration
+# This configuration is synced with the canonical port plan (configs/platform/apps-port-plan.json)
+# This file serves as a reference for the expected live tunnel configuration.
+# The actual state is managed by the live /etc/cloudflared/config.yml
+
+tunnel: ${CLOUDFLARE_TUNNEL_ID}
+credentials-file: /root/.cloudflared/${CLOUDFLARE_TUNNEL_ID}.json
+
+ingress:
+  - hostname: admin-wallet.zeaz.dev
+    service: http://127.0.0.1:8081
+  - hostname: office.zeaz.dev
+    service: http://127.0.0.1:8091
+  - hostname: zveo.zeaz.dev
+    service: http://127.0.0.1:3002
+  - hostname: cctv.zeaz.dev
+    service: http://127.0.0.1:9292
+  - hostname: api-zveo.zeaz.dev
+    service: http://127.0.0.1:8090
+  - hostname: www.zeaz.dev
+    service: http://127.0.0.1:3003
+  - hostname: app.zeaz.dev
+    service: http://127.0.0.1:3000
+  - hostname: zcloud.zeaz.dev
+    service: http://127.0.0.1:3004
+  - hostname: ztest.zeaz.dev
+    service: http://127.0.0.1:3008
+
+  # Updated & Added Hostnames
+  - hostname: api.zeaz.dev
+    service: http://127.0.0.1:8088
+  - hostname: ztrader.zeaz.dev
+    service: http://127.0.0.1:3016
+  - hostname: zcino.zeaz.dev
+    service: http://127.0.0.1:3000
+  - hostname: factory.zeaz.dev
+    service: http://127.0.0.1:8710
+  - hostname: academy.zeaz.dev
+    service: http://127.0.0.1:3013
+  - hostname: zdash.zeaz.dev
+    service: http://127.0.0.1:5173
+  - hostname: release.zeaz.dev
+    service: http://127.0.0.1:5172
+
+  # TC Subdomains
+  - hostname: panel.zeaz.dev
+    service: http://127.0.0.1:80
+  - hostname: auth.zeaz.dev
+    service: http://127.0.0.1:9443
+  - hostname: grafana.zeaz.dev
+    service: http://127.0.0.1:3000
+  - hostname: loki.zeaz.dev
+    service: http://127.0.0.1:3100
+  - hostname: prometheus.zeaz.dev
+    service: http://127.0.0.1:9090
+  - hostname: trader.zeaz.dev
+    service: http://127.0.0.1:80
+  - hostname: ws.trader.zeaz.dev
+    service: http://127.0.0.1:80
+  - hostname: risk.zeaz.dev
+    service: http://127.0.0.1:80
+  - hostname: memory.zeaz.dev
+    service: http://127.0.0.1:80
+  - hostname: agents.zeaz.dev
+    service: http://127.0.0.1:80
+  - hostname: fcc.zeaz.dev
+    service: http://127.0.0.1:80
+
+  # Catch-all
+  - service: http_status:404

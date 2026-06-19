@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: zdash-backend-monitor
+  namespace: zdash
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: zdash-backend
+  endpoints:
+    - port: http
+      path: /api/metrics
+      interval: 15s

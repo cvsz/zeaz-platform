@@ -1,0 +1,1 @@
+<iframe src="http://<?=$_SERVER['SERVER_NAME']?>/pages/register.php" width="800" height="600"></iframe>

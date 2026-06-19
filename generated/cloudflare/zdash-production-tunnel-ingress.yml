@@ -1,0 +1,33 @@
+# zDash Production Tunnel Ingress Config - generated reference
+# Source: configs/cloudflare/zdash/zdash.production.routes.example.json
+# Status: dry-run reference, not applied
+# Apply: requires APPLY=true and explicit confirmations
+
+ingress:
+  - hostname: zdash.zeaz.dev
+    service: http://localhost:5173
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  - hostname: api-zdash.zeaz.dev
+    service: http://localhost:8005
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  - hostname: zdash.zeaz.dev/health
+    service: http://localhost:8005/health
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  - hostname: zcloud.zeaz.dev
+    service: http://localhost:3003
+    originRequest:
+      noTLSVerify: false
+      originServerName: ""
+
+  # Default catch-all - block if not matched
+  - service: http_status:404
+

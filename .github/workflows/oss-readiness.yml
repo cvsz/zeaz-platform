@@ -1,0 +1,128 @@
+name: OSS Readiness Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions: read-all
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Markdown Docs Presence
+        run: |
+          REQUIRED_DOCS=("README.md" "SECURITY.md" "CONTRIBUTING.md" "CODE_OF_CONDUCT.md" "CHANGELOG.md" "ROADMAP.md" "LICENSE")
+          for doc in "${REQUIRED_DOCS[@]}"; do
+            if [ ! -f "$doc" ]; then
+              echo "Error: Required document $doc is missing!"
+              exit 1
+            fi
+            echo "Verified presence of $doc"
+          done
+
+  validate-node-stacks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Safe Install and Validate Node Stacks
+        run: |
+          # Find all directories containing package.json (exclude node_modules and dot folders)
+          find . -name "package.json" -not -path "*/node_modules/*" -not -path "*/.*" | while read -r pkg; do
+            dir=$(dirname "$pkg")
+            echo "--- Checking Node stack in $dir ---"
+            
+            # Check for lockfiles
+            if [ -f "$dir/pnpm-lock.yaml" ]; then
+              echo "pnpm-lock.yaml found in $dir. Installing with pnpm..."
+              (cd "$dir" && pnpm install --frozen-lockfile || pnpm install)
+            elif [ -f "$dir/package-lock.json" ]; then
+              echo "package-lock.json found in $dir. Installing with npm..."
+              (cd "$dir" && npm ci || npm install)
+            elif [ -f "$dir/yarn.lock" ]; then
+              echo "yarn.lock found in $dir. Installing with yarn..."
+              (cd "$dir" && yarn install --frozen-lockfile || yarn install)
+            else
+              echo "No lockfile found in $dir. Skipping dependency installation to avoid breaking changes."
+              continue
+            fi
+
+            # Safe script execution: only run lint/test/typecheck if they exist in package.json
+            if grep -q '"lint":' "$pkg"; then
+              echo "Running lint in $dir..."
+              (cd "$dir" && (pnpm lint || npm run lint || yarn lint))
+            fi
+
+            if grep -q '"typecheck":' "$pkg"; then
+              echo "Running typecheck in $dir..."
+              (cd "$dir" && (pnpm typecheck || npm run typecheck || yarn typecheck))
+            fi
+
+            if grep -q '"test":' "$pkg"; then
+              echo "Running test in $dir..."
+              (cd "$dir" && (pnpm test || npm run test || yarn test))
+            fi
+          done
+
+  validate-python-stacks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Safe Install and Validate Python Stacks
+        run: |
+          # Find all pyproject.toml or requirements.txt files (exclude .venv and dot folders)
+          find . \( -name "pyproject.toml" -o -name "requirements.txt" \) -not -path "*/.*" -not -path "*/node_modules/*" | while read -r dep_file; do
+            dir=$(dirname "$dep_file")
+            echo "--- Checking Python stack in $dir ---"
+            
+            # Use venv for isolation
+            python -m venv "$dir/.venv"
+            source "$dir/.venv/bin/activate"
+            pip install --upgrade pip
+
+            if [ -f "$dir/requirements.txt" ]; then
+              echo "Installing requirements.txt in $dir..."
+              pip install -r "$dir/requirements.txt"
+            elif [ -f "$dir/pyproject.toml" ]; then
+              if grep -q -E '\[build-system\]|\[project\]' "$dir/pyproject.toml"; then
+                echo "Installing pyproject.toml in $dir..."
+                pip install .
+              else
+                echo "Skipping pyproject.toml install in $dir (no build-system/project section)..."
+              fi
+            fi
+
+            # Check Python files syntax using py_compile
+            echo "Validating syntax of Python files in $dir..."
+            find "$dir" -name "*.py" -not -path "*/.*" | while read -r py_file; do
+              python -m py_compile "$py_file" || exit 1
+            done
+          done

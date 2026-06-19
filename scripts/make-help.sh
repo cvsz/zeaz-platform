@@ -26,36 +26,42 @@ Validation:
   make ci                     Alias for validate
   make validate-env           Advisory env check; does not fail on missing secrets
   make validate-env-strict    Strict deployment env validator; requires real values
+  make env-format-validate    CI-safe env format check for .env.example only
+  make env-format-validate-local
+                              Local env format check for .env, .env.cloudflare, and .env.example when present
+  make env-normalize-local    Normalize local .env and .env.cloudflare when present
   make maintenance            Run scripts/environments/maintenance.sh validate
   make test                   Run pytest suite
   make fmt                    Terraform fmt recursive
   make fmt-check              Terraform fmt check recursive
-  make lint                   Run optional shellcheck/tflint/yaml checks
+  make lint                   Run shellcheck, YAML validation, and TFLint when installed
+  make shellcheck             Run shellcheck through find/xargs for workflow-policy compatibility
+  make yaml-validate          Validate YAML files with repository ignore rules
 
-Zeaz platform ops:
-  make health-zveo            Run ZVEO health checks
-  make health-zwallet         Run zWallet health checks
-  make health-platform        Run full platform health checks
-  make ssh-origin-setup       Configure hardened SSH origin on 127.0.0.1:22022
-  make ssh-origin-health      Check local SSH origin readiness
-  make ssh-route              Upsert or print Cloudflare SSH route instructions
-  make ssh-public-health      Check client/public Cloudflare Access SSH readiness
-  make backup-platform        Run platform backup script
-  make install-platform-ops   Install ops scripts into /usr/local/bin
+Security:
+  make secret-scan            Run tracked-file gitleaks release gate
+  make secret-scan-history    Run full git-history gitleaks scan for remediation work
+  make security-scan          Run aggregate advisory scanner script when present
+  make agent-scan             Run Snyk Agent Scan wrapper with repo-safe defaults
+  make policy-test            Validate workflow policy rules
+  make sbom                   Generate SBOM when syft is installed
+  make cosign-sign            Sign SBOM when cosign and SBOM artifact exist
+
+Supabase AI tools:
+  make supabase-docs-context  Cache Supabase llms.txt and guides context locally
+  make supabase-mcp-check     Validate Supabase MCP env without printing secrets
+  make supabase-mcp-config    Write local .agent/supabase-mcp.json with token placeholder
+  make supabase-ai-tools      Run docs cache and MCP env validation
 
 Terraform root:
   make tf-init                Load scoped env, then terraform -chdir=terraform init
   make tf-validate            Init, then terraform -chdir=terraform validate
   make tf-plan                Init, then terraform -chdir=terraform plan
   make tf-plan-out            Save plan to terraform/$(TF_PLAN_FILE), default tfplan
-  make tf-apply-plan CONFIRM_APPLY=yes
-                              Apply saved terraform/$(TF_PLAN_FILE)
-  make tf-apply CONFIRM_APPLY=yes
-                              Auto-approve direct apply after explicit confirmation
-  make tf-destroy CONFIRM_APPLY=yes
-                              Auto-approve destroy after explicit confirmation
-  make tf-state-rm-waf CONFIRM_APPLY=yes
-                              Remove module.waf resources from Terraform state only
+  make tf-apply-plan          Guarded in release-gate Makefile; use reviewed deployment workflow
+  make tf-apply               Guarded in release-gate Makefile; use reviewed deployment workflow
+  make tf-destroy             Guarded in release-gate Makefile; use reviewed deployment workflow
+  make tf-state-rm-waf        Guarded in release-gate Makefile; use reviewed deployment workflow
   make drift                  Run terraform plan -detailed-exitcode; exits 2 on drift
 
 Terraform options:
@@ -77,12 +83,26 @@ Tokens:
   make token-verify           Verify Cloudflare token env without printing token values
   make token-verify-strict    Strict token verification; fails on invalid token
   make token-rotate-dry       Dry-run token regeneration with permission preflight
-  make token-rotate           Live token regeneration; writes .env.cloudflare
+  make token-rotate           Guarded; run live rotation from reviewed local shell
+  make token-rotate-refresh   Alias for token-rotate-dry
 
-Compatibility:
-  make secret-scan            Run gitleaks-only scan when available
-  make policy-test sbom-generation security-validate tunnel-validation waf-validation waf-validate
+Git finalization:
+  make git-status             Print git status --short
+  make gpg-commit COMMIT_MSG="message"
+                              Commit staged changes with bash gpg-loopback.sh only
+  make gpg-push               Push current branch to origin; set GIT_BRANCH when detached
+  make gpg-finalize COMMIT_MSG="message"
+                              Run validate, gpg commit, push, and final status
+  make git-finalize COMMIT_MSG="message"
+                              Alias for gpg-finalize
 
-Phases:
-  make phase-f1 ... phase-f7
+Release gate:
+  make zaiz-validate          Alias for validate
+  make zaiz-prod              Disabled in release-gate Makefile; use reviewed deployment workflow
+  make zaiz-fix-google-genai  Run google-genai/websockets fixer if present
+  make zaiz-deps-check        Dry-run Python dependency resolution in temp venv
+
+General:
+  make doctor                 Print local tool/runtime inventory
+  make clean                  Remove Terraform plans, SBOM artifacts, and .terraform dirs
 HELP

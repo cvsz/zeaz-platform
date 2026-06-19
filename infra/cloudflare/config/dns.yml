@@ -1,0 +1,7 @@
+# Canonical DNS Configuration (Reference)
+# This file serves as a reference for what should be in the Cloudflare DNS zone.
+# The actual state is managed by terraform/cloudflare-apps/apps.auto.tfvars.json
+
+description: "Canonical reference for DNS records. Managed via Terraform."
+records:
+  - note: "See terraform/cloudflare-apps/apps.auto.tfvars.json for definitive app routes."

@@ -1,0 +1,49 @@
+List all ports and refactor port conflicts.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Tasks:
+1. Scan all files for ports:
+   - package.json
+   - docker-compose*.yml
+   - .env*
+   - nginx configs
+   - Cloudflare tunnel configs
+   - Next.js configs
+   - Vite configs
+   - server files
+   - scripts
+2. Detect duplicate/conflicting ports.
+3. Generate canonical port map.
+
+Use this preferred port map unless project inspection shows a better existing standard:
+
+  openwork   -> 4101
+  api        -> 4102
+  web        -> 4103
+  zoffice    -> 4104
+  zwallet    -> 4105
+  ztrader    -> 4106
+  zdash      -> 4107
+  zsp-aitool -> 4108
+  zveo       -> 4109
+  zsticker   -> 4110
+  zcino      -> 4111
+  zlms-prod  -> 4112
+  zLinebot   -> 4113
+  postgres   -> 5432
+  redis      -> 6379
+
+4. Refactor start scripts and env files to use canonical ports.
+5. Add app-level PORT variables.
+6. Add healthcheck URLs.
+7. Generate:
+   scripts/ports/list-all-ports.sh
+   scripts/ports/check-port-conflicts.sh
+   docs/reports/PORT_INVENTORY_REPORT.md
+
+Acceptance criteria:
+  - No app port conflicts.
+  - Every app has documented PORT.
+  - Every domain maps to one local service port.

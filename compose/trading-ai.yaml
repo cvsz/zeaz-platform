@@ -1,0 +1,8 @@
+services:
+  ai-coordinator:
+    build: .
+    command: python runtime/trading/ai_sandbox.py
+    networks:
+      - internal_trading
+    environment:
+      - PORT=8106

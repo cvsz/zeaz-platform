@@ -1,0 +1,28 @@
+# monitoring/prometheus/rules/api-latency.yml
+#
+# NOTE: Requires a histogram metric for API request durations, typically
+# http_request_duration_seconds from an API gateway, reverse proxy, or
+# application instrumentation. Adjust the label selectors (e.g., route, method,
+# status) to match your service topology. The p99 is calculated via the
+# histogram_quantile function over the appropriate le buckets.
+groups:
+  - name: api-latency
+    interval: 30s
+    rules:
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API latency (p99 > 2s)"
+          description: "p99 API latency is above 2 seconds for 5 minutes (current: {{ $value }}s). Check upstream services and origin health."
+
+      - alert: APILatencyIncrease
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) / (histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[30m])) + 0.01) > 1.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API latency increase detected"
+          description: "p99 latency exceeds 1.5x the baseline from the previous 30 minutes (current: {{ $value }}s). Investigate for gradual degradation."

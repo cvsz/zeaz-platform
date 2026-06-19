@@ -1,0 +1,19 @@
+services:
+
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+
+  loki:
+    image: grafana/loki
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter
+    restart: unless-stopped

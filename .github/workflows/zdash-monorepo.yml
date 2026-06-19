@@ -1,0 +1,57 @@
+name: zDash Monorepo Validation
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Manual run reason
+        required: false
+        default: manual
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check apps/zdash exists
+        run: |
+          test -d apps/zdash || { echo "ERROR: apps/zdash missing"; exit 1; }
+          echo "apps/zdash: OK"
+      - name: Verify structure
+        run: |
+          bash scripts/zdash/verify-zdash-monorepo.sh
+      - name: Run phase51-validate
+        run: |
+          make phase51-validate
+      - name: Try zDash validate-fast
+        run: |
+          if [ -f apps/zdash/backend/.venv/bin/activate ] || [ -d apps/zdash/frontend/node_modules ]; then
+            make zdash-validate-fast
+          else
+            echo "dependency install not present; skipping zDash validate-fast"
+          fi
+      - name: Build release evidence
+        run: |
+          mkdir -p docs/reports/generated
+          bash scripts/zdash/capture-zdash-monorepo-evidence.sh
+      - name: Check no .env tracked
+        run: |
+          if git ls-files | grep -Eq '(^|/)\.env($|/)'; then
+            echo "ERROR: .env tracked"; exit 1
+          fi
+          echo ".env check: OK"
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: zdash-monorepo-evidence
+          path: docs/reports/generated/zdash-monorepo-evidence.md

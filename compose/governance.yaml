@@ -1,0 +1,4 @@
+services:
+  governance-engine:
+    build: .
+    command: python runtime/convergence_engine.py

@@ -1,0 +1,27 @@
+# monitoring/prometheus/rules/jwt-failures.yml
+#
+# NOTE: Requires jwt_validation_failures_total counter metric from the auth
+# service, API gateway, or Cloudflare Access exporter. Each failed JWT validation
+# (expired token, bad signature, invalid issuer, etc.) should increment this counter.
+# If using Cloudflare Access, look for cf_access_jwt_validation_failures_total.
+groups:
+  - name: jwt-failures
+    interval: 30s
+    rules:
+      - alert: HighJWTValidationFailureRate
+        expr: rate(jwt_validation_failures_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High JWT validation failure rate"
+          description: "JWT validation failures exceed 5 per 5 minutes (current: {{ $value }}/5m). Possible token abuse or config issue."
+
+      - alert: JWTFailureRateIncrease
+        expr: rate(jwt_validation_failures_total[5m]) / (rate(jwt_validation_failures_total[30m]) + 1) > 1.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "JWT validation failure rate increase"
+          description: "JWT failures increased by >50% compared to the previous 30-minute window. Investigate recent deployments or token rotation."

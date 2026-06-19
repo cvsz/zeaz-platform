@@ -1,0 +1,56 @@
+Refactor root Docker Compose for ZEAZ Platform.
+
+Root:
+  /home/zeazdev/zeaz-platform
+
+Tasks:
+1. Inspect existing docker-compose files.
+2. Create or update canonical compose file:
+   docker-compose.yml
+3. Add services:
+   - postgres
+   - redis if needed
+   - openwork
+   - api
+   - web
+   - zoffice
+   - zwallet
+   - ztrader
+   - zdash
+   - zsp-aitool
+   - zveo
+   - zsticker
+   - zcino
+   - zlms-prod
+   - zLinebot
+   - cloudflared if used locally
+4. Use canonical ports:
+   openwork   4101
+   api        4102
+   web        4103
+   zoffice    4104
+   zwallet    4105
+   ztrader    4106
+   zdash      4107
+   zsp-aitool 4108
+   zveo       4109
+   zsticker   4110
+   zcino      4111
+   zlms-prod  4112
+   zLinebot   4113
+5. Use env_file where appropriate.
+6. Do not bake secrets into Docker images.
+7. Add healthchecks.
+8. Add depends_on only where needed.
+9. Add named volumes:
+   postgres_data
+   redis_data
+10. Do not auto-remove existing data volumes.
+11. Generate:
+    docs/reports/DOCKER_COMPOSE_REFACTOR_REPORT.md
+
+Acceptance criteria:
+  - docker compose config is valid.
+  - no duplicate ports.
+  - database service is healthy.
+  - apps can use PostgreSQL.

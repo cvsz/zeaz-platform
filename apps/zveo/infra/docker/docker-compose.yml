@@ -1,0 +1,179 @@
+services:
+  postgres:
+    image: postgres:16
+    profiles:
+    - node
+    environment:
+      POSTGRES_DB: zveo
+      POSTGRES_USER: zveo
+      POSTGRES_PASSWORD: ${ZPVEO_PG_PASSWORD:?err}
+    ports:
+    - 127.0.0.1:5436:5432
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U zveo -d zveo
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  db-migrate:
+    image: node:24-bookworm
+    profiles:
+    - node
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm db:migrate"
+    environment:
+      DATABASE_URL: postgres://zveo:${ZPVEO_PG_PASSWORD:?err}@postgres:5432/zveo
+    volumes:
+    - ../../:/workspace
+    depends_on:
+      postgres:
+        condition: service_healthy
+  db-seed:
+    image: node:24-bookworm
+    profiles:
+    - node
+    working_dir: /workspace
+    command: sh -lc "corepack enable && pnpm db:seed"
+    environment:
+      DATABASE_URL: postgres://zveo:${ZPVEO_PG_PASSWORD:?err}@postgres:5432/zveo
+    volumes:
+    - ../../:/workspace
+    depends_on:
+      db-migrate:
+        condition: service_completed_successfully
+  redis:
+    image: redis:7-alpine
+    profiles:
+    - node
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
+    ports:
+    - 127.0.0.1:6382:6379
+    volumes:
+    - redis-data:/data
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    profiles:
+    - node
+    command:
+    - server
+    - /data
+    - --console-address
+    - :9001
+    environment:
+      MINIO_ROOT_USER: zveo
+      MINIO_ROOT_PASSWORD: ${ZPVEO_MINIO_PASSWORD:?err}
+    ports:
+    - 127.0.0.1:9005:9000
+    - 127.0.0.1:9006:9001
+    volumes:
+    - minio-data:/data
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:9000/minio/health/live
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  api-gateway:
+    build:
+      context: ../..
+      dockerfile: apps/api-gateway/Dockerfile
+    profiles:
+    - node
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      REDIS_URL: redis://redis:6379
+      AUTH_SHARED_SECRET: ${ZPVEO_AUTH_SHARED_SECRET:?err}
+      S3_BUCKET: zveo-renders
+    depends_on:
+      redis:
+        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
+    ports:
+    - 8085:8080
+  render-worker:
+    build:
+      context: ../..
+      dockerfile: apps/render-worker/Dockerfile
+    profiles:
+    - node
+    environment:
+      NODE_ENV: production
+      REDIS_URL: redis://redis:6379
+      CONCURRENCY: 2
+      PROVIDER_TIMEOUT_MS: 900000
+    depends_on:
+      redis:
+        condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
+    deploy:
+      replicas: 2
+  dashboard:
+    build:
+      context: ../..
+      dockerfile: apps/dashboard/Dockerfile
+    profiles:
+    - node
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      ZVEO_API_URL: http://api-gateway:8080
+    depends_on:
+      api-gateway:
+        condition: service_started
+    ports:
+    - 3018:3000
+    networks:
+    - default
+    - proxy
+    labels:
+    - traefik.enable=true
+    - traefik.docker.network=proxy
+    - traefik.http.routers.dashboard.rule=Host(`zveo.zeaz.dev`)
+    - traefik.http.routers.dashboard.entrypoints=web
+    - traefik.http.services.dashboard.loadbalancer.server.port=3000
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    profiles:
+    - node
+    ports:
+    - 127.0.0.1:9095:9090
+    volumes:
+    - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  grafana:
+    image: grafana/grafana:12.0.1
+    profiles:
+    - node
+    ports:
+    - 127.0.0.1:3019:3000
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${ZPVEO_GRAFANA_PASSWORD:?err}
+    volumes:
+    - grafana-data:/var/lib/grafana
+volumes:
+  postgres-data: null
+  redis-data: null
+  minio-data: null
+  grafana-data: null
+networks:
+  proxy:
+    external: true

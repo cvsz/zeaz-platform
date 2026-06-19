@@ -1,0 +1,27 @@
+# monitoring/prometheus/rules/workers-failures.yml
+#
+# NOTE: Requires worker_errors_total counter metric from the Cloudflare Workers
+# exporter or from wrangler-instrumented Worker metrics. If using the
+# cloudflare_worker_requests metric, filter on status or cf-worker-status labels
+# indicating errors (e.g., 5xx responses, exceptions, or script timeouts).
+groups:
+  - name: workers-failures
+    interval: 30s
+    rules:
+      - alert: HighWorkerErrorRate
+        expr: rate(worker_errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Worker error rate"
+          description: "Worker errors exceed 10 per 5 minutes (current: {{ $value }}/5m). Check Worker logs and recent deployments."
+
+      - alert: WorkerErrorSpike
+        expr: rate(worker_errors_total[5m]) / (rate(worker_errors_total[30m]) + 1) > 3
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Worker error spike detected"
+          description: "Worker error rate has tripled compared to the previous 30-minute window (current: {{ $value }}/5m). Immediate investigation required."

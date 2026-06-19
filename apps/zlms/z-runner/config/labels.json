@@ -1,0 +1,15 @@
+{
+  "labels": [
+    "self-hosted",
+    "linux",
+    "x64",
+    "secure",
+    "ephemeral",
+    "docker",
+    "kubernetes",
+    "zero-trust",
+    "gpu",
+    "ai",
+    "production"
+  ]
+}

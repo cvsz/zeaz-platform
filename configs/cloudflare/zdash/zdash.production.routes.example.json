@@ -1,0 +1,50 @@
+{
+  "description": "zDash production routes for zeaz.dev — dry-run by default",
+  "zone": "zeaz.dev",
+  "apply_required": "APPLY=true",
+  "frontend_origin_default": "http://localhost:5173",
+  "backend_origin_default": "http://localhost:8005",
+  "frontend_origin_env": "ZDASH_FRONTEND_ORIGIN",
+  "backend_origin_env": "ZDASH_BACKEND_ORIGIN",
+  "routes": [
+    {
+      "hostname": "zzdash.zeaz.dev",
+      "origin": "http://localhost:5173",
+      "kind": "frontend",
+      "proxied": true
+    },
+    {
+      "hostname": "api-zzdash.zeaz.dev",
+      "origin": "http://localhost:8005",
+      "kind": "backend",
+      "proxied": true
+    },
+    {
+      "hostname": "zzdash.zeaz.dev/health",
+      "origin": "http://localhost:8005/health",
+      "kind": "health",
+      "proxied": true
+    },
+    {
+      "hostname": "zcino.zeaz.dev",
+      "origin": "http://localhost:3009",
+      "kind": "frontend",
+      "proxied": true
+    },
+    {
+      "hostname": "zcloud.zeaz.dev",
+      "origin": "http://localhost:3003",
+      "kind": "frontend",
+      "proxied": true
+    }
+  ],
+  "fallback": {
+    "service": "http_status:404",
+    "purpose": "block unmatched ingress"
+  },
+  "notes": [
+    "Override origins only with ZDASH_FRONTEND_ORIGIN and ZDASH_BACKEND_ORIGIN.",
+    "Do not add paid Cloudflare features by default.",
+    "Existing ssh.zeaz.dev Access route must stay intact."
+  ]
+}

@@ -1,0 +1,12 @@
+services:
+  trader-core:
+    build: .
+    command: python runtime/trading/trading_main.py
+    environment:
+      - REDIS_URL=redis://eventbus-redis:6379/0
+      - DB_URL=postgresql://zeaz:pass@postgres:5432/zeaz
+  trader-workers:
+    build: .
+    command: python runtime/trading/worker_main.py
+    deploy:
+      replicas: 3

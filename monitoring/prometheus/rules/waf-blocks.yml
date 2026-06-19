@@ -1,0 +1,27 @@
+# monitoring/prometheus/rules/waf-blocks.yml
+#
+# NOTE: Requires cf_waf_blocked_requests_total or similar WAF counter metric.
+# If using the Cloudflare WAF exporter, the metric is typically
+# cloudflare_waf_requests with action="block". Adjust the label filter to match
+# your exporter's label schema.
+groups:
+  - name: waf-blocks
+    interval: 30s
+    rules:
+      - alert: HighWAFBlockRate
+        expr: rate(cf_waf_blocked_requests_total[5m]) > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High WAF block rate"
+          description: "WAF is blocking >50 requests per 5 minutes (current: {{ $value }}/5m). Possible attack in progress."
+
+      - alert: WAFBlockSpike
+        expr: rate(cf_waf_blocked_requests_total[5m]) / (rate(cf_waf_blocked_requests_total[30m]) + 1) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "WAF block rate spike detected"
+          description: "WAF block rate has doubled compared to the previous 30-minute window. Investigate for new attack patterns."

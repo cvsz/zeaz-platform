@@ -1,0 +1,32 @@
+name: "zVEO Security & Quality Analysis"
+
+disable-default-queries: false
+
+query-filters:
+  - include:
+      tags:
+        - security
+        - quality
+        - correctness
+
+# Monorepo-specific path filtering. Include GitHub workflow paths so the
+# `actions` matrix entry has first-party workflow files to analyze.
+paths:
+  - .github/workflows
+  - apps
+  - packages
+  - scripts
+paths-ignore:
+  - node_modules
+  - dist
+  - .next
+  - build
+  - coverage
+  - docs
+  - examples
+  - tests
+  - '**/test'
+  - '**/tests'
+  - '**/__tests__'
+  - '**/*.test.*'
+  - '**/*.spec.*'

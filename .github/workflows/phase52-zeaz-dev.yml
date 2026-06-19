@@ -1,0 +1,48 @@
+name: Phase 52 zeaz.dev Production Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Manual run reason
+        required: false
+        default: manual
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase52-zeaz-dev-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell scripts syntax
+        run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
+
+      - name: Run phase 52 validation
+        env:
+          APPLY: "false"
+          COST_LOCK: "true"
+          ALLOW_PAID_CLOUDFLARE_FEATURES: "false"
+          CLOUDFLARE_PLAN_TIER: Free
+        run: make phase52-validate
+
+      - name: Upload generated evidence
+        if: ${{ hashFiles('docs/reports/generated/zeaz-dev-*.md') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase52-zeaz-dev-evidence
+          path: docs/reports/generated/zeaz-dev-*.md
+          if-no-files-found: warn

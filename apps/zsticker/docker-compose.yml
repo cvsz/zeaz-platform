@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: line-sticker-bot:latest
+    container_name: sticker_bot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+      - ./credentials.json:/app/credentials.json:ro
+    ports:
+      - "8007:8000"
+    depends_on:
+      - redis
+
+  dashboard:
+    build: .
+    image: line-sticker-bot:latest
+    container_name: sticker_dashboard
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+      - ./templates:/app/templates
+      - ./credentials.json:/app/credentials.json:ro
+    ports:
+      - "3008:3008"
+    command: uvicorn src.cli.dashboard:app --host 0.0.0.0 --port 3008
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: sticker_redis
+    restart: always
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

@@ -1,0 +1,20 @@
+services:
+  trader-api:
+    build: .
+    command: python runtime/trading/trading_main.py
+    networks:
+      - internal_trading
+    environment:
+      - PORT=8100
+      - REDIS_URL=redis://redis:6382/0
+  trader-ws:
+    build: .
+    command: python runtime/trading/ws_main.py
+    networks:
+      - internal_trading
+    environment:
+      - PORT=8101
+      
+networks:
+  internal_trading:
+    internal: true

@@ -1,0 +1,73 @@
+name: Bug Report
+description: Report a bug or issue in the ZeaZ Platform
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting this issue. Before submitting, please verify that you are not committing secrets or sensitive data in this report.
+        If this is a security vulnerability, please refer to our [Security Policy](https://github.com/cvsz/zeaz-platform/blob/main/SECURITY.md) to report it privately.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a clear and concise description of what the bug is.
+      placeholder: E.g., The build-all-stacks command fails on zlms port conflict...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to Reproduce
+      description: Explain how to reproduce the issue. Include commands run or stack setups.
+      placeholder: |
+        1. Run `make build-all-stacks`
+        2. Inspect output for error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: Describe what you expected to happen.
+      placeholder: The compiler checks should pass successfully.
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: Describe what actually happened.
+      placeholder: "Compiler error: port conflict detected on zlms stack..."
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Provide details about your environment (OS, Node.js version, Python version, Docker version, git branch).
+      placeholder: |
+        - OS: Linux (Ubuntu 22.04)
+        - Node Version: v18.16.0
+        - Python Version: v3.10.12
+        - Target application stack: apps/zlms
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs or Screenshots
+      description: Paste any command line logs or drag screenshots here to help explain the problem.
+      placeholder: |
+        Paste output logs here...
+    validations:
+      required: false
+  - type: textarea
+    id: security_impact
+    attributes:
+      label: Security Impact
+      description: Does this issue expose any sensitive keys, credentials, or open ports to the public network? (Do not post actual credentials!)
+      placeholder: E.g., This exposes port 8080 without Cloudflare Access configuration...
+    validations:
+      required: false

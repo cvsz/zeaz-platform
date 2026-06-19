@@ -7,26 +7,32 @@ web_search = "live"
 
 [mcp_servers.github]
 command = "npx"
-args = ["-y", "@modelcontextprotocol/server-github"]
+args = ["--yes", "--silent", "@modelcontextprotocol/server-github"]
+startup_timeout_sec = 60
 
 [mcp_servers.context7]
 command = "npx"
-args = ["-y", "@upstash/context7-mcp@latest"]
+args = ["--yes", "--silent", "@upstash/context7-mcp@latest", "--transport", "stdio"]
+startup_timeout_sec = 60
 
 [mcp_servers.exa]
 url = "https://mcp.exa.ai/mcp"
+startup_timeout_sec = 60
 
 [mcp_servers.memory]
 command = "npx"
-args = ["-y", "@modelcontextprotocol/server-memory"]
+args = ["--yes", "--silent", "@modelcontextprotocol/server-memory"]
+startup_timeout_sec = 60
 
 [mcp_servers.playwright]
 command = "npx"
-args = ["-y", "@playwright/mcp@latest", "--extension"]
+args = ["--yes", "--silent", "@playwright/mcp@latest", "--extension"]
+startup_timeout_sec = 60
 
 [mcp_servers.sequential-thinking]
 command = "npx"
-args = ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+args = ["--yes", "--silent", "@modelcontextprotocol/server-sequential-thinking"]
+startup_timeout_sec = 60
 
 [features]
 multi_agent = true
@@ -46,3 +52,15 @@ config_file = "agents/reviewer.toml"
 [agents.docs_researcher]
 description = "Documentation specialist that verifies APIs, framework behavior, and release notes."
 config_file = "agents/docs-researcher.toml"
+
+[agents.phase_planner]
+description = "Phase-scoped planner for F0-F12 Cloudflare platform delivery."
+config_file = "agents/phase-planner.toml"
+
+[agents.security_guardian]
+description = "Security-first reviewer for secrets, access policies, token separation, and guarded automation."
+config_file = "agents/security-guardian.toml"
+
+[agents.validation_operator]
+description = "Offline validation planner that maps phases to safe checks without mutating infrastructure."
+config_file = "agents/validation-operator.toml"

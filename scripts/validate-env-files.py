@@ -15,18 +15,30 @@ OPTIONAL_EMPTY_DROP = {
 }
 
 
+def is_secret_key(key: str) -> bool:
+    return bool(SECRET_HINT_RE.search(key))
+
+
 def mask_value(key: str, value: str) -> str:
-    if not SECRET_HINT_RE.search(key):
+    if not is_secret_key(key):
         return value
     if not value:
         return ""
     return "<redacted>"
 
 
-def validate_file(path: Path) -> list[str]:
+def suggested_assignment(key: str, value: str) -> str:
+    if is_secret_key(key) and value:
+        return f"{key}=<redacted>"
+    return f"{key}={value}"
+
+
+def validate_file(path: Path, *, skip_missing: bool = False) -> tuple[list[str], bool]:
     errors: list[str] = []
     if not path.exists():
-        return errors
+        if skip_missing:
+            return errors, False
+        return [f"{path}: missing file; pass --skip-missing to ignore absent local env files"], False
 
     seen: dict[str, int] = {}
     for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
@@ -43,23 +55,36 @@ def validate_file(path: Path) -> list[str]:
             seen[key] = lineno
 
         if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            unquoted = value[1:-1]
             display = mask_value(key, value)
-            errors.append(f"{path}:{lineno}: quoted env value for {key}: {display}; use {key}={value[1:-1]}")
+            suggestion = suggested_assignment(key, unquoted)
+            errors.append(f"{path}:{lineno}: quoted env value for {key}: {display}; use {suggestion}")
 
         if key in OPTIONAL_EMPTY_DROP and value in {"", '""', "''"}:
-            errors.append(f"{path}:{lineno}: optional empty {key} should be omitted")
+            errors.append(
+                f"{path}:{lineno}: optional empty {key} should be omitted; "
+                "run make env-normalize-local"
+            )
 
-    return errors
+    return errors, True
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate generated env file formatting.")
+    parser.add_argument("--skip-missing", action="store_true", help="Ignore missing files, useful for local .env checks.")
     parser.add_argument("files", nargs="*", type=Path, default=DEFAULT_FILES)
     args = parser.parse_args()
 
     errors: list[str] = []
+    checked_paths: list[Path] = []
+    skipped_paths: list[Path] = []
     for path in args.files:
-        errors.extend(validate_file(path))
+        file_errors, checked = validate_file(path, skip_missing=args.skip_missing)
+        errors.extend(file_errors)
+        if checked:
+            checked_paths.append(path)
+        elif args.skip_missing:
+            skipped_paths.append(path)
 
     if errors:
         print("Env formatting validation failed:", file=sys.stderr)
@@ -67,8 +92,11 @@ def main() -> int:
             print(f"ERROR: {error}", file=sys.stderr)
         return 1
 
-    checked = ", ".join(str(p) for p in args.files if p.exists()) or "<none>"
+    checked = ", ".join(str(p) for p in checked_paths) or "<none>"
     print(f"Env formatting validation passed: {checked}")
+    if skipped_paths:
+        skipped = ", ".join(str(p) for p in skipped_paths)
+        print(f"Env formatting validation skipped missing files: {skipped}")
     return 0
 
 

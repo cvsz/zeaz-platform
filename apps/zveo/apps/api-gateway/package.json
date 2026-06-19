@@ -1,0 +1,26 @@
+{
+  "name": "@zveo/api-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@zveo/contracts": "workspace:*",
+    "@zveo/core": "workspace:*",
+    "@zveo/queue": "workspace:*",
+    "@zveo/scene-graph": "workspace:*",
+    "zod": "^3.24.4",
+    "@zveo/media-pipeline": "workspace:*",
+    "@zveo/ai-script-generator": "workspace:*",
+    "@zveo/publisher-meta": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  }
+}

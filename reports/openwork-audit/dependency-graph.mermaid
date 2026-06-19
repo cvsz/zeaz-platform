@@ -1,0 +1,67 @@
+graph TD
+  subgraph "OpenWork Core"
+    OW_ROOT[Root: @different-ai/openwork-workspace]
+    OW_APP[App: @openwork/app - Vite+React]
+    OW_DESKTOP[Desktop: @openwork/desktop - Electron]
+    OW_SERVER[Server: server]
+    OW_ORCH[Orchestrator: openwork-orchestrator]
+    OW_ROUTER[Router: opencode-router]
+  end
+
+  subgraph "OpenWork Packages"
+    PKG_APP[packages/app]
+    PKG_UI[packages/ui - shadcn/ui]
+    PKG_TYPES[packages/types - @openwork/types]
+    PKG_EMAIL[packages/email]
+    PKG_DOCS[packages/docs]
+    PKG_MCP[packages/openwork-ui-mcp]
+    PKG_HANDSFREE[packages/handsfree]
+  end
+
+  subgraph "OpenWork EE (Den)"
+    EE_DEN_API[den-api - Hono + Better-Auth + Stripe]
+    EE_DEN_WEB[den-web - Next.js Dashboard]
+    EE_DEN_DB[den-db - Drizzle ORM + PostgreSQL]
+    EE_DEN_PROXY[den-worker-proxy - Daytona SDK]
+    EE_DEN_RUNTIME[den-worker-runtime]
+    EE_INFERENCE[inference - Model proxy]
+    EE_CONTROLLER[den-controller]
+    EE_LANDING[landing - Next.js Marketing]
+  end
+
+  subgraph "Runtime Layer"
+    RT_SELF_HEAL[self_healing_runtime.py - ConvergenceGovernor]
+    RT_POLICY[policy_engine.py - PolicyEngine]
+    RT_EVENT_BUS[event_bus.py - EventBus + Redis]
+    RT_LLM[llm/ - Provider Registry + Router]
+    RT_SWARM[swarm/ - Agent Base + Orchestrator]
+    RT_GOV[governance/ - Action Journal + Replay]
+    RT_ACTION[action_coordinator.py]
+    RT_SECURITY[security_middleware.py]
+    RT_RECONCILER[runtime_reconciler.py]
+  end
+
+  OW_ROOT --> OW_APP
+  OW_ROOT --> OW_DESKTOP
+  OW_ROOT --> OW_SERVER
+  OW_ROOT --> OW_ORCH
+  OW_ROOT --> OW_ROUTER
+
+  OW_APP --> PKG_UI
+  OW_APP --> PKG_TYPES
+  OW_APP --> PKG_MCP
+
+  OW_DESKTOP --> PKG_UI
+  OW_DESKTOP --> PKG_TYPES
+
+  EE_DEN_API --> EE_DEN_DB
+  EE_DEN_API --> PKG_TYPES
+  EE_DEN_WEB --> EE_DEN_DB
+  EE_DEN_WEB --> PKG_UI
+  EE_INFERENCE --> EE_DEN_DB
+
+  OW_ORCH --> RT_SWARM
+  OW_ORCH --> RT_LLM
+  RT_SWARM --> RT_POLICY
+  RT_SELF_HEAL --> RT_EVENT_BUS
+  RT_SELF_HEAL --> RT_POLICY

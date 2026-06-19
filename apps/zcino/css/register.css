@@ -1,0 +1,63 @@
+body {
+	background-image: url(../images/bg2.jpg);
+	background-repeat:repeat;
+	color:white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;margin-left: 10%;
+	margin-right: 10%;
+}
+#page { text-align:center;margin:auto;width:900px;}
+a:link {
+	color: #09F;
+}
+a:visited {
+	color: #09F;
+}
+a:hover {
+	color: #CCC;
+}
+a:active {
+	color: #09F;
+}
+.openAccTable td {height:33px;}
+.error { color:red;font-size:11px;text-align:center;font-weight:bold}
+.errorBorder {
+	border: 3px solid #F00;
+}
+input[type="submit"] {
+height:24px;color:white;
+font-weight:bold;
+-moz-appearance:button;
+-moz-binding:none;
+-moz-box-sizing:border-box;
+-moz-user-select:none;
+background-color:buttonface;
+border:0px outset buttonface;
+color:buttontext;
+cursor:default;
+font:-moz-button;
+line-height:normal !important;
+padding:0 6px;
+text-align:center;
+text-shadow:none;
+white-space:pre;
+}
+input.bt_register {
+	width: 94px;
+	color: white;
+	background: transparent url(../login_panel/images/bt_register.png) no-repeat 0 0;
+}
+input.bt_register:hover{
+	width: 94px;
+	color: white;
+	background: transparent url(../login_panel/images/bt_register_over.png) no-repeat 0 0;
+}
+/*
+ * jQuery UI CSS Framework @VERSION
+ *
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ */
+

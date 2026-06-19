@@ -1,0 +1,50 @@
+Deep dive and merge zcino-modern into canonical zcino.
+
+Source:
+  /home/zeazdev/zeaz-platform/apps/zcino-modern
+
+Target:
+  /home/zeazdev/zeaz-platform/apps/zcino
+
+Domain:
+  zcino.zeaz.dev
+
+Port:
+  4111
+
+Tasks:
+1. Inspect both apps completely.
+2. Compare:
+   - package.json
+   - dependencies
+   - routes
+   - pages
+   - components
+   - styles
+   - public assets
+   - API integrations
+   - env variables
+   - build configs
+   - Docker configs
+3. Determine whether zcino-modern is newer, more complete, or only partially modernized.
+4. Create backup:
+   .backups/zcino-merge/YYYYMMDD-HHMMSS/
+5. Merge zcino-modern into zcino without losing working features.
+6. Resolve dependency conflicts.
+7. Preserve canonical app path:
+   /home/zeazdev/zeaz-platform/apps/zcino
+8. After merge, zcino-modern should be archived or documented, not actively used.
+9. Update start scripts to use only:
+   /home/zeazdev/zeaz-platform/apps/zcino
+10. Verify:
+   - install
+   - build
+   - start on port 4111
+   - curl local health/page
+11. Generate:
+   docs/reports/ZCINO_MERGE_REPORT.md
+
+Acceptance criteria:
+  - zcino is the single canonical app.
+  - zcino-modern functionality is preserved or documented if excluded.
+  - zcino.zeaz.dev maps to port 4111.

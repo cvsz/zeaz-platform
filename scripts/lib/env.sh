@@ -35,22 +35,18 @@ find_root() {
   return 1
 }
 
-set_if_empty_from_alias() {
-  local canonical="$1" alias="$2"
-  if [[ -z "${!canonical:-}" && -n "${!alias:-}" ]]; then
-    export "$canonical=${!alias}"
-  fi
-}
-
-normalize_cloudflare_env_aliases() {
-  set_if_empty_from_alias CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
-  set_if_empty_from_alias CLOUDFLARE_ZONE_ID CLOUDFLARE_ZONE_ID
-  set_if_empty_from_alias CLOUDFLARE_DNS_TOKEN CLOUDFLARE_DNS_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_WORKERS_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_ZT_TOKEN CLOUDFLARE_ZT_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_WAF_TOKEN CLOUDFLARE_WAF_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_TUNNEL_TOKEN
-  set_if_empty_from_alias CLOUDFLARE_R2_TOKEN CLOUDFLARE_R2_TOKEN
+normalize_env_file_if_repo_managed() {
+  local file="$1" root normalizer
+  [[ -f "$file" ]] || return 0
+  root="$(find_root)" || root="${PROJECT_ROOT:-${PWD}}"
+  normalizer="$root/scripts/cloudflare/clean-env-empty-values.sh"
+  [[ -x "$normalizer" ]] || return 0
+  case "$(basename "$file")" in
+    .env|.env.cloudflare|*.env)
+      bash "$normalizer" "$file"
+      chmod 600 "$file" 2>/dev/null || true
+      ;;
+  esac
 }
 
 load_dotenv_if_present() {
@@ -61,13 +57,13 @@ load_dotenv_if_present() {
   local token_env_path="${TOKEN_ENV_FILE:-$root/.env.cloudflare}"
 
   local load_files=()
-  [[ -f "$token_env_path" ]] && load_files+=("$token_env_path")
   [[ -f "$env_path" ]] && load_files+=("$env_path")
+  [[ -f "$token_env_path" ]] && load_files+=("$token_env_path")
 
   if ((${#load_files[@]} > 0)); then
     local var
     local loaded_vars=()
-    for var in "${REQUIRED_ENV_VARS[@]}" "${S3_BACKEND_REQUIRED_ENV_VARS[@]}" CLOUDFLARE_AUDIT_TOKEN CLOUDFLARE_AI_GATEWAY_TOKEN CLOUDFLARE_AI_GATEWAY_SLUG; do
+    for var in "${REQUIRED_ENV_VARS[@]}" "${S3_BACKEND_REQUIRED_ENV_VARS[@]}" CLOUDFLARE_AUDIT_TOKEN CLOUDFLARE_AI_GATEWAY_TOKEN CLOUDFLARE_AI_GATEWAY_SLUG CLOUDFLARE_BOOTSTRAP_TOKEN; do
       if [[ -n "${!var+x}" ]]; then
         loaded_vars+=("$var")
       fi
@@ -76,6 +72,7 @@ load_dotenv_if_present() {
     set -a
     local f
     for f in "${load_files[@]}"; do
+      normalize_env_file_if_repo_managed "$f"
       # shellcheck disable=SC1090
       source "$f"
     done
@@ -87,21 +84,18 @@ load_dotenv_if_present() {
     done
   fi
 
-  normalize_cloudflare_env_aliases
   : "${CLOUDFLARE_AI_GATEWAY_SLUG:=zeaz}"
   : "${COST_LOCK:=true}"
   export CLOUDFLARE_AI_GATEWAY_SLUG COST_LOCK
 }
 
 require_env_presence() {
-  normalize_cloudflare_env_aliases
-
   local missing=0
   local var
   for var in "${REQUIRED_ENV_VARS[@]}"; do
     if [[ -z "${!var:-}" ]]; then
       missing=$((missing + 1))
-      printf 'ERROR: %s: missing\n' "${var}" >&2
+      printf 'ERROR: %s: missing\n' "$var" >&2
     fi
   done
 
@@ -109,10 +103,10 @@ require_env_presence() {
     for var in "${S3_BACKEND_REQUIRED_ENV_VARS[@]}"; do
       if [[ -z "${!var:-}" ]]; then
         missing=$((missing + 1))
-        printf 'ERROR: %s: missing for s3 backend\n' "${var}" >&2
+        printf 'ERROR: %s: missing for s3 backend\n' "$var" >&2
       fi
     done
   fi
 
-  return "${missing}"
+  return "$missing"
 }

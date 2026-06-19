@@ -1,0 +1,30 @@
+creds.json
+.env
+.env.*
+*.env
+
+# Tunnel credential patterns
+*credentials.json
+*.pem
+*.key
+
+# Secrets (exact filenames, not source code)
+creds.json
+credentials.json
+tunnel-token
+*.auth
+
+# Terraform variable files
+*.tfvars
+*.tfvars.json
+
+# SSH keys and certificates
+*.p12
+*.cer
+*.crt
+*.csr
+
+# Local state
+*.terraform*
+terraform.tfstate*
+*.plan

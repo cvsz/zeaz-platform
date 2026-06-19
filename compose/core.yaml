@@ -1,0 +1,8 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: zeaz
+      POSTGRES_PASSWORD: ${DB_PASS}
+  redis:
+    image: redis:7-alpine

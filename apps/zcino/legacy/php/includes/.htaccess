@@ -1,0 +1,5 @@
+Options -Indexes
+RewriteEngine On
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?demov3.casinowebscripts\.com/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?casinov3.digital.nevergone\.eu/.*$ [NC]
+#RewriteRule .*\.(inc.php)$ http://www.demov3.casinowebscripts.com/images/logo.png [R,NC,L]

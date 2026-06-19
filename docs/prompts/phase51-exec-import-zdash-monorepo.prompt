@@ -1,0 +1,184 @@
+Implement Phase 51: Full zDash Monorepo Import into zeaz-platform.
+
+Primary repo:
+- cvsz/zeaz-platform
+
+Source repo:
+- cvsz/zdash
+
+Goal:
+Move/merge/combine/integrate the full cvsz/zdash application repository into cvsz/zeaz-platform because zeaz-platform is the Cloudflare operator/control-plane for zeaz.dev.
+
+Target architecture:
+- zDash application code lives under apps/zdash/
+- zeaz-platform root remains the Cloudflare operator, DNS/Tunnel/Access/IaC, free/no-cost guardrail, and release orchestration repo.
+- zDash must remain runnable and testable from apps/zdash.
+- Root Makefile must provide wrapper targets for zDash.
+
+Hard rules:
+- Preserve all zDash safety invariants.
+- Preserve zeaz-platform free/no-cost defaults:
+  - CLOUDFLARE_PLAN_TIER=Free
+  - COST_LOCK=true
+  - ALLOW_PAID_CLOUDFLARE_FEATURES=false
+  - ALLOW_R2_WRITE=false
+  - ALLOW_WORKERS_DEPLOY=false
+  - ALLOW_LOAD_BALANCING=false
+  - ALLOW_ADVANCED_WAF=false
+  - ALLOW_LOGPUSH=false
+- Do not enable live trading, real broker orders, real IoT actions, real social posting, destructive automation, Workers deployment, paid WAF, Load Balancing, Logpush, or R2 writes by default.
+- No .env files tracked.
+- No secrets printed.
+- No Global API Key usage.
+- All Cloudflare apply actions must remain dry-run unless explicitly confirmed.
+
+Implementation plan:
+
+1. Import zDash into apps/zdash
+Use git subtree or equivalent safe import:
+- Add remote named zdash-source pointing to git@github.com:cvsz/zdash.git or https://github.com/cvsz/zdash.git.
+- Fetch main.
+- Import into apps/zdash preserving history if possible.
+- Do not use git submodule.
+- Do not copy .git directory.
+- Do not import runtime files, .env, node_modules, .venv, dist, .runtime, coverage, caches, or secret files.
+- If apps/zdash already exists, update it safely and do not overwrite local uncommitted operator files.
+
+2. Root Makefile wrappers
+Add root targets:
+- zdash-install
+- zdash-validate
+- zdash-validate-fast
+- zdash-backend-test
+- zdash-frontend-test
+- zdash-build
+- zdash-server-start
+- zdash-server-stop
+- zdash-server-restart
+- zdash-server-status
+- zdash-release-evidence
+- zdash-phase48-validate
+- zdash-cloudflare-handoff
+- phase51-validate
+
+Each target must cd apps/zdash and call the correct zDash target/script.
+Root targets must fail safely if apps/zdash is missing.
+
+3. Root docs
+Create:
+- docs/architecture/ZDASH_MONOREPO_INTEGRATION.md
+- docs/runbooks/ZDASH_MONOREPO_OPERATIONS.md
+- docs/reports/PHASE51_ZDASH_MONOREPO_IMPORT_REPORT.md
+
+Docs must explain:
+- zDash app now lives under apps/zdash
+- zeaz-platform remains Cloudflare operator
+- deployment responsibility split
+- local dev commands
+- CI commands
+- Cloudflare route ownership
+- rollback plan
+- how to sync future zDash changes
+- why submodule is not used
+
+4. Cloudflare operator integration
+Create or update:
+- configs/cloudflare/zdash/zdash.edge.routes.example.json
+- configs/cloudflare/zdash/zdash-dns-intent.example.json
+- configs/cloudflare/zdash/zdash-access-policy.example.json
+- generated/cloudflare/zdash-tunnel-ingress.yml
+
+Keep all generated configs dry-run/example by default.
+
+5. Scripts
+Create:
+- scripts/zdash/import-zdash-subtree.sh
+- scripts/zdash/sync-zdash-subtree.sh
+- scripts/zdash/verify-zdash-monorepo.sh
+- scripts/zdash/run-zdash-validation.sh
+- scripts/zdash/capture-zdash-monorepo-evidence.sh
+
+Script requirements:
+- executable
+- bash strict mode
+- no secrets printed
+- safe failure messages
+- no force push
+- no destructive deletion
+- do not require Cloudflare secrets
+- validate apps/zdash exists
+- validate zDash backend/frontend folders exist
+- validate zDash Makefile exists
+- validate no nested .git exists under apps/zdash
+- validate no .env tracked
+
+6. CI
+Create or update:
+- .github/workflows/zdash-monorepo.yml
+
+Workflow must:
+- run on push and pull_request
+- not require secrets
+- validate apps/zdash exists
+- run root phase51-validate
+- optionally run zDash validate-fast if dependency install is available
+- upload evidence artifact if generated
+- never print secrets
+
+7. README update
+Update root README.md:
+- Add "Integrated applications" section.
+- List apps/zdash.
+- Explain zDash is now integrated under zeaz-platform.
+- Keep existing Cloudflare free/no-cost guardrails.
+- Add commands:
+  - make zdash-validate-fast
+  - make zdash-server-start
+  - make phase51-validate
+
+8. Release evidence
+Create:
+- docs/releases/zdash/ZDASH_MONOREPO_IMPORT_EVIDENCE.md
+- docs/reports/generated/zdash-monorepo-evidence.md
+
+Include:
+- source repo
+- target path
+- imported commit SHA placeholder
+- validation status
+- safety status
+- no-secret status
+- rollback command notes
+
+9. Rollback plan
+Document:
+- git revert import commit
+- remove apps/zdash only through revert, not rm -rf
+- disable Cloudflare route intent
+- keep original cvsz/zdash repo read-only until final migration accepted
+- do not delete original repo until CI and deployment are stable
+
+10. Validation
+phase51-validate must check:
+- apps/zdash exists
+- apps/zdash/backend exists
+- apps/zdash/frontend exists
+- apps/zdash/Makefile exists
+- no apps/zdash/.git directory
+- no tracked .env files
+- no obvious secret-looking values in generated evidence
+- root README mentions apps/zdash
+- root Makefile has zdash wrapper targets
+- Cloudflare zDash route configs exist
+- monorepo docs/reports exist
+
+Acceptance criteria:
+- Full zDash repo is present under apps/zdash.
+- Root zeaz-platform can operate zDash through Makefile wrappers.
+- Cloudflare operator configs for zDash are under zeaz-platform.
+- No submodule.
+- No nested .git.
+- No tracked .env.
+- No secrets.
+- phase51-validate passes.
+- Existing zeaz-platform validation still passes.

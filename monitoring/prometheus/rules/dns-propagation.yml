@@ -1,0 +1,29 @@
+# monitoring/prometheus/rules/dns-propagation.yml
+#
+# NOTE: Requires DNS probe metrics from a blackbox-exporter or similar probing
+# tool. Expected metrics:
+#   - probe_dns_lookup_time_seconds: histogram of DNS lookup duration.
+#   - probe_success: 1 if probe succeeded, 0 if failed.
+# Adjust the label selectors (e.g., target, dns_record_type) to match your
+# blackbox-exporter configuration for critical Zeaz domains.
+groups:
+  - name: dns-propagation
+    interval: 30s
+    rules:
+      - alert: DNSProbeFailure
+        expr: probe_success{target=~".*\\.zeaz\\.dev"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "DNS probe failure for critical domain"
+          description: "DNS resolution failed for {{ $labels.target }}. Check DNS records, nameservers, and propagation status."
+
+      - alert: DNSSlowResponse
+        expr: probe_dns_lookup_time_seconds > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow DNS response time"
+          description: "DNS lookup for {{ $labels.target }} exceeds 500ms (current: {{ $value }}s). Investigate upstream resolver or nameserver performance."

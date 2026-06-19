@@ -1,0 +1,7 @@
+services:
+  traefik:
+    image: traefik:v2.10
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    deploy:
+      replicas: 2 # HA ingress

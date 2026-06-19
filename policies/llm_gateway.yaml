@@ -1,0 +1,27 @@
+version: 1
+llm_gateway:
+  endpoints:
+    - path: /api/runtime/llm/completion
+      rate_limit: 60/min
+      burst: 10
+      require_auth: true
+    - path: /api/runtime/llm/health
+      rate_limit: 10/min
+      require_auth: true
+    - path: /ws/topology
+      protocol: websocket
+      require_auth: true
+    - path: /api/runtime/scheduler/tasks
+      rate_limit: 100/min
+      require_auth: true
+    - path: /api/runtime/scheduler/topology/snapshot
+      rate_limit: 60/min
+      require_auth: true
+
+  waf_rules:
+    - name: block_runaway_agents
+      action: block
+      condition: "token_burn_rate > 1000/sec"
+    - name: require_signed_mutations
+      action: challenge
+      condition: "path contains /api/runtime/mutate"

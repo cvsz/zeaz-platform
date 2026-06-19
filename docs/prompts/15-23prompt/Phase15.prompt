@@ -1,0 +1,217 @@
+# Phase 15 — Cloudflare Runtime Drift SLA + Ownership Review Board
+
+## Objective
+
+Establish a scheduled drift review board, SLA classification for drift severity, an exception register, aging buckets for unresolved drift, and monthly governance evidence templates for the ZeaZ Platform Cloudflare runtime.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare. It is a read-only governance documentation and scripting layer only.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-runtime-drift-sla-review-board
+```
+
+## Commit Message
+
+```
+docs(cloudflare): add runtime drift sla and review board
+```
+
+---
+
+## Scope
+
+- Define SLA classes and aging buckets for all tracked Cloudflare drift items
+- Establish ownership review board roles, responsibilities, and cadence
+- Create exception register with required fields
+- Create monthly governance evidence template
+- Update infra/cloudflare/README.md with Phase 15 entry
+
+---
+
+## Non-Goals
+
+- Do NOT run `wrangler deploy`, `terraform apply`, `tofu apply`, or any Cloudflare write
+- Do NOT start or restart any services
+- Do NOT edit `/etc/cloudflared/config.yml`
+- Do NOT print, log, or commit any secrets or credentials
+- Do NOT query live Cloudflare API unless explicitly enabled via opt-in flag
+- Do NOT modify unrelated files or scopes
+
+---
+
+## Safety Rules
+
+1. All scripts must be safe by default (offline/dry-run unless opt-in flag is passed)
+2. Scripts must support `--help`, `--markdown`, `--json`, `--strict`
+3. Never print `CLOUDFLARE_API_TOKEN`, `TUNNEL_ID`, credentials, or any secret value
+4. Treat all config files as potentially stale unless verified separately
+5. All docs must clearly separate: live runtime facts | repo intent | Terraform ownership | manual actions | unresolved drift | evidence outputs
+6. No exact-copy of live configuration — use sanitized examples only
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live cloudflared runtime config: `/etc/cloudflared/config.yml` (DO NOT EDIT)
+- systemd unit: `/etc/systemd/system/cloudflared.service`
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Known old/orphaned credential file: `/etc/cloudflared/22bd858b-7cd2-4b54-91a7-9365cdb9eb80.json`
+- Live ingress hostnames (known): office.zeaz.dev, zveo.zeaz.dev, cctv.zeaz.dev, api.zveo.zeaz.dev, app.zeaz.dev, admin-wallet.zeaz.dev, zcloud.zeaz.dev, ztest.zeaz.dev, catch-all 404
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-runtime-drift-sla.md`**
+   - SLA classes: Critical, High, Medium, Low, Accepted Exception
+   - Aging buckets: 0–7 days, 8–14 days, 15–30 days, 31+ days
+   - Escalation paths per SLA class
+   - SLA breach definitions and consequences
+   - Drift closure requirements
+
+2. **`docs/infra/cloudflare-ownership-review-board.md`**
+   - Review board roles:
+     - Cloudflare runtime owner
+     - DNS owner
+     - Worker owner
+     - Terraform owner
+     - Security reviewer
+     - Release approver
+   - Meeting cadence (weekly, monthly, quarterly)
+   - Quorum requirements
+   - Voting / sign-off process
+   - Escalation contacts
+   - Board charter
+
+3. **`docs/infra/cloudflare-drift-exception-register.md`**
+   - Exception register table with fields:
+     - Drift ID
+     - System area (DNS / Tunnel / Worker / IaC / Access / Secret)
+     - Owner
+     - Reason
+     - Risk level
+     - Approval status
+     - Expiry date
+     - Next review date
+     - Closure evidence reference
+   - Example sanitized entries (no real values)
+   - Process for adding, approving, renewing, and closing exceptions
+
+4. **`docs/infra/cloudflare-monthly-governance-evidence.md`**
+   - Template for monthly governance evidence including:
+     - Period covered
+     - Scanner output reference
+     - Unresolved drift list
+     - Accepted exceptions
+     - Expired exceptions
+     - Owner sign-off table
+     - Summary of changes approved/rejected
+     - Drift aging statistics
+
+5. **`docs/infra/cloudflare-drift-report.md`** *(update if existing)*
+   - Add SLA class field to each drift item
+   - Add aging bucket field to each drift item
+   - Add exception register reference where applicable
+
+6. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 15 entry with links to all deliverables above
+
+---
+
+## Required Scripts / Validation Extensions
+
+No new scripts are required for Phase 15. Extend or reference:
+
+- `infra/cloudflare/scripts/validate-cloudflare-config.sh` — verify docs exist
+- Optionally add a check that drift-report has SLA fields
+
+---
+
+## Evidence Outputs
+
+- All four documentation files committed and readable via `cat`
+- `infra/cloudflare/README.md` updated with Phase 15 links
+- `git diff` showing only Phase 15 files changed
+- Markdown lint passes (no broken links to referenced files)
+- `grep` shows no secrets found in new docs
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-runtime-drift-sla.md` exists and contains all SLA classes and aging buckets
+- [ ] `docs/infra/cloudflare-ownership-review-board.md` exists with all six roles defined
+- [ ] `docs/infra/cloudflare-drift-exception-register.md` exists with all required fields
+- [ ] `docs/infra/cloudflare-monthly-governance-evidence.md` exists with full template
+- [ ] `docs/infra/cloudflare-drift-report.md` updated with SLA and aging fields
+- [ ] `infra/cloudflare/README.md` updated with Phase 15 section
+- [ ] No secrets found in any new or modified file
+- [ ] No deployment, apply, or Cloudflare write performed
+- [ ] All docs have header separating live facts from repo intent
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-runtime-drift-sla-review-board
+
+# Verify docs after creation
+cat docs/infra/cloudflare-runtime-drift-sla.md
+cat docs/infra/cloudflare-ownership-review-board.md
+cat docs/infra/cloudflare-drift-exception-register.md
+cat docs/infra/cloudflare-monthly-governance-evidence.md
+
+# Check no secrets in new files
+grep -RInE '(token|secret|password|credential|api[_-]?key)' docs/infra/cloudflare-runtime-drift-sla.md \
+  docs/infra/cloudflare-ownership-review-board.md \
+  docs/infra/cloudflare-drift-exception-register.md \
+  docs/infra/cloudflare-monthly-governance-evidence.md || echo "No secrets found"
+
+# Check markdown structure
+grep -c "##" docs/infra/cloudflare-runtime-drift-sla.md
+
+# Git status
+git diff --name-only
+
+# Commit
+git add docs/infra/cloudflare-runtime-drift-sla.md \
+        docs/infra/cloudflare-ownership-review-board.md \
+        docs/infra/cloudflare-drift-exception-register.md \
+        docs/infra/cloudflare-monthly-governance-evidence.md \
+        docs/infra/cloudflare-drift-report.md \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): add runtime drift sla and review board"
+
+# Push and open PR
+git push origin fix/cloudflare-runtime-drift-sla-review-board
+gh pr create --title "docs(cloudflare): add runtime drift sla and review board" \
+  --body "Phase 15: Adds drift SLA classes, aging buckets, review board, exception register, and monthly governance evidence template. Read-only governance layer. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Short summary of each doc (1–2 lines)
+4. Validation commands run and their output summary
+5. Any warnings or gaps found
+6. Git status summary (`git diff --stat`)
+7. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**

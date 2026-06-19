@@ -1,0 +1,176 @@
+Fix zeaz-platform Cloudflare scripts and Terraform zDash integration using official upstream sources:
+
+Sources of truth:
+- Cloudflare API docs: https://developers.cloudflare.com/api/
+- cloudflared repo: https://github.com/cloudflare/cloudflared
+- Terraform Cloudflare provider repo: https://github.com/cloudflare/terraform-provider-cloudflare
+
+Repo:
+- cvsz/zeaz-platform
+- zDash is integrated under apps/zdash
+- zeaz-platform is the Cloudflare operator repo
+
+Problems to fix:
+1. Makefile has duplicate tf-zdash-* targets.
+2. Terraform has duplicate declarations because old terraform/zdash/zdash_edge.tf exists alongside versions.tf, variables.tf, main.tf, outputs.tf.
+3. Terraform plan still reads placeholder values:
+   - REPLACE_WITH_ZEAZ_DEV_ZONE_ID
+   - REPLACE_WITH_TUNNEL_UUID
+4. cf-zdash-preflight fails when CLOUDFLARE_API_TOKEN is not loaded.
+5. Scripts must use scoped CLOUDFLARE_API_TOKEN only.
+6. Do not use Global API Key.
+7. Keep no-cost guardrails:
+   - COST_LOCK=true
+   - CLOUDFLARE_PLAN_TIER=Free
+   - ALLOW_PAID_CLOUDFLARE_FEATURES=false
+   - ALLOW_LOAD_BALANCING=false
+   - ALLOW_ADVANCED_WAF=false
+   - ALLOW_LOGPUSH=false
+   - ALLOW_R2_WRITE=false
+   - ALLOW_WORKERS_DEPLOY=false
+
+Required implementation:
+
+A. Terraform layout
+Make terraform/zdash contain only:
+- versions.tf
+- variables.tf
+- main.tf
+- outputs.tf
+- README.md
+- terraform.tfvars.example
+
+Delete:
+- terraform/zdash/zdash_edge.tf
+
+versions.tf:
+- required_version >= 1.5.0
+- provider source cloudflare/cloudflare
+
+variables.tf:
+- cloudflare_zone_id validation: 32 lowercase hex chars
+- cloudflare_tunnel_id validation: UUID
+- zdash_domain default zzdash.zeaz.dev
+- zdash_api_domain default api-zzdash.zeaz.dev
+- zdash_release_domain default release.zeaz.dev
+
+main.tf:
+- use cloudflare_dns_record.zdash for:
+  - zzdash.zeaz.dev
+  - api-zzdash.zeaz.dev
+  - release.zeaz.dev
+- all CNAME to ${cloudflare_tunnel_id}.cfargotunnel.com
+- proxied = true
+- ttl = 1
+
+B. Makefile
+Remove all existing duplicated blocks for:
+- zdash-terraform-integrate
+- cf-zdash-preflight
+- cf-zdash-import-existing
+- tf-zdash-init
+- tf-zdash-fmt
+- tf-zdash-fmt-check
+- tf-zdash-validate
+- tf-zdash-plan
+- tf-zdash-apply
+
+Add exactly one canonical block:
+- zdash-terraform-integrate
+- cf-zdash-preflight
+- cf-zdash-import-existing
+- tf-zdash-init
+- tf-zdash-fmt
+- tf-zdash-fmt-check
+- tf-zdash-validate
+- tf-zdash-plan
+- tf-zdash-apply
+
+tf-zdash-validate, tf-zdash-plan, tf-zdash-apply must run through:
+- scripts/cloudflare/zdash-terraform-env-guard.sh
+
+C. Env guard
+Create scripts/cloudflare/zdash-terraform-env-guard.sh:
+- fail if terraform/zdash contains placeholder values in any auto-loaded tfvars
+- fail if .env.cloudflare.zdash.generated is missing
+- source .env.cloudflare.zdash.generated
+- fail if TF_VAR_cloudflare_zone_id or TF_VAR_cloudflare_tunnel_id is missing or starts with REPLACE_
+- then exec the passed Terraform command
+
+D. Cloudflare API lib
+Create/update scripts/cloudflare/cloudflare-api-lib.sh:
+- require curl and jq
+- require CLOUDFLARE_API_TOKEN
+- reject CLOUDFLARE_API_KEY, CF_API_KEY, GLOBAL_API_KEY, X_AUTH_KEY, CF_GLOBAL_KEY
+- provide:
+  - cf_api
+  - cf_zone_id_by_name
+  - cf_dns_record_id
+  - cf_validate_zone_id
+  - cf_validate_tunnel_uuid
+  - cf_cost_lock_check
+- use https://api.cloudflare.com/client/v4
+- never print tokens
+
+E. Preflight
+Create/update scripts/cloudflare/zdash-cloudflare-preflight.sh:
+- source cloudflare-api-lib.sh
+- resolve zone id for zeaz.dev through Cloudflare API if TF_VAR_cloudflare_zone_id is missing
+- resolve tunnel UUID from TF_VAR_cloudflare_tunnel_id, or from cloudflared tunnel list if available
+- query DNS record IDs for:
+  - zzdash.zeaz.dev
+  - api-zzdash.zeaz.dev
+  - release.zeaz.dev
+- write:
+  - docs/reports/generated/zdash-cloudflare-api-preflight.md
+  - .env.cloudflare.zdash.generated
+- chmod 600 generated env file
+- do not commit generated env file
+
+F. Import script
+Create/update scripts/cloudflare/zdash-terraform-import-existing.sh:
+- requires .env.cloudflare.zdash.generated
+- reads Terraform import commands from preflight report
+- runs terraform import commands from terraform/zdash
+- ignores already-imported errors safely
+- tells operator to run make tf-zdash-plan next
+
+G. Generator
+Create/update scripts/cloudflare/zdash-terraform-integrate.sh:
+- idempotent
+- deletes legacy terraform/zdash/zdash_edge.tf
+- rewrites the clean Terraform files
+- writes docs/reports/generated/zdash-terraform-integration.md
+- no Cloudflare mutation
+
+H. Token clean
+Keep:
+- token-clean = dry-run
+- token-clean-delete = live delete only with CONFIRM_TOKEN_DELETE=yes
+- default preserve regex must protect:
+  - zeaz.dev
+  - bootstrap
+  - audit
+  - admin
+  - ai-gateway
+- never delete protected tokens by default
+
+I. Validation
+Run:
+- grep target counts to ensure each tf-zdash target exists exactly once
+- test ! -f terraform/zdash/zdash_edge.tf
+- make zdash-terraform-integrate
+- make yaml-validate
+- make workflow-validate
+- make phase51-validate
+- make phase52-validate
+- git diff --check
+
+Acceptance criteria:
+- no Makefile override warnings
+- no Terraform duplicate required_providers / variable / local / resource errors
+- placeholder values fail early with clear env-guard error
+- preflight generates .env.cloudflare.zdash.generated only when scoped token exists
+- Terraform plan uses real zone/tunnel values from preflight
+- no secrets committed
+- no .env, .env.cloudflare, .env.cloudflare.zdash.generated, tfstate, tfvars, .terraform committed

@@ -1,0 +1,128 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Status summary
+        run: |
+          {
+            echo '### Install status';
+            echo '- pnpm install completed successfully.';
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:foundation
+      - name: Status summary
+        run: |
+          {
+            echo '### Build status';
+            echo '- pnpm build:foundation completed successfully.';
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  typecheck:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck:foundation
+      - name: Status summary
+        run: |
+          {
+            echo '### Typecheck status';
+            echo '- pnpm typecheck:foundation completed successfully.';
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      OPENAI_API_KEY: ci-mock-openai-key
+      META_ACCESS_TOKEN: ci-mock-meta-token
+      VEO_API_KEY: ci-mock-veo-key
+      GOOGLE_FLOW_API_KEY: ci-mock-google-flow-key
+      NANOBANANA_API_KEY: ci-mock-nanobanana-key
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r --if-present test
+      - name: Status summary
+        run: |
+          {
+            echo '### Test status';
+            echo '- Ran all workspace test scripts using pnpm -r --if-present test.';
+            echo '- External provider keys were mocked for CI safety.';
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  audit:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run pnpm audit:unused when available
+        run: |
+          if pnpm run | grep -q '^  audit:unused$'; then
+            pnpm audit:unused
+            echo '- pnpm audit:unused executed.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '- pnpm audit:unused not defined in package.json; skipped.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Status summary
+        run: |
+          {
+            echo '### Audit status';
+            echo '- Audit check finished.';
+          } >> "$GITHUB_STEP_SUMMARY"

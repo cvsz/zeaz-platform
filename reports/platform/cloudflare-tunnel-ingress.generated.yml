@@ -1,0 +1,36 @@
+ingress:
+  - hostname: zeaz.dev
+    service: http://127.0.0.1:3003
+  - hostname: www.zeaz.dev
+    service: http://127.0.0.1:3003
+  - hostname: ssh.zeaz.dev
+    service: ssh://127.0.0.1:22022
+  - hostname: zdash.zeaz.dev
+    service: http://127.0.0.1:5173
+  - hostname: api-zdash.zeaz.dev
+    service: http://127.0.0.1:8005
+  - hostname: release.zeaz.dev
+    service: http://127.0.0.1:5172
+  - hostname: zveo.zeaz.dev
+    service: http://127.0.0.1:3002
+  - hostname: api-zveo.zeaz.dev
+    service: http://127.0.0.1:8090
+  - hostname: ztrader.zeaz.dev
+    service: http://127.0.0.1:3016
+  - hostname: zcino.zeaz.dev
+    service: http://127.0.0.1:3000
+  - hostname: zoffice.zeaz.dev
+    service: http://127.0.0.1:8091
+  - hostname: zcloud.zeaz.dev
+    service: http://127.0.0.1:3004
+  - hostname: ztest.zeaz.dev
+    service: http://127.0.0.1:3008
+  - hostname: auth.zeaz.dev
+    service: http://127.0.0.1:9443
+  - hostname: zcfdash.zeaz.dev
+    service: http://127.0.0.1:3003
+  - hostname: api-zcfdash.zeaz.dev
+    service: http://127.0.0.1:8088
+  - hostname: api-ztrader.zeaz.dev
+    service: http://127.0.0.1:8016
+  - service: http_status:404

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="zcloud CloudPanel operations cockpit for Zeaz platform operators." />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests" />
+    <title>zcloud · CloudPanel Operations Cockpit</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="shell-header">
+      <nav class="nav" aria-label="Primary navigation">
+        <div class="brand" aria-label="zcloud home">
+          <span class="brand-mark">z</span>
+          <span><strong>zcloud</strong><small>CloudPanel cockpit</small></span>
+        </div>
+        <div class="nav-links">
+          <a href="#coverage">Coverage</a>
+          <a href="#launch">Launch</a>
+          <a href="#sites">Sites</a>
+          <a href="#security">Security</a>
+          <a href="#cli">CLI</a>
+          <a href="#readiness">Readiness</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero section-grid">
+        <div class="hero-copy glass-panel reveal">
+          <p class="eyebrow">Generated from CloudPanel v2 documentation research</p>
+          <h1>Meta-grade server operations cockpit for CloudPanel estates.</h1>
+          <p class="hero-text">Plan, harden, and operate PHP, Node.js, Python, static, reverse-proxy, and WordPress workloads across major cloud providers without committing secrets or executing unsafe automation.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#readiness">Start readiness review</a>
+            <a class="button secondary" href="https://www.cloudpanel.io/docs/v2/" rel="noreferrer" target="_blank">Open upstream docs</a>
+          </div>
+        </div>
+        <aside class="hero-panel glass-panel reveal" aria-label="CloudPanel baseline">
+          <div class="status-pill success">Offline-safe cockpit</div>
+          <dl class="metric-grid">
+            <div><dt>Docs areas</dt><dd>90</dd></div>
+            <div><dt>Providers</dt><dd>8+</dd></div>
+            <div><dt>Workloads</dt><dd>7</dd></div>
+            <div><dt>Secrets</dt><dd>0</dd></div>
+          </dl>
+          <p class="note">VM-first design: CloudPanel documentation warns against Linux container deployments. Use a supported virtual machine or dedicated server.</p>
+        </aside>
+      </section>
+
+      <section id="coverage" class="section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Completeness map</p>
+          <h2>CloudPanel v2 coverage translated into Zeaz operator workflows.</h2>
+          <p>Every card maps an upstream documentation family to an actionable local planning surface.</p>
+        </div>
+        <div id="coverage-grid" class="card-grid"></div>
+      </section>
+
+      <section id="launch" class="section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Provider launch matrix</p>
+          <h2>Choose the safest installation path before touching a server.</h2>
+          <p>Filter by cloud, marketplace preference, architecture, and operating-system readiness.</p>
+        </div>
+        <div class="toolbar glass-panel">
+          <label for="provider-filter">Provider</label>
+          <select id="provider-filter" aria-label="Filter cloud providers"></select>
+          <label for="search-box">Search</label>
+          <input id="search-box" type="search" placeholder="Search workloads, commands, providers" autocomplete="off" />
+        </div>
+        <div id="provider-grid" class="card-grid"></div>
+      </section>
+
+      <section id="sites" class="section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Site factory</p>
+          <h2>Production blueprints for the CloudPanel frontend area.</h2>
+          <p>Each blueprint lists operator inputs, guardrails, and validation outcomes before launch.</p>
+        </div>
+        <div id="workload-grid" class="workload-grid"></div>
+      </section>
+
+      <section id="security" class="section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Security command center</p>
+          <h2>Hardening model for CloudPanel, servers, and sites.</h2>
+          <p>Apply defense-in-depth with upstream-aligned controls while preserving Zeaz safety standards.</p>
+        </div>
+        <div id="security-grid" class="timeline"></div>
+      </section>
+
+      <section id="cli" class="section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">CLI atlas</p>
+          <h2>Safe command references with explicit human execution.</h2>
+          <p>Parameterized examples avoid committed credentials and keep destructive actions manual.</p>
+        </div>
+        <div id="cli-grid" class="command-grid"></div>
+      </section>
+
+      <section id="readiness" class="section reveal">
+        <div class="section-heading">
+          <p class="eyebrow">Release readiness</p>
+          <h2>Operator checklist with deterministic states.</h2>
+          <p>Checklist state is stored locally in the browser and must not contain secrets.</p>
+        </div>
+        <div class="readiness-shell glass-panel">
+          <div class="progress-ring" aria-live="polite"><span id="progress-value">0%</span><small>complete</small></div>
+          <div id="checklist" class="checklist"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>zcloud is a Zeaz operator cockpit inspired by CloudPanel v2 documentation. Verify all operational commands against upstream docs before manual execution.</p>
+    </footer>
+  </body>
+</html>

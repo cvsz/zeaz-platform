@@ -1,0 +1,38 @@
+{
+  "description": "zDash edge routes example — dry-run by default",
+  "zone": "example.invalid",
+  "apply_required": "APPLY=true",
+  "frontend_origin_default": "http://localhost:5173",
+  "backend_origin_default": "http://localhost:8005",
+  "frontend_origin_env": "ZDASH_FRONTEND_ORIGIN",
+  "backend_origin_env": "ZDASH_BACKEND_ORIGIN",
+  "routes": [
+    {
+      "hostname": "zdash.example.invalid",
+      "origin": "http://localhost:5173",
+      "kind": "frontend",
+      "proxied": true
+    },
+    {
+      "hostname": "api-zdash.example.invalid",
+      "origin": "http://localhost:8005",
+      "kind": "backend",
+      "proxied": true
+    },
+    {
+      "hostname": "zdash.example.invalid/health",
+      "origin": "http://localhost:8005/health",
+      "kind": "health",
+      "proxied": true
+    }
+  ],
+  "fallback": {
+    "service": "http_status:404",
+    "purpose": "block unmatched ingress"
+  },
+  "notes": [
+    "Override origins only with ZDASH_FRONTEND_ORIGIN and ZDASH_BACKEND_ORIGIN.",
+    "Do not add paid Cloudflare features by default.",
+    "This file is a sanitized template and must not be applied directly."
+  ]
+}

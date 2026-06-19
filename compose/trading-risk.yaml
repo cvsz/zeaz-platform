@@ -1,0 +1,8 @@
+services:
+  risk-engine:
+    build: .
+    command: python runtime/trading/risk_engine.py
+    networks:
+      - internal_trading
+    environment:
+      - PORT=8104

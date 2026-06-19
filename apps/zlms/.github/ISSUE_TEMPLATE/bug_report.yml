@@ -1,0 +1,157 @@
+name: Bug report
+description: Report a reproducible defect with impact, environment, logs, and validation details.
+title: "[Bug]: "
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve zLMS. Treat all issue content as public and untrusted.
+
+        - Do not include secrets, credentials, private keys, tokens, cookies, PII, student records, production database rows, or exploit payloads.
+        - Redact hostnames, tenant identifiers, account IDs, and log values unless they are already approved for public disclosure.
+        - Security vulnerabilities must be reported through the private security advisory link, not this public template.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight checklist
+      description: Confirm that the report can be safely triaged.
+      options:
+        - label: I searched existing open and closed issues and did not find a duplicate.
+          required: true
+        - label: I removed secrets, sensitive data, and student/personally identifiable information.
+          required: true
+        - label: This is not an exploitable security vulnerability or active incident.
+          required: true
+        - label: I can reproduce the issue or have provided enough diagnostic evidence for triage.
+          required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a concise description of the defect and the affected user journey.
+      placeholder: "When an instructor publishes a course, learners cannot access the first lesson because..."
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Select the highest confirmed impact.
+      options:
+        - S0 - Active incident, data loss, or security exposure
+        - S1 - Critical production functionality unavailable
+        - S2 - Major feature broken with workaround
+        - S3 - Minor defect or degraded experience
+        - S4 - Cosmetic, documentation, or low-risk issue
+    validations:
+      required: true
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Affected area
+      multiple: true
+      options:
+        - Web application
+        - API
+        - Authentication or authorization
+        - Course/content management
+        - Learner experience
+        - Administration
+        - Reporting or analytics
+        - Notifications
+        - Billing or subscriptions
+        - Integrations/webhooks
+        - Data import/export
+        - CI/CD or deployment
+        - Infrastructure or Kubernetes
+        - Observability/logging
+        - Documentation
+        - Unknown
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Identify the environment without exposing sensitive tenant or host details.
+      placeholder: "production, staging, local Docker, preview deployment, commit SHA"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version, build, or commit
+      description: Include release version, image tag, commit SHA, or package version when available.
+      placeholder: "v1.2.3 / sha:abc1234 / image digest:sha256:..."
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Provide deterministic, minimal steps. Do not paste malicious payloads; describe them safely.
+      placeholder: |
+        1. Sign in as a learner with standard permissions.
+        2. Open course "Redacted Course A".
+        3. Select lesson 1.
+        4. Observe that the page returns a 500 error.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe the correct behavior and relevant acceptance criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Describe what happened instead, including exact error messages if safe to share.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and sanitized logs
+      description: Attach screenshots, trace IDs, request IDs, log excerpts, or metrics. Redact secrets and sensitive data.
+      render: shell
+      placeholder: |
+        timestamp=2026-05-08T12:34:56Z level=error correlation_id=redacted error="..."
+  - type: textarea
+    id: user_impact
+    attributes:
+      label: User and business impact
+      description: Quantify scope, frequency, affected roles, tenants, regions, or workflows where possible.
+      placeholder: "Affects approximately 20% of learner sessions in staging; no production confirmation yet."
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Document any safe mitigation or workaround, or write "None known".
+    validations:
+      required: true
+  - type: textarea
+    id: regression
+    attributes:
+      label: Regression details
+      description: State whether this worked previously and identify the suspected release, PR, or commit.
+      placeholder: "Worked in v1.2.2; first observed after deployment v1.2.3 on 2026-05-08."
+  - type: textarea
+    id: security_review
+    attributes:
+      label: Security and privacy considerations
+      description: Note any authentication, authorization, tenant isolation, data exposure, audit logging, or rate-limit concerns.
+      placeholder: "No data exposure observed; failure occurs after authorization succeeds."
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Suggested validation
+      description: Describe tests, monitoring queries, or acceptance checks that should prove the fix.
+      placeholder: "Add regression test for learner lesson access; verify audit log correlation IDs are retained."

@@ -1,0 +1,13 @@
+version: 1
+plan_gating:
+  enterprise_features:
+    - advanced_rate_limiting
+  fallback_on_non_enterprise:
+    - js_challenge
+rules:
+  - id: ddos-http-flood
+    action: js_challenge
+    expression: "cf.threat_score gt 15 or (http.request.method in {\"GET\", \"POST\"} and cf.bot_management.score lt 20)"
+  - id: ddos-wildcard-probe
+    action: block
+    expression: "http.request.uri.path contains \"*\" or http.request.uri.path contains \"..\" or (http.request.version eq \"HTTP/1.0\" and cf.threat_score gt 25)"

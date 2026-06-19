@@ -1,0 +1,18 @@
+# monitoring/prometheus/rules/tunnel-health.yml
+#
+# NOTE: Requires cloudflared_tunnel_ha_connections gauge metric from the
+# cloudflared exporter (enabled with --metrics flag). The metric reports the
+# number of active HA connections per tunnel. A value of 0 means the tunnel is
+# down. If using a custom health probe, substitute the metric name accordingly.
+groups:
+  - name: tunnel-health
+    interval: 30s
+    rules:
+      - alert: TunnelDown
+        expr: cloudflared_tunnel_ha_connections == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Cloudflare Tunnel is down"
+          description: "Tunnel {{ $labels.tunnel_id }} has 0 active HA connections for over 1 minute. Traffic cannot reach the origin."

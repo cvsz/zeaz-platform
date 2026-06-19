@@ -1,0 +1,47 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-signed-images
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: verify-signatures
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      verifyImages:
+        - imageReferences:
+            - "*"
+          mutateDigest: false
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-runtime-isolation
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: runtime-hardening
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Runtime isolation required"
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: adaptive-zero-trust
+  namespace: production
+data:
+  policy-mode: enforce
+  runtime-protection: enabled
+  threat-federation: enabled

@@ -1,0 +1,22 @@
+name: Enterprise Supply Chain Security (Retired - Security Control Plane)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retired-security-control-plane-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  retired:
+    name: Retired by Security Control Plane
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Explain retirement
+        run: |
+          echo "This workflow was retired to prevent duplicate scans, SARIF uploads, and autonomous remediation PR storms."
+          echo "Use .github/workflows/security-control-plane.yml for centralized security governance."

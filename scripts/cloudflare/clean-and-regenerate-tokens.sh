@@ -8,9 +8,10 @@ BACKUP_DIR="${BACKUP_DIR:-./.cloudflare-backups}"
 CACHE_DIR="${CACHE_DIR:-./.cache/cloudflare-permissions}"
 DEFAULT_OUT="${DEFAULT_OUT:-.env.cloudflare}"
 TOKEN_QUOTA="${TOKEN_QUOTA:-50}"
-PRESERVE_TOKEN_NAME_REGEX="${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap)([-_]|$)}"
+PRESERVE_TOKEN_NAME_REGEX="${PRESERVE_TOKEN_NAME_REGEX:-(^|[-_])(audit|ai[-_]?gateway|bootstrap|admin)([-_]|$)}"
 
 NAME_FILTER=""
+NAME_REGEX_FILTER=""
 UNUSED_DAYS=0
 KEEP_MOST=1
 DO_BACKUP=false
@@ -28,6 +29,7 @@ Usage: CLOUDFLARE_ACCOUNT_ID=<id> CLOUDFLARE_BOOTSTRAP_TOKEN=<token> $0 [options
 
 Cleaning:
   --name <token-name>    Restrict cleanup to an exact token name
+  --name-regex <regex>   Restrict cleanup to token names matching regex
   --unused-days <N>      Revoke tokens inactive for more than N days; 0 disables
   --keep-most <N>        Keep N newest tokens per name; revoke older duplicates
 
@@ -55,6 +57,7 @@ USAGE
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --name) shift; NAME_FILTER="${1:-}"; shift || true ;;
+    --name-regex) shift; NAME_REGEX_FILTER="${1:-}"; shift || true ;;
     --unused-days) shift; UNUSED_DAYS="${1:-0}"; shift || true ;;
     --keep-most) shift; KEEP_MOST="${1:-1}"; shift || true ;;
     --backup) DO_BACKUP=true; shift ;;
@@ -138,30 +141,25 @@ permission_cache_file(){
 }
 
 fetch_permission_groups(){
-  local cache file_tmp
+  local cache script_dir
   cache="$(permission_cache_file)"
-  if [[ -f "$cache" && "$REFRESH_PERMISSIONS" != "true" ]]; then
-    printf '%s' "$cache"
-    return 0
-  fi
-  file_tmp="$(mktemp "${cache}.XXXXXX")"
-  cf_request GET "/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/permission_groups" > "$file_tmp"
-  chmod 600 "$file_tmp"
-  mv "$file_tmp" "$cache"
-  log_err "permission-group cache refreshed: $cache"
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local opts=()
+  [[ "$REFRESH_PERMISSIONS" == "true" ]] && opts+=(--refresh)
+  bash "${script_dir}/discover-permission-groups.sh" "${opts[@]}" >/dev/null || die "Permission-group discovery failed"
   printf '%s' "$cache"
 }
 
 resolve_permission_id(){
   local token_type="$1" cache pattern env_key explicit
   case "$token_type" in
-    dns) env_key="CLOUDFLARE_DNS_PERMISSION_GROUP_ID"; pattern='(?i)(zone.*dns.*(write|edit)|dns.*(write|edit))' ;;
-    zt) env_key="CLOUDFLARE_ZT_PERMISSION_GROUP_ID"; pattern='(?i)(zero trust.*(write|edit)|access.*(write|edit))' ;;
-    workers) env_key="CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID"; pattern='(?i)(workers.*(write|edit)|workers scripts.*(write|edit))' ;;
-    pages) env_key="CLOUDFLARE_PAGES_PERMISSION_GROUP_ID"; pattern='(?i)(pages.*(write|edit))' ;;
+    dns) env_key="CLOUDFLARE_DNS_PERMISSION_GROUP_ID"; pattern='(?i)^dns write$' ;;
+    zt) env_key="CLOUDFLARE_ZT_PERMISSION_GROUP_ID"; pattern='(?i)\bZero Trust\b.*Write' ;;
+    workers) env_key="CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID"; pattern='(?i)\bWorkers Scripts?\b.*Write' ;;
+    pages) env_key="CLOUDFLARE_PAGES_PERMISSION_GROUP_ID"; pattern='(?i)^Pages Write$' ;;
     waf) env_key="CLOUDFLARE_WAF_PERMISSION_GROUP_ID"; pattern='(?i)(waf.*(write|edit)|rulesets.*(write|edit)|firewall.*(write|edit))' ;;
     tunnel) env_key="CLOUDFLARE_TUNNEL_PERMISSION_GROUP_ID"; pattern='(?i)(tunnel.*(write|edit)|cloudflare tunnel.*(write|edit))' ;;
-    r2) env_key="CLOUDFLARE_R2_PERMISSION_GROUP_ID"; pattern='(?i)(r2.*(write|edit))' ;;
+    r2) env_key="CLOUDFLARE_R2_PERMISSION_GROUP_ID"; pattern='(?i)\bR2 Storage\b.*Write' ;;
     d1) env_key="CLOUDFLARE_D1_PERMISSION_GROUP_ID"; pattern='(?i)(d1.*(write|edit))' ;;
     *) return 1 ;;
   esac
@@ -236,6 +234,7 @@ for line in "${ALL_TOKENS[@]}"; do
   IFS=$'\t' read -r id name created last_used <<< "$line"
   [[ -z "$id" ]] && continue
   [[ -n "$NAME_FILTER" && "$name" != "$NAME_FILTER" ]] && continue
+  [[ -n "$NAME_REGEX_FILTER" && ! "$name" =~ $NAME_REGEX_FILTER ]] && continue
   if [[ -n "$name" ]] && [[ "$name" =~ $PRESERVE_TOKEN_NAME_REGEX ]]; then
     log "preserving token from cleanup by name policy: $name"
     continue

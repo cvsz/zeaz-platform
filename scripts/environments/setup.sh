@@ -26,9 +26,11 @@ find_root() {
 
 ROOT="$(find_root || true)"
 [[ -n "${ROOT}" && "${ROOT}" != "/" ]] || { warn "could not detect repo root from PWD=${PWD}"; exit 0; }
+cd "$ROOT"
 
 ENV_FILE="${ENV_FILE:-$ROOT/.env}"
 TOKEN_ENV_FILE="${TOKEN_ENV_FILE:-$ROOT/.env.cloudflare}"
+NORMALIZER="$ROOT/scripts/cloudflare/clean-env-empty-values.sh"
 BACKUP_DIR="$ROOT/.cloudflare-backups"
 mkdir -p "$BACKUP_DIR"
 
@@ -47,12 +49,24 @@ pick(){
   printf '%s' "$value"
 }
 
+normalize_env_file(){
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+  [[ -x "$NORMALIZER" ]] || die "missing executable env normalizer: $NORMALIZER"
+  bash "$NORMALIZER" "$file"
+  chmod 600 "$file"
+}
+
 if [[ -f "$ENV_FILE" ]]; then
-  cp "$ENV_FILE" "$BACKUP_DIR/env.$(date -u +%Y%m%dT%H%M%SZ).bak"
-  log "backup saved under $BACKUP_DIR"
+  backup="$BACKUP_DIR/env.$(date -u +%Y%m%dT%H%M%SZ).bak"
+  cp "$ENV_FILE" "$backup"
+  chmod 600 "$backup" 2>/dev/null || true
+  log "backup saved: $backup"
 fi
 
-cat > "$ENV_FILE" <<ENV
+tmp="$(mktemp "$ENV_FILE.setup.XXXXXX")"
+chmod 600 "$tmp"
+cat > "$tmp" <<ENV
 CLOUDFLARE_ACCOUNT_ID=$(pick CLOUDFLARE_ACCOUNT_ID)
 CLOUDFLARE_ZONE_ID=$(pick CLOUDFLARE_ZONE_ID)
 CLOUDFLARE_API_TOKEN=$(pick CLOUDFLARE_API_TOKEN)
@@ -86,7 +100,10 @@ SOPS_AGE_KEY=$(pick SOPS_AGE_KEY)
 SECRET_ROTATION_INTERVAL=$(pick SECRET_ROTATION_INTERVAL 30d)
 ENV
 
+normalize_env_file "$tmp"
+mv "$tmp" "$ENV_FILE"
 chmod 600 "$ENV_FILE"
+normalize_env_file "$ENV_FILE"
 log "wrote $ENV_FILE"
 
 set -a

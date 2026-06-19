@@ -1,0 +1,357 @@
+You are continuing work on the cvsz/zeaz-platform repository.
+
+CRITICAL CONTEXT
+- Main repository is cvsz/zeaz-platform.
+- Treat zeaz-platform as the Cloudflare/operator monorepo.
+- Do NOT treat cvsz/zdash as the main repo anymore.
+- zDash is already imported under apps/zdash.
+- Work only from the zeaz-platform repo root unless explicitly instructed otherwise.
+- Explanations should be in Thai.
+- Commands, code, file contents, commit messages, branch names, and technical identifiers should be in English.
+- Be precise, production-grade, and conservative with secrets, Cloudflare operations, Terraform, GitHub Actions, and destructive commands.
+
+CURRENT REPO STATE TO REMEMBER
+- Latest known successful commit pushed to main:
+  6657bb7 Skip imported app automation YAML in root validator
+- Root YAML validation was fixed to skip imported app-local automation YAML under apps/*/.github, apps/*/.copilot, etc.
+- Latest known validation state:
+  python3 scripts/validate-yaml.py     PASS, 110 YAML files
+  make yaml-validate                   PASS
+  make workflow-validate               PASS
+  git diff --check                     FAIL only because Makefile had a blank line at EOF
+- Immediate known fix:
+  cd ~/zeaz-platform
+  python3 - <<'PY'
+  from pathlib import Path
+  p = Path("Makefile")
+  text = p.read_text()
+  p.write_text(text.rstrip() + "\n")
+  PY
+
+  git diff --check
+
+CORE REPOSITORY RULES
+- Repo root: ~/zeaz-platform
+- zDash path: apps/zdash
+- Terraform zDash path: terraform/zdash
+- Do not commit local secrets or machine-local files.
+- Keep these untracked / ignored:
+  .env
+  .env.*
+  .env.cloudflare
+  .env.cloudflare.zdash.generated
+  *.tfvars
+  *.tfstate
+  *.tfstate.*
+  .cloudflare-backups/
+  *.audit.log
+  token audit logs
+  generated secrets
+  local backup files
+- Cloudflare apply / token delete / token rotate / DNS mutation / tunnel mutation / Terraform apply must require explicit guarded confirmation before execution.
+- Preflight scripts must sync real zone/tunnel/account IDs from Cloudflare API and must not rely on placeholders.
+- Root validators must not scan imported app-local automation YAML under apps/*/.github, apps/*/.copilot, apps/*/.cursor, apps/*/.agents, or similar app-local AI automation directories unless explicitly required.
+
+LANGUAGE / STYLE RULES
+- Explain in Thai.
+- Commands/code/configs/scripts must be in English.
+- Use direct, actionable steps.
+- Prefer copy-paste-ready commands.
+- Do not provide vague advice.
+- Ask a follow-up only if required to avoid dangerous or destructive action.
+- When unsure, use read-only inspection commands first.
+
+KNOWN INVENTORY SUMMARY
+- apps/ contains 12 apps.
+- apps/zdash is P0 and already integrated.
+- apps/zdash has about 1120 tracked root files.
+- apps/zdash/.env.production is local and must remain untracked.
+- P1 apps are:
+  apps/ABTPi18n
+  apps/zkbtrader
+- ABTPi18n:
+  - adopt-local
+  - repo reachable
+  - Node + Python + Docker
+  - has nested .git
+  - env example has about 54 keys
+  - ports include 3000, 3001, 5432, 6379, 8000, 9090, 22022
+  - warnings: nested .git and secret-like text in source
+- zkbtrader:
+  - adopt-local
+  - repo reachable
+  - has local env file that must not be tracked
+- zDash:
+  - runtime Python + Docker
+  - backend port 8005
+  - frontend port 5173
+  - Cloudflare vars in .env.example
+  - domains include:
+    zdash.zeaz.dev
+    api.zdash.zeaz.dev
+    dash.zeaz.dev as test/mock domain
+
+LATEST KNOWN SAFE NEXT ACTION
+Start with read-only or safe workspace cleanup:
+
+cd ~/zeaz-platform
+
+python3 - <<'PY'
+from pathlib import Path
+p = Path("Makefile")
+text = p.read_text()
+p.write_text(text.rstrip() + "\n")
+PY
+
+python3 scripts/validate-yaml.py
+make yaml-validate
+make workflow-validate
+git diff --check
+git status --short
+
+Then split unstaged changes into safe batches.
+
+SAFE COMMIT BATCH PLAN
+Batch A: root platform scripts and validators
+- scripts/validate-yaml.py
+- Makefile
+- root validation helpers
+- CI/workflow validation helpers
+- platform-safe checks
+
+Batch B: zDash imported docs/config cleanup
+- apps/zdash docs
+- apps/zdash config cleanup
+- app-local automation YAML skip/ignore changes
+- no local env files
+
+Batch C: app env examples for P1/P2 apps
+- apps/ABTPi18n/.env.example or docs only
+- apps/zkbtrader/.env.example or docs only
+- apps/zoffice/.env.example or docs only
+- apps/zsticker/.env.example or docs only
+- never commit real env values
+
+Batch D: reports/platform and preflight scripts
+- reports/platform
+- inventory reports
+- preflight scripts
+- read-only Cloudflare sync scripts
+- no mutation scripts unless gated
+
+DEFAULT FOLLOW-UP TASK
+Review current git status in cvsz/zeaz-platform and split unstaged changes into safe commits by batch. Keep local env files untracked. zDash is under apps/zdash. Explanations Thai, commands/code English.
+
+FIRST COMMANDS TO RUN / ASK USER TO RUN
+cd ~/zeaz-platform
+
+git status --short
+git branch --show-current
+git log --oneline -5
+git diff --check
+python3 scripts/validate-yaml.py
+make yaml-validate
+make workflow-validate
+
+If there are many unstaged files, inspect with:
+
+git status --short
+git diff --stat
+git diff --name-only
+git ls-files --others --exclude-standard
+
+Then classify files into:
+- safe to commit
+- must remain local/untracked
+- needs manual review
+- dangerous/destructive or secret-risk
+
+SECRET SAFETY RULES
+Before any commit, run:
+
+git status --short
+git diff --cached --name-only
+git diff --cached --check
+
+Scan staged content with conservative patterns:
+
+git diff --cached | grep -Ei \
+  'api[_-]?key|secret|token|password|passwd|private[_-]?key|BEGIN .*PRIVATE KEY|CF_API|CLOUDFLARE|DATABASE_URL|REDIS_URL|JWT|SESSION_SECRET|WEBHOOK_SECRET' \
+  || true
+
+If suspicious content appears:
+- stop
+- explain in Thai
+- unstage the file
+- propose .env.example placeholders only
+
+SAFE GIT WORKFLOW
+Use this pattern:
+
+cd ~/zeaz-platform
+git pull --ff-only
+
+# inspect
+git status --short
+git diff --stat
+
+# stage only safe files
+git add <safe-files>
+
+# verify staged files
+git diff --cached --name-only
+git diff --cached --check
+
+# run validation
+python3 scripts/validate-yaml.py
+make yaml-validate
+make workflow-validate
+git diff --check
+
+# commit
+git commit -m "Short English commit message"
+
+# push only after validations pass
+git push origin main
+
+If git pull --ff-only fails due to local unstaged changes:
+- do not force.
+- inspect status.
+- either commit safe changes first or stash only safe working changes.
+- never stash secrets blindly unless user explicitly accepts.
+
+DANGEROUS COMMAND POLICY
+Do not run or suggest these without explicit confirmation and backup plan:
+- rm -rf on broad paths
+- git reset --hard
+- git clean -fdx
+- terraform apply
+- terraform destroy
+- cloudflare token delete/rotate
+- bulk DNS mutation
+- deleting tunnels
+- overwriting .env files
+- force push
+
+Cloudflare mutation confirmation phrase should be required:
+CONFIRM CLOUDFLARE APPLY
+
+Terraform mutation confirmation phrase should be required:
+CONFIRM TERRAFORM APPLY
+
+Git destructive confirmation phrase should be required:
+CONFIRM DESTRUCTIVE GIT
+
+YAML VALIDATOR POLICY
+Root validator should validate root-owned YAML, but skip imported app-local automation/config directories, including:
+- apps/*/.github/**
+- apps/*/.copilot/**
+- apps/*/.cursor/**
+- apps/*/.agents/**
+- apps/*/.agent/**
+- apps/*/.gemini/**
+- apps/*/.claude/**
+- apps/*/node_modules/**
+- apps/*/.venv/**
+- apps/*/venv/**
+- apps/*/dist/**
+- apps/*/build/**
+- apps/*/.next/**
+- apps/*/coverage/**
+- apps/*/.turbo/**
+- apps/*/.cache/**
+
+Rationale:
+- imported apps may contain workflows or automation YAML that are not valid for the root platform
+- root CI must not break because imported app local automation has custom schema
+- app-specific validation can be added later per app
+
+PREFERRED VALIDATOR IMPLEMENTATION
+If asked to regenerate scripts/validate-yaml.py, make it:
+- Python 3 standard library + PyYAML if available
+- fail with clear file path and line/column when YAML syntax invalid
+- skip ignored directories
+- count validated files
+- exit non-zero on syntax errors
+- print concise PASS/FAIL
+- avoid network calls
+- avoid mutation
+
+PREFERRED MAKE TARGETS
+Makefile should include or preserve:
+- yaml-validate
+- workflow-validate
+- platform-preflight
+- status
+- help
+- no trailing blank line issue
+- POSIX-friendly shell commands
+
+CLOUDFLARE / ZDASH POLICY
+- zDash domain:
+  zdash.zeaz.dev
+- zDash API domain:
+  api.zdash.zeaz.dev
+- Test/mock:
+  dash.zeaz.dev
+- zDash frontend local port:
+  5173
+- zDash backend local port:
+  8005
+- Terraform path:
+  terraform/zdash
+- Cloudflare preflight should be read-only unless confirmed.
+- Token creation/rotation must never be automatic without confirmation.
+- Do not print secrets.
+- Do not commit generated Cloudflare env files.
+
+ABTPi18n POLICY
+When preparing ABTPi18n adoption:
+- remove or ignore nested .git safely, but do not delete until confirmed
+- preserve app source
+- create sanitized .env.example only
+- document ports
+- document Docker services
+- inspect for secret-like content before staging
+- do not commit real local env files
+- if nested git is intentional, propose submodule/subtree/vendor approach before changing
+
+zkbtrader POLICY
+When preparing zkbtrader adoption:
+- keep local env untracked
+- sanitize examples
+- do read-only inventory first
+- do not run trading/live execution scripts
+- do not include credentials, exchange keys, wallet/private key material
+- add docs for paper/dev mode first
+
+STANDARD RESPONSE FORMAT
+For each follow-up, answer with:
+
+1. สรุปสถานะ
+2. ความเสี่ยง / ข้อห้าม
+3. คำสั่งที่ให้รัน
+4. คาดหวังผลลัพธ์
+5. ขั้นตอนต่อไป
+
+For code/script generation:
+- provide full file content
+- include file path
+- include chmod command if script
+- include validation command
+- include commit command only after validation passes
+
+MASTER PROMPT FOR CURRENT NEXT CHAT TASK
+Use this as the next actual instruction:
+
+"Review current git status in cvsz/zeaz-platform and split unstaged changes into safe commits by batch. Keep local env files untracked. zDash is under apps/zdash. Fix Makefile trailing whitespace issue first. Run/guide validations: python3 scripts/validate-yaml.py, make yaml-validate, make workflow-validate, git diff --check. Explanations Thai, commands/code English. Do not run destructive Git, Cloudflare mutation, or Terraform apply without explicit confirmation."
+
+EXPECTED OUTPUT FROM AI
+The AI should produce:
+- exact commands to inspect and fix
+- a safe staging plan by file groups
+- commit messages in English
+- validation sequence
+- push sequence
+- warnings for any secret-risk files
+- no destructive operations

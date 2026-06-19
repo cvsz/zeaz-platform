@@ -1,0 +1,217 @@
+{
+  "zone": "zeaz.dev",
+  "api_gateway": {
+    "hostname": "api.zeaz.dev",
+    "port": 8088,
+    "origin": "http://127.0.0.1:8088"
+  },
+  "policy": {
+    "host_bind": "127.0.0.1",
+    "public_bind_for_apps": false,
+    "reserved_port_ranges": {
+      "ui": "3000-3999",
+      "api": "8000-8999",
+      "evidence": "5100-5199",
+      "ops": "8700-8799",
+      "media": "9200-9299",
+      "ssh": "22022"
+    }
+  },
+  "routes": [
+    {
+      "app_id": "web-root",
+      "role": "ui",
+      "path": "apps/zeaz-web",
+      "hostname": "zeaz.dev",
+      "port": 3003,
+      "origin": "http://127.0.0.1:3003",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "web-www",
+      "role": "ui",
+      "path": "apps/zeaz-web",
+      "hostname": "www.zeaz.dev",
+      "port": 3003,
+      "origin": "http://127.0.0.1:3003",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "ssh",
+      "role": "tcp",
+      "path": "system/ssh",
+      "hostname": "ssh.zeaz.dev",
+      "port": 22022,
+      "origin": "ssh://127.0.0.1:22022",
+      "status": "active"
+    },
+    {
+      "app_id": "zdash",
+      "role": "ui",
+      "path": "apps/zdash",
+      "hostname": "zdash.zeaz.dev",
+      "port": 5173,
+      "origin": "http://127.0.0.1:5173",
+      "status": "active",
+      "origin_check": "must-run"
+    },
+    {
+      "app_id": "zdash-api",
+      "role": "api",
+      "path": "apps/zdash",
+      "hostname": "api-zdash.zeaz.dev",
+      "port": 8005,
+      "origin": "http://127.0.0.1:8005",
+      "status": "active",
+      "origin_check": "must-run",
+      "health_path": "/health",
+      "api_gateway_prefix": "/v1/zdash"
+    },
+    {
+      "app_id": "release",
+      "role": "evidence",
+      "path": "apps/zdash",
+      "hostname": "release.zeaz.dev",
+      "port": 5172,
+      "origin": "http://127.0.0.1:5172",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "zveo",
+      "role": "ui",
+      "path": "apps/zveo",
+      "hostname": "zveo.zeaz.dev",
+      "port": 3002,
+      "origin": "http://127.0.0.1:3002",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "zveo-api",
+      "role": "api",
+      "path": "apps/zveo",
+      "hostname": "api-zveo.zeaz.dev",
+      "port": 8090,
+      "origin": "http://127.0.0.1:8090",
+      "status": "active",
+      "origin_check": "report-only",
+      "api_gateway_prefix": "/v1/zveo"
+    },
+    {
+      "app_id": "ztrader",
+      "role": "ui",
+      "path": "apps/ztrader",
+      "hostname": "ztrader.zeaz.dev",
+      "port": 3016,
+      "origin": "http://127.0.0.1:3016",
+      "status": "active",
+      "origin_check": "report-only",
+      "api_gateway_prefix": "/v1/ztrader"
+    },
+    {
+      "app_id": "zcino",
+      "role": "ui",
+      "path": "apps/zcino",
+      "hostname": "zcino.zeaz.dev",
+      "port": 3000,
+      "origin": "http://127.0.0.1:3000",
+      "status": "active",
+      "origin_check": "report-only",
+      "api_gateway_prefix": "/v1/zcino"
+    },
+    {
+      "app_id": "zoffice",
+      "role": "api-ui",
+      "path": "apps/zoffice",
+      "hostname": "zoffice.zeaz.dev",
+      "port": 8091,
+      "origin": "http://127.0.0.1:8091",
+      "status": "refactor-from-8090",
+      "origin_check": "must-run",
+      "health_path": "/health",
+      "api_gateway_prefix": "/v1/zoffice"
+    },
+    {
+      "app_id": "zwallet",
+      "role": "api-ui",
+      "path": "apps/zwallet",
+      "hostname": "zwallet.zeaz.dev",
+      "port": 8011,
+      "origin": "http://127.0.0.1:8011",
+      "status": "reserved",
+      "api_gateway_prefix": "/v1/zwallet"
+    },
+    {
+      "app_id": "zlms",
+      "role": "app",
+      "path": "apps/zlms",
+      "hostname": "zlms.zeaz.dev",
+      "port": 8012,
+      "origin": "http://127.0.0.1:8012",
+      "status": "reserved",
+      "api_gateway_prefix": "/v1/zlms"
+    },
+    {
+      "app_id": "zAcademy",
+      "role": "ui",
+      "path": "apps/zAcademy",
+      "hostname": "academy.zeaz.dev",
+      "port": 3013,
+      "origin": "http://127.0.0.1:3013",
+      "status": "reserved"
+    },
+    {
+      "app_id": "zsticker",
+      "role": "api-ui",
+      "path": "apps/zsticker",
+      "hostname": "zsticker.zeaz.dev",
+      "port": 8014,
+      "origin": "http://127.0.0.1:8014",
+      "status": "reserved",
+      "api_gateway_prefix": "/v1/zsticker"
+    },
+    {
+      "app_id": "zcloud",
+      "role": "ui",
+      "path": "apps/zcloud",
+      "hostname": "zcloud.zeaz.dev",
+      "port": 3004,
+      "origin": "http://127.0.0.1:3004",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "zsp-aitool",
+      "role": "ui",
+      "path": "apps/zsp-aitool",
+      "hostname": "ztest.zeaz.dev",
+      "port": 3008,
+      "origin": "http://127.0.0.1:3008",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "auth",
+      "role": "auth",
+      "path": "apps/auth",
+      "hostname": "auth.zeaz.dev",
+      "port": 9443,
+      "origin": "http://127.0.0.1:9443",
+      "status": "active",
+      "origin_check": "report-only"
+    },
+    {
+      "app_id": "zai-factory",
+      "role": "ops",
+      "path": "apps/zai-factory",
+      "hostname": "factory.zeaz.dev",
+      "port": 8710,
+      "origin": "http://127.0.0.1:8710",
+      "status": "reserved",
+      "api_gateway_prefix": "/v1/factory"
+    }
+  ]
+}

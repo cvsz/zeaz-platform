@@ -1,0 +1,251 @@
+# Phase 22 — Cloudflare Governance Automation Index
+
+## Objective
+
+Create a comprehensive, structured index of all Cloudflare governance scanners, CI workflows, documentation files, evidence outputs, and ownership assignments accumulated across Phases 10–21. This provides a single navigation point for all governance automation in the ZeaZ Platform.
+
+This phase must NOT deploy, apply, destroy, or mutate Cloudflare. It is a documentation and index layer only.
+
+---
+
+## Branch Name
+
+```
+fix/cloudflare-governance-automation-index
+```
+
+## Commit Message
+
+```
+docs(cloudflare): index governance automation
+```
+
+---
+
+## Scope
+
+- Create governance automation index (master index)
+- Create scanner/script index
+- Create workflow index
+- Create evidence output index
+- Update `infra/cloudflare/README.md` with Phase 22 entry
+
+---
+
+## Non-Goals
+
+- Do NOT run any scanner scripts in this phase
+- Do NOT deploy, apply, or mutate Cloudflare
+- Do NOT print secrets, credentials, or tokens
+- Do NOT start or restart any services
+- Do NOT modify files outside Phase 22 scope
+
+---
+
+## Safety Rules
+
+1. Index docs must reflect what exists in the repository — not what is assumed to exist
+2. For each scanner/script, clearly mark whether it exists (`exists: true/false`) in the repository
+3. Missing scripts must be listed as GAPs — do not create stub scripts in this phase
+4. Never include real secrets, credentials, or tokens in index docs
+5. Ownership fields must use role names, not real personal information
+
+---
+
+## Known Runtime Context (Read-Only Reference)
+
+- Repository root: `/home/zeazdev/zeaz-platform`
+- Live Tunnel ID: `ef0355dd-8e90-45ed-a222-b5053794ed20` (reference only)
+- Active credential file must NEVER be printed or committed
+
+---
+
+## Known Scanner/Script Paths to Index
+
+Check whether each exists in the repository and mark accordingly:
+
+| Script Path | Phase Introduced | Status |
+|---|---|---|
+| `infra/cloudflare/scripts/validate-cloudflare-config.sh` | Phase 10/11 | Check |
+| `infra/cloudflare/scripts/check-secret-leaks.sh` | Phase 10/11 | Check |
+| `infra/cloudflare/scripts/scan-tunnel-configs.sh` | Phase 10/11 | Check |
+| `infra/cloudflare/scripts/scan-dns-ownership.sh` | Phase 10/11 | Check |
+| `infra/cloudflare/scripts/scan-workers-routes.sh` | Phase 10/11 | Check |
+| `infra/cloudflare/scripts/scan-workers-edge-bindings.sh` | Phase 10/11 | Check |
+| `infra/cloudflare/scripts/scan-terraform-cloudflare-ownership.sh` | Phase 11 | Check |
+| `infra/cloudflare/scripts/score-cloudflare-change-risk.sh` | Phase 17 | Check |
+| `infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh` | Phase 18 | Check |
+
+For each script found: document inputs, outputs, flags supported, network requirement, evidence file generated.
+For each script NOT found: list as GAP with recommended creation phase.
+
+---
+
+## Required Deliverables
+
+### Documentation Files
+
+1. **`docs/infra/cloudflare-governance-automation-index.md`**
+   - Master overview of all governance automation
+   - Links to scanner index, workflow index, evidence output index
+   - How to navigate the governance system
+   - How to find the scanner for a given governance area
+   - How to add new scanners/automation to the index
+
+2. **`docs/infra/cloudflare-scanner-index.md`**
+   - Full index table for all known scanners/scripts
+   - Columns for each entry:
+     - Scanner name
+     - Path
+     - Purpose (one sentence)
+     - Inputs (files/env vars consumed, no secrets)
+     - Outputs (stdout format, evidence file written)
+     - Flags supported (`--help`, `--markdown`, `--json`, `--strict`, `--live`)
+     - Owner (role name)
+     - Network required (yes/no)
+     - Strict mode supported (yes/no)
+     - Evidence file generated (path template)
+     - Phase that introduced it
+     - Exists in repo (yes/no — verified by executor)
+   - GAP section: list missing scanners with recommended creation phase
+   - Recommendations section: scanners that should be created or consolidated
+
+3. **`docs/infra/cloudflare-workflow-index.md`**
+   - Index of all GitHub Actions workflows related to Cloudflare governance
+   - Columns:
+     - Workflow file path
+     - Workflow name
+     - Trigger (push/PR/schedule/workflow_dispatch)
+     - Purpose
+     - Jobs
+     - Scanners invoked
+     - Evidence output
+     - Owner
+     - Phase introduced
+   - Known workflow files to check (check if they exist):
+     - `.github/workflows/cloudflare-release-readiness.yml`
+     - `.github/workflows/deploy-worker.yml`
+     - `.github/workflows/validate.yml`
+     - `.github/workflows/ci.yml`
+     - Any other workflow that invokes Cloudflare scripts
+   - GAP section: workflows that should exist but do not
+
+4. **`docs/infra/cloudflare-evidence-output-index.md`**
+   - Index of all evidence documents and templates in the governance system
+   - Sections:
+     - Scanner output evidence (files generated by scanners)
+     - Phase governance documents (docs/infra/ files per phase)
+     - Templates (for release approval, incident review, etc.)
+     - Evidence archive structure (Phase 16)
+   - For each entry: path | purpose | format (md/json/yaml) | phase introduced | owner
+   - GAP section: evidence outputs that should exist but do not
+
+5. **`infra/cloudflare/README.md`** *(update)*
+   - Add Phase 22 entry
+   - Update master links table to reference governance automation index
+
+---
+
+## Evidence Outputs
+
+- All four documentation files committed and readable via `cat`
+- Scanner index has entry for all 9 known scripts (with exists: yes/no verified)
+- GAP section documents any missing scripts
+- `infra/cloudflare/README.md` updated with Phase 22 links
+- No secrets found in any new file
+- `git diff --name-only` shows only Phase 22 files
+
+---
+
+## Acceptance Criteria
+
+- [ ] `docs/infra/cloudflare-governance-automation-index.md` exists as master index
+- [ ] `docs/infra/cloudflare-scanner-index.md` exists with all 9 scripts indexed
+- [ ] Each script entry has: path, purpose, inputs, outputs, flags, owner, network, phase
+- [ ] Scripts not found are listed as GAPs (not silently omitted)
+- [ ] `docs/infra/cloudflare-workflow-index.md` exists with all relevant workflows indexed
+- [ ] `docs/infra/cloudflare-evidence-output-index.md` exists with all evidence docs indexed
+- [ ] `infra/cloudflare/README.md` updated with Phase 22 section
+- [ ] No secrets in any new or updated file
+- [ ] No deployment, apply, or Cloudflare write performed
+
+---
+
+## Suggested Commands
+
+```bash
+# Create branch
+git checkout -b fix/cloudflare-governance-automation-index
+
+# Verify which scripts exist before writing index
+for script in \
+  "infra/cloudflare/scripts/validate-cloudflare-config.sh" \
+  "infra/cloudflare/scripts/check-secret-leaks.sh" \
+  "infra/cloudflare/scripts/scan-tunnel-configs.sh" \
+  "infra/cloudflare/scripts/scan-dns-ownership.sh" \
+  "infra/cloudflare/scripts/scan-workers-routes.sh" \
+  "infra/cloudflare/scripts/scan-workers-edge-bindings.sh" \
+  "infra/cloudflare/scripts/scan-terraform-cloudflare-ownership.sh" \
+  "infra/cloudflare/scripts/score-cloudflare-change-risk.sh" \
+  "infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh"; do
+  [ -f "$script" ] && echo "EXISTS: $script" || echo "MISSING (GAP): $script"
+done
+
+# Verify which workflows exist
+for wf in \
+  ".github/workflows/cloudflare-release-readiness.yml" \
+  ".github/workflows/deploy-worker.yml" \
+  ".github/workflows/validate.yml" \
+  ".github/workflows/ci.yml"; do
+  [ -f "$wf" ] && echo "EXISTS: $wf" || echo "MISSING (GAP): $wf"
+done
+
+# After writing files
+cat docs/infra/cloudflare-governance-automation-index.md
+cat docs/infra/cloudflare-scanner-index.md
+cat docs/infra/cloudflare-workflow-index.md
+cat docs/infra/cloudflare-evidence-output-index.md
+
+# Verify all 9 scripts mentioned
+grep -c "scan-\|validate-\|score-\|check-" docs/infra/cloudflare-scanner-index.md
+
+# Secret check
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-governance-automation-index.md \
+  docs/infra/cloudflare-scanner-index.md \
+  docs/infra/cloudflare-workflow-index.md \
+  docs/infra/cloudflare-evidence-output-index.md || echo "No secrets found"
+
+# Commit
+git add docs/infra/cloudflare-governance-automation-index.md \
+        docs/infra/cloudflare-scanner-index.md \
+        docs/infra/cloudflare-workflow-index.md \
+        docs/infra/cloudflare-evidence-output-index.md \
+        infra/cloudflare/README.md
+git commit -m "docs(cloudflare): index governance automation"
+
+git push origin fix/cloudflare-governance-automation-index
+gh pr create --title "docs(cloudflare): index governance automation" \
+  --body "Phase 22: Adds master governance automation index, scanner index (9 scripts + GAPs), workflow index, evidence output index. Read-only. No deploy. No secrets."
+```
+
+---
+
+## Final Response Format for AI Agent
+
+When this phase is complete, report:
+
+1. Files created (list with paths)
+2. Files updated (list with paths)
+3. Scanner index summary: N found, N GAPs
+4. Workflow index summary: N found, N GAPs
+5. Evidence output index summary: N entries
+6. Validation commands run and their output summary
+7. Any warnings (missing entries, unlabeled GAPs)
+8. Git status summary (`git diff --stat`)
+9. Suggested commit command (already done or ready to run)
+
+**Do not claim that anything was deployed.**
+**Do not claim that Cloudflare was changed.**
+**Do not claim that Terraform was applied.**
+**GAP items must be clearly labeled as missing — do not create stub scripts in this phase.**

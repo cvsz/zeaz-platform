@@ -2,9 +2,35 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
+usage() {
+  cat <<'USAGE'
+Usage: scripts/ai/validate-agent-env.sh [--help]
+
+Validate the AI/Cloudflare agent runtime environment without printing secret
+values. This check is offline only and does not call external APIs.
+USAGE
+}
+
 log() {
   printf '[%s] %s\n' "$1" "$2"
 }
+
+on_error() {
+  local exit_code=$?
+  log ERROR "agent environment validation crashed at line ${BASH_LINENO[0]} with exit code ${exit_code}"
+  exit "$exit_code"
+}
+trap on_error ERR
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  usage >&2
+  exit 2
+fi
 
 require_var() {
   local name="$1"
@@ -33,7 +59,7 @@ required_vars=(
   CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_ZONE_ID CLOUDFLARE_API_TOKEN CLOUDFLARE_DNS_TOKEN CLOUDFLARE_WORKERS_TOKEN CLOUDFLARE_ZT_TOKEN CLOUDFLARE_WAF_TOKEN CLOUDFLARE_TUNNEL_TOKEN CLOUDFLARE_R2_TOKEN
   IDENTITY_PROVIDER_TYPE IDENTITY_PROVIDER_VENDOR IDENTITY_PROVIDER_METADATA_URL
   ENVIRONMENT REGION PRIMARY_DOMAIN ORIGIN_INFRA_TYPE ORIGIN_HOSTS
-  TERRAFORM_BACKEND_TYPE TERRAFORM_STATE_BUCKET TERRAFORM_LOCK_TABLE
+  TERRAFORM_BACKEND_TYPE
   SOPS_AGE_KEY SECRET_ROTATION_INTERVAL CLOUDFLARE_PLAN_TIER
 )
 
@@ -58,8 +84,8 @@ if [[ "${TERRAFORM_BACKEND_TYPE:-}" == "s3" ]]; then
   require_var TERRAFORM_LOCK_TABLE || fail=1
 fi
 
-if [[ "${SOPS_AGE_KEY:-}" != age1* ]]; then
-  log ERROR 'SOPS_AGE_KEY must be an age private key (prefix age1...)'
+if [[ "${SOPS_AGE_KEY:-}" != age1* && "${SOPS_AGE_KEY:-}" != AGE-SECRET-KEY* ]]; then
+  log ERROR 'SOPS_AGE_KEY must be an age private key (prefix age1... or AGE-SECRET-KEY...)'
   fail=1
 fi
 

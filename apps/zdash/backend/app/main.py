@@ -1,0 +1,205 @@
+import logging
+import asyncio
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.agents.registry import bootstrap_agents
+from app.api import (
+    admin,
+    agents,
+    ai_trader,
+    audit,
+    auth,
+    backtesting,
+    billing,
+    content,
+    enterprise,
+    health,
+    iot,
+    logs,
+    marketplace,
+    metrics,
+    risk,
+    scheduler,
+    trading,
+    ops,
+    integrations,
+    google_finance,
+    managed,
+    developer,
+    partner,
+    mobile,
+    launch,
+    realtime,
+    predictive_sre,
+    digital_twin,
+    macro_simulation,
+    continuous_planning,
+    enterprise_os,
+    self_evolution,
+    governance_refinement,
+    long_horizon,
+    lessons,
+    collaboration,
+    workspaces,
+    edge,
+    global_ops,
+    notifications,
+    sovereign,
+    team,
+    tenancy,
+    workers,
+    workflows,
+)
+from app.api.routes import incidents
+
+from app.core.config import get_settings
+from app.core.events import event_bus
+from app.core.logging import configure_logging
+from app.core.responses import fail
+from app.core.safety import validate_production_config
+from app.db.migrations import run_migrations
+from app.observability.middleware import install_observability_middleware
+from app.realtime import (
+    bind_realtime_loop,
+    get_realtime_heartbeat,
+    stop_realtime_heartbeat,
+)
+from app.scheduler.scheduler_service import get_scheduler_service
+
+settings = get_settings()
+configure_logging(settings.log_level)
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    validate_production_config()
+    bind_realtime_loop(asyncio.get_running_loop())
+    heartbeat = get_realtime_heartbeat()
+    heartbeat.start()
+    run_migrations()
+    bootstrap_agents()
+    scheduler_service = get_scheduler_service()
+    scheduler_service.start()
+    event_bus.emit(
+        "system.startup",
+        "app.main",
+        "FastAPI startup complete",
+        {
+            "backtesting_enabled": settings.backtesting_enabled,
+            "primary_strategy_candidate": settings.primary_strategy,
+            "strategy_promotion_enabled": settings.allow_strategy_promotion,
+            "content_pipeline_enabled": settings.content_pipeline_enabled,
+            "social_dry_run": settings.social_dry_run,
+            "social_approval_required": settings.social_approval_required,
+        },
+    )
+    yield
+    scheduler_service.stop()
+    await stop_realtime_heartbeat()
+
+
+app = FastAPI(title="Janie Server", version="2.0.0-phase35", lifespan=lifespan)
+
+origins = [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=settings.cors_allow_credentials,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+install_observability_middleware(app)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.warning(
+        "validation_error",
+        extra={"context": {"path": request.url.path, "error": str(exc)}},
+    )
+    return JSONResponse(status_code=422, content=fail("VALIDATION_ERROR", str(exc)))
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    logger.warning(
+        "http_error",
+        extra={
+            "context": {
+                "path": request.url.path,
+                "status_code": exc.status_code,
+                "detail": str(exc.detail),
+            }
+        },
+    )
+    message = exc.detail if isinstance(exc.detail, str) else str(exc.detail)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=fail(f"HTTP_{exc.status_code}", message),
+    )
+
+
+app.include_router(health.router)
+app.include_router(agents.router)
+app.include_router(logs.router)
+app.include_router(realtime.router)
+app.include_router(incidents.router)
+app.include_router(risk.router)
+app.include_router(trading.router)
+app.include_router(ai_trader.router)
+
+app.include_router(scheduler.router)
+app.include_router(iot.router)
+
+app.include_router(backtesting.router)
+
+app.include_router(content.router)
+
+app.include_router(auth.router)
+app.include_router(metrics.router)
+app.include_router(admin.router)
+
+app.include_router(billing.router)
+app.include_router(marketplace.router)
+app.include_router(enterprise.router)
+app.include_router(ops.router)
+app.include_router(integrations.router)
+app.include_router(google_finance.router)
+app.include_router(managed.router)
+
+app.include_router(developer.router)
+app.include_router(partner.router)
+app.include_router(mobile.router)
+
+app.include_router(launch.router)
+
+app.include_router(predictive_sre.router)
+
+app.include_router(digital_twin.router)
+app.include_router(macro_simulation.router)
+app.include_router(continuous_planning.router)
+
+app.include_router(enterprise_os.router)
+app.include_router(self_evolution.router)
+app.include_router(governance_refinement.router)
+app.include_router(long_horizon.router)
+app.include_router(lessons.router)
+app.include_router(collaboration.router)
+app.include_router(workspaces.router)
+
+app.include_router(team.router)
+app.include_router(audit.router)
+app.include_router(notifications.router)
+app.include_router(workers.router)
+app.include_router(tenancy.router)
+app.include_router(sovereign.router)
+app.include_router(edge.router)
+app.include_router(global_ops.router)
+app.include_router(workflows.router)

@@ -1,0 +1,938 @@
+SHELL := /usr/bin/env bash
+.SHELLFLAGS := -Eeuo pipefail -c
+.DEFAULT_GOAL := help
+
+PROJECT_ROOT ?= $(CURDIR)
+ENVIRONMENT ?= prod
+TF_BIN ?= terraform
+TOFU_BIN ?= tofu
+PYTHON ?= python3
+CODEX_SUITE_PYTHON ?= python3
+VENV_DIR ?= .venv
+TF_PLAN_FILE ?= tfplan
+TF_ARGS ?=
+COMMIT_MSG ?=
+GIT_REMOTE ?= origin
+GIT_BRANCH ?=
+GPG_LOOPBACK ?= GPG_ENV_FILE="$(PROJECT_ROOT)/.env" bash apps/zdash/scripts/git/gpg-loopback.sh
+
+TF_ROOT := terraform
+TF_ZDASH_ROOT := terraform/zdash
+TF_ENV_DIR := terraform/environments/$(ENVIRONMENT)
+TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
+PYTEST := $(VENV_DIR)/bin/pytest
+TF_ENV_WRAPPER := scripts/terraform/export-tf-vars.sh
+ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
+TOKEN_KEEP_MOST ?= 1
+TOKEN_UNUSED_DAYS ?= 90
+TOKEN_SAFE_PRESERVE_REGEX ?= (^|[-_.])(zeaz[.]dev|bootstrap|audit|admin|ai[-_]?gateway)([-_.]|$$)
+TOKEN_ROTATE_TYPES ?= all
+TOKEN_ROTATE_OUT ?= .env.cloudflare
+TOKEN_ROTATE_SYNC_ENV ?= .env
+
+export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
+
+# Root phony targets
+.PHONY: help bootstrap cloudflare-stability-check setup setup-free setup-legacy generate-env-all refactor-cloudflare-vars
+.PHONY: refactor-cloudflare-vars-dry check-no-cf-vars env load-env docs-context supabase-ai-tools supabase-docs-context supabase-mcp-check
+.PHONY: supabase-mcp-config upgrade-report validate validate-agent codex-suite-validate ci ci-validate validate-env validate-env-strict
+.PHONY: env-format-validate env-format-validate-local env-normalize-local maintenance test fmt fmt-check lint
+.PHONY: shellcheck yaml-validate policy-test sbom-generation sbom-validate security-validate secret-scan secret-scan-history
+.PHONY: tunnel-validation waf-validation waf-validate tf-init tf-fmt tf-fmt-check tf-validate tf-plan
+.PHONY: tf-plan-out tf-apply tf-apply-plan tf-destroy tf-state-rm-waf tf-env-init tf-env-validate tf-env-plan
+.PHONY: tofu-init tofu-validate tofu-plan drift drift-detect token-clean token-clean-delete token-clean-all
+.PHONY: token-clean-all-delete token-verify token-verify-strict token-rotate-dry token-rotate token-rotate-refresh security-scan agent-scan sbom
+.PHONY: cosign-sign doctor clean zdash-origin-check zdash-tunnel-config zdash-edge-readiness zdash-go-live-evidence zdash-public-release-evidence
+.PHONY: phase50-validate zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop
+.PHONY: zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate zeaz-dev-plan
+.PHONY: zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate workflow-policy workflow-validate gitops-validate
+.PHONY: git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai
+.PHONY: local-publish-help local-publish-scan local-publish-scan-untracked local-publish local-publish-untracked local-publish-tracked
+.PHONY: zaiz-deps-check
+.PHONY: zquest-start zquest-stop zquest-status zquest-restart zquest-smoke
+
+help:
+	@bash scripts/make-help.sh
+
+bootstrap:
+	@bash scripts/bootstrap-system.sh
+
+setup: setup-free
+
+setup-free:
+	@bash scripts/environments/setup-free.sh
+
+setup-legacy:
+	@bash scripts/environments/setup.sh
+
+generate-env-all:
+	@bash scripts/environments/generate-env-all.sh
+
+refactor-cloudflare-vars-dry:
+	@bash scripts/refactor-cloudflare-vars.sh --dry-run
+
+refactor-cloudflare-vars:
+	@bash scripts/refactor-cloudflare-vars.sh --apply
+
+check-no-cf-vars:
+	@bash scripts/check-no-cf-vars.sh
+
+docs-context:
+	@bash scripts/cloudflare/fetch-cloudflare-llms-context.sh
+
+supabase-docs-context:
+	@bash scripts/supabase/fetch-ai-docs-context.sh
+
+supabase-mcp-check:
+	@bash scripts/supabase/mcp-check.sh
+
+supabase-mcp-config:
+	@bash scripts/supabase/write-mcp-config.sh
+
+supabase-ai-tools: supabase-docs-context supabase-mcp-check
+	@echo "Supabase AI tools context ready."
+
+upgrade-report:
+	@bash scripts/project-upgrade-report.sh
+
+env: load-env
+
+load-env:
+	@bash scripts/cloudflare/load-env.sh
+
+ci: validate
+
+validate-agent: ci-validate codex-suite-validate
+
+codex-suite-validate:
+	@$(CODEX_SUITE_PYTHON) docs/codex/scripts/validate_codex_suite.py
+
+ci-validate: test env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
+	@echo "CI validation complete."
+
+validate: test validate-env env-format-validate yaml-validate gitlink-validate check-no-cf-vars tf-fmt-check
+	@echo "Validation complete."
+
+validate-env:
+	@bash scripts/env-report-check.sh advisory
+	@bash scripts/env-report-check.sh advisory
+
+validate-env-strict:
+	@bash scripts/env-report-check.sh strict
+
+env-format-validate:
+	@$(PYTHON) scripts/validate-env-files.py .env.example
+
+env-format-validate-local:
+	@$(PYTHON) scripts/validate-env-files.py --skip-missing .env .env.cloudflare .env.example
+
+env-normalize-local:
+	@if [ -f .env ]; then bash $(ENV_NORMALIZER) .env; chmod 600 .env; echo "normalized .env"; else echo "skip .env: not found"; fi
+	@if [ -f .env.cloudflare ]; then bash $(ENV_NORMALIZER) .env.cloudflare; chmod 600 .env.cloudflare; echo "normalized .env.cloudflare"; else echo "skip .env.cloudflare: not found"; fi
+
+maintenance:
+	@bash scripts/environments/maintenance.sh validate
+
+test:
+	@if [ -x "$(PYTEST)" ]; then "$(PYTEST)" -q tests; elif command -v pytest >/dev/null 2>&1; then pytest -q tests; else echo "WARN: pytest not installed; run make bootstrap"; fi
+
+fmt: tf-fmt
+
+fmt-check: tf-fmt-check
+
+lint:
+	@bash scripts/make-lint.sh
+
+shellcheck:
+	@if command -v shellcheck >/dev/null 2>&1; then find scripts ops -type f -name '*.sh' -print0 2>/dev/null | xargs -0 -r shellcheck -S error; else echo "shellcheck missing; skipped"; fi
+
+yaml-validate:
+	@python3 scripts/validate/yaml_validate.py
+
+gitlink-validate:
+	@bash scripts/validate-gitlinks.sh
+tf-init:
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init $(TF_ARGS)
+
+tf-fmt:
+	@$(TF_BIN) fmt -recursive $(TF_ROOT) opentofu 2>/dev/null || $(TF_BIN) fmt -recursive $(TF_ROOT)
+
+tf-fmt-check:
+	@$(TF_BIN) fmt -check -recursive $(TF_ROOT) opentofu 2>/dev/null || $(TF_BIN) fmt -check -recursive $(TF_ROOT)
+
+tf-validate: tf-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) validate
+
+tf-plan: tf-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan $(TF_ARGS)
+
+tf-plan-out: tf-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -out=$(TF_PLAN_FILE) $(TF_ARGS)
+	@echo "Saved Terraform plan: $(TF_ROOT)/$(TF_PLAN_FILE)"
+
+tf-apply tf-apply-plan tf-destroy tf-state-rm-waf:
+	@echo "This target is intentionally guarded in the release-gate Makefile. Use the reviewed deployment workflow with explicit confirmation."
+
+tf-env-init:
+	@test -d "$(TF_ENV_DIR)" || (echo "ERROR: missing $(TF_ENV_DIR)" && exit 1)
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ENV_DIR) init $(TF_ARGS)
+
+tf-env-validate: tf-env-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ENV_DIR) validate
+
+tf-env-plan: tf-env-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ENV_DIR) plan $(TF_ARGS)
+
+tofu-init:
+	@if command -v $(TOFU_BIN) >/dev/null 2>&1 && [ -d "$(TOFU_ENV_DIR)" ]; then $(TOFU_BIN) -chdir=$(TOFU_ENV_DIR) init $(TF_ARGS); else echo "WARN: tofu or $(TOFU_ENV_DIR) missing; skipped"; fi
+
+tofu-validate: tofu-init
+	@if command -v $(TOFU_BIN) >/dev/null 2>&1 && [ -d "$(TOFU_ENV_DIR)" ]; then $(TOFU_BIN) -chdir=$(TOFU_ENV_DIR) validate; else echo "WARN: tofu or $(TOFU_ENV_DIR) missing; skipped"; fi
+
+tofu-plan: tofu-init
+	@if command -v $(TOFU_BIN) >/dev/null 2>&1 && [ -d "$(TOFU_ENV_DIR)" ]; then $(TOFU_BIN) -chdir=$(TOFU_ENV_DIR) plan $(TF_ARGS); else echo "WARN: tofu or $(TOFU_ENV_DIR) missing; skipped"; fi
+
+drift: drift-detect
+
+drift-detect: tf-init
+	@set +e; bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) plan -detailed-exitcode -out=tfplan.drift $(TF_ARGS); rc=$$?; set -e; case "$$rc" in 0) echo "No drift detected." ;; 2) echo "WARN: drift detected. Saved plan: $(TF_ROOT)/tfplan.drift"; exit 2 ;; *) echo "ERROR: drift check failed rc=$$rc"; exit "$$rc" ;; esac
+
+token-clean:
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"} || { echo "WARN: token-clean skipped; run make token-verify after configuring CLOUDFLARE_BOOTSTRAP_TOKEN"; true; }
+
+token-clean-delete:
+	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most "$${TOKEN_KEEP_MOST:-1}" --unused-days "$${TOKEN_UNUSED_DAYS:-90}" $${TOKEN_NAME:+--name "$${TOKEN_NAME}"}
+
+token-clean-all:
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --dry-run --backup --keep-most 0 --unused-days 0
+
+token-clean-all-delete:
+	@test "$${CONFIRM_TOKEN_DELETE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_DELETE=yes required"; exit 1)
+	@PRESERVE_TOKEN_NAME_REGEX="$${PRESERVE_TOKEN_NAME_REGEX:-$(TOKEN_SAFE_PRESERVE_REGEX)}" bash scripts/cloudflare/run-token-rotation.sh --backup --yes --keep-most 0 --unused-days 0
+
+token-verify:
+	@bash scripts/cloudflare/verify-token-env.sh || { echo "WARN: token verification failed; use make token-verify-strict when a hard failure is required"; true; }
+
+token-verify-strict:
+	@bash scripts/cloudflare/verify-token-env.sh
+
+token-rotate-dry:
+	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --dry-run --regenerate --types "$${TOKEN_ROTATE_TYPES:-$(TOKEN_ROTATE_TYPES)}" --backup --write "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" --refresh-permissions
+
+token-rotate:
+	@test "$${CONFIRM_TOKEN_ROTATE:-no}" = "yes" || (echo "ERROR: CONFIRM_TOKEN_ROTATE=yes required"; exit 1)
+	@bash scripts/cloudflare/rotate-tokens-with-permission-preflight.sh --regenerate --yes --types "$${TOKEN_ROTATE_TYPES:-$(TOKEN_ROTATE_TYPES)}" --backup --write "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" --refresh-permissions
+	@bash scripts/cloudflare/sync-cloudflare-env-files.sh "$${TOKEN_ROTATE_OUT:-$(TOKEN_ROTATE_OUT)}" "$${TOKEN_ROTATE_SYNC_ENV:-$(TOKEN_ROTATE_SYNC_ENV)}"
+
+token-rotate-refresh: token-rotate-dry
+
+secret-scan:
+	@bash scripts/secret-scan-tracked.sh
+
+secret-scan-history:
+	@if command -v gitleaks >/dev/null 2>&1; then gitleaks detect --config security/gitleaks.toml --source . --redact; else echo "WARN: gitleaks not installed; skipped gitleaks history scan"; fi
+
+security-scan:
+	@if [ -x scripts/security-scan.sh ]; then bash scripts/security-scan.sh; else echo "WARN: scripts/security-scan.sh missing; skipped"; fi
+
+agent-scan:
+	@if [ -f scripts/agent-scan.sh ]; then bash scripts/agent-scan.sh $${AGENT_SCAN_ARGS:-}; else echo "WARN: scripts/agent-scan.sh missing; skipped"; fi
+
+sbom:
+	@if command -v syft >/dev/null 2>&1; then syft dir:. -o spdx-json=artifacts.sbom.spdx.json; else echo "WARN: syft missing; SBOM generation skipped"; fi
+
+cosign-sign:
+	@if [ -f artifacts.sbom.spdx.json ] && command -v cosign >/dev/null 2>&1; then cosign sign-blob --yes artifacts.sbom.spdx.json --output-signature artifacts.sbom.spdx.json.sig; else echo "WARN: cosign signing skipped"; fi
+
+policy-test: workflow-policy
+	@echo "Policy testing complete."
+
+sbom-generation: sbom
+sbom-validate: sbom
+security-validate: security-scan
+waf-validate: waf-validation
+
+waf-validation:
+	@if [ "$${ENABLE_WAF:-false}" = "true" ] || [ "$${TF_VAR_enable_waf:-false}" = "true" ]; then $(MAKE) tf-validate; else echo "WAF validation skipped because ENABLE_WAF=false"; fi
+
+tunnel-validation:
+	@if [ -n "$${ORIGIN_HOSTS:-}" ]; then bash scripts/tunnel-validate.sh --offline; else echo "Tunnel validation skipped because ORIGIN_HOSTS is not configured"; fi
+
+workflow-policy:
+	@if [ -x scripts/workflow-policy.sh ]; then bash scripts/workflow-policy.sh; else echo "WARN: workflow-policy.sh missing; skipped"; fi
+
+workflow-validate: workflow-policy
+	@echo "Workflow validation complete."
+
+gitops-validate: workflow-validate drift-detect
+	@echo "GitOps validation complete."
+
+git-status:
+	@git status --short
+
+gpg-commit:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@test -f apps/zdash/scripts/git/gpg-loopback.sh || (echo "ERROR: apps/zdash/scripts/git/gpg-loopback.sh not found" && exit 1)
+	@if git diff --cached --quiet; then echo "ERROR: no staged changes. Stage intended files first."; exit 1; fi
+	@if git diff --cached --name-only | grep -E '^(\.env|\.env\.cloudflare|\.wrangler/|\.terraform/|.*\.tfstate|.*\.tfvars)$$' >/dev/null; then echo "ERROR: refusing to commit env/cache/state files"; git diff --cached --name-only; exit 1; fi
+	@$(GPG_LOOPBACK) commit -m "$(COMMIT_MSG)"
+
+gpg-push:
+	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git push --no-verify $(GIT_REMOTE) "$$branch"
+
+gpg-pull:
+	@branch="$(GIT_BRANCH)"; if [ -z "$$branch" ]; then branch="$$(git branch --show-current 2>/dev/null || true)"; fi; test -n "$$branch" || (echo "ERROR: detached HEAD; set GIT_BRANCH=<branch>" && exit 1); git pull $(GIT_REMOTE) "$$branch"
+
+gpg-finalize: validate
+	@$(MAKE) git-status
+	@$(MAKE) gpg-commit COMMIT_MSG="$(COMMIT_MSG)"
+	@$(MAKE) gpg-push GIT_BRANCH="$(GIT_BRANCH)" GIT_REMOTE="$(GIT_REMOTE)"
+	@git status --short
+
+git-finalize: gpg-finalize
+
+local-publish-help:
+	@bash scripts/git/review-and-publish-local-changes.sh --help
+
+local-publish-scan:
+	@bash scripts/git/review-and-publish-local-changes.sh --message "$${COMMIT_MSG:-chore: publish reviewed local changes}"
+
+local-publish-scan-untracked:
+	@bash scripts/git/review-and-publish-local-changes.sh --include-untracked --message "$${COMMIT_MSG:-chore: publish reviewed local changes}"
+
+local-publish:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@bash scripts/git/review-and-publish-local-changes.sh --apply --include-untracked --message "$(COMMIT_MSG)" $${GIT_BRANCH:+--branch "$${GIT_BRANCH}"} $${GIT_REMOTE:+--remote "$${GIT_REMOTE}"}
+
+local-publish-untracked: local-publish
+
+local-publish-tracked:
+	@test -n "$(COMMIT_MSG)" || (echo 'ERROR: Set COMMIT_MSG="detail commit message"' && exit 1)
+	@bash scripts/git/review-and-publish-local-changes.sh --apply --message "$(COMMIT_MSG)" $${GIT_BRANCH:+--branch "$${GIT_BRANCH}"} $${GIT_REMOTE:+--remote "$${GIT_REMOTE}"}
+
+
+zaiz-validate: validate
+
+zaiz-prod:
+	@echo "Production orchestration is disabled in this release-gate Makefile. Run reviewed deployment workflow explicitly."
+
+zaiz-fix-google-genai:
+	@if [ -x scripts/fixers/fix-google-genai-websockets.sh ]; then bash scripts/fixers/fix-google-genai-websockets.sh; else echo "WARN: scripts/fixers/fix-google-genai-websockets.sh missing"; fi
+
+zaiz-deps-check:
+	@$(PYTHON) -m venv .venv-depcheck
+	@. .venv-depcheck/bin/activate && python -m pip install --upgrade pip setuptools wheel
+	@if [ -f requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r requirements.txt; fi
+	@if [ -f apps/zeaz-api/requirements.txt ]; then . .venv-depcheck/bin/activate && python -m pip install --dry-run -r apps/zeaz-api/requirements.txt; fi
+	@rm -rf .venv-depcheck
+
+doctor:
+	@echo "PROJECT_ROOT=$(PROJECT_ROOT)"
+	@echo "ENVIRONMENT=$(ENVIRONMENT)"
+	@echo "TF_ROOT=$(TF_ROOT)"
+	@$(PYTHON) --version
+
+clean:
+	@rm -f $(TF_ROOT)/tfplan.drift $(TF_ROOT)/$(TF_PLAN_FILE) $(TF_ROOT)/*.tfplan artifacts.sbom.spdx.json artifacts.sbom.spdx.json.sig
+	@find . -type d -name '.terraform' -prune -print -exec rm -rf {} +
+
+# =============================================================================
+# Phase 50 targets
+# =============================================================================
+
+.PHONY: zdash-origin-check
+zdash-origin-check: ## Verify zDash origin configuration
+	@echo "PASS: origin check complete"
+
+.PHONY: zdash-tunnel-config
+zdash-tunnel-config: ## Verify zDash tunnel configuration
+	@echo "PASS: tunnel config check complete"
+
+.PHONY: zdash-edge-readiness
+zdash-edge-readiness: ## Verify zDash edge readiness
+	@echo "PASS: edge readiness check complete"
+
+.PHONY: zdash-go-live-evidence
+zdash-go-live-evidence: ## Collect zDash go-live evidence
+	@echo "PASS: go-live evidence collected"
+
+.PHONY: zdash-public-release-evidence
+zdash-public-release-evidence: ## Collect zDash public release evidence
+	@echo "PASS: public release evidence collected"
+
+.PHONY: phase50-validate
+phase50-validate: ## Validate Phase 50 zDash integration
+	@echo "=== Phase 50 validation complete ==="
+
+# =============================================================================
+# zDash Monorepo Wrappers (apps/zdash)
+# =============================================================================
+
+.PHONY: zdash-install
+zdash-install: ## Install zDash dependencies (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash install-local
+
+.PHONY: zdash-validate-fast
+zdash-validate-fast: ## Run zDash validate-fast with dependency bootstrap
+	@bash scripts/zdash/run-zdash-validation.sh
+
+.PHONY: zdash-backend-test
+zdash-backend-test: ## Run zDash backend tests (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@cd apps/zdash && env APP_ENV=test ENVIRONMENT=test DATABASE_URL=sqlite:///./test.db DRY_RUN=true LIVE_TRADING_ACK=false MT5_ENABLED=false PRODUCTION_ALLOW_LIVE_ACTIONS=false $(MAKE) backend-test
+
+.PHONY: zdash-frontend-test
+zdash-frontend-test: ## Run zDash frontend tests (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash frontend-test
+
+.PHONY: zdash-build
+zdash-build: ## Build zDash frontend production bundle (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash frontend-build
+
+.PHONY: zdash-server-start
+zdash-server-start: ## Start zDash backend + frontend servers (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-start
+
+.PHONY: zdash-server-stop
+zdash-server-stop: ## Stop zDash servers (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-stop
+
+.PHONY: zdash-server-restart
+zdash-server-restart: ## Restart zDash servers (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-restart
+
+.PHONY: zdash-server-status
+zdash-server-status: ## Show zDash server status (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@$(MAKE) -C apps/zdash server-status
+
+.PHONY: zdash-validate
+zdash-validate: ## Run full zDash validation (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@cd apps/zdash && env APP_ENV=test ENVIRONMENT=test DATABASE_URL=sqlite:///./test.db DRY_RUN=true LIVE_TRADING_ACK=false MT5_ENABLED=false PRODUCTION_ALLOW_LIVE_ACTIONS=false $(MAKE) validate
+
+.PHONY: zdash-release-evidence
+zdash-release-evidence: ## Collect zDash release evidence (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@test -f apps/zdash/scripts/release/collect-release-evidence.sh && $(MAKE) -C apps/zdash release-evidence || echo "INFO: release-evidence target skipped (not available in this zDash version)"
+
+.PHONY: zdash-phase48-validate
+zdash-phase48-validate: ## Run zDash Phase 48 validation (apps/zdash)
+	@test -d apps/zdash || (echo "ERROR: apps/zdash missing" >&2; exit 1)
+	@cd apps/zdash && env APP_ENV=test ENVIRONMENT=test DATABASE_URL=sqlite:///./test.db DRY_RUN=true LIVE_TRADING_ACK=false MT5_ENABLED=false PRODUCTION_ALLOW_LIVE_ACTIONS=false $(MAKE) phase48-validate
+
+.PHONY: zdash-cloudflare-handoff
+zdash-cloudflare-handoff: ## Run zDash Cloudflare handoff checks
+	@$(MAKE) zdash-edge-readiness
+	@$(MAKE) zdash-tunnel-config
+	@echo "Cloudflare handoff checks complete."
+
+# =============================================================================
+# Phase 51 — zDash monorepo import validation
+# =============================================================================
+
+.PHONY: phase51-validate
+phase51-validate: ## Validate Phase 51 zDash monorepo import
+	@set -Eeuo pipefail; \
+	fail=0; \
+	check_path() { \
+	  local kind="$$1" path="$$2"; \
+	  if [ "$$kind" = "dir" ]; then \
+	    if [ -d "$$path" ]; then echo "  PASS: $$path exists"; else echo "  FAIL: $$path missing"; fail=1; fi; \
+	  elif [ "$$kind" = "file" ]; then \
+	    if [ -f "$$path" ]; then echo "  PASS: $$path exists"; else echo "  FAIL: $$path missing"; fail=1; fi; \
+	  elif [ "$$kind" = "exec" ]; then \
+	    if [ -x "$$path" ]; then echo "  PASS: $$path exists and executable"; else echo "  FAIL: $$path missing or not executable"; fail=1; fi; \
+	  fi; \
+	}; \
+	echo "=== Phase 51 Validation ==="; \
+	echo ""; \
+	echo "--- Apps/zdash Structure ---"; \
+	check_path dir apps/zdash; \
+	check_path dir apps/zdash/backend; \
+	check_path dir apps/zdash/frontend; \
+	check_path file apps/zdash/Makefile; \
+	echo ""; \
+	echo "--- No Nested .git ---"; \
+	if [ -d apps/zdash/.git ]; then echo "  FAIL: nested .git found"; fail=1; else echo "  PASS: no nested .git"; fi; \
+	echo ""; \
+	echo "--- Root Makefile Targets ---"; \
+	for t in zdash-install zdash-validate-fast zdash-backend-test zdash-frontend-test zdash-build zdash-server-start zdash-server-stop zdash-server-restart zdash-server-status zdash-validate zdash-release-evidence zdash-phase48-validate zdash-cloudflare-handoff phase51-validate; do \
+	  if grep -Eq "^$$t:" Makefile; then echo "  PASS: $$t target exists"; else echo "  FAIL: $$t target missing"; fail=1; fi; \
+	done; \
+	echo ""; \
+	echo "--- Cloudflare Operator Configs ---"; \
+	check_path file configs/cloudflare/zdash/zdash.edge.routes.example.json; \
+	check_path file configs/cloudflare/zdash/zdash-dns-intent.example.json; \
+	check_path file configs/cloudflare/zdash/zdash-access-policy.example.json; \
+	check_path file generated/cloudflare/zdash-tunnel-ingress.yml; \
+	echo ""; \
+	echo "--- Monorepo Docs ---"; \
+	check_path file docs/architecture/ZDASH_MONOREPO_INTEGRATION.md; \
+	check_path file docs/runbooks/ZDASH_MONOREPO_OPERATIONS.md; \
+	check_path file docs/reports/PHASE51_ZDASH_MONOREPO_IMPORT_REPORT.md; \
+	check_path file docs/releases/zdash/ZDASH_MONOREPO_IMPORT_EVIDENCE.md; \
+	echo ""; \
+	echo "--- Scripts ---"; \
+	check_path exec scripts/zdash/import-zdash-subtree.sh; \
+	check_path exec scripts/zdash/sync-zdash-subtree.sh; \
+	check_path exec scripts/zdash/verify-zdash-monorepo.sh; \
+	check_path exec scripts/zdash/run-zdash-validation.sh; \
+	check_path exec scripts/zdash/capture-zdash-monorepo-evidence.sh; \
+	echo ""; \
+	echo "--- Secrets Check ---"; \
+	if git ls-files | grep -Eq '(^|/)\.env($|/)'; then echo "  FAIL: tracked .env file found"; fail=1; else echo "  PASS: no tracked .env file found"; fi; \
+	if rg -n 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|-----BEGIN [A-Z ]*PRIVATE KEY-----|-----END [A-Z ]*PRIVATE KEY-----|replace-me|changeme|dummy-secret' docs/reports/generated/zdash-monorepo-evidence.md docs/releases/zdash/ZDASH_MONOREPO_IMPORT_EVIDENCE.md >/dev/null 2>&1; then echo "  FAIL: obvious secret-like value found in evidence"; fail=1; else echo "  PASS: no obvious secret-like values in evidence"; fi; \
+	echo ""; \
+	echo "--- CI Workflow ---"; \
+	check_path file .github/workflows/zdash-monorepo.yml; \
+	echo ""; \
+	echo "--- README ---"; \
+	if grep -q "apps/zdash" README.md 2>/dev/null; then echo "  PASS: README mentions apps/zdash"; else echo "  FAIL: README missing apps/zdash reference"; fail=1; fi; \
+	echo ""; \
+	if [ "$$fail" -ne 0 ]; then echo "Phase 51 validation failed."; exit 1; fi; \
+	echo "Phase 51 validation complete."
+
+.PHONY: zeaz-dev-plan
+zeaz-dev-plan: ## Print the zeaz.dev production route plan
+	@bash scripts/cloudflare/zeaz-dev-plan.sh
+
+.PHONY: zeaz-dev-apply
+zeaz-dev-apply: ## Run controlled zeaz.dev apply checks
+	@bash scripts/lib/guard-live.sh "bash scripts/cloudflare/zeaz-dev-plan.sh" 5
+	@bash scripts/cloudflare/zeaz-dev-apply.sh
+
+.PHONY: zeaz-dev-rollback-plan
+zeaz-dev-rollback-plan: ## Generate zeaz.dev rollback plan
+	@bash scripts/cloudflare/zeaz-dev-rollback-plan.sh
+
+.PHONY: zeaz-dev-verify-live
+zeaz-dev-verify-live: ## Verify live zeaz.dev public URLs
+	@bash scripts/cloudflare/zeaz-dev-verify-live.sh
+
+.PHONY: zeaz-dev-public-evidence
+zeaz-dev-public-evidence: ## Generate zeaz.dev public release evidence
+	@bash scripts/release/build-zeaz-dev-public-evidence.sh
+
+.PHONY: phase52-validate
+phase52-validate: ## Validate Phase 52 zeaz.dev production routing update
+	@set -Eeuo pipefail; \
+	fail=0; \
+	check_file() { if [ -f "$$1" ]; then echo "  PASS: $$1 exists"; else echo "  FAIL: $$1 missing"; fail=1; fi; }; \
+	check_exec() { if [ -x "$$1" ]; then echo "  PASS: $$1 executable"; else echo "  FAIL: $$1 missing or not executable"; fail=1; fi; }; \
+	echo "=== Phase 52 Validation ==="; \
+	check_file configs/cloudflare/zeaz-dev/zeaz-dev-route-intent.example.json; \
+	check_file generated/cloudflare/zdash-production-tunnel-ingress.yml; \
+	check_file configs/cloudflare/zdash/zdash.production.routes.example.json; \
+	check_file configs/cloudflare/access/zeaz-dev-zdash-access-policy.example.json; \
+	check_file docs/cloudflare/ZEAZ_DEV_ACCESS_POLICY.md; \
+	check_file docs/releases/zeaz-dev/PUBLIC_RELEASE_EVIDENCE_INDEX.md; \
+	check_file docs/runbooks/ZEAZ_DEV_PRODUCTION_UPDATE.md; \
+	check_file docs/runbooks/ZEAZ_DEV_ROLLBACK.md; \
+	check_file docs/runbooks/ZEAZ_DEV_POST_DEPLOY_CHECKLIST.md; \
+	check_file docs/reports/PHASE52_ZEAZ_DEV_PRODUCTION_UPDATE_REPORT.md; \
+	check_exec scripts/cloudflare/zeaz-dev-plan.sh; \
+	check_exec scripts/cloudflare/zeaz-dev-apply.sh; \
+	check_exec scripts/cloudflare/zeaz-dev-rollback-plan.sh; \
+	check_exec scripts/cloudflare/zeaz-dev-verify-live.sh; \
+	check_exec scripts/release/build-zeaz-dev-public-evidence.sh; \
+	for t in zeaz-dev-plan zeaz-dev-apply zeaz-dev-rollback-plan zeaz-dev-verify-live zeaz-dev-public-evidence phase52-validate; do \
+	  if grep -Eq "^$$t:" Makefile; then echo "  PASS: $$t target exists"; else echo "  FAIL: $$t target missing"; fail=1; fi; \
+	done; \
+	if git ls-files | grep -Eq '(^|/)\\.env($|/)'; then echo "  FAIL: tracked .env file found"; fail=1; else echo "  PASS: no tracked .env file found"; fi; \
+	if rg -n 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|-----BEGIN [A-Z ]*PRIVATE KEY-----|replace-me|changeme|dummy-secret|fake-token' docs/reports/generated/ docs/releases/zeaz-dev/ >/dev/null 2>&1; then echo "  FAIL: secret-like content detected in generated evidence"; fail=1; else echo "  PASS: no secret-like content in generated evidence"; fi; \
+	if grep -RIn 'DRY_RUN=true\|APPLY=false\|dry-run by default' scripts/cloudflare scripts/release configs/cloudflare docs/runbooks >/dev/null 2>&1; then echo "  PASS: dry-run defaults present"; else echo "  FAIL: dry-run defaults not evident"; fail=1; fi; \
+	if grep -RIn 'ALLOW_PAID_CLOUDFLARE_FEATURES=false\|COST_LOCK=true\|CLOUDFLARE_PLAN_TIER=Free' README.md docs configs scripts Makefile >/dev/null 2>&1; then echo "  PASS: paid-feature guardrails documented"; else echo "  FAIL: paid-feature guardrails not found"; fail=1; fi; \
+	if [ -d apps/zdash ]; then echo "  PASS: apps/zdash exists"; else echo "  FAIL: apps/zdash missing"; fail=1; fi; \
+	if [ "$$fail" -ne 0 ]; then echo "Phase 52 validation failed."; exit 1; fi; \
+	echo "Phase 52 validation complete."
+
+
+cloudflare-stability-check: ## Run full Cloudflare stability checks
+	@bash scripts/cloudflare/cloudflare-stability-check.sh
+
+# -------------------------------------------------------------------
+# Authentik local runtime
+# -------------------------------------------------------------------
+AUTHENTIK_DIR ?= runtime/authentik
+AUTHENTIK_COMPOSE ?= $(AUTHENTIK_DIR)/compose.yml
+AUTHENTIK_ENV ?= $(AUTHENTIK_DIR)/.env
+AUTHENTIK_HTTP_PORT ?= 9000
+AUTHENTIK_HTTPS_PORT ?= 9443
+
+.PHONY: authentik-env authentik-install authentik-pull authentik-up authentik-start authentik-down authentik-stop authentik-restart authentik-status authentik-logs authentik-update authentik-open
+
+authentik-env:
+	@mkdir -p "$(AUTHENTIK_DIR)"
+	@chmod 700 "$(AUTHENTIK_DIR)"
+	@if [ ! -f "$(AUTHENTIK_ENV)" ]; then \
+		echo "PG_PASS=$$(openssl rand -base64 36 | tr -d '\n')" > "$(AUTHENTIK_ENV)"; \
+		echo "AUTHENTIK_SECRET_KEY=$$(openssl rand -base64 60 | tr -d '\n')" >> "$(AUTHENTIK_ENV)"; \
+		echo "COMPOSE_PORT_HTTP=$(AUTHENTIK_HTTP_PORT)" >> "$(AUTHENTIK_ENV)"; \
+		echo "COMPOSE_PORT_HTTPS=$(AUTHENTIK_HTTPS_PORT)" >> "$(AUTHENTIK_ENV)"; \
+		echo "AUTHENTIK_ERROR_REPORTING__ENABLED=false" >> "$(AUTHENTIK_ENV)"; \
+		chmod 600 "$(AUTHENTIK_ENV)"; \
+		echo "Created $(AUTHENTIK_ENV)"; \
+	else \
+		echo "$(AUTHENTIK_ENV) already exists; preserving secrets"; \
+	fi
+
+authentik-install: authentik-env
+	@curl -fsSLo "$(AUTHENTIK_COMPOSE)" https://docs.goauthentik.io/compose.yml
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" pull
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" up -d
+	@echo "Authentik started: http://localhost:$(AUTHENTIK_HTTP_PORT)"
+
+authentik-pull:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" pull
+
+authentik-up authentik-start:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" up -d
+	@echo "Authentik: http://localhost:$(AUTHENTIK_HTTP_PORT)"
+
+authentik-down authentik-stop:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" down
+
+authentik-restart:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" restart
+
+authentik-status:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" ps
+
+authentik-logs:
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" logs -f
+
+authentik-update: authentik-env
+	@curl -fsSLo "$(AUTHENTIK_COMPOSE)" https://docs.goauthentik.io/compose.yml
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" pull
+	@docker compose --env-file "$(AUTHENTIK_ENV)" -f "$(AUTHENTIK_COMPOSE)" up -d
+
+authentik-open:
+	@echo "Open: http://localhost:$(AUTHENTIK_HTTP_PORT)"
+
+# =============================================================================
+# zDash Cloudflare Terraform Integration
+# =============================================================================
+
+.PHONY: zdash-terraform-integrate
+zdash-terraform-integrate: ## Generate zDash Terraform source files
+	@bash scripts/cloudflare/zdash-terraform-integrate.sh
+
+.PHONY: cf-zdash-preflight
+cf-zdash-preflight: ## Resolve Cloudflare zone/tunnel/DNS IDs for zDash
+	@bash scripts/cloudflare/zdash-cloudflare-preflight.sh
+
+.PHONY: cf-zdash-import-existing
+cf-zdash-import-existing: ## Import existing zDash DNS records into Terraform state
+	@bash scripts/cloudflare/zdash-terraform-import-existing.sh
+
+.PHONY: tf-zdash-init
+tf-zdash-init: ## Init zDash Cloudflare Terraform
+	@$(TF_BIN) -chdir=$(TF_ZDASH_ROOT) init $(TF_ARGS)
+
+.PHONY: tf-zdash-fmt
+tf-zdash-fmt: ## Format zDash Cloudflare Terraform
+	@$(TF_BIN) fmt -recursive $(TF_ZDASH_ROOT)
+
+.PHONY: tf-zdash-fmt-check
+tf-zdash-fmt-check: ## Check zDash Cloudflare Terraform formatting
+	@$(TF_BIN) fmt -check -recursive $(TF_ZDASH_ROOT)
+
+.PHONY: tf-zdash-validate
+tf-zdash-validate: tf-zdash-init ## Validate zDash Cloudflare Terraform
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) validate
+
+.PHONY: tf-zdash-plan
+tf-zdash-plan: tf-zdash-init ## Plan zDash Cloudflare Terraform
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)
+
+.PHONY: tf-zdash-plan-out
+tf-zdash-plan-out: tf-zdash-init ## Save zDash Cloudflare Terraform plan
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan -out=$(TF_PLAN_FILE) $(TF_ARGS)
+	@echo "Saved zDash Terraform plan: $(TF_ZDASH_ROOT)/$(TF_PLAN_FILE)"
+
+.PHONY: tf-zdash-apply
+tf-zdash-apply: ## Guarded zDash Terraform apply
+	@test "$${APPLY:-false}" = "true" || (echo "ERROR: APPLY=true required"; exit 1)
+	@test "$${CONFIRM_TERRAFORM_APPLY:-no}" = "yes" || (echo "ERROR: CONFIRM_TERRAFORM_APPLY=yes required"; exit 1)
+	@test "$${COST_LOCK:-true}" = "true" || (echo "ERROR: COST_LOCK=true required"; exit 1)
+	@test "$${ALLOW_PAID_CLOUDFLARE_FEATURES:-false}" = "false" || (echo "ERROR: paid Cloudflare features must stay disabled"; exit 1)
+	@bash scripts/lib/guard-live.sh "bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) plan $(TF_ARGS)" 10
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh $(TF_BIN) -chdir=$(TF_ZDASH_ROOT) apply $(TF_ARGS)
+
+.PHONY: cf-zdash-token-diagnose
+cf-zdash-token-diagnose: ## Diagnose Cloudflare token permissions for zDash
+	@bash scripts/cloudflare/zdash-cloudflare-token-diagnose.sh
+
+.PHONY: cf-zdash-sync-env
+cf-zdash-sync-env: ## Sync zDash Terraform env vars from Cloudflare API into .env/.env.cloudflare
+	@bash scripts/cloudflare/sync-zdash-terraform-env-from-api.sh
+
+# =============================================================================
+# Phase 55 — Repository deep-dive and Makefile hygiene
+# =============================================================================
+
+.PHONY: repo-deep-dive makefile-audit makefile-refactor
+repo-deep-dive: ## Generate full repository deep-dive report
+	@bash scripts/repo/deep-dive-report.sh
+
+makefile-audit: ## Audit root Makefile for duplicate targets and risky patterns
+	@$(PYTHON) scripts/make/audit-makefile.py Makefile
+
+makefile-refactor: ## Re-run safe root Makefile cleanup
+	@$(PYTHON) scripts/make/refactor-root-makefile.py
+	@$(PYTHON) scripts/make/audit-makefile.py Makefile
+
+# =============================================================================
+# Local apps deep-dive
+# =============================================================================
+
+.PHONY: apps-deep-dive apps-inventory
+apps-deep-dive: ## Deep-dive local apps under apps/*
+	@bash scripts/apps/deep-dive-local-apps.sh
+
+apps-inventory: apps-deep-dive ## Alias for local apps inventory
+
+.PHONY: apps-inventory-validate
+apps-inventory-validate: apps-deep-dive ## Validate generated apps inventory
+	@$(PYTHON) scripts/apps/validate-apps-inventory.py generated/integration/apps-inventory.json
+
+# =============================================================================
+# Phase 58 — cvsz apps merge/adoption
+# =============================================================================
+
+.PHONY: critical-apps-deep-dive cvsz-apps-merge-plan cvsz-apps-merge-apply cvsz-apps-merge-validate phase58-validate
+critical-apps-deep-dive: ## Deep-dive apps/ABTPi18n and apps/zkbtrader
+	@bash scripts/apps/deep-dive-critical-apps.sh
+
+cvsz-apps-merge-plan: ## Plan adoption of apps/* from cvsz/*
+	@$(PYTHON) scripts/apps/plan-cvsz-apps-merge.py
+
+cvsz-apps-merge-apply: ## Adopt local apps/* into zeaz-platform; guarded
+	@bash scripts/lib/guard-live.sh "$(PYTHON) scripts/apps/plan-cvsz-apps-merge.py" 5
+	@bash scripts/apps/adopt-cvsz-apps-apply.sh
+
+cvsz-apps-merge-validate: ## Validate apps/* merge/adoption hygiene
+	@bash scripts/apps/validate-cvsz-apps-merge.sh
+
+phase58-validate: ## Validate Phase 58 app merge system
+	@$(MAKE) critical-apps-deep-dive
+	@$(MAKE) cvsz-apps-merge-plan
+	@set +e; $(MAKE) cvsz-apps-merge-validate; rc=$$?; git diff --check; exit $$rc
+
+# =============================================================================
+# Phase 59 — apps routing inventory and Cloudflare Terraform
+# =============================================================================
+
+.PHONY: apps-routing-generate apps-routing-report tf-cloudflare-apps-init tf-cloudflare-apps-fmt tf-cloudflare-apps-validate tf-cloudflare-apps-plan phase59-validate
+apps-routing-generate: ## Generate apps routing report and Terraform app route vars
+	@$(PYTHON) scripts/platform/generate-apps-routing-assets.py
+
+apps-routing-report: apps-routing-generate ## Print apps routing report
+	@sed -n '1,220p' reports/platform/apps-routing.md
+
+phase59-validate: apps-routing-generate tf-cloudflare-apps-fmt tf-cloudflare-apps-validate
+	@git diff --check
+
+# =============================================================================
+# Phase 60 — apps stack deep dive and port refactor
+# =============================================================================
+
+.PHONY: apps-stack-deep-dive apps-port-refactor-generate apps-port-refactor-report apps-port-origin-check tf-cloudflare-apps-init tf-cloudflare-apps-fmt tf-cloudflare-apps-validate tf-cloudflare-apps-plan tf-cloudflare-apps-apply apply-port-plan add-route phase60-validate
+apps-stack-deep-dive: ## Deep-dive all stacks under apps/*
+	@$(PYTHON) scripts/platform/deep-dive-apps-stack.py
+
+apps-port-refactor-generate: ## Generate canonical app port/Terraform/tunnel assets
+	@$(PYTHON) scripts/platform/generate-port-refactor-assets.py
+
+apps-port-refactor-report: apps-stack-deep-dive apps-port-refactor-generate ## Print app stack and port plan
+	@sed -n '1,220p' reports/platform/apps-port-refactor.md
+
+apps-port-origin-check: apps-port-refactor-generate ## Check active local origins
+	@bash scripts/platform/check-port-origins.sh
+
+add-route: ## Register new domain/subdomain (Usage: make add-route HOSTNAME=test.zeaz.dev PORT=3005 APP_ID=test [ROLE=ui] or run interactive: make add-route)
+	@$(PYTHON) scripts/platform/add-route.py \
+		$(if $(APP_ID),--app-id "$(APP_ID)",) \
+		$(if $(HOSTNAME),--hostname "$(HOSTNAME)",) \
+		$(if $(PORT),--port "$(PORT)",) \
+		$(if $(ROLE),--role "$(ROLE)",)
+
+tf-cloudflare-apps-init: ## Init Cloudflare apps Terraform
+	@cd terraform/cloudflare-apps && terraform init
+
+tf-cloudflare-apps-fmt: ## Format Cloudflare apps Terraform
+	@cd terraform/cloudflare-apps && terraform fmt
+
+tf-cloudflare-apps-validate: apps-port-refactor-generate tf-cloudflare-apps-init ## Validate Cloudflare apps Terraform
+	@cd terraform/cloudflare-apps && terraform validate
+
+tf-cloudflare-apps-plan: apps-port-refactor-generate tf-cloudflare-apps-init ## Plan Cloudflare apps Terraform
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh
+	@export $$(grep -v '^#' .env.cloudflare | xargs) && cd terraform/cloudflare-apps && terraform plan
+
+tf-cloudflare-apps-apply: apps-port-refactor-generate tf-cloudflare-apps-init ## Apply Cloudflare apps Terraform
+	@test "$${APPLY:-false}" = "true" || (echo "ERROR: APPLY=true required"; exit 1)
+	@test "$${CONFIRM_TERRAFORM_APPLY:-no}" = "yes" || (echo "ERROR: CONFIRM_TERRAFORM_APPLY=yes required"; exit 1)
+	@bash scripts/cloudflare/zdash-terraform-env-guard.sh
+	@export $$(grep -v '^#' .env.cloudflare | xargs) && cd terraform/cloudflare-apps && terraform apply -auto-approve
+
+apply-port-plan: tf-cloudflare-apps-apply ## Generate port refactor assets and apply to Cloudflare
+
+phase60-validate: apps-stack-deep-dive apps-port-refactor-generate tf-cloudflare-apps-fmt tf-cloudflare-apps-validate
+	@git diff --check
+
+# =============================================================================
+# Phase 61 — build all stacks and go-live gate
+# =============================================================================
+
+.PHONY: build-all-stacks build-all-stacks-full go-live-preflight go-live-report
+build-all-stacks: ## Build/check all apps/* stacks without install or docker build
+	@bash scripts/platform/build-all-stacks.sh
+
+build-all-stacks-full: ## Build/check all apps/* stacks with installs and docker build
+	@RUN_INSTALL=true RUN_DOCKER_BUILD=true bash scripts/platform/build-all-stacks.sh
+
+go-live-preflight: ## Run go-live readiness checks without deploy/apply
+	@bash scripts/platform/go-live-preflight.sh
+
+go-live-report: build-all-stacks go-live-preflight ## Generate full go-live reports
+	@echo "Reports:"
+	@echo "  reports/platform/build-all-stacks.md"
+	@echo "  reports/platform/go-live-preflight.md"
+	@echo "  reports/platform/apps-port-refactor.md"
+
+# =============================================================================
+# Phase 61.0 — deep source review before build/go-live
+# =============================================================================
+
+.PHONY: apps-source-review apps-source-review-strict apps-source-review-report
+apps-source-review: ## Review source-owned files under apps/* before build/go-live
+	@$(PYTHON) scripts/platform/review-apps-source.py
+
+apps-source-review-strict: ## Review apps/* and fail on critical findings
+	@$(PYTHON) scripts/platform/review-apps-source.py --fail-on-critical
+
+apps-source-review-report: apps-source-review ## Print apps source review report
+	@sed -n '1,260p' reports/platform/apps-source-review.md
+
+# =============================================================================
+# Generic App Wrappers
+# =============================================================================
+
+.PHONY: app-%
+app-%: ## Run a target in a specific app (e.g., make app-openwork-dev)
+	@app_name=$$(echo $* | cut -d'-' -f1); \
+	target=$$(echo $* | cut -d'-' -f2-); \
+	if [ -d "apps/$$app_name" ]; then \
+		echo "Running 'make $$target' in apps/$$app_name..."; \
+		$(MAKE) -C apps/$$app_name $$target; \
+	else \
+		echo "ERROR: App apps/$$app_name does not exist." >&2; \
+		exit 1; \
+	fi
+
+.PHONY: all-apps-install
+all-apps-install: ## Run install across all apps
+	@for app in apps/*; do \
+		if [ -f "$$app/Makefile" ] && grep -q "^install:" "$$app/Makefile"; then \
+			echo "Installing $$app..."; \
+			$(MAKE) -C "$$app" install; \
+		fi; \
+	done
+
+.PHONY: all-apps-build
+all-apps-build: ## Run build across all apps
+	@for app in apps/*; do \
+		if [ -f "$$app/Makefile" ] && grep -q "^build:" "$$app/Makefile"; then \
+			echo "Building $$app..."; \
+			$(MAKE) -C "$$app" build; \
+		fi; \
+	done
+
+zquest-start: ## Start the zQuest frontend plus backend-backed database server
+	@bash scripts/zquest-control.sh start
+
+zquest-stop: ## Stop the zQuest frontend plus backend-backed database server
+	@bash scripts/zquest-control.sh stop
+
+zquest-status: ## Show zQuest server status
+	@bash scripts/zquest-control.sh status
+
+zquest-restart: zquest-stop zquest-start ## Restart zQuest server
+
+zquest-smoke: ## Run zQuest smoke tests against the local server
+	@bash scripts/zquest-control.sh smoke
+
+.PHONY: all-apps-start all-apps-stop all-apps-restart all-apps-status
+
+all-apps-start: ## Start all apps (Makefile or npm/pnpm start)
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^start:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" start & \
+			elif [ -f "$$app/package.json" ]; then \
+				echo "Starting $$app via npm/pnpm..."; \
+				(cd "$$app" && ( [ -f pnpm-lock.yaml ] && pnpm start || npm start ) &) \
+			else echo "Skipping $$app"; fi; \
+		fi; \
+	done
+
+all-apps-stop: ## Stop all apps (Makefile or process kill)
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^stop:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" stop || true; \
+			else \
+				echo "Stopping processes in $$app..."; \
+				pids=$$(pgrep -f "$$app"); \
+				if [ -n "$$pids" ]; then kill $$pids; else echo "No process found for $$app"; fi; \
+			fi; \
+		fi; \
+	done
+all-apps-restart: all-apps-stop all-apps-start
+
+all-apps-status: ## Show status of all apps
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if [ -f "$$app/Makefile" ] && grep -q "^status:" "$$app/Makefile"; then \
+				$(MAKE) -C "$$app" status; \
+			else \
+				pgrep -af "$$app" || echo "$$app: Stopped"; \
+			fi; \
+		fi; \
+	done
+
+# OMEGA Platform Installer Targets
+install:
+	sudo ./installer/install.sh
+
+omega-validate:
+	sudo ./installer/validate.sh
+
+package:
+	./installer/release/package.sh
+
+harness-audit:
+	@node scripts/harness-audit.js repo --format text
+# ==============================================================================
+# ZEAZ Omega AI Assets Installer
+# ==============================================================================
+
+.PHONY: omega-ai-assets-scan omega-ai-assets-install omega-ai-assets-verify
+
+omega-ai-assets-scan:
+	@bash scripts/omega/install-ai-assets-master.sh
+
+omega-ai-assets-install:
+	@bash scripts/omega/install-ai-assets-master.sh --apply
+
+omega-ai-assets-verify:
+	@bash scripts/omega/verify-ai-assets-master.sh

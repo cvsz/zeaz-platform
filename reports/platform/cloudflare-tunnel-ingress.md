@@ -1,0 +1,21 @@
+# Cloudflare Tunnel ingress intent
+
+- `zeaz.dev` -> `http://127.0.0.1:3003`
+- `www.zeaz.dev` -> `http://127.0.0.1:3003`
+- `ssh.zeaz.dev` -> `ssh://127.0.0.1:22022`
+- `app.zeaz.dev` -> `http://127.0.0.1:3003`
+- `studio.zeaz.dev` -> `http://127.0.0.1:3001`
+- `zveo.zeaz.dev` -> `http://127.0.0.1:3002`
+- `api-zveo.zeaz.dev` -> `http://127.0.0.1:8090`
+- `cctv.zeaz.dev` -> `http://127.0.0.1:9292`
+- `zkbtrader.zeaz.dev` -> `http://127.0.0.1:8004`
+- `zdash.zeaz.dev` -> `http://127.0.0.1:5173`
+- `api-zdash.zeaz.dev` -> `http://127.0.0.1:8005`
+- `release.zeaz.dev` -> `http://127.0.0.1:5172`
+- `zcino.zeaz.dev` -> `http://127.0.0.1:3000`
+- `zoffice.zeaz.dev` -> `http://127.0.0.1:8090`
+- `abtpi18n.zeaz.dev` -> `http://127.0.0.1:3001`
+- `zwallet.zeaz.dev` -> `reserved`
+- `zlms.zeaz.dev` -> `reserved`
+- `academy.zeaz.dev` -> `reserved`
+- `zsticker.zeaz.dev` -> `reserved`

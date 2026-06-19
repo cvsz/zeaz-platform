@@ -1,0 +1,106 @@
+name: Security control request
+description: Request a defensive security improvement, control gap remediation, or hardening task.
+title: "[Security Control]: "
+labels:
+  - security
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this public form only for defensive control work that does not reveal exploitable vulnerability details. Use private security advisories for confirmed vulnerabilities or sensitive exploit information.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight checklist
+      options:
+        - label: This request does not disclose an exploitable vulnerability, secret, or sensitive production detail.
+          required: true
+        - label: I removed tokens, credentials, private keys, sensitive logs, PII, and protected student data.
+          required: true
+        - label: I identified the control objective and expected evidence.
+          required: true
+  - type: dropdown
+    id: control_domain
+    attributes:
+      label: Control domain
+      multiple: true
+      options:
+        - Authentication
+        - Authorization / least privilege
+        - Input validation / output encoding
+        - Webhook signature verification
+        - Replay protection / idempotency
+        - Rate limiting / abuse prevention
+        - Audit logging
+        - Secrets management
+        - CI/CD supply chain
+        - Dependency governance
+        - Container hardening
+        - Kubernetes hardening
+        - Observability / detection
+        - Incident response
+        - Compliance evidence
+        - Data protection / privacy
+    validations:
+      required: true
+  - type: textarea
+    id: control_gap
+    attributes:
+      label: Control gap or risk
+      description: Describe the missing, weak, or inconsistent defensive control without publishing exploit instructions.
+    validations:
+      required: true
+  - type: dropdown
+    id: risk_rating
+    attributes:
+      label: Risk rating
+      options:
+        - Critical - immediate remediation required
+        - High - significant exposure or compliance blocker
+        - Medium - important hardening gap
+        - Low - defense-in-depth improvement
+    validations:
+      required: true
+  - type: textarea
+    id: requirement
+    attributes:
+      label: Requirement and policy mapping
+      description: Map to internal policy, OWASP ASVS, SOC 2, ISO 27001, SLSA, CIS, NIST, or other relevant standards.
+      placeholder: "OWASP ASVS 2.x, 5.x; SLSA provenance; CIS Kubernetes Benchmark..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_control
+    attributes:
+      label: Proposed control
+      description: Describe the desired technical and process controls.
+      placeholder: "Verify X-Hub-Signature-256, reject duplicate delivery IDs, enforce installation-scoped authorization, and emit audit events."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Identify affected services, workflows, repositories, environments, endpoints, queues, or infrastructure.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria and evidence
+      description: Define required tests, scans, logs, dashboards, screenshots, policy checks, or audit artifacts.
+    validations:
+      required: true
+  - type: textarea
+    id: operational_impact
+    attributes:
+      label: Operational impact
+      description: Note rollout risks, compatibility constraints, rate-limit effects, migration needs, and rollback strategy.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Link safe public standards, internal ticket IDs, architecture decisions, or non-sensitive docs.

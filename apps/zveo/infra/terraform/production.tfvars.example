@@ -1,0 +1,6 @@
+name             = "zveo"
+region           = "us-east-1"
+backup_region    = "us-west-2"
+retention_days   = 35
+eks_cluster_name = "zveo-prod"
+vpc_cidr         = "10.42.0.0/16"

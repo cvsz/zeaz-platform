@@ -1,0 +1,23 @@
+{
+  "scan_timestamp": 1781193470,
+  "scan_duration_seconds": 5,
+  "total_files": 42,
+  "classification": {
+    "active": 3,
+    "legacy": 3,
+    "example": 5,
+    "reference": 1,
+    "sensitive": 1,
+    "unknown": 29
+  },
+  "issue_count": 26,
+  "issues": [
+    "HARDCODED: apps/zLinebot/cloudflared/config.yml — tunnel name 'zlinebot' should use env var",
+    "HARDCODED: apps/zLinebot/cloudflared/config.yml — credentials-file path should use env var",
+    "SENSITIVE: infra/cloudflare/creds.json — contains tunnel credentials, committed to repo",
+    "HARDCODED: infrastructure/cloudflare/config.yml — tunnel name 'zeaz-platform' should use env var",
+    "HARDCODED: infrastructure/cloudflare/config.yml — credentials-file path should use env var",
+    "HARDCODED: tunnels/cloudflared/config.yml — tunnel name '' should use env var",
+    "HARDCODED: tunnels/cloudflared/config.yml — credentials-file path should use env var"
+  ]
+}

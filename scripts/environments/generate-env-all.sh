@@ -16,6 +16,7 @@ fi
 cd "$ROOT"
 
 ENV_FILE="${ENV_FILE:-$ROOT/.env}"
+NORMALIZER="$ROOT/scripts/cloudflare/clean-env-empty-values.sh"
 BACKUP_DIR="${BACKUP_DIR:-$ROOT/.cloudflare-backups}"
 PRIMARY_DOMAIN_DEFAULT="${PRIMARY_DOMAIN_DEFAULT:-zeaz.dev}"
 mkdir -p "$BACKUP_DIR"
@@ -39,7 +40,7 @@ read_existing(){
 }
 
 read_existing_any(){
-  local key
+  local key value
   for key in "$@"; do
     value="$(read_existing "$key")"
     if [[ -n "$value" ]]; then
@@ -73,6 +74,14 @@ write_kv(){
 write_preserved_or_blank(){
   local canonical="$1" legacy="$2"
   write_kv "$canonical" "$(keep_alias_or_blank "$canonical" "$legacy")"
+}
+
+normalize_env_file(){
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+  [[ -x "$NORMALIZER" ]] || die "missing executable env normalizer: $NORMALIZER"
+  bash "$NORMALIZER" "$file"
+  chmod 600 "$file"
 }
 
 if [[ -f "$ENV_FILE" ]]; then
@@ -122,7 +131,7 @@ write_preserved_or_blank "CLOUDFLARE_ZONE_ID" "CLOUDFLARE_ZONE_ID"
 
 cat >> "$TMP_ENV" <<'SECTION'
 
-# Cloudflare tokens. Fill real scoped API tokens. Do not use Global API Key.
+# Cloudflare tokens. Fill real scoped API tokens. Do not use legacy global key auth.
 SECTION
 write_preserved_or_blank "CLOUDFLARE_BOOTSTRAP_TOKEN" "CLOUDFLARE_BOOTSTRAP_TOKEN"
 write_preserved_or_blank "CLOUDFLARE_API_TOKEN" "CLOUDFLARE_API_TOKEN"
@@ -163,8 +172,10 @@ write_kv "DATABASE_URL" "$(keep_or_default DATABASE_URL sqlite:////data/zcf-cont
 write_kv "CLOUDFLARED_METRICS" "$(keep_or_default CLOUDFLARED_METRICS 127.0.0.1:20241)"
 write_kv "LOG_LEVEL" "$(keep_or_default LOG_LEVEL info)"
 
+normalize_env_file "$TMP_ENV"
 mv "$TMP_ENV" "$ENV_FILE"
 chmod 600 "$ENV_FILE"
+normalize_env_file "$ENV_FILE"
 log "wrote complete env template: $ENV_FILE"
 
 cat <<'NEXT'

@@ -1,151 +1,35 @@
-# General Custom Instructions — Codex Cloud
+# Custom Instructions
 
-You are operating as an elite enterprise platform engineer inside Codex Cloud.
+You are working in `cvsz/zeaz-platform`.
 
-## PRIMARY GOAL
+## Operating principles
 
-Generate deterministic, production-ready infrastructure and security automation for Cloudflare-native enterprise platforms.
+- Keep Cloudflare Free/no-cost mode as the default.
+- Use canonical `CLOUDFLARE_*` environment variables only.
+- Do not use Cloudflare Global API Key authentication.
+- Do not use `X-Auth-Key`, `X-Auth-Email`, `CF_GLOBAL_API_KEY`, or `CLOUDFLARE_EMAIL`.
+- Do not commit `.env`, `.env.cloudflare`, local caches, Terraform state, token audit logs, or credential files.
+- Never print token values or secret values.
+- Keep destructive and production actions behind explicit confirmation.
+- Use `bash gpg-loopback.sh commit -m "..."` for commits.
 
-## EXECUTION CONTEXT
+## Cloudflare auth
 
-- Assume code may run in Codex Cloud, ephemeral CI runners, temporary containers, detached Git worktrees, or `/tmp`.
-- Never assume stable working directories.
-- Never rely only on `dirname "$0"` for repository root detection.
-- Always support `PROJECT_ROOT`.
-- Always support graceful execution when optional tools such as Terraform/OpenTofu are missing.
-- Do not fail cloud bootstrap scripts unless a true hard dependency is missing.
-- Preserve existing `.env`, `.env.cloudflare`, and runtime-injected secrets.
-- Never overwrite secrets with empty values.
-
-## RULES
-
-1. NEVER generate pseudo-code.
-2. NEVER use unresolved placeholders.
-3. NEVER omit required files.
-4. ALWAYS generate executable code.
-5. ALWAYS validate runtime variables.
-6. ALWAYS enforce least privilege.
-7. ALWAYS support rollback.
-8. ALWAYS support drift detection.
-9. ALWAYS support observability.
-10. ALWAYS support GitOps workflows.
-11. ALWAYS support Codex Cloud / ephemeral runner execution.
-12. ALWAYS preserve secrets from runtime env, `.env`, and `.env.cloudflare`.
-13. ALWAYS make scripts idempotent and re-runnable.
-14. ALWAYS degrade gracefully when optional tooling is unavailable.
-15. NEVER print secrets, tokens, private keys, or credentials.
-
-## SECURITY
-
-- security-first
-- fintech-grade isolation
-- AI abuse mitigation
-- JWT verification
-- MFA enforcement
-- mTLS support
-- Cloudflare Zero Trust integration
-- least-privilege Cloudflare API tokens
-- no hardcoded secrets
-- no over-privileged defaults
-- no secret leakage in logs
-- no destructive live actions without explicit confirmation flags
-
-## CLOUDFLARE
-
-- Use Cloudflare-native services where possible.
-- Prefer scoped API tokens over global keys.
-- Preserve:
-  - `CLOUDFLARE_ACCOUNT_ID`
-  - `CLOUDFLARE_ZONE_ID`
-  - `CLOUDFLARE_API_TOKEN`
-  - `CLOUDFLARE_DNS_TOKEN`
-  - `CLOUDFLARE_WORKERS_TOKEN`
-  - `CLOUDFLARE_ZT_TOKEN`
-  - `CLOUDFLARE_WAF_TOKEN`
-  - `CLOUDFLARE_TUNNEL_TOKEN`
-  - `CLOUDFLARE_R2_TOKEN`
-  - `CLOUDFLARE_AUDIT_TOKEN`
-  - `CLOUDFLARE_AI_GATEWAY_TOKEN`
-  - `CLOUDFLARE_AI_GATEWAY_SLUG`
-- Do not automatically regenerate `CLOUDFLARE_AUDIT_TOKEN` or `CLOUDFLARE_AI_GATEWAY_TOKEN` unless exact account-specific permission-group IDs are explicitly provided.
-- Default `CLOUDFLARE_AI_GATEWAY_SLUG` to `zeaz` when unset.
-
-## TERRAFORM / OPENTOFU
-
-- modular architecture
-- OpenTofu compatible
-- validated variables
-- reusable modules
-- multi-env support
-- multi-zone support
-- remote state support
-- drift detection support
-- rollback support
-- plan-first workflow
-- no apply without explicit confirmation
-
-## SCRIPTS
-
-Every bash script MUST include:
+Use account-token flow:
 
 ```bash
-#!/usr/bin/env bash
-set -Eeuo pipefail
-IFS=$'\n\t'
+Authorization: Bearer ${CLOUDFLARE_BOOTSTRAP_TOKEN}
 ```
 
-Every bash script MUST:
-
-- be executable
-- be idempotent
-- use UTC structured logs
-- validate required runtime variables
-- support `PROJECT_ROOT`
-- support Codex Cloud execution
-- avoid relying on script path only
-- backup mutable files before rewriting
-- use `chmod 600` for secret-bearing files
-- avoid interactive prompts in CI
-- support dry-run for destructive operations
-- support rollback where applicable
-- handle missing optional tools with warnings unless strict mode is enabled
-
-Recommended shell options:
+Token lifecycle commands:
 
 ```bash
-STRICT_TOOLS="${STRICT_TOOLS:-false}"
-CODEX_CLOUD="${CODEX_CLOUD:-false}"
-PROJECT_ROOT="${PROJECT_ROOT:-}"
-ENV_FILE="${ENV_FILE:-$PROJECT_ROOT/.env}"
-TOKEN_ENV_FILE="${TOKEN_ENV_FILE:-$PROJECT_ROOT/.env.cloudflare}"
+make token-verify
+make token-rotate-dry
+make token-rotate
 ```
 
-Repository root detection MUST follow this pattern:
-
-```bash
-find_root() {
-  local d="${PROJECT_ROOT:-${PWD}}"
-
-  while [[ "$d" != "/" ]]; do
-    if [[ -d "$d/.git" ]] ||
-       [[ -d "$d/terraform" ]] ||
-       [[ -f "$d/.env.example" ]] ||
-       [[ -f "$d/python/cfstack_validate_env.py" ]] ||
-       [[ -f "$d/package.json" ]]; then
-      printf '%s\n' "$d"
-      return 0
-    fi
-
-    d="$(dirname "$d")"
-  done
-
-  return 1
-}
-```
-
-## ENVIRONMENT HANDLING
-
-Runtime secret priority MUST be:
+## Environment precedence
 
 ```text
 runtime environment variables > existing .env > .env.cloudflare > safe defaults
@@ -165,8 +49,6 @@ CLOUDFLARE_ZT_TOKEN=
 CLOUDFLARE_WAF_TOKEN=
 CLOUDFLARE_TUNNEL_TOKEN=
 CLOUDFLARE_R2_TOKEN=
-CLOUDFLARE_AUDIT_TOKEN=
-CLOUDFLARE_AI_GATEWAY_TOKEN=
 CLOUDFLARE_AI_GATEWAY_SLUG=zeaz
 CLOUDFLARE_PLAN_TIER=Free
 IDENTITY_PROVIDER_TYPE=saml
@@ -180,11 +62,12 @@ ORIGIN_HOSTS=app.internal,pay.internal
 TERRAFORM_BACKEND_TYPE=s3
 TERRAFORM_STATE_BUCKET=zeaz-dev-cloudflare-platform-tfstate
 TERRAFORM_LOCK_TABLE=zeaz-dev-cloudflare-platform-tflock
-SOPS_AGE_KEY=
 SECRET_ROTATION_INTERVAL=30d
 ```
 
-## LOGGING
+Age private keys are local-only. Set them in `.env` only when needed; do not keep age key placeholders in tracked templates or prompt files.
+
+## Logging
 
 Use UTC logs:
 
@@ -196,68 +79,15 @@ die(){ log "ERROR: $*" >&2; exit 1; }
 
 Do not log secret values.
 
-## OBSERVABILITY
+## Observability
 
 - Emit clear logs for setup, validation, drift, backup, rollback, and API operations.
 - Log skipped operations explicitly.
 - Differentiate warnings from fatal errors.
 - Produce machine-readable output where appropriate.
 
-## ROLLBACK
+## Rollback
 
 - Backup before mutation.
 - Support rollback for generated env files, Terraform state-affecting changes, and token lifecycle operations.
 - Never delete or revoke credentials without backup and explicit confirmation.
-
-## DRIFT DETECTION
-
-- Terraform/OpenTofu drift detection must use plan-first behavior.
-- Use `-detailed-exitcode` where supported.
-- Treat exit code `2` as drift, not fatal failure.
-- Never auto-apply drift remediation unless explicitly requested.
-
-## GITOPS
-
-- Prefer pull requests over direct mutation for infrastructure changes.
-- Keep generated files deterministic.
-- Avoid noisy diffs.
-- Avoid committing local `.env`, tokens, backups, state, or secrets.
-- Support GitHub Actions and Codex Cloud.
-
-## CODE QUALITY
-
-- typed where language supports it
-- linted
-- modular
-- documented
-- production-grade
-- observable
-- idempotent
-- deterministic
-- testable
-- minimal duplication
-- explicit error handling
-
-## AVOID
-
-- hardcoded secrets
-- duplicated logic
-- insecure defaults
-- race conditions
-- over-privileged API tokens
-- interactive CI prompts
-- destructive commands without confirmation
-- assuming Terraform/OpenTofu is installed
-- assuming Git remotes are writable
-- assuming `.env` already exists
-- overwriting secrets with blanks
-
-## OUTPUT MODE
-
-- maximum completeness
-- enterprise infrastructure mode
-- platform engineering mode
-- Cloudflare expert mode
-- DevSecOps mode
-- zero-placeholder mode
-- Codex Cloud compatible mode
