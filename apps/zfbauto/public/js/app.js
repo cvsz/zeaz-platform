@@ -31,6 +31,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Fetch Config & Insights
+  const fetchConfigAndInsights = async () => {
+    try {
+      const kpiFollowers = document.getElementById('kpi-followers');
+      const kpiPageStatus = document.getElementById('kpi-page-status');
+
+      // Fetch Config
+      const configRes = await fetch('/api/facebook/config');
+      const configData = await configRes.json();
+      
+      if (configData.success) {
+        const { pageId, hasAccessToken } = configData.data;
+        if (hasAccessToken) {
+          kpiPageStatus.textContent = pageId || 'Connected';
+          kpiPageStatus.style.color = 'var(--color-accent)';
+        } else {
+          kpiPageStatus.textContent = 'Missing Token';
+          kpiPageStatus.style.color = 'var(--color-destructive)';
+        }
+      }
+
+      // Fetch Insights
+      const insightsRes = await fetch('/api/facebook/insights');
+      const insightsData = await insightsRes.json();
+      
+      if (insightsData.success && insightsData.data) {
+        kpiFollowers.textContent = insightsData.data.followers_count || insightsData.data.fan_count || '0';
+        if (insightsData.data.name && kpiPageStatus.textContent !== 'Missing Token') {
+          kpiPageStatus.textContent = insightsData.data.name;
+        }
+      } else {
+        kpiFollowers.textContent = 'N/A';
+      }
+    } catch (e) {
+      console.error('Failed to fetch config/insights', e);
+      document.getElementById('kpi-followers').textContent = 'Error';
+    }
+  };
+
   // Fetch recent posts
   const fetchPosts = async () => {
     feedList.innerHTML = '<div class="text-muted" style="text-align: center; padding: 32px 0;">Loading recent posts...</div>';
@@ -134,9 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4000);
   };
 
-  btnRefresh.addEventListener('click', fetchPosts);
+  btnRefresh.addEventListener('click', () => {
+    fetchPosts();
+    fetchConfigAndInsights();
+  });
 
   // Init
   checkHealth();
+  fetchConfigAndInsights();
   fetchPosts();
 });

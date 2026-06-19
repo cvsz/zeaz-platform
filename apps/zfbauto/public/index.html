@@ -51,13 +51,20 @@
       </header>
 
       <!-- Metrics -->
-      <section class="dashboard-grid">
+      <section class="dashboard-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
         <div class="card">
           <div class="card-header">
-            <span>Total Posts Sent</span>
+            <span>Total Posts</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           </div>
           <div class="card-value" id="kpi-total-posts">--</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>Page Followers</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <div class="card-value" id="kpi-followers">--</div>
         </div>
         <div class="card">
           <div class="card-header">
@@ -68,10 +75,10 @@
         </div>
         <div class="card">
           <div class="card-header">
-            <span>Page Status</span>
+            <span>Page Connection</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           </div>
-          <div class="card-value" style="color: var(--color-accent);" id="kpi-page-status">Connected</div>
+          <div class="card-value" style="color: var(--color-accent); font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="kpi-page-status">Checking...</div>
         </div>
       </section>
 

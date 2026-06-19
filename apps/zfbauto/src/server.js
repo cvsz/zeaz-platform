@@ -28,6 +28,8 @@ app.get('/health', (req, res) => {
 app.post('/api/facebook/post-message', fbController.postMessage);
 app.post('/api/facebook/post-photo', fbController.postPhoto);
 app.get('/api/facebook/posts', fbController.getPosts);
+app.get('/api/facebook/insights', fbController.getInsights);
+app.get('/api/facebook/config', fbController.getConfig);
 
 app.listen(port, () => {
   console.log(`zfbauto server listening on port ${port}`);
