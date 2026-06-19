@@ -1,6 +1,9 @@
 {
   "version": 1,
-  "default_profile": "openrouter-qwen-coder",
+  "generated_at": "2026-06-19T07:35:15.664Z",
+  "source": "scripts/omega/agy-free-models.sh",
+  "default_profile": "openrouter-free-router",
+  "cost_policy": "free-first; local-no-cost preferred; hosted free-tier depends on provider quota",
   "profiles": [
     {
       "id": "gemini-free-2-flash",
@@ -65,23 +68,6 @@
         "fast",
         "low-cost",
         "routing"
-      ]
-    },
-    {
-      "id": "lmstudio-local",
-      "provider": "openai-compatible",
-      "model": "local-model",
-      "base_url": "http://127.0.0.1:1234/v1",
-      "api_key_env": "LMSTUDIO_API_KEY",
-      "context_window": 32768,
-      "max_output_tokens": 4096,
-      "temperature": 0.2,
-      "supports_tool_calling": false,
-      "supports_vision": false,
-      "supports_json_mode": false,
-      "recommended_for": [
-        "local experiments",
-        "no-cost"
       ]
     },
     {
@@ -169,24 +155,6 @@
       ]
     },
     {
-      "id": "ollama-qwen-local",
-      "provider": "ollama",
-      "model": "qwen2.5-coder:14b",
-      "base_url": "http://127.0.0.1:11434/v1",
-      "api_key_env": "OLLAMA_API_KEY",
-      "context_window": 32768,
-      "max_output_tokens": 4096,
-      "temperature": 0.2,
-      "supports_tool_calling": false,
-      "supports_vision": false,
-      "supports_json_mode": false,
-      "recommended_for": [
-        "local coding",
-        "offline review",
-        "safe-cost"
-      ]
-    },
-    {
       "id": "ollama-qwen2.5-coder-14b",
       "provider": "ollama",
       "model": "qwen2.5-coder:14b",
@@ -231,24 +199,6 @@
       ]
     },
     {
-      "id": "openrouter-deepseek",
-      "provider": "openrouter",
-      "model": "deepseek/deepseek-chat",
-      "base_url": "https://openrouter.ai/api/v1",
-      "api_key_env": "OPENROUTER_API_KEY",
-      "context_window": 128000,
-      "max_output_tokens": 8192,
-      "temperature": 0.2,
-      "supports_tool_calling": true,
-      "supports_vision": false,
-      "supports_json_mode": true,
-      "recommended_for": [
-        "architecture",
-        "debugging",
-        "large repo reasoning"
-      ]
-    },
-    {
       "id": "openrouter-free-router",
       "provider": "openrouter",
       "model": "openrouter/free",
@@ -268,33 +218,9 @@
         "fallback",
         "experiments"
       ]
-    },
-    {
-      "id": "openrouter-qwen-coder",
-      "provider": "openrouter",
-      "model": "qwen/qwen3-coder",
-      "base_url": "https://openrouter.ai/api/v1",
-      "api_key_env": "OPENROUTER_API_KEY",
-      "context_window": 262144,
-      "max_output_tokens": 8192,
-      "temperature": 0.2,
-      "supports_tool_calling": true,
-      "supports_vision": false,
-      "supports_json_mode": true,
-      "recommended_for": [
-        "coding",
-        "repo edits",
-        "refactor",
-        "tests"
-      ]
     }
   ],
   "routes": {
-    "architect": "openrouter-deepseek",
-    "coder": "openrouter-qwen-coder",
-    "reviewer": "openrouter-qwen-coder",
-    "local": "ollama-qwen-local",
-    "offline": "lmstudio-local",
     "free": "openrouter-free-router",
     "free_coder": "ollama-qwen2.5-coder-14b",
     "free_local": "ollama-qwen2.5-coder-14b",
@@ -303,5 +229,7 @@
     "free_reasoning": "ollama-deepseek-r1-8b",
     "free_lmstudio": "lmstudio-local-free"
   },
-  "cost_policy": "free-first"
+  "warnings": [
+    "failed to fetch OpenRouter free model catalog: self-signed certificate in certificate chain"
+  ]
 }
