@@ -11,6 +11,7 @@ This directory contains configuration, scripts, and documentation for Cloudflare
 | `compose.yaml` | Docker Compose | Launches cloudflared container(s) for active tunnels |
 | `.gitignore` | Git config | Protects secret files from commits |
 | `config/` | Canonical config | Reserved for domain, DNS, tunnel inventories |
+| `environments/` | Environment intent | Sanitized dev/staging/prod ownership boundaries |
 | `examples/` | Examples | Example files with placeholder values |
 | `examples/creds.example.json` | Example | Fake credential template (safe for commits) |
 | `scripts/` | Tooling | Validation, scanning, and comparison scripts |
@@ -23,6 +24,7 @@ This directory contains configuration, scripts, and documentation for Cloudflare
 | `scan-dns-ownership.sh` | Phase 5 | DNS hostname ownership scanner across all sources |
 | `check-secret-leaks.sh` | Phase 5 | Detects tracked secret-like files in git |
 | `validate-cloudflare-config.sh` | Phase 5+6 | Combined offline validator |
+| `scan-cloudflare-environment-boundaries.sh` | Phase 18 | Dev/staging/prod boundary scanner (--markdown/--json/--strict) |
 | `scan-workers-routes.sh` | Phase 6 | Worker route ownership scanner (--markdown/--json/--strict) |
 | `check-wrangler-examples.sh` | Phase 6 | Wrangler example file hygiene checker |
 | `compare-tunnel.sh` | Phase 3 | Live tunnel comparison (requires tokens) |
@@ -177,6 +179,7 @@ Before any Worker route deployment:
 - Phase 8: Terraform and live runtime reconciliation, ownership matrix, scanner script
 - Phase 9: Access security governance, rule scanners, zero trust inventory
 - Phase 10: CI Enforcement, PR gates, read-only CI operations
+- Phase 18: Multi-environment separation, environment intent YAMLs, boundary scanner
 
 ## Phase 7 Usage (Runtime Governance & Binding Audits)
 
@@ -496,3 +499,4 @@ printf 'Remove production Worker route for app.zeaz.dev with no rollback plan' |
   echo "Expected strict failure for unapproved Critical risk"
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check
 ```
+
