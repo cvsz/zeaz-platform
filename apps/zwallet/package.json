@@ -18,11 +18,5 @@
     "eslint": "^9.26.0",
     "madge": "^8.0.0",
     "typescript": "^5.8.3"
-  },
-  "pnpm": {
-    "overrides": {
-      "ws": "8.21.0",
-      "js-yaml": "4.2.0"
-    }
   }
 }
