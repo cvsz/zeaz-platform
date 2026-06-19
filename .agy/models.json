@@ -1,0 +1,307 @@
+{
+  "version": 1,
+  "default_profile": "openrouter-qwen-coder",
+  "profiles": [
+    {
+      "id": "gemini-free-2-flash",
+      "provider": "gemini",
+      "model": "gemini-2.0-flash",
+      "base_url": "https://generativelanguage.googleapis.com",
+      "api_key_env": "GEMINI_API_KEY",
+      "cost_class": "free-tier-quota",
+      "source": "manual-free-tier",
+      "context_window": 1048576,
+      "max_output_tokens": 8192,
+      "temperature": 0.2,
+      "supports_tool_calling": true,
+      "supports_vision": true,
+      "supports_json_mode": true,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "free-tier",
+        "fast",
+        "stable"
+      ]
+    },
+    {
+      "id": "gemini-free-flash",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "base_url": "https://generativelanguage.googleapis.com",
+      "api_key_env": "GEMINI_API_KEY",
+      "cost_class": "free-tier-quota",
+      "source": "manual-free-tier",
+      "context_window": 1048576,
+      "max_output_tokens": 8192,
+      "temperature": 0.2,
+      "supports_tool_calling": true,
+      "supports_vision": true,
+      "supports_json_mode": true,
+      "supports_reasoning": true,
+      "recommended_for": [
+        "free-tier",
+        "long-context",
+        "multimodal",
+        "agent"
+      ]
+    },
+    {
+      "id": "gemini-free-flash-lite",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash-lite",
+      "base_url": "https://generativelanguage.googleapis.com",
+      "api_key_env": "GEMINI_API_KEY",
+      "cost_class": "free-tier-quota",
+      "source": "manual-free-tier",
+      "context_window": 1048576,
+      "max_output_tokens": 8192,
+      "temperature": 0.2,
+      "supports_tool_calling": true,
+      "supports_vision": true,
+      "supports_json_mode": true,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "free-tier",
+        "fast",
+        "low-cost",
+        "routing"
+      ]
+    },
+    {
+      "id": "lmstudio-local",
+      "provider": "openai-compatible",
+      "model": "local-model",
+      "base_url": "http://127.0.0.1:1234/v1",
+      "api_key_env": "LMSTUDIO_API_KEY",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "recommended_for": [
+        "local experiments",
+        "no-cost"
+      ]
+    },
+    {
+      "id": "lmstudio-local-free",
+      "provider": "openai-compatible",
+      "model": "local-model",
+      "base_url": "http://127.0.0.1:1234/v1",
+      "api_key_env": "LMSTUDIO_API_KEY",
+      "cost_class": "local-no-cost",
+      "source": "manual-local",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "local",
+        "lm-studio",
+        "offline"
+      ]
+    },
+    {
+      "id": "ollama-deepseek-coder-v2",
+      "provider": "ollama",
+      "model": "deepseek-coder-v2",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "cost_class": "local-no-cost",
+      "source": "manual-local",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "local",
+        "coding",
+        "offline"
+      ]
+    },
+    {
+      "id": "ollama-deepseek-r1-8b",
+      "provider": "ollama",
+      "model": "deepseek-r1:8b",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "cost_class": "local-no-cost",
+      "source": "manual-local",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": true,
+      "recommended_for": [
+        "local",
+        "reasoning",
+        "debugging"
+      ]
+    },
+    {
+      "id": "ollama-llama3.2-3b",
+      "provider": "ollama",
+      "model": "llama3.2:3b",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "cost_class": "local-no-cost",
+      "source": "manual-local",
+      "context_window": 131072,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "local",
+        "fast",
+        "low-vram"
+      ]
+    },
+    {
+      "id": "ollama-qwen-local",
+      "provider": "ollama",
+      "model": "qwen2.5-coder:14b",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "recommended_for": [
+        "local coding",
+        "offline review",
+        "safe-cost"
+      ]
+    },
+    {
+      "id": "ollama-qwen2.5-coder-14b",
+      "provider": "ollama",
+      "model": "qwen2.5-coder:14b",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "cost_class": "local-no-cost",
+      "source": "manual-local",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "local",
+        "coding",
+        "offline",
+        "safe-cost"
+      ]
+    },
+    {
+      "id": "ollama-qwen2.5-coder-7b",
+      "provider": "ollama",
+      "model": "qwen2.5-coder:7b",
+      "base_url": "http://127.0.0.1:11434/v1",
+      "api_key_env": "OLLAMA_API_KEY",
+      "cost_class": "local-no-cost",
+      "source": "manual-local",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "local",
+        "coding",
+        "low-vram",
+        "offline"
+      ]
+    },
+    {
+      "id": "openrouter-deepseek",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-chat",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "context_window": 128000,
+      "max_output_tokens": 8192,
+      "temperature": 0.2,
+      "supports_tool_calling": true,
+      "supports_vision": false,
+      "supports_json_mode": true,
+      "recommended_for": [
+        "architecture",
+        "debugging",
+        "large repo reasoning"
+      ]
+    },
+    {
+      "id": "openrouter-free-router",
+      "provider": "openrouter",
+      "model": "openrouter/free",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "cost_class": "free-router",
+      "source": "openrouter",
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "temperature": 0.2,
+      "supports_tool_calling": false,
+      "supports_vision": false,
+      "supports_json_mode": false,
+      "supports_reasoning": false,
+      "recommended_for": [
+        "free",
+        "fallback",
+        "experiments"
+      ]
+    },
+    {
+      "id": "openrouter-qwen-coder",
+      "provider": "openrouter",
+      "model": "qwen/qwen3-coder",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "context_window": 262144,
+      "max_output_tokens": 8192,
+      "temperature": 0.2,
+      "supports_tool_calling": true,
+      "supports_vision": false,
+      "supports_json_mode": true,
+      "recommended_for": [
+        "coding",
+        "repo edits",
+        "refactor",
+        "tests"
+      ]
+    }
+  ],
+  "routes": {
+    "architect": "openrouter-deepseek",
+    "coder": "openrouter-qwen-coder",
+    "reviewer": "openrouter-qwen-coder",
+    "local": "ollama-qwen-local",
+    "offline": "lmstudio-local",
+    "free": "openrouter-free-router",
+    "free_coder": "ollama-qwen2.5-coder-14b",
+    "free_local": "ollama-qwen2.5-coder-14b",
+    "free_fast": "gemini-free-flash-lite",
+    "free_long_context": "gemini-free-flash",
+    "free_reasoning": "ollama-deepseek-r1-8b",
+    "free_lmstudio": "lmstudio-local-free"
+  },
+  "cost_policy": "free-first"
+}

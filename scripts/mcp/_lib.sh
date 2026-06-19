@@ -30,16 +30,16 @@ validate_json() {
 
 # ── Interactive prompt with non-interactive guard ────────────────────────────
 prompt_value() {
-  local var_name="$1" prompt_text="${2:-Enter value for \$${1}}"
+  local var_name="$1" prompt_text="${2:-Enter value for \${1}}"
   if [[ "${ZEAZ_NONINTERACTIVE:-0}" != "0" ]]; then
-    warn "Non-interactive mode; cannot set \$${var_name}"
+    warn "Non-interactive mode; cannot set \${var_name}"
     return 1
   fi
   local val
   read -rp "  ${prompt_text}: " val
   if [[ -n "$val" ]]; then
     echo "${var_name}=${val}" >> "${MCP_AUTH_DIR}/_manual.env"
-    log "Saved \$${var_name} to ~/.mcp-auth/_manual.env"
+    log "Saved \${var_name} to ~/.mcp-auth/_manual.env"
     return 0
   fi
   return 1

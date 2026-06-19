@@ -402,6 +402,47 @@ validate_wrangler_examples() {
   echo "$issues"
 }
 
+validate_environment_boundaries() {
+  local count=0
+  local env_dir="${CONFIG_DIR}/environments"
+  local scanner="${SCRIPTS_DIR}/scan-cloudflare-environment-boundaries.sh"
+
+  # Check 1: Verify all three environment YAML files exist
+  for env in dev staging prod; do
+    if [[ ! -f "${env_dir}/${env}.yml" ]]; then
+      errors+=("Missing environment intent file: ${env}.yml")
+      count=$((count + 1))
+    fi
+  done
+
+  # Check 2: Verify scanner exists and is executable
+  if [[ ! -x "$scanner" ]]; then
+    errors+=("Scanner script not found or not executable: $scanner")
+    count=$((count + 1))
+  fi
+
+  # Check 3: Run scanner in strict mode
+  if [[ -x "$scanner" ]]; then
+    if ! "$scanner" --strict >/dev/null 2>&1; then
+      errors+=("Environment boundary scanner found violations (run with --markdown for details)")
+      count=$((count + 1))
+    fi
+  fi
+
+  # Check 4: Verify no prod domain appears in dev.yml or staging.yml (direct check)
+  for env in dev staging; do
+    local file="${env_dir}/${env}.yml"
+    if [[ -f "$file" ]]; then
+      if grep -qE "office\.zeaz\.dev|zveo\.zeaz\.dev|cctv\.zeaz\.dev|api\.zveo\.zeaz\.dev|app\.zeaz\.dev|admin-wallet\.zeaz\.dev|zcloud\.zeaz\.dev|ztest\.zeaz\.dev" "$file"; then
+         errors+=("[$env.yml] Production domain hostname found in $env environment intent")
+         count=$((count + 1))
+      fi
+    fi
+  done
+
+  echo "$count"
+}
+
 # ---------- Validation ----------
 if [[ ${#TARGET_FILES[@]} -eq 0 ]]; then
   while IFS= read -r -d '' file; do
@@ -598,6 +639,10 @@ if [[ ! -f "$risk_gate" ]]; then
 else
   log_ok "cloudflare-risk-gate-policy.md exists"
 fi
+# Phase 18: Environment boundary validation
+log_info "Running Phase 18 environment boundary validation..."
+env_issues=$(validate_environment_boundaries)
+total_errors=$((total_errors + env_issues))
 
 # ---------- Output ----------
 if [[ "$MODE" == "json" ]]; then
@@ -616,7 +661,6 @@ if [[ "$MODE" == "json" ]]; then
   echo "}"
 else
   echo ""
-  echo "========== Cloudflare Config Validation =========="
   echo "  Files validated: ${#TARGET_FILES[@]}"
   echo ""
 
@@ -654,7 +698,6 @@ else
     log_error "Validation failed with $total_errors error(s) and ${#warnings[@]} warning(s)."
   fi
 
-  echo "================================================="
 fi
 
 # ---------- Exit code ----------

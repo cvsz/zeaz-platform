@@ -96,4 +96,21 @@ else
   warn "SBOM file missing; skipped grype"
 fi
 
+if [[ "${ENABLE_AGENT_SCAN:-false}" == "true" ]]; then
+  if [[ -f scripts/agent-scan.sh ]]; then
+    log "running agent scan because ENABLE_AGENT_SCAN=true"
+    if ! bash scripts/agent-scan.sh ${AGENT_SCAN_ARGS:-}; then
+      if [[ "$STRICT_SECURITY_SCAN" == "true" ]]; then
+        warn "agent scan failed in strict mode"
+        exit 1
+      fi
+      warn "agent scan failed; continuing because STRICT_SECURITY_SCAN=false"
+    fi
+  else
+    warn "scripts/agent-scan.sh missing; skipped agent scan"
+  fi
+else
+  log "agent scan skipped; set ENABLE_AGENT_SCAN=true to include it"
+fi
+
 log "security scans completed"

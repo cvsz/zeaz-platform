@@ -2,7 +2,6 @@ import { HDNodeWallet, Mnemonic } from "ethers";
 import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { z } from "zod";
 import { PathSchema } from "./types.js";
-import { wipeBuffer } from "./memory.js";
 
 const DeriveSchema = z.object({
   mnemonic: z.string().min(1).refine((m) => validateMnemonic(m), "Invalid BIP39 mnemonic"),

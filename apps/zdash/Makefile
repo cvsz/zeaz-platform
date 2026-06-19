@@ -5,10 +5,11 @@ SHELL := /usr/bin/env bash
 ROOT_DIR := $(CURDIR)
 BACKEND_DIR := backend
 FRONTEND_DIR := frontend
-BACKEND_HOST ?= 127.0.0.1
+BACKEND_HOST ?= 0.0.0.0
 BACKEND_PORT ?= 8005
-FRONTEND_HOST ?= 127.0.0.1
+FRONTEND_HOST ?= 0.0.0.0
 FRONTEND_PORT ?= 5173
+PROBE_HOST ?= 127.0.0.1
 RELEASE_HOST ?= 127.0.0.1
 RELEASE_PORT ?= 5172
 PYTHON ?= python3
@@ -50,7 +51,7 @@ install-frontend: ## Install frontend dependencies
 install-local: install-backend install-frontend ## Install backend and frontend
 
 run-backend: ## Run backend in foreground
-	@PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) $(PYTHON) -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload
+	@PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) $(BACKEND_DIR)/.venv/bin/python -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) --reload
 
 run-frontend: ## Run frontend in foreground
 	@cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT)
@@ -61,13 +62,19 @@ server-start: ## Start backend and frontend in background
 		echo "backend already running pid=$$(cat "$(BACKEND_PID)")"; \
 	else \
 		echo "START backend http://$(BACKEND_HOST):$(BACKEND_PORT)"; \
-		PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) nohup $(PYTHON) -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) >> "$(BACKEND_LOG)" 2>&1 & echo $$! > "$(BACKEND_PID)"; \
+		setsid -f env PYTHONPATH=$(BACKEND_DIR) APP_ENV=development BACKEND_HOST=$(BACKEND_HOST) BACKEND_PORT=$(BACKEND_PORT) $(BACKEND_DIR)/.venv/bin/python -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT) >> "$(BACKEND_LOG)" 2>&1 </dev/null; \
+		sleep 1; \
+		pid="$$(pgrep -fn 'python -m uvicorn app.main:app --host $(BACKEND_HOST) --port $(BACKEND_PORT)')"; \
+		if [ -n "$$pid" ]; then echo "$$pid" > "$(BACKEND_PID)"; fi; \
 	fi
 	@if [ -f "$(FRONTEND_PID)" ] && kill -0 "$$(cat "$(FRONTEND_PID)")" >/dev/null 2>&1; then \
 		echo "frontend already running pid=$$(cat "$(FRONTEND_PID)")"; \
 	else \
 		echo "START frontend http://$(FRONTEND_HOST):$(FRONTEND_PORT)"; \
-		cd $(FRONTEND_DIR); VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) nohup $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT) >> "../../$(FRONTEND_LOG)" 2>&1 & echo $$! > "../../$(FRONTEND_PID)"; \
+		cd $(FRONTEND_DIR); setsid -f env VITE_API_BASE_URL=http://$(BACKEND_HOST):$(BACKEND_PORT) $(NPM) run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT) >> "../$(FRONTEND_LOG)" 2>&1 </dev/null; \
+		sleep 2; \
+		pid="$$(pgrep -fn 'node .*/vite --host $(FRONTEND_HOST) --port $(FRONTEND_PORT)')"; \
+		if [ -n "$$pid" ]; then echo "$$pid" > "../$(FRONTEND_PID)"; fi; \
 	fi
 	@$(MAKE) server-status
 
@@ -83,8 +90,8 @@ server-restart: ## Restart backend and frontend
 server-status: ## Show server status and write report
 	@mkdir -p "$(REPORT_DIR)"
 	@backend_status="STOPPED"; frontend_status="STOPPED"; \
-	if [ -f "$(BACKEND_PID)" ] && kill -0 "$$(cat "$(BACKEND_PID)")" >/dev/null 2>&1; then backend_status="RUNNING pid=$$(cat "$(BACKEND_PID)")"; elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://$(BACKEND_HOST):$(BACKEND_PORT)/health" >/dev/null 2>&1; then backend_status="RUNNING external"; fi; \
-	if [ -f "$(FRONTEND_PID)" ] && kill -0 "$$(cat "$(FRONTEND_PID)")" >/dev/null 2>&1; then frontend_status="RUNNING pid=$$(cat "$(FRONTEND_PID)")"; elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://$(FRONTEND_HOST):$(FRONTEND_PORT)/" >/dev/null 2>&1; then frontend_status="RUNNING external"; fi; \
+	if [ -f "$(BACKEND_PID)" ] && kill -0 "$$(cat "$(BACKEND_PID)")" >/dev/null 2>&1; then backend_status="RUNNING pid=$$(cat "$(BACKEND_PID)")"; elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://$(PROBE_HOST):$(BACKEND_PORT)/health" >/dev/null 2>&1; then backend_status="RUNNING external"; fi; \
+	if [ -f "$(FRONTEND_PID)" ] && kill -0 "$$(cat "$(FRONTEND_PID)")" >/dev/null 2>&1; then frontend_status="RUNNING pid=$$(cat "$(FRONTEND_PID)")"; elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://$(PROBE_HOST):$(FRONTEND_PORT)/" >/dev/null 2>&1; then frontend_status="RUNNING external"; fi; \
 	echo "backend api-zdash.zeaz.dev -> http://$(BACKEND_HOST):$(BACKEND_PORT) :: $$backend_status"; \
 	echo "frontend zdash.zeaz.dev -> http://$(FRONTEND_HOST):$(FRONTEND_PORT) :: $$frontend_status"; \
 	{ echo "# zdash server report"; echo; echo "Generated: $$(date -u +%Y-%m-%dT%H:%M:%SZ)"; echo; echo "| Service | Public hostname | Local origin | Status |"; echo "|---|---|---|---|"; echo "| backend | api-zdash.zeaz.dev | http://$(BACKEND_HOST):$(BACKEND_PORT) | $$backend_status |"; echo "| frontend | zdash.zeaz.dev | http://$(FRONTEND_HOST):$(FRONTEND_PORT) | $$frontend_status |"; } > "$(SERVER_REPORT)"
@@ -96,11 +103,11 @@ server-logs: ## Tail logs; set SERVICE=backend/frontend
 	@if [ "$${SERVICE:-backend}" = "frontend" ]; then tail -f "$(FRONTEND_LOG)"; else tail -f "$(BACKEND_LOG)"; fi
 
 health-check: ## Check backend health endpoint
-	@curl -fsS "http://$(BACKEND_HOST):$(BACKEND_PORT)/health"
+	@curl -fsS "http://$(PROBE_HOST):$(BACKEND_PORT)/health"
 
 smoke-test: ## Run local smoke tests
-	@curl -fsS --max-time 3 "http://$(BACKEND_HOST):$(BACKEND_PORT)/health" >/dev/null
-	@curl -fsS --max-time 3 "http://$(FRONTEND_HOST):$(FRONTEND_PORT)/" >/dev/null
+	@curl -fsS --max-time 3 "http://$(PROBE_HOST):$(BACKEND_PORT)/health" >/dev/null
+	@curl -fsS --max-time 3 "http://$(PROBE_HOST):$(FRONTEND_PORT)/" >/dev/null
 	@echo "PASSED: zdash smoke test"
 
 env-check: ## Validate env syntax without printing values

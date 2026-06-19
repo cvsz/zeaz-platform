@@ -2,4 +2,3 @@ node_modules
 .next
 .git
 .npmrc
-pnpm-lock.yaml

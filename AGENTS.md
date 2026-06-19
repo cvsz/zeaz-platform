@@ -1,9 +1,36 @@
 # AGENTS.md — Cloudflare Platform Codex Operating Guide
 
+# ZeaZ Platform Project Instructions
+
+## Language and Coding Standards
+- **Communication**: Always talk in Thai when interacting with users.
+- **Code & Technical Assets**: All code, comments, documentation, and technical definitions must be in English.
+
+## Git Workflow
+
+
+### Forbidden Commands
+- **Never use** `git commit` directly
+- **Never use** `git push` directly
+- **Never use** `git pull` directly
+- **Never use** `gh` CLI for commit/push/pull operations
+
+### Allowed Commands
+| Operation   | Command                            |
+|-------------|------------------------------------|
+| Stage files | `git add <files>`                  |
+| Commit      | `make gpg-commit COMMIT_MSG="..."` |
+| Push        | `make gpg-push`                    |
+| Pull        | `make gpg-pull`                    |
+| All-in-one  | `make gpg-finalize COMMIT_MSG="..."` |
+
+### Branching
+- Follow the established branch naming conventions (e.g., `fix/`, `feat/`).
+
 This file is the authoritative operating guide for Codex and other automated coding agents working in this repository.
 
-Repository: `cvsz/cloudflare-platform`
-Organization: `ZeazDev`
+Repository: `cvsz/zeaz-platform`
+Organization: `ZeazDev Company Limited`
 Primary domain: `zeaz.dev`
 Primary objective: build and maintain a production-grade, GitOps-ready Cloudflare Zero Trust platform without committing secrets, fake production identifiers, or unsafe automation.
 
@@ -95,25 +122,35 @@ When in doubt, externalize values through environment variables, GitHub secrets,
 The repository must converge toward this structure:
 
 ```text
-cloudflare-platform/
-├── bootstrap/
+zeaz-platform/
+├── .github/
+├── apps/
+│   ├── zeaz-api/
+│   ├── zow/
+│   ├── zeaz-web/
+│   ├── zAcademy/
+│   ├── zLinebot/
+│   ├── zcfdash/
+│   ├── zcino/
+│   ├── zcloud/
+│   ├── zdash/
+│   ├── zdev/
+│   ├── zlms/
+│   ├── zoffice/
+│   ├── zaiz/
+│   ├── zsticker/
+│   ├── ztrader/
+│   ├── zveo/
+│   └── zwallet/
+├── configs/
+├── infrastructure/
+├── docs/
+├── scripts/
 ├── terraform/
 ├── opentofu/
-├── scripts/
-├── python/
 ├── workers/
 ├── workers-ai/
-├── tunnels/
 ├── zero-trust/
-├── waf/
-├── dns/
-├── policies/
-├── monitoring/
-├── security/
-├── backups/
-├── tests/
-├── docs/
-├── .github/
 ├── Makefile
 └── README.md
 ```
@@ -143,6 +180,24 @@ Financial platform:
 - `treasury.zeaz.dev`
 - `admin-wallet.zeaz.dev`
 
+Developer Tools & Cockpits:
+
+- `cloud.zeaz.dev` (zcloud)
+- `dash.zeaz.dev` (zdash)
+- `cfdash.zeaz.dev` (zcfdash)
+
+Algo Trading & Game Services:
+
+- `trader.zeaz.dev` (ztrader)
+- `cino.zeaz.dev` (zcino)
+
+Educational & Workspace Portals:
+
+- `academy.zeaz.dev` (zAcademy)
+- `lms.zeaz.dev` (zlms)
+- `office.zeaz.dev` (zoffice)
+- `openwork.zeaz.dev` (openwork)
+
 AI capabilities:
 
 - AI content generation
@@ -158,6 +213,12 @@ Finance capabilities:
 - treasury access controls
 - compliance/audit access controls
 - Web3 and crypto operation guardrails
+
+Other Platform capabilities:
+
+- SaaS automation (zsp-aitool)
+- Developer APIs (api)
+- Daemon & Bot triggers (zLinebot, zsticker)
 
 ---
 
@@ -525,7 +586,7 @@ Standard public error shape:
 
 ## 15. Frontend and UI/UX Standards
 
-All web interfaces must adhere to the **Zeaz Unified Design System**.
+All web interfaces must adhere to the **ZEAZ Platform System**.
 
 ### Core Requirements:
 - **Rich Aesthetics**: Use Glassmorphism, backdrop blurs, and premium color palettes (as defined in `ui/design-system/tokens.css`).
@@ -913,7 +974,32 @@ When adding generated files, ensure they are lintable, testable, and documented.
 
 ---
 
-## 24. Final Instruction
+## 24. Technology Stack
+
+ZeaZ Platform is a multi-application, Cloudflare-first monorepo. The core stack components include:
+
+### Core Infrastructure & Routing
+- **Reverse Proxy**: Traefik (entry gateway for all internal apps)
+- **Tunneling**: Cloudflare Tunnel (`cloudflared`) routing external traffic to Traefik
+- **Databases**: PostgreSQL (primary relational), Redis (caching, sessions, pub/sub)
+- **Containerization**: Docker & Docker Compose
+- **Security & Identity**: Authentik, Cloudflare Zero Trust
+
+### Applications
+- **Frontend / Web Apps**: Next.js, React (Vite)
+- **Backend APIs**: FastAPI (Python), Node.js/Express
+- **Developer Tools & Cockpits**: `apps/zcloud` (CloudPanel), `apps/zdash` (Next.js/FastAPI), `apps/zcfdash`
+- **Algo Trading & Game Services**: `apps/ztrader` (Celery/FastAPI), `apps/zcino`, `apps/zcino-modern`
+- **Educational & Workspace**: `apps/zAcademy`, `apps/zlms`, `apps/zoffice`, `apps/openwork`
+- **Other Utilities**: `apps/zLinebot`, `apps/zsticker`, `apps/zsp-aitool`, `apps/zveo`, `apps/zwallet`
+
+### Agentic Capabilities
+- **ZAI Ecosystem**: `zai-agents-pack` utilizing Claude Code and advanced AI architectures
+- **Workflow & Orchestration**: AgentDB, Hooks, and autonomous loops via `.agents` and `zaictl`
+
+---
+
+## 25. Final Instruction
 
 This repository must evolve from specification to safe executable platform through phased, validated, reviewable changes.
 

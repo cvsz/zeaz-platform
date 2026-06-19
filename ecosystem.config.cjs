@@ -13,7 +13,7 @@ module.exports = {
     "name": "web",
     "script": "pnpm",
     "args": "run dev",
-    "cwd": "apps/web",
+    "cwd": "apps/zeaz-web",
     "env": {
       "PORT": "3001"
     }

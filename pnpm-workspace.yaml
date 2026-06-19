@@ -1,0 +1,32 @@
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true
+
+packages:
+  - apps/zeaz-web
+  - apps/zow
+  - apps/zacademy
+  - apps/zcloud
+  - apps/zdev
+  - apps/zai-factory
+  - apps/zlinebot
+  - apps/zlms
+  - apps/zaiz
+  - apps/zwallet
+  - apps/zdash/frontend
+  - apps/zdash/backend
+  - apps/ztrader/frontend
+  - apps/zveo/frontend
+  - '!apps/zeaz-api'
+  - '!apps/zcino'
+  - '!apps/zcino-modern'
+  - '!apps/zsticker'
+
+overrides:
+  ws: 8.21.0
+  form-data: 4.0.6

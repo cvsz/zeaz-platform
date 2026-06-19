@@ -1,0 +1,63 @@
+name: Zeaz Meta OS CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  meta-os-ci:
+    name: Meta OS CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      APPLY: "false"
+      COST_LOCK: "true"
+      ALLOW_PAID_CLOUDFLARE_FEATURES: "false"
+      CLOUDFLARE_PLAN_TIER: "Free"
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then
+            python -m pip install -r requirements-dev.txt
+          else
+            python -m pip install PyYAML
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Validate YAML
+        run: python3 scripts/validate-yaml.py
+
+      - name: Validate Phase 51
+        run: make phase51-validate
+
+      - name: Validate Phase 52
+        run: make phase52-validate
+
+      - name: Install Web Deps
+        run: scripts/ci/install-web-deps-safe.sh
+
+      - name: Build web
+        working-directory: apps/zeaz-web
+        run: npm run build

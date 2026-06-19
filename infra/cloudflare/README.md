@@ -352,6 +352,87 @@ grep -RInE '(token|secret|password|credential|api[_-]?key)' \
 
 **Safety Statement:** Phase 15 is governance documentation only. It does not deploy, apply Terraform/OpenTofu, restart services, or mutate Cloudflare.
 
+---
+
+## Phase 18 — Cloudflare Multi-Environment Separation
+
+Phase 18 defines and enforces ownership boundaries between dev, staging, and production Cloudflare environments. It prevents cross-environment drift, credential sharing, and misconfigured hostname routing.
+
+**Phase 18 is documentation and validation only. It does not deploy or mutate Cloudflare.**
+
+### Phase 18 Documents
+
+| Document | Purpose |
+|---|---|
+| `docs/infra/cloudflare-environment-boundaries.md` | Rules for dev, staging, and prod environment separation |
+| `docs/infra/cloudflare-environment-ownership-matrix.md` | Matrix of environment × resource × owner × approval |
+| `docs/infra/cloudflare-cross-environment-drift-policy.md` | Policy for detecting and remediating cross-env drift |
+| `docs/infra/cloudflare-environment-promotion-policy.md` | Gates and requirements for promotion between environments |
+
+### Phase 18 Environment Intent Files
+
+- `infra/cloudflare/environments/dev.yml` (Redacted intent)
+- `infra/cloudflare/environments/staging.yml` (Redacted intent)
+- `infra/cloudflare/environments/prod.yml` (Redacted intent)
+
+### Phase 18 Scripts
+
+- `infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh` (Offline scanner)
+
+### Phase 18 Validation
+
+```bash
+# Run environment boundary scan
+infra/cloudflare/scripts/scan-cloudflare-environment-boundaries.sh --markdown
+
+# Validate using the master validator
+infra/cloudflare/scripts/validate-cloudflare-config.sh --check
+```
+
+---
+
+## Phase 19 — Cloudflare Disaster Recovery Governance
+
+Phase 19 adds disaster recovery tabletop exercise templates, recovery ownership assignments, restore evidence requirements, and a manual recovery checklist for Cloudflare runtime failures.
+
+**Phase 19 is governance documentation only. It does not deploy or mutate Cloudflare.**
+
+### Phase 19 Documents
+
+| Document | Purpose |
+|---|---|
+| `docs/infra/cloudflare-disaster-recovery-governance.md` | DR governance model and scenario overview |
+| `docs/infra/cloudflare-dr-tabletop-template.md` | Template for conducting DR simulation exercises |
+| `docs/infra/cloudflare-manual-recovery-checklist.md` | Human-executable steps for 8 major DR scenarios |
+| `docs/infra/cloudflare-restore-evidence-template.md` | Evidence capture requirements after a recovery action |
+| `docs/infra/cloudflare-recovery-ownership-matrix.md` | Scenario × Owner × Backup × SLA mapping |
+
+### DR Scenarios Covered
+
+1. DNS misroute
+2. Worker route collision
+3. Tunnel outage
+4. Credential leak
+5. Terraform state drift
+6. Access policy lockout
+7. Production rollback (Phase 13 link)
+8. Evidence archive unavailable
+
+### Phase 19 Validation
+
+```bash
+# Verify all steps labeled MANUAL or READ-ONLY in recovery checklist
+grep -c "\[MANUAL\]\|\[READ-ONLY" docs/infra/cloudflare-manual-recovery-checklist.md
+
+# Secret check on Phase 19 docs
+grep -RInE '(token|secret|password|credential|api[_-]?key)' \
+  docs/infra/cloudflare-disaster-recovery-governance.md \
+  docs/infra/cloudflare-dr-tabletop-template.md \
+  docs/infra/cloudflare-manual-recovery-checklist.md \
+  docs/infra/cloudflare-restore-evidence-template.md \
+  docs/infra/cloudflare-recovery-ownership-matrix.md || echo "No secrets found"
+```
+
 ## Phase 16 — Cloudflare Change Evidence Archive
 
 Phase 16 adds an immutable change evidence archive, retention policy, index template, release approval template, and incident review template.

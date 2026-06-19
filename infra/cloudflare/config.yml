@@ -1,0 +1,48 @@
+tunnel: 6fc5dc60-812e-479c-8f2b-a9e62b568aeb
+protocol: http2
+
+originRequest:
+  connectTimeout: 30s
+  keepAliveConnections: 100
+  keepAliveTimeout: 90s
+
+ingress:
+  - hostname: auth.zeaz.dev
+    service: http://traefik:80
+  - hostname: zcfdash.zeaz.dev
+    service: http://traefik:80
+  - hostname: openwork.zeaz.dev
+    service: http://traefik:80
+  - hostname: www.zeaz.dev
+    service: http://traefik:80
+  - hostname: zeaz.dev
+    service: http://traefik:80
+  - hostname: api.zeaz.dev
+    service: http://traefik:80
+  - hostname: zcino.zeaz.dev
+    service: http://traefik:80
+  - hostname: zdash.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-zdash.zeaz.dev
+    service: http://traefik:80
+  - hostname: zlms.zeaz.dev
+    service: http://traefik:80
+  - hostname: zoffice.zeaz.dev
+    service: http://traefik:80
+  - hostname: zaiz.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-zveo.zeaz.dev
+    service: http://traefik:80
+  - hostname: zsticker.zeaz.dev
+    service: http://traefik:80
+  - hostname: ztrader.zeaz.dev
+    service: http://traefik:80
+  - hostname: zveo.zeaz.dev
+    service: http://traefik:80
+  - hostname: app.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-apps.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-app.zeaz.dev
+    service: http://traefik:80
+  - service: http_status:404

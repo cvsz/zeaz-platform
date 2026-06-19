@@ -1,25 +1,34 @@
-// ZeaZDev [Frontend Login Page] //
-// Project: ztrader Platform //
-// Version: 1.0.0 (Unified Scaffolding) //
-// Author: ZeaZDev Meta-Intelligence //
-// --- DO NOT EDIT HEADER --- //
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { initI18n } from '../../i18n/client';
 import { useTranslation } from 'react-i18next';
 import { GoogleSignIn } from '../../../components/auth/GoogleSignIn';
 import { usePathname, useRouter } from 'next/navigation';
 
-export default function LoginPage(_: { params: Promise<{ lng: string }> }) {
+export default function LoginPage() {
   const pathname = usePathname();
   const lng = pathname?.split('/')[1] || 'en';
   initI18n(lng);
   const { t } = useTranslation('translation');
   const router = useRouter();
 
-  const handleSuccess = (user: any) => {
-    console.log('Login successful:', user);
+  useEffect(() => {
+    const params = new URLSearchParams(
+      typeof window !== 'undefined' ? window.location.search : '',
+    );
+    const token = params.get('token');
+    const error = params.get('error');
+    if (token) {
+      window.history.replaceState(null, '', pathname.replace(/\?.*$/, ''));
+      localStorage.setItem('ztrader_admin_token', token);
+      router.push(`/${lng}/dashboard`);
+    } else if (error) {
+      console.error('OAuth error:', error); // eslint-disable-line
+    }
+  }, [lng, pathname, router]);
+
+  const handleSuccess = (_user: unknown) => {
     router.push(`/${lng}/dashboard`);
   };
 
@@ -28,59 +37,89 @@ export default function LoginPage(_: { params: Promise<{ lng: string }> }) {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '80vh',
-      backgroundColor: '#0b0f19',
-      color: '#f3f4f6',
-      fontFamily: "'Outfit', sans-serif"
-    }}>
-      <div style={{
-        backgroundColor: 'rgba(17, 24, 39, 0.7)',
-        backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-        padding: '48px',
-        borderRadius: '16px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        maxWidth: '420px',
-        width: '100%',
-        textAlign: 'center',
-        margin: '0 20px',
-      }}>
-        <div style={{ marginBottom: '40px' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '60px',
-            height: '60px',
-            borderRadius: '16px',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            border: '1px solid rgba(59, 130, 246, 0.2)',
-            marginBottom: '20px',
-            boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)',
-          }}>
-            <div style={{
-              width: '16px',
-              height: '16px',
-              borderRadius: '50%',
-              backgroundColor: '#3B82F6',
-              boxShadow: '0 0 10px #3B82F6',
-            }}></div>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        className="bg-orb"
+        style={{
+          position: 'fixed',
+          top: '-25%',
+          right: '-15%',
+          width: '700px',
+          height: '700px',
+          background:
+            'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        className="bg-orb"
+        style={{
+          position: 'fixed',
+          bottom: '-25%',
+          left: '-15%',
+          width: '600px',
+          height: '600px',
+          background:
+            'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        className="glass-card-static animate-fade-in"
+        style={{
+          maxWidth: '440px',
+          width: '100%',
+          textAlign: 'center',
+        padding: 'clamp(28px, 8vw, 48px) clamp(20px, 6vw, 36px)',
+        margin: '0 clamp(12px, 4vw, 20px)',
+          position: 'relative',
+        }}
+      >
+        <div style={{ marginBottom: '36px' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '64px',
+              height: '64px',
+              borderRadius: '18px',
+              background: 'var(--color-primary-bg)',
+              border: '1px solid var(--color-primary-border)',
+              marginBottom: '20px',
+              boxShadow: 'var(--shadow-glow-primary)',
+            }}
+          >
+            <div
+              style={{
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                background: 'var(--color-primary)',
+                boxShadow: '0 0 12px var(--color-primary)',
+              }}
+            />
           </div>
-          <h1 style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            marginBottom: '10px',
-            letterSpacing: '0.05em',
-            color: '#f3f4f6'
-          }}>
-            z<span style={{ color: '#3B82F6' }}>trader</span>
+          <h1
+            className="h1"
+            style={{ marginBottom: '8px', letterSpacing: '-0.02em' }}
+          >
+            z<span className="text-primary-color">trader</span>
           </h1>
-          <p style={{ color: '#9ca3af', fontSize: '15px' }}>
-            Safety-First Algorithmic Trading Platform
+          <p className="text-secondary" style={{ fontSize: '15px' }}>
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -88,11 +127,13 @@ export default function LoginPage(_: { params: Promise<{ lng: string }> }) {
           <GoogleSignIn onSuccess={handleSuccess} onError={handleError} />
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '24px' }}>
-          <p style={{ fontSize: '13px', color: '#6b7280', lineHeight: '1.6' }}>
-            By signing in, you agree to our Terms of Service and Risk Disclosure Statement. Live trading involves substantial risk of loss.
-          </p>
-        </div>
+        <div className="divider" />
+        <p
+          className="text-muted"
+          style={{ fontSize: '13px', lineHeight: '1.6', marginTop: '20px' }}
+        >
+          {t('login.disclaimer')}
+        </p>
       </div>
     </div>
   );

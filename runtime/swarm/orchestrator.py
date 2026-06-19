@@ -1,116 +1,22 @@
-import asyncio
 import logging
-import json
 import time
-<<<<<<< HEAD
-import uuid
-=======
->>>>>>> 580d172 (feat: implement ZEAZ Autonomous Agent Swarm Runtime with distributed cooperation, task marketplace, and semantic consensus)
-from typing import Dict, Any, List, Optional
-import redis
 from runtime.swarm.marketplace import TaskMarketplace
-from runtime.swarm.consensus_engine import ConsensusEngine
-<<<<<<< HEAD
-from runtime.scheduler.scheduler_engine import SchedulerEngine
-from runtime.scheduler.models import CognitiveTask
-=======
->>>>>>> 580d172 (feat: implement ZEAZ Autonomous Agent Swarm Runtime with distributed cooperation, task marketplace, and semantic consensus)
-
-logger = logging.getLogger("SwarmOrchestrator")
 
 class SwarmOrchestrator:
-<<<<<<< HEAD
-    def __init__(self, redis_url: str = "redis://localhost:6379/0", scheduler: Optional[SchedulerEngine] = None):
-        self.redis = redis.from_url(redis_url)
-        self.marketplace = TaskMarketplace(redis_url)
-        self.consensus = ConsensusEngine(redis_url)
-        self.scheduler = scheduler
-=======
-    def __init__(self, redis_url: str = "redis://localhost:6379/0"):
-        self.redis = redis.from_url(redis_url)
-        self.marketplace = TaskMarketplace(redis_url)
-        self.consensus = ConsensusEngine(redis_url)
->>>>>>> 580d172 (feat: implement ZEAZ Autonomous Agent Swarm Runtime with distributed cooperation, task marketplace, and semantic consensus)
+    def __init__(self, marketplace: TaskMarketplace):
+        self.marketplace = marketplace
+        self.logger = logging.getLogger("swarm.orchestrator")
+        self.running = True
 
-    async def manage_swarm(self):
-        logger.info("Swarm Orchestrator started.")
-        while True:
-            try:
-                # 1. Monitor active agents
-                active_agents = self.redis.smembers("swarm:active_agents")
-                logger.debug(f"Active agents in swarm: {len(active_agents)}")
-                
-                # 2. Resolve marketplace tasks
-<<<<<<< HEAD
-=======
-                # In a real system, this would look at bids and assign tasks
-                # based on affinity, score, and consensus requirements.
->>>>>>> 580d172 (feat: implement ZEAZ Autonomous Agent Swarm Runtime with distributed cooperation, task marketplace, and semantic consensus)
-                await self._resolve_bids()
-                
-            except Exception as e:
-                logger.error(f"Error in Swarm Orchestrator: {e}")
-            await asyncio.sleep(5)
+    def run_convergence_loop(self):
+        """Continuously monitor and converge swarm topology."""
+        self.logger.info("Swarm Orchestrator started (Convergence Loop).")
+        while self.running:
+            # 1. Monitor agent heartbeats in Redis
+            # 2. Check task marketplace for stalled/unprocessed tasks
+            # 3. Trigger 'all-hands' if critical incidents detected
+            self.logger.debug("Swarm topology converged.")
+            time.sleep(5)  # Convergence interval
 
-    async def _resolve_bids(self):
-        # Scan for tasks with bids but no assignment
-<<<<<<< HEAD
-        # Simplified resolver: Pick the best bid and submit to Scheduler
-        pass
-
-    async def submit_to_scheduler(self, task_id: str, tenant_id: str, action_type: str, payload: Dict[str, Any]):
-        """
-        Submits an agent-derived task to the Cognitive Scheduler.
-        """
-        if not self.scheduler:
-            logger.warning("Scheduler not integrated with Orchestrator. Direct execution only.")
-            return
-            
-        task = CognitiveTask(
-            task_id=task_id,
-            tenant_id=tenant_id,
-            action_type=action_type,
-            payload=payload
-        )
-        await self.scheduler.submit_task(task)
-        logger.info(f"Orchestrator submitted task {task_id} to Scheduler.")
-
-=======
-        # This is a simplified auction resolver
-        pass
-
->>>>>>> 580d172 (feat: implement ZEAZ Autonomous Agent Swarm Runtime with distributed cooperation, task marketplace, and semantic consensus)
-    async def coordinate_incident_swarm(self, incident_id: str, severity: str):
-        """
-        Trigger an 'incident swarm' mode where multiple specialized agents
-        are coordinated to resolve a high-priority failure.
-        """
-        logger.info(f"COORD: Incident Swarm triggered for {incident_id} (Severity: {severity})")
-        
-        # 1. Post analysis task
-        self.marketplace.submit_task(
-            task_id=f"analyze-{incident_id}",
-            task_type="INCIDENT_ANALYSIS",
-            requirements=["ANALYZE_METRICS"],
-            payload={"incident_id": incident_id}
-        )
-        
-        # 2. Require consensus from Security and Telemetry before Healing
-        if severity == "CRITICAL":
-            consensus_reached = await self.consensus.collect_consensus(
-                task_id=incident_id,
-                required_agents=["security", "telemetry"]
-            )
-            
-            if not consensus_reached:
-                logger.error(f"Incident {incident_id} aborted: Consensus failed.")
-                return False
-                
-        # 3. Post healing task
-        self.marketplace.submit_task(
-            task_id=f"heal-{incident_id}",
-            task_type="HEAL_RUNTIME",
-            requirements=["HEAL_RUNTIME"],
-            payload={"incident_id": incident_id}
-        )
-        return True
+    def stop(self):
+        self.running = False

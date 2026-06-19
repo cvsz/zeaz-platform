@@ -15,7 +15,7 @@ Apps and domains:
 
 2. api
    Path:
-     /home/zeazdev/zeaz-platform/apps/api
+     /home/zeazdev/zeaz-platform/apps/zeaz-api
    Domain:
      api-zcfdash.zeaz.dev
    Port:
@@ -23,7 +23,7 @@ Apps and domains:
 
 3. web
    Path:
-     /home/zeazdev/zeaz-platform/apps/web
+     /home/zeazdev/zeaz-platform/apps/zeaz-web
    Domain:
      zcfdash.zeaz.dev
    Port:

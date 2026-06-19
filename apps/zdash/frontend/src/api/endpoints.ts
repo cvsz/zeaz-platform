@@ -66,6 +66,7 @@ import type {
   ExportBundle,
   OnboardingChecklist,
   CustomerHealth,
+  SubagentResult,
   TeamMember,
   TeamInvitation,
   TeamWorkspaceAccess,
@@ -81,6 +82,42 @@ type AgentMessagePayload = {
   context?: Record<string, unknown>;
 };
 
+const mockSubagentResults: SubagentResult[] = [
+  {
+    agent_id: "019ec6ac-a368-7b91-a6c4-41aeaee6452e",
+    nickname: "Cicero",
+    agent_name: "code-architect",
+    status: "completed",
+    role: "architect",
+    source: "manual",
+    created_at: "2026-06-14T15:42:41Z",
+    summary: "Architecture review for apps/ztrader is stored in the mailbox.",
+    details:
+      "Use the repository mailbox artifacts to inspect the full recommendation set and linked markdown evidence.",
+    artifacts: [
+      "artifacts/subagents/results/20260614T154241Z-019ec6ac-a368-7b91-a6c4-41aeaee6452e.json",
+      "artifacts/subagents/incoming/cicero-ztrader-analysis.md",
+    ],
+    metadata: {},
+  },
+  {
+    agent_id: "agent-review-002",
+    nickname: "Dorian",
+    agent_name: "reviewer",
+    status: "failed",
+    role: "reviewer",
+    source: "manual",
+    created_at: "2026-06-14T16:12:10Z",
+    summary: "Review detected unresolved namespace drift in the merge target.",
+    details:
+      "The reviewer flagged mixed module namespaces and recommended consolidating imports before shipping.",
+    artifacts: [
+      "artifacts/subagents/results/20260614T161210Z-agent-review-002.json",
+    ],
+    metadata: { severity: "medium" },
+  },
+];
+
 export const getHealth = () => apiClient.getHealth() as Promise<HealthStatus>;
 
 export const getLogs = async () => {
@@ -95,6 +132,40 @@ export const getAgents = async () => {
     agents: mockAgents,
   });
   return data.agents;
+};
+
+export const listSubagentResults = async (params?: {
+  agentId?: string;
+  nickname?: string;
+  status?: string;
+  limit?: number;
+}) => {
+  const search = new URLSearchParams();
+  if (params?.agentId) {
+    search.set("agent_id", params.agentId);
+  }
+  if (params?.nickname) {
+    search.set("nickname", params.nickname);
+  }
+  if (params?.status) {
+    search.set("status", params.status);
+  }
+  if (params?.limit !== undefined) {
+    search.set("limit", String(params.limit));
+  }
+  const path = search.size > 0 ? `/api/subagents/results?${search.toString()}` : "/api/subagents/results";
+  const data = await apiClient.get<{ items: SubagentResult[] }>(path, {
+    items: mockSubagentResults,
+  });
+  return data.items;
+};
+
+export const getSubagentResult = async (agentId: string) => {
+  const data = await apiClient.get<{ item: SubagentResult }>(
+    `/api/subagents/results/${agentId}`,
+    { item: mockSubagentResults[0] },
+  );
+  return data.item;
 };
 
 export const sendAgentMessage = (payload: AgentMessagePayload) =>
@@ -1406,4 +1477,43 @@ export const getTeamActivity = async () => {
 export const getTeamSummary = async () => {
   const data = await apiClient.get<{ summary: TeamSummary }>('/api/team/summary', { summary: mockTeamSummary });
   return data.summary;
+};
+
+// --- Workflows ---
+export type Workflow = {
+  name: string;
+  description?: string;
+  status?: string;
+  created_at?: string;
+  last_run_at?: string;
+};
+
+export type WorkflowRunResult = {
+  ok: boolean;
+  message: string;
+  run_id?: string;
+};
+
+export const listWorkflows = async () => {
+  const data = await apiClient.get<{ workflows: Workflow[] }>("/workflows/", {
+    workflows: [
+      { name: "test-workflow", description: "Mock Workflow", status: "active" }
+    ],
+  });
+  return data.workflows ?? [];
+};
+
+export const getWorkflow = async (name: string) => {
+  const data = await apiClient.get<{ workflow: Workflow }>(`/workflows/${name}`, {
+    workflow: { name, description: "Mock Workflow details", status: "active" },
+  });
+  return data.workflow;
+};
+
+export const runWorkflow = async (name: string, payload?: Record<string, unknown>) => {
+  const data = await apiClient.post<WorkflowRunResult>(`/workflows/${name}/run`, payload, {
+    ok: true,
+    message: `Mock run started for workflow ${name}`,
+  });
+  return data;
 };

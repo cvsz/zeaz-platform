@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     ADMIN_API_TOKEN: Optional[str] = None
 
+    # OAuth
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+
     # Trading Defaults
     EXECUTION_MODE: str = "paper" # paper or live
     LIVE_TRADING_ENABLED: bool = False

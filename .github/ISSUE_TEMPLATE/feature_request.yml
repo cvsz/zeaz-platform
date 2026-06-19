@@ -35,7 +35,7 @@ body:
     attributes:
       label: Target Stack / Context
       description: Which application stacks or infrastructure configs does this request affect?
-      placeholder: E.g., apps/web, configs/platform, or global Makefiles...
+      placeholder: E.g., apps/zeaz-web, configs/platform, or global Makefiles...
     validations:
       required: true
   - type: textarea

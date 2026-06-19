@@ -9,7 +9,7 @@ Overall status: **Architecturally strong, operationally not yet production-safe 
 - Architecture and top-level intent: `README.md`, `ARCHITECTURE.md`
 - Core backend runtime: `backend/services/gateway/src/*`
 - Wallet/crypto primitives: `packages/crypto/src/*`, `packages/crypto-core/src/*`
-- Service slices: `services/*`, `api/*`, `apps/api/*`
+- Service slices: `services/*`, `api/*`, `apps/zeaz-api/*`
 - Infra manifests: `k8s/*`, `terraform/*`
 - Existing audit docs in `docs/`
 

@@ -10,7 +10,7 @@ command -v python3 >/dev/null 2>&1 || { echo "python3 is required but it's not i
 
 # Install backend dependencies
 echo "Installing API dependencies..."
-cd apps/api
+cd apps/zeaz-api
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -18,7 +18,7 @@ cd ../..
 
 # Install frontend dependencies
 echo "Installing Web dependencies..."
-cd apps/web
+cd apps/zeaz-web
 npm install
 cd ../..
 

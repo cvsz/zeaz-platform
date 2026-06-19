@@ -1,0 +1,19 @@
+# Cloudflare Environment Intent: dev
+# This file is for DOCUMENTATION of intent only. NOT a live config.
+
+environment: dev
+owner: Dev Team
+review_required: false
+
+hostnames:
+  - app.dev.zeaz.internal
+  - wallet.local
+
+tunnel_id: <REDACTED_DEV_TUNNEL_ID>
+
+worker_routes:
+  - pattern: "dev-api.zeaz.dev/*"
+    env: dev
+    script: api-worker
+
+terraform_workspace: cloudflare-dev

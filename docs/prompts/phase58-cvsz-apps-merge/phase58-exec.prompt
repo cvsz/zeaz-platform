@@ -8,7 +8,7 @@ Deep-dive apps/ABTPi18n and apps/zkbtrader, then create safe scripts to adopt al
 Rules:
 - zeaz-platform remains the operator monorepo.
 - apps/zdash is already integrated and must not be broken.
-- apps/api and apps/web are internal root apps, not cvsz imports by default.
+- apps/zeaz-api and apps/zeaz-web are internal root apps, not cvsz imports by default.
 - apps/ABTPi18n and apps/zkbtrader are P1 deep-dive targets.
 - Remove nested .git only with explicit APPLY=true and CONFIRM_CVSZ_APPS_MERGE=yes.
 - Before removing nested .git, write apps/<app>/IMPORT_SOURCE.md with origin, branch, and HEAD.

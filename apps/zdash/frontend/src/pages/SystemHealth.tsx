@@ -1,5 +1,6 @@
 import PageHeader from '../components/layout/PageHeader';
 import SectionCard from '../components/common/SectionCard';
+import GlassCard from '../components/ui/GlassCard';
 import { apiClientConfig, mockFallbackActive } from '../api/client';
 import { getHealth } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
@@ -17,9 +18,14 @@ export default function SystemHealth() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('system_health.title')} subtitle={t('system_health.subtitle')} />
-      <SectionCard title={t('health.diagnostics')}>
-        <ul className="space-y-2 text-sm text-text-secondary">
+      <PageHeader
+        eyebrow="Diagnostics"
+        title={t('system_health.title')}
+        subtitle={t('system_health.subtitle')}
+      />
+      <GlassCard className="p-0 overflow-hidden">
+        <SectionCard title={t('health.diagnostics')} className="border-0 bg-transparent shadow-none">
+          <ul className="space-y-2 text-sm text-text-secondary">
           <li>{t('health.build_mode')}: <strong>{mode}</strong></li>
           <li>{t('health.api_base_url')}: <strong>{apiClientConfig.baseUrl}</strong></li>
           <li>{t('health.mock_fallback_enabled')}: <strong>{String(apiClientConfig.mockFallbackEnabled)}</strong></li>
@@ -34,8 +40,9 @@ export default function SystemHealth() {
           <li>{t('health.last_event_timestamp')}: <strong>{lastEvent?.timestamp ?? t('common.none')}</strong></li>
           <li>{t('health.heartbeat_latency')}: <strong>{lastEvent?.type === 'system.heartbeat' ? t('common.active') : t('common.none')}</strong></li>
           <li>{t('health.mock_realtime_fallback')}: <strong>{state !== 'connected' ? t('health.simulated_realtime_mode') : t('common.no')}</strong></li>
-        </ul>
-      </SectionCard>
+          </ul>
+        </SectionCard>
+      </GlassCard>
     </div>
   );
 }

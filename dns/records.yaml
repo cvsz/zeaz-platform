@@ -87,4 +87,18 @@ records:
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
+  - id: ztrader
+    name: ztrader
+    fqdn: ztrader.${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
+  - id: api-ztrader
+    name: api-ztrader
+    fqdn: api-ztrader.${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
 

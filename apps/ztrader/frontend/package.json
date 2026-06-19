@@ -5,45 +5,26 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}",
-    "build": "next build",
-    "start": "next start --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}"
+    "build": "next build --webpack",
+    "start": "next start --hostname ${HOST:-127.0.0.1} -p ${PORT:-3016}",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "next": "16.2.6",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "react-i18next": "16.2.4",
+    "@react-oauth/google": "^0.12.1",
+    "@types/node": "22.10.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "i18next": "25.6.1",
     "i18next-browser-languagedetector": "8.2.0",
-    "typescript": "5.7.3",
-    "@types/react": "18.3.18",
-    "@types/react-dom": "18.3.5",
-    "@types/node": "22.10.5",
-    "@react-oauth/google": "^0.12.1",
-    "next-themes": "^0.4.6"
+    "lightweight-charts": "^4.1.1",
+    "next": "16.2.9",
+    "next-themes": "^0.4.6",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-i18next": "16.2.4",
+    "typescript": "5.7.3"
   },
-  "resolutions": {
-    "postcss": "latest",
-    "follow-redirects": "latest",
-    "qs": "latest",
-    "uuid": "latest",
-    "file-type": "latest",
-    "ip-address": "latest",
-    "esbuild": "latest",
-    "@tootallnate/once": "latest",
-    "ws": "latest",
-    "@protobufjs/utf8": "latest"
-  },
-  "overrides": {
-    "postcss": "latest",
-    "follow-redirects": "latest",
-    "qs": "latest",
-    "uuid": "latest",
-    "file-type": "latest",
-    "ip-address": "latest",
-    "esbuild": "latest",
-    "@tootallnate/once": "latest",
-    "ws": "latest",
-    "@protobufjs/utf8": "latest"
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }

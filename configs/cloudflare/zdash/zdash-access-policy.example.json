@@ -1,23 +1,51 @@
 {
-  "description": "zDash Access policy template — dry-run only",
-  "policy": {
-    "name": "zDash Admin Access",
-    "decision": "allow",
-    "include": [
-      {
-        "email_domain": {
-          "domain": "zeaz.dev"
-        }
-      }
-    ],
-    "exclude": [],
-    "require": [],
-    "bypass_rules": [],
-    "session_duration": "24h"
+  "description": "zDash Access policy example — private-admin-only default",
+  "zone": "example.invalid",
+  "modes": {
+    "private_admin_only": true,
+    "public_read_frontend_optional": false,
+    "backend_protected_by_default": true,
+    "release_evidence_public_optional": true,
+    "bypass_disabled_by_default": true
   },
+  "policies": [
+    {
+      "hostname": "zdash.example.invalid",
+      "decision": "allow",
+      "mode": "private-admin-only",
+      "include": [
+        { "email_domain": { "domain": "example.invalid" } }
+      ],
+      "exclude": [],
+      "require": [
+        { "mfa": { "enabled": true } }
+      ]
+    },
+    {
+      "hostname": "api-zdash.example.invalid",
+      "decision": "allow",
+      "mode": "backend-protected",
+      "include": [
+        { "email_domain": { "domain": "example.invalid" } }
+      ],
+      "exclude": [],
+      "require": [
+        { "mfa": { "enabled": true } }
+      ]
+    },
+    {
+      "hostname": "release.example.invalid",
+      "decision": "allow",
+      "mode": "release-evidence-public-optional",
+      "include": [],
+      "exclude": [],
+      "require": [],
+      "bypass": false
+    }
+  ],
   "notes": [
-    "Replace email_domain with your identity provider group or email list",
-    "Bypass rules disabled by default — enable only for public read-only access",
-    "Apply via Terraform or Cloudflare dashboard"
+    "Public read frontend is optional and disabled by default.",
+    "Do not add any allow-all policy.",
+    "Disable bypass unless an operator explicitly enables a narrower exception."
   ]
 }

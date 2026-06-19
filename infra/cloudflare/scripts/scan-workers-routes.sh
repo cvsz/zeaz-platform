@@ -244,8 +244,16 @@ declare -a tf_worker_modules=()
 
 for f in "${worker_tf_files[@]}"; do
   rel="${f#$REPO_ROOT/}"
-  has_script=$(grep -c 'cloudflare_worker_script' "$f" 2>/dev/null || echo 0)
-  has_route=$(grep -c 'cloudflare_worker_route' "$f" 2>/dev/null || echo 0)
+  if grep -q 'cloudflare_worker_script' "$f" 2>/dev/null; then
+    has_script=1
+  else
+    has_script=0
+  fi
+  if grep -q 'cloudflare_worker_route' "$f" 2>/dev/null; then
+    has_route=1
+  else
+    has_route=0
+  fi
   if [[ "$has_script" -gt 0 ]] || [[ "$has_route" -gt 0 ]]; then
     tf_worker_modules+=("$rel (script:$has_script, route:$has_route)")
   fi

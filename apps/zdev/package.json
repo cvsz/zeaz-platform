@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "python3 -m http.server 4181 --directory ../..",
-    "validate": "node scripts/validate-zdev.mjs"
+    "validate": "node scripts/validate-zdev.mjs",
+    "build": "exit 0"
   },
   "engines": {
     "node": ">=18"

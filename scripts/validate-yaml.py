@@ -69,7 +69,7 @@ def should_skip(path: Path) -> bool:
     if any(part in SKIP_PARTS for part in path.parts):
         return True
 
-    # Skip all YAML files in adopted/imported apps (anything under apps/ except apps/api and apps/web)
+    # Skip all YAML files in adopted/imported apps (anything under apps/ except apps/zeaz-api and apps/zeaz-web)
     if len(path.parts) >= 2 and path.parts[0] == "apps":
         if path.parts[1] not in {"api", "web"}:
             return True
@@ -93,7 +93,9 @@ for pattern in ("*.yml", "*.yaml"):
 failed: list[tuple[Path, Exception]] = []
 for path in sorted(set(files)):
     try:
-        yaml.safe_load(path.read_text(encoding="utf-8"))
+        docs = list(yaml.safe_load_all(path.read_text(encoding="utf-8")))
+        if not docs:
+          raise ValueError("YAML file contains no documents")
     except Exception as exc:
         failed.append((path, exc))
 

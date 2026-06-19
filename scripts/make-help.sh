@@ -42,6 +42,7 @@ Security:
   make secret-scan            Run tracked-file gitleaks release gate
   make secret-scan-history    Run full git-history gitleaks scan for remediation work
   make security-scan          Run aggregate advisory scanner script when present
+  make agent-scan             Run Snyk Agent Scan wrapper with repo-safe defaults
   make policy-test            Validate workflow policy rules
   make sbom                   Generate SBOM when syft is installed
   make cosign-sign            Sign SBOM when cosign and SBOM artifact exist

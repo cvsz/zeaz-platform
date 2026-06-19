@@ -21,6 +21,7 @@ import RiskPanel from "./pages/RiskPanel";
 import Scheduler from "./pages/Scheduler";
 import SessionLogs from "./pages/SessionLogs";
 import Settings from "./pages/Settings";
+import SubagentResults from "./pages/SubagentResults";
 import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
 import SystemHealth from "./pages/SystemHealth";
@@ -36,6 +37,8 @@ import Usage from "./pages/Usage";
 import Marketplace from "./pages/Marketplace";
 import Enterprise from "./pages/Enterprise";
 import Onboarding from "./pages/Onboarding";
+import Workflows from "./pages/Workflows";
+import ZaiEcosystem from "./pages/ZaiEcosystem";
 import { RealtimeProvider } from "./realtime/context";
 
 function ProtectedDashboardRoutes() {
@@ -57,6 +60,8 @@ function ProtectedDashboardRoutes() {
           <Route path="/organizations" element={<Organizations />} />
           <Route path="/workspace" element={<Workspace />} />
           <Route path="/workers" element={<Workers />} />
+          <Route path="/workflows" element={<Workflows />} />
+          <Route path="/zai-ecosystem" element={<ZaiEcosystem />} />
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/billing" element={<Billing />} />
@@ -68,6 +73,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/system/health" element={<SystemHealth />} />
           <Route path="/events" element={<EventTimeline />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/subagents" element={<SubagentResults />} />
           <Route path="/workspace/live" element={<WorkspaceLive />} />
           <Route path="/workspace/timeline" element={<WorkspaceTimeline />} />
           <Route path="/workspace/notes" element={<WorkspaceNotes />} />

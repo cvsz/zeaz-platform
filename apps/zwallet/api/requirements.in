@@ -14,7 +14,7 @@ alembic
 
 # Security
 PyJWT[crypto]>=2.8.0
-cryptography>=42.0.0
+cryptography>=48.0.1
 
 # HTTP
 httpx
@@ -27,5 +27,5 @@ prometheus-client
 python-dotenv
 
 # CVE patches (transitive overrides)
-starlette>=1.0.1
+starlette>=1.3.1
 pyasn1>=0.6.0

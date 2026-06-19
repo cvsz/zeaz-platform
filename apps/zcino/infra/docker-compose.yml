@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       POSTGRES_DB: ${POSTGRES_DB:-zeaz}
     ports:
-      - "127.0.0.1:5437:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ../migrations:/docker-entrypoint-initdb.d:ro
@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"]
     ports:
-      - "127.0.0.1:6383:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis-data:/data
     healthcheck:
@@ -42,8 +42,8 @@ services:
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?CLICKHOUSE_PASSWORD is required}
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     ports:
-      - "127.0.0.1:8125:8123"
-      - "127.0.0.1:9007:9000"
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
     volumes:
       - clickhouse-data:/var/lib/clickhouse
       - ./clickhouse.sql:/docker-entrypoint-initdb.d/001_zeaz.sql:ro
@@ -64,8 +64,8 @@ services:
       NATS_PASSWORD: ${NATS_PASSWORD:?NATS_PASSWORD is required}
     command: ["--config", "/etc/nats/nats.conf"]
     ports:
-      - "127.0.0.1:4225:4222"
-      - "127.0.0.1:8225:8222"
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
     volumes:
       - nats-data:/data/jetstream
       - ./nats.conf:/etc/nats/nats.conf:ro
@@ -94,7 +94,7 @@ services:
       RATE_LIMIT_BURST: ${RATE_LIMIT_BURST:-200}
       NATS_URL: nats://zeaz:${NATS_PASSWORD}@nats:4222
     ports:
-      - "127.0.0.1:8086:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -133,7 +133,7 @@ services:
       COMPLIANCE_HTTP_ADDRESS: :8082
       BLOCKED_COUNTRIES: TH,CN
     ports:
-      - "127.0.0.1:8087:8082"
+      - "127.0.0.1:8082:8082"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8082/healthz >/dev/null || exit 1"]
       interval: 10s

@@ -1,7 +1,8 @@
-# scripts/fix-mcp-stack.sh
-
 #!/usr/bin/env bash
 set -Eeuo pipefail
+IFS=$'\n\t'
+
+# scripts/fix-mcp-stack.sh
 
 CONFIG_FILE="${HOME}/.mcp.json"
 BACKUP_DIR="${HOME}/mcp-backups"

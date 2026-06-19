@@ -12,7 +12,7 @@
   "dependencies": {
     "@zveo/contracts": "workspace:*",
     "@zveo/core": "workspace:*",
-    "bullmq": "^5.65.0",
+    "bullmq": "^5.79.0",
     "ioredis": "^5.7.0",
     "zod": "^3.24.4"
   },

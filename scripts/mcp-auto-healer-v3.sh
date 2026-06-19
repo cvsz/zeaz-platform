@@ -1,8 +1,6 @@
-# scripts/mcp-auto-healer-v3.sh
-
 #!/usr/bin/env bash
-
 set -Eeuo pipefail
+IFS=$'\n\t'
 
 ###############################################################################
 # CONFIG

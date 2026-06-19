@@ -49,6 +49,18 @@ policies:
     include: [{groups: [wallet-admin, compliance]}]
     require: [mfa, webauthn, valid_service_token, step_up_auth]
     session_ttl: 4h
+  - app_key: ztrader
+    decision: allow
+    precedence: 1
+    include: [{groups: [wallet-admin, wallet-operator, treasury, compliance]}]
+    require: [mfa, webauthn, valid_service_token]
+    session_ttl: 4h
+  - app_key: ztrader-api
+    decision: allow
+    precedence: 1
+    include: [{groups: [wallet-admin, wallet-operator, treasury, compliance]}]
+    require: [mfa, webauthn, valid_service_token]
+    session_ttl: 4h
 audit_hooks:
   - destination: cloudflare-logpush
     dataset: access_requests

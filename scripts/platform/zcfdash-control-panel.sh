@@ -10,8 +10,8 @@ PLAN="${APPS_PORT_PLAN:-configs/platform/apps-port-plan.json}"
 OVERLAY_GLOB="${APPS_ROUTE_OVERLAY_GLOB:-configs/platform/*-route-overlay.json}"
 WEB_HOSTNAME="${WEB_HOSTNAME:-zcfdash.zeaz.dev}"
 API_HOSTNAME="${API_HOSTNAME:-api-zcfdash.zeaz.dev}"
-WEB_DIR="apps/web"
-API_DIR="apps/api"
+WEB_DIR="apps/zeaz-web"
+API_DIR="apps/zeaz-api"
 RUNTIME_DIR="runtime/app-servers"
 REPORT="reports/platform/zcfdash-control-panel.md"
 mkdir -p "$RUNTIME_DIR" "$(dirname "$REPORT")"
@@ -98,7 +98,7 @@ service_status() {
     echo "RUNNING pid=$(cat "$pid_file")"
     return 0
   fi
-  if command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "$url" >/dev/null 2>&1; then
+  if command -v curl >/dev/null 2>&1 && curl -sS --max-time 2 "$url" >/dev/null 2>&1; then
     echo "RUNNING external"
     return 0
   fi
@@ -120,7 +120,7 @@ start_api() {
   fi
   test -d "$API_DIR" || { echo "ERROR: missing $API_DIR" >&2; exit 1; }
   echo "START: ${API_HOSTNAME} API origin http://${API_HOST}:${API_PORT} from ${API_DIR}"
-  (cd "$API_DIR" && nohup python3 -m uvicorn main:app --host "$API_HOST" --port "$API_PORT" >> "${ROOT}/${API_LOG}" 2>&1 & echo $! > "${ROOT}/${API_PID}")
+  (cd "$API_DIR" && setsid bash -lc "echo \$\$ > \"${ROOT}/${API_PID}\"; exec env PYTHONPATH=\"${ROOT}\" \"${ROOT}/apps/ztrader/backend/.venv/bin/python3\" -m uvicorn main:app --host \"$API_HOST\" --port \"$API_PORT\"" >> "${ROOT}/${API_LOG}" 2>&1 &)
 }
 
 start_web() {
@@ -130,11 +130,11 @@ start_web() {
   test -d "$WEB_DIR" || { echo "ERROR: missing $WEB_DIR" >&2; exit 1; }
   echo "START: ${WEB_HOSTNAME} web origin http://${WEB_HOST}:${WEB_PORT} from ${WEB_DIR}"
   if [ -f "$WEB_DIR/pnpm-lock.yaml" ]; then
-    (cd "$WEB_DIR" && nohup bash -lc "corepack enable >/dev/null 2>&1 || true; HOST=${WEB_HOST} PORT=${WEB_PORT} pnpm run dev -- --hostname ${WEB_HOST} --port ${WEB_PORT}" >> "${ROOT}/${WEB_LOG}" 2>&1 & echo $! > "${ROOT}/${WEB_PID}")
+    (cd "$WEB_DIR" && setsid bash -lc "echo \$\$ > \"${ROOT}/${WEB_PID}\"; corepack enable >/dev/null 2>&1 || true; exec env HOSTNAME=${WEB_HOST} PORT=${WEB_PORT} pnpm run dev" >> "${ROOT}/${WEB_LOG}" 2>&1 &)
   elif [ -f "$WEB_DIR/yarn.lock" ]; then
-    (cd "$WEB_DIR" && nohup bash -lc "HOST=${WEB_HOST} PORT=${WEB_PORT} yarn dev --hostname ${WEB_HOST} --port ${WEB_PORT}" >> "${ROOT}/${WEB_LOG}" 2>&1 & echo $! > "${ROOT}/${WEB_PID}")
+    (cd "$WEB_DIR" && setsid bash -lc "echo \$\$ > \"${ROOT}/${WEB_PID}\"; exec env HOSTNAME=${WEB_HOST} PORT=${WEB_PORT} yarn dev" >> "${ROOT}/${WEB_LOG}" 2>&1 &)
   else
-    (cd "$WEB_DIR" && nohup bash -lc "HOST=${WEB_HOST} PORT=${WEB_PORT} npm run dev -- --hostname ${WEB_HOST} --port ${WEB_PORT}" >> "${ROOT}/${WEB_LOG}" 2>&1 & echo $! > "${ROOT}/${WEB_PID}")
+    (cd "$WEB_DIR" && setsid bash -lc "echo \$\$ > \"${ROOT}/${WEB_PID}\"; exec env HOSTNAME=${WEB_HOST} PORT=${WEB_PORT} npm run dev" >> "${ROOT}/${WEB_LOG}" 2>&1 &)
   fi
 }
 

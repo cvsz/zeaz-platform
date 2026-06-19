@@ -12,7 +12,7 @@ This document reflects the architecture currently implemented in this repository
 
 ## 2) Monorepo Topology
 
-- `apps/` → user/API entrypoint apps (`apps/android`, `apps/api`).
+- `apps/` → user/API entrypoint apps (`apps/android`, `apps/zeaz-api`).
 - `android-app/` and `mobile/` → additional mobile client surfaces (native Android + React Native shell).
 - `backend/services/` → production-style Node/TypeScript microservices (gateway, tx-orchestrator, swap-service, policy-service, notify-service, wallet-service, portfolio-service, indexer-service).
 - `services/` → lightweight service implementations (`wallet-engine`, `swap-engine`, `indexer`, `router`).
@@ -82,7 +82,7 @@ flowchart LR
 - State/store components exist for chain progress tracking.
 
 ### 4.6 API variants
-- `apps/api` (TypeScript) and `api/` (Python FastAPI) represent alternative API stack paths.
+- `apps/zeaz-api` (TypeScript) and `api/` (Python FastAPI) represent alternative API stack paths.
 - Python service follows layered architecture: `domain` → `application` → `infrastructure` → `interfaces`.
 
 ## 5) Data and Infra Planes

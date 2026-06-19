@@ -1,4 +1,5 @@
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 cd terraform/cloudflare-apps
 export APPLY=true COST_LOCK=true ALLOW_PAID_CLOUDFLARE_FEATURES=false CLOUDFLARE_PLAN_TIER=Free CONFIRM_TERRAFORM_APPLY=yes
 source ../../.env

@@ -3,10 +3,23 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck source=../lib/gemini-sandbox.sh
+source "${ROOT_DIR}/scripts/lib/gemini-sandbox.sh"
+gemini_init_sandbox_paths "${ROOT_DIR}"
+
 MODE="${1:-cloudflare-api}"
 
 log() {
   printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"
+}
+
+redact_id() {
+  local value="${1:-}"
+  if [[ ${#value} -le 10 ]]; then
+    printf '[redacted]'
+  else
+    printf '%s...%s' "${value:0:6}" "${value: -4}"
+  fi
 }
 
 require_var() {
@@ -32,10 +45,12 @@ render_runtime_banner() {
   cat <<BANNER
 cloudflare-agent-bootstrap
 mode=${MODE}
-account=${CLOUDFLARE_ACCOUNT_ID}
-zone=${CLOUDFLARE_ZONE_ID}
+account=$(redact_id "${CLOUDFLARE_ACCOUNT_ID}")
+zone=$(redact_id "${CLOUDFLARE_ZONE_ID}")
 domain=${PRIMARY_DOMAIN}
 repo=${ROOT_DIR}
+cache=${GEMINI_CACHE_DIR}
+logs=${GEMINI_LOG_DIR}
 BANNER
 }
 

@@ -3,25 +3,25 @@
     {
       "app_id": "zcfdash",
       "role": "ui",
-      "path": "apps/web",
+      "path": "apps/zeaz-web",
       "hostname": "zcfdash.zeaz.dev",
       "port": 3003,
       "origin": "http://127.0.0.1:3003",
       "status": "active",
       "alias_for": "web",
-      "description": "Cloudflare control dashboard served by apps/web"
+      "description": "Cloudflare control dashboard served by apps/zeaz-web"
     },
     {
       "app_id": "zcfdash-api",
       "role": "api",
-      "path": "apps/api",
+      "path": "apps/zeaz-api",
       "hostname": "api-zcfdash.zeaz.dev",
       "port": 8088,
       "origin": "http://127.0.0.1:8088",
       "status": "active",
       "alias_for": "api-gateway",
       "api_gateway_prefix": "/api/runtime/cloudflare",
-      "description": "Read-only Cloudflare control API served by apps/api"
+      "description": "Read-only Cloudflare control API served by apps/zeaz-api"
     }
   ]
 }
