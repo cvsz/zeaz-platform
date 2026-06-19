@@ -10,6 +10,10 @@ app.use(express.json());
 
 const fbController = require('./fbController');
 const scheduler = require('./scheduler');
+const path = require('path');
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Basic health check endpoint
 app.get('/health', (req, res) => {

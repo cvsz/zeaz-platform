@@ -11,6 +11,7 @@ To comply with the `cvsz/zeaz-platform` monorepo constraints, this directory has
 - Regenerated Facebook Graph API integrations for pages.
 - Exposes API endpoints for posting messages and photos to Facebook Pages.
 - Includes a `node-cron` scheduled worker to automate Facebook posts at regular intervals.
+- **Includes a full-featured, responsive Data-Dense Dashboard UI** built with vanilla HTML/CSS/JS (served from `/public`) for scheduling, viewing KPI metrics, and manually publishing content.
 
 ## Local development
 

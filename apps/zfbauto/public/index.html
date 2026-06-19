@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeaZ FB Auto Post - Dashboard</title>
+  <meta name="description" content="Dashboard for scheduling and posting content to Facebook Pages automatically.">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+          </svg>
+        </div>
+        zfbauto
+      </div>
+      
+      <nav class="nav-links">
+        <a href="#" class="nav-link active">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Dashboard
+        </a>
+        <a href="#" class="nav-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Posts
+        </a>
+        <a href="#" class="nav-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+      <header class="header">
+        <div>
+          <h1>Overview</h1>
+          <p class="text-muted" style="margin-top: 4px;">Monitor and publish content to your Facebook page.</p>
+        </div>
+        <div class="status-badge" id="system-status">
+          <div class="status-dot"></div>
+          <span id="status-text">Checking System...</span>
+        </div>
+      </header>
+
+      <!-- Metrics -->
+      <section class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <span>Total Posts Sent</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+          <div class="card-value" id="kpi-total-posts">--</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>Next Auto-Post</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div class="card-value" style="font-size: 1.5rem;" id="kpi-next-post">T+ 1hr</div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>Page Status</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div class="card-value" style="color: var(--color-accent);" id="kpi-page-status">Connected</div>
+        </div>
+      </section>
+
+      <!-- Content Grid -->
+      <section class="content-grid">
+        <!-- Publish Form -->
+        <div class="card">
+          <div class="card-header">
+            <span style="font-size: 1rem; color: var(--color-on-primary);">Create New Post</span>
+          </div>
+          <form id="post-form">
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="What's on your mind?" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="imageUrl">Photo URL (Optional)</label>
+              <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+            </div>
+            <button type="submit" id="btn-submit">
+              <span class="loading-spinner"></span>
+              Publish Now
+            </button>
+          </form>
+        </div>
+
+        <!-- Recent Posts -->
+        <div class="card">
+          <div class="card-header flex-between">
+            <span style="font-size: 1rem; color: var(--color-on-primary);">Recent Posts Activity</span>
+            <button id="btn-refresh" style="padding: 6px 12px; font-size: 0.875rem; background: var(--color-primary); color: var(--color-foreground); border: 1px solid var(--color-border);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              Refresh
+            </button>
+          </div>
+          <div class="feed-list" id="feed-list">
+            <!-- Loading State -->
+            <div class="text-muted" style="text-align: center; padding: 32px 0;">
+              Loading recent posts...
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
