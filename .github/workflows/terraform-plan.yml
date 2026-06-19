@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -36,12 +36,12 @@ jobs:
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v4
+        uses: hashicorp/setup-terraform@v3
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v2
+        uses: opentofu/setup-opentofu@v1
 
       - name: Terraform fmt check
         run: make tf-fmt-check
@@ -84,9 +84,10 @@ jobs:
 
       - name: Upload Terraform plan artifacts
         if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-artifacts
+          if-no-files-found: warn
           path: |
             terraform/**/*.tfplan
             terraform/**/plan-*.txt

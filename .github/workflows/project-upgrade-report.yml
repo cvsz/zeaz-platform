@@ -35,7 +35,7 @@ jobs:
       COST_LOCK: "true"
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -55,8 +55,9 @@ jobs:
         run: bash scripts/project-upgrade-report.sh
 
       - name: Upload report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: project-upgrade-report
+          if-no-files-found: warn
           path: reports/project-upgrade-report.md
           if-no-files-found: error

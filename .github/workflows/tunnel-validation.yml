@@ -23,7 +23,7 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
@@ -33,9 +33,10 @@ jobs:
 
       - name: Upload tunnel validation artifacts
         if: ${{ hashFiles('reports/tunnel/**', 'tunnels/**/*.json') != '' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: tunnel-validation-artifacts
+          if-no-files-found: warn
           path: |
             reports/tunnel
             tunnels/**/*.json

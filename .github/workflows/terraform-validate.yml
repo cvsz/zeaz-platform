@@ -26,16 +26,16 @@ jobs:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Validate shell scripts syntax
         run: find scripts -type f -name '*.sh' -print0 | xargs -0 -r -I{} bash -n {}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v4
+        uses: hashicorp/setup-terraform@v3
 
       - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v2
+        uses: opentofu/setup-opentofu@v1
 
       - name: Run workflow policy checks
         run: make workflow-policy
