@@ -2,14 +2,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const frontendRoot = path.dirname(fileURLToPath(import.meta.url));
-const workspaceRoot = path.resolve(frontendRoot, "../../..");
+const repoRoot = path.resolve(frontendRoot, "../../..");
 
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: workspaceRoot,
   turbopack: {
-    root: workspaceRoot,
+    root: frontendRoot,
   },
+  outputFileTracingRoot: repoRoot,
 };
 
 export default nextConfig;
