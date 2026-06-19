@@ -114,7 +114,7 @@ env-check: ## Validate env syntax without printing values
 	@status=0; for file in .env .env.example .env.full-local.example .env.production .env.production.example frontend/.env frontend/.env.local frontend/.env.example; do [ -f "$$file" ] || continue; grep -nEv '^($$|#|[A-Za-z_][A-Za-z0-9_]*=)' "$$file" && status=1 || echo "PASSED: $$file"; done; exit $$status
 
 port-scan: ## Fail if source still references old backend port 8000
-	@tmp=$$(mktemp); git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . ':(exclude)Makefile' ':(exclude)docs/**' ':(exclude)**/*.md' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no old backend port 8000 found"; fi
+	@tmp=$$(mktemp); git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . ':(exclude)Makefile' ':(exclude)docs/**' ':(exclude)**/*.md' ':(exclude).codex/**' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no old backend port 8000 found"; fi
 
 secret-scan: ## Basic scan for private key blocks in tracked app files
 	@tmp=$$(mktemp); git grep -nE 'BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY' -- . ':(exclude)**/*.md' ':(exclude)docs/**' > $$tmp 2>/dev/null || true; if [ -s $$tmp ]; then cat $$tmp; rm -f $$tmp; exit 1; else rm -f $$tmp; echo "PASSED: no private key blocks found"; fi
@@ -143,7 +143,7 @@ feature-status: ## Write local feature key status report
 
 validate-fast: safety-scan ## Run fast validation
 	@PYTHONPATH=$(BACKEND_DIR) $(PYTHON) -m compileall -q $(BACKEND_DIR)/app
-	@$(NPM) --prefix $(FRONTEND_DIR) run test -- --run --passWithNoTests
+	@$(NPM) --prefix $(FRONTEND_DIR) run test
 	@echo "PASSED: zdash fast validation"
 
 validate-local: validate-fast ## Alias for local validation

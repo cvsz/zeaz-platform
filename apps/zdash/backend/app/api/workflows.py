@@ -1,6 +1,6 @@
 import subprocess
 from fastapi import APIRouter, HTTPException
-from typing import List, Dict, Any
+from typing import List, Dict
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 ZAICTL_PATH = "/home/zeazdev/zeaz-platform/scripts/zaictl.sh"
