@@ -105,4 +105,49 @@ Release gate:
 General:
   make doctor                 Print local tool/runtime inventory
   make clean                  Remove Terraform plans, SBOM artifacts, and .terraform dirs
+
+zDash Monorepo (apps/zdash):
+  make zdash-install          Install zDash dependencies
+  make zdash-validate-fast    Run fast validation for zDash
+  make zdash-backend-test     Run backend tests
+  make zdash-frontend-test    Run frontend tests
+  make zdash-build            Build frontend production bundle
+  make zdash-server-start     Start zDash servers
+  make zdash-server-stop      Stop zDash servers
+  make zdash-server-restart   Restart zDash servers
+  make zdash-server-status    Show zDash server status
+  make zdash-validate         Run full zDash validation
+
+Authentik Local Runtime:
+  make authentik-install      Install and start Authentik
+  make authentik-up           Start Authentik
+  make authentik-down         Stop Authentik
+  make authentik-status       Show Authentik status
+  make authentik-logs         View Authentik logs
+
+All Apps:
+  make all-apps-install       Run install across all apps
+  make all-apps-build         Run build across all apps
+  make all-apps-start         Start all apps
+  make all-apps-stop          Stop all apps
+  make all-apps-status        Show status of all apps
+  make app-<name>-<target>    Run a target in a specific app (e.g., make app-zquest-start)
+
+zQuest:
+  make zquest-start           Start the zQuest frontend plus backend-backed database server
+  make zquest-stop            Stop the zQuest frontend plus backend-backed database server
+  make zquest-status          Show zQuest server status
+  make zquest-restart         Restart zQuest server
+  make zquest-smoke           Run zQuest smoke tests against the local server
+
+Omega Platform:
+  make install                Install OMEGA Platform
+  make omega-validate         Validate OMEGA Installer
+  make package                Package OMEGA Release
+  make harness-audit          Run harness audit
+
+ZEAZ Omega AI Assets:
+  make omega-ai-assets-scan   Scan AI assets
+  make omega-ai-assets-install Install AI assets
+  make omega-ai-assets-verify  Verify AI assets
 HELP
