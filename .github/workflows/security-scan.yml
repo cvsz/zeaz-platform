@@ -1,5 +1,7 @@
 name: Security Scan
 on: [push]
+permissions:
+  contents: read
 jobs:
   trivy-scan:
     runs-on: ubuntu-latest
