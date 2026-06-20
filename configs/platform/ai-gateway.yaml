@@ -1,0 +1,5 @@
+gateway_slug: example-gateway-slug
+rate_limiting:
+  enabled: true
+  requests_per_minute: 100
+EOF

@@ -101,4 +101,12 @@ records:
     target_from: tunnel_endpoint
     proxied: true
     ttl: 1
-
+  - id: zfbauto
+    name: zfbauto
+    fqdn: zfbauto.${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
+    tags: [internal-tools, zfbauto]
+    notes: Facebook Auto-Post Bot dashboard — Zero Trust protected, @zeaz.dev only

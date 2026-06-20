@@ -56,7 +56,7 @@ jobs:
         run: make phase52-validate
 
       - name: Install Web Deps
-        run: scripts/ci/install-web-deps-safe.sh
+        run: bash scripts/install.sh web-deps
 
       - name: Build web
         working-directory: apps/zeaz-web

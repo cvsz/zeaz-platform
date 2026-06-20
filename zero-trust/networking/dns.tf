@@ -1,5 +1,5 @@
 # DNS CNAME records routing all zeaz.dev subdomains to zeaz-tunnel
-# Tunnel ID: b84b87a0-ecd5-4eeb-8551-0faa7e8fe189
+# Tunnel ID: 45667e7e-7383-4265-b53e-6a9e770a8554
 locals {
   tunnel_cname = "45667e7e-7383-4265-b53e-6a9e770a8554.cfargotunnel.com"
 

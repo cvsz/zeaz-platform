@@ -1,31 +1,26 @@
-# Incident Runbook
+# Runbook: Tunnel Outage
 
 ## Severity matrix
-- Sev1: customer-impacting outage or active compromise
-- Sev2: degraded service or attempted compromise
-- Sev3: contained issue with no customer impact
+- P0: Full outage of all subdomains.
+- P1: Partial outage affecting core services (Auth, AI).
 
-## Detection and triage
-- Confirm indicators from monitoring and audit logs.
-- Open incident channel and assign commander.
+## Detection Signals
+- High latency or connection timeouts to proxied applications.
+
+## Immediate Containment
+- Verify status with `cloudflared tunnel status`.
+
+## Recovery
+- Restart tunnel process.
 
 ## Rollback
-- Revert last known-good infrastructure/config release.
-- Validate rollback with smoke checks and policy tests.
+- Revert recent tunnel configuration changes if applicable.
 
 ## Forensic collection
-- Export Cloudflare audit logs and WAF events.
-- Preserve worker logs, tunnel metrics, and IAM events.
-- Hash evidence and store immutable copies.
+- Collect cloudflared logs for investigation.
 
 ## Recovery validation
-- Confirm service SLOs recovered.
-- Verify auth, JWT, WAF, and tunnel checks are green.
-- Run post-recovery drift detection.
+- Confirm service connectivity and log stability.
 
 ## Postmortem template
-- Timeline
-- Root cause
-- Contributing factors
-- Corrective actions
-- Owners and due dates
+- Record incident details, root cause, and follow-up actions.

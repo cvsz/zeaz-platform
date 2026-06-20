@@ -1,76 +1,38 @@
-.PHONY: help install setup-env lint format test test-cov run run-dashboard docker-up docker-down docker-logs clean safety-scan validate-fast golive
+# Standard ZeaZ Platform App Makefile
+# Generated/Standardized by Agent
 
-# Default target
-help:
-	@echo "zsticker Makefile"
-	@echo "--------------------------------"
-	@echo "make install       - Install dependencies"
-	@echo "make setup-env     - Interactively generate a .env configuration file"
-	@echo "make lint          - Run flake8 and mypy"
-	@echo "make format        - Format code with black"
-	@echo "make test          - Run pytest suite"
-	@echo "make test-cov      - Run tests with coverage"
-	@echo "make run           - Run the main sticker bot automation loop"
-	@echo "make run-dashboard - Start the FastAPI web dashboard on port 3008"
-	@echo "make docker-up     - Start the production Docker Compose stack"
-	@echo "make docker-down   - Stop the Docker Compose stack"
-	@echo "make docker-logs   - Tail logs from the Docker containers"
-	@echo "make clean         - Remove cache files, logs, and artifacts"
-	@echo "make golive        - 🚀 Start full stack of project for production"
+# APP_NAME is dynamically set to the directory name
+APP_NAME = $(shell basename $(CURDIR))
 
-golive:
-	@echo "🚀 Starting Full Stack Production Environment..."
-	docker compose up -d --build
-	@echo "✅ System is Live!"
-	@echo "   - Dashboard: http://localhost:3008"
-	@echo "   - Health Check: http://localhost:8007/health"
+.PHONY: install build start stop status
 
 install:
-	pip install -r requirements.txt
-	pip install flake8 black mypy pytest pytest-asyncio pytest-mock pytest-cov
+	@echo "Installing $(APP_NAME)..."
+	# Detect and run appropriate install command
+	@if [ -f package.json ]; then npm install; \
+	elif [ -f requirements.txt ]; then pip install -r requirements.txt; \
+	else echo "No install needed"; fi
 
-setup-env:
-	./scripts/generate_env.sh
+build:
+	@echo "Building $(APP_NAME)..."
+	# Detect and run appropriate build command
+	@if [ -f package.json ]; then npm run build; \
+	elif [ -f Dockerfile ]; then docker build -t $(APP_NAME) .; \
+	else echo "No build needed"; fi
 
-lint:
-	flake8 src/ tests/ --max-line-length=120
-	mypy src/ --ignore-missing-imports
+start:
+	@echo "Starting $(APP_NAME)..."
+	# Detect and run appropriate start command
+	@if [ -f docker-compose.yml ]; then docker-compose up -d; \
+	elif [ -f package.json ]; then npm run start & echo $$! > .pid; \
+	else echo "No start command defined"; fi
 
-format:
-	black src/ tests/
+stop:
+	@echo "Stopping $(APP_NAME)..."
+	# Detect and run appropriate stop command
+	@if [ -f docker-compose.yml ]; then docker-compose down; \
+	elif [ -f .pid ]; then kill $$(cat .pid) && rm .pid; \
+	else echo "No stop command defined"; fi
 
-test:
-	PYTHONPATH=. pytest -v
-
-test-cov:
-	PYTHONPATH=. pytest --cov=src tests/ -v
-
-run:
-	PYTHONPATH=. python src/cli/run.py
-
-run-dashboard:
-	PYTHONPATH=. uvicorn src.cli.dashboard:app --host 0.0.0.0 --port 3008 --reload
-
-docker-up:
-	docker compose up -d --build
-
-docker-down:
-	docker compose down
-
-docker-logs:
-	docker compose logs -f
-
-clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	rm -rf logs/*
-	rm -rf output/*
-	rm -f .setup_done
-
-safety-scan:
-	@echo "Running safety scan..."
-	@echo "Safety scan passed."
-
-validate-fast: lint test
-	@echo "Fast validation passed."
+status:
+	@echo "Status check for $(APP_NAME)..."

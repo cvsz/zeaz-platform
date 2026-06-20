@@ -1,18 +1,38 @@
-SHELL := /usr/bin/env bash
-.SHELLFLAGS := -Eeuo pipefail -c
+# Standard ZeaZ Platform App Makefile
+# Generated/Standardized by Agent
 
-.PHONY: server-start server-stop server-status server-restart smoke
+# APP_NAME is dynamically set to the directory name
+APP_NAME = $(shell basename $(CURDIR))
 
-server-start:
-	@bash ../../scripts/zquest-control.sh start
+.PHONY: install build start stop status
 
-server-stop:
-	@bash ../../scripts/zquest-control.sh stop
+install:
+	@echo "Installing $(APP_NAME)..."
+	# Detect and run appropriate install command
+	@if [ -f package.json ]; then npm install; \
+	elif [ -f requirements.txt ]; then pip install -r requirements.txt; \
+	else echo "No install needed"; fi
 
-server-status:
-	@bash ../../scripts/zquest-control.sh status
+build:
+	@echo "Building $(APP_NAME)..."
+	# Detect and run appropriate build command
+	@if [ -f package.json ]; then npm run build; \
+	elif [ -f Dockerfile ]; then docker build -t $(APP_NAME) .; \
+	else echo "No build needed"; fi
 
-server-restart: server-stop server-start
+start:
+	@echo "Starting $(APP_NAME)..."
+	# Detect and run appropriate start command
+	@if [ -f docker-compose.yml ]; then docker-compose up -d; \
+	elif [ -f package.json ]; then npm run start & echo $$! > .pid; \
+	else echo "No start command defined"; fi
 
-smoke:
-	@bash ../../scripts/zquest-control.sh smoke
+stop:
+	@echo "Stopping $(APP_NAME)..."
+	# Detect and run appropriate stop command
+	@if [ -f docker-compose.yml ]; then docker-compose down; \
+	elif [ -f .pid ]; then kill $$(cat .pid) && rm .pid; \
+	else echo "No stop command defined"; fi
+
+status:
+	@echo "Status check for $(APP_NAME)..."

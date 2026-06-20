@@ -27,6 +27,12 @@ ingress:
     service: http://127.0.0.1:3008
   - hostname: auth.zeaz.dev
     service: http://127.0.0.1:9443
+  - hostname: zstudio.zeaz.dev
+    service: http://127.0.0.1:3001
+  - hostname: zagents.zeaz.dev
+    service: http://127.0.0.1:3009
+  - hostname: api.zeaz.dev
+    service: http://127.0.0.1:8088
   - hostname: zcfdash.zeaz.dev
     service: http://127.0.0.1:3003
   - hostname: api-zcfdash.zeaz.dev

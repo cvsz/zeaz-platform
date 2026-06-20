@@ -90,10 +90,11 @@ for file in "${!toml_files[@]}"; do
         bname=$(echo "$clean_line" | sed -n 's/.*binding\s*=\s*"\([^"]*\)".*/\1/p')
         raw_id=$(echo "$clean_line" | sed -n 's/.*id\s*=\s*"\([^"]*\)".*/\1/p')
         risk="OK"
-        if [[ "$raw_id" == "00000000000000000000000000000000" || "$raw_id" == "replace-me" ]]; then
+        # Check against common insecure placeholder patterns
+        if [[ -z "$raw_id" || "$raw_id" =~ ^(0{32}|replace-me|changeme|dummy-secret|fake-token)$ ]]; then
           risk="BLOCKER"
         fi
-        add_result "$file" "$worker" "default" "kv_namespace" "${bname:-unknown}" "REDACTED_ID" "$risk" "Check IDs" "Check"
+        add_result "$file" "$worker" "default" "kv_namespace" "${bname:-unknown}" "REDACTED_ID" "$risk" "Check IDs and override with env" "Check"
       fi
     elif echo "$clean_line" | grep -qE "^\[\[kv_namespaces\]\]"; then
       add_result "$file" "$worker" "default" "kv_namespace" "unknown" "REDACTED_ID" "OK" "Verify ID is real" "Verify"

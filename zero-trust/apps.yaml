@@ -90,3 +90,22 @@ applications:
     allowed_idps: [zeazdev-finance-saml]
     service_tokens_enabled: true
     security: {mfa: required, webauthn: required}
+
+  # ── Internal Tooling ───────────────────────────────────────────────────────
+  - key: zfbauto
+    name: zeazdev-${ENVIRONMENT}-zfbauto
+    domain: zfbauto.${PRIMARY_DOMAIN}
+    type: self_hosted
+    session_duration: 12h
+    app_launcher_visible: true
+    auto_redirect_to_identity: false
+    allowed_idps: [zeazdev-ai-saml]
+    service_tokens_enabled: true
+    security:
+      mfa: required
+      webauthn: recommended
+    tags: [internal-tools, facebook-automation, ai-content]
+    notes: >
+      Facebook Auto-Post bot with AI content generation dashboard.
+      Internal-only tool for social media management team.
+      Accessible at zfbauto.zeaz.dev via Cloudflare Zero Trust.

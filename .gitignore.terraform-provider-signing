@@ -1,0 +1,7 @@
+# Terraform provider signing secrets
+.secrets/
+dist/
+*.sig
+*.pem
+*.key
+*.asc

@@ -114,6 +114,7 @@ validate: test validate-env env-format-validate yaml-validate gitlink-validate c
 	@echo "Validation complete."
 
 validate-env:
+	@bash scripts/validate-env.sh
 	@bash scripts/env-report-check.sh advisory
 	@bash scripts/env-report-check.sh advisory
 
@@ -151,8 +152,13 @@ yaml-validate:
 
 gitlink-validate:
 	@bash scripts/validate-gitlinks.sh
+TF_INIT_ARGS ?= -upgrade
+
 tf-init:
-	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init $(TF_ARGS)
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init $(TF_INIT_ARGS)
+
+tf-init-offline:
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) init -get=false -backend=false
 
 tf-fmt:
 	@$(TF_BIN) fmt -recursive $(TF_ROOT) opentofu 2>/dev/null || $(TF_BIN) fmt -recursive $(TF_ROOT)
@@ -161,6 +167,9 @@ tf-fmt-check:
 	@$(TF_BIN) fmt -check -recursive $(TF_ROOT) opentofu 2>/dev/null || $(TF_BIN) fmt -check -recursive $(TF_ROOT)
 
 tf-validate: tf-init
+	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) validate
+
+tf-validate-only:
 	@bash $(TF_ENV_WRAPPER) $(TF_BIN) -chdir=$(TF_ROOT) validate
 
 tf-plan: tf-init
@@ -929,10 +938,19 @@ harness-audit:
 .PHONY: omega-ai-assets-scan omega-ai-assets-install omega-ai-assets-verify
 
 omega-ai-assets-scan:
-	@bash scripts/omega/install-ai-assets-master.sh
+	@bash scripts/install.sh ai-assets
 
 omega-ai-assets-install:
-	@bash scripts/omega/install-ai-assets-master.sh --apply
+	@bash scripts/install.sh ai-assets --apply
 
 omega-ai-assets-verify:
-	@bash scripts/omega/verify-ai-assets-master.sh
+	@bash scripts/install.sh ai-assets --verify
+
+# Offline syntax checks
+tf-syntax-check:
+	@echo "Checking Terraform syntax..."
+	@terraform fmt -check -recursive terraform/
+
+tofu-syntax-check:
+	@echo "Checking OpenTofu syntax..."
+	@tofu fmt -check -recursive opentofu/

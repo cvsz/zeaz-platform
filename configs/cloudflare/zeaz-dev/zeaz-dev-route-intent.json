@@ -68,6 +68,17 @@
       "type": "CNAME",
       "proxied": true,
       "ttl": "auto"
+    },
+    {
+      "name": "zfbauto.zeaz.dev",
+      "purpose": "Facebook Auto-Post Bot dashboard with AI content generation (zfbauto app, port 5000)",
+      "target": "TUNNEL_ENDPOINT_PLACEHOLDER",
+      "type": "CNAME",
+      "proxied": true,
+      "ttl": "auto",
+      "zero_trust_protected": true,
+      "access_app_key": "zfbauto",
+      "origin": "http://127.0.0.1:5000"
     }
   ],
   "rollback": {

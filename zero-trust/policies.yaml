@@ -61,6 +61,17 @@ policies:
     include: [{groups: [wallet-admin, wallet-operator, treasury, compliance]}]
     require: [mfa, webauthn, valid_service_token]
     session_ttl: 4h
+
+  # ── Internal Tools ──────────────────────────────────────────────────────────
+  - app_key: zfbauto
+    decision: allow
+    precedence: 1
+    include:
+      - emails_ending_in: [zeaz.dev]
+    require: [mfa]
+    session_ttl: 12h
+    notes: Internal social media automation dashboard — accessible by any @zeaz.dev team member
+
 audit_hooks:
   - destination: cloudflare-logpush
     dataset: access_requests

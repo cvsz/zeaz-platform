@@ -1,15 +1,17 @@
-# ZeaZ Platform — Omega Master Advanced Professional Final Release Complete
+# ZeaZ Platform
 
-Production-grade, GitOps-ready Cloudflare Zero Trust platform.
+ZeaZ Platform is a production-grade, GitOps-ready Cloudflare Zero Trust platform.
 
-## Status
-**Omega Master Advanced Professional Final Release Complete**
+## Architecture & Standards
+This project follows strict platform engineering standards. Please refer to:
+- `GEMINI.md`: Authoritative operating guide.
+- `SECURITY.md`: Security policy and alignment.
 
-## Documentation
-- [GEMINI.md](GEMINI.md): Architectural standards & operating rules.
-- [docs/omega/RUNBOOK.md](docs/omega/RUNBOOK.md): Operations.
-- [docs/omega/PLATFORM_APPS.md](docs/omega/PLATFORM_APPS.md): Routing registry.
-- [docs/omega/DEPLOY_PROCEDURE.md](docs/omega/DEPLOY_PROCEDURE.md): Deployment guide.
+## Getting Started
+See the [Installation Guide](docs/README.md) for environment setup and asset installation.
 
-## Design System
-- Integrated [zai-ux-ui] for platform-wide consistent aesthetics.
+## Validation
+Run platform validation:
+```bash
+make validate
+```

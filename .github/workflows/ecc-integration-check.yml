@@ -3,7 +3,7 @@ name: ECC Integration Check
 on:
   pull_request:
     paths:
-      - "scripts/ai/install-ecc.sh"
+      - "scripts/installers/ecc.sh"
       - "docs/ecc-integration.md"
       - ".github/workflows/ecc-integration-check.yml"
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate shell syntax
-        run: bash -n scripts/ai/install-ecc.sh
+        run: bash -n scripts/install.sh ecc
 
       - name: Show wrapper help
-        run: bash scripts/ai/install-ecc.sh --help
+        run: bash scripts/install.sh ecc --help

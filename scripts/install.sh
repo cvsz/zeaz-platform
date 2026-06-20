@@ -1,29 +1,41 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+trap 'log "Error on line $LINENO"' ERR
 
-echo "Installing Zeaz Meta OS Dependencies..."
+# Common utility functions
+log() { printf '[%s] %s\n' "install.sh" "$*"; }
+warn() { printf '[%s] WARN: %s\n' "install.sh" "$*" >&2; }
+die() { printf '[%s] ERROR: %s\n' "install.sh" "$*" >&2; exit 1; }
 
-# Check prerequisites
-command -v docker >/dev/null 2>&1 || { echo "Docker is required but it's not installed. Aborting." >&2; exit 1; }
-command -v npm >/dev/null 2>&1 || { echo "npm is required but it's not installed. Aborting." >&2; exit 1; }
-command -v python3 >/dev/null 2>&1 || { echo "python3 is required but it's not installed. Aborting." >&2; exit 1; }
+usage() {
+  cat <<USAGE
+Usage:
+  scripts/install.sh [module] [options]
 
-# Install backend dependencies
-echo "Installing API dependencies..."
-cd apps/zeaz-api
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cd ../..
+Modules:
+  web-deps        Install web dependencies safely
+  omega-addons    Install Omega Master addons
+  ai-assets       Scan and install AI assets
+  ecc             Integrate ECC
 
-# Install frontend dependencies
-echo "Installing Web dependencies..."
-cd apps/zeaz-web
-npm install
-cd ../..
+Options:
+  -h, --help      Show this help
+USAGE
+}
 
-# Pull docker images
-echo "Pulling Docker images..."
-docker compose pull
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 1
+fi
 
-echo "Installation complete!"
+MODULE="$1"
+shift
+
+case "$MODULE" in
+  web-deps)     bash scripts/installers/web-deps.sh "$@" ;;
+  omega-addons) bash scripts/installers/omega-addons.sh "$@" ;;
+  ai-assets)    bash scripts/installers/ai-assets.sh "$@" ;;
+  ecc)          bash scripts/installers/ecc.sh "$@" ;;
+  *)            die "Unknown module: $MODULE" ;;
+esac

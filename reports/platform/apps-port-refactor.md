@@ -24,6 +24,15 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | zsp-aitool | ui | `apps/zsp-aitool` | `ztest.zeaz.dev` | 3008 | `http://127.0.0.1:3008` | active | report-only | `` | `` | `` |
 | auth | auth | `apps/auth` | `auth.zeaz.dev` | 9443 | `http://127.0.0.1:9443` | active | report-only | `` | `` | `` |
 | zai-factory | ops | `apps/zai-factory` | `factory.zeaz.dev` | 8710 | `http://127.0.0.1:8710` | reserved |  | `` | `` | `/v1/factory` |
+| zstudio | ui | `apps/zstudio` | `zstudio.zeaz.dev` | 3001 | `http://127.0.0.1:3001` | active |  | `` | `` | `` |
+| analytics | ui | `apps/analytics` | `analytics.zeaz.dev` | 3017 | `http://127.0.0.1:3017` | reserved |  | `` | `` | `` |
+| zpay | api-ui | `apps/zpay` | `zpay.zeaz.dev` | 3018 | `http://127.0.0.1:3018` | reserved |  | `` | `` | `` |
+| ztreasury | api-ui | `apps/ztreasury` | `ztreasury.zeaz.dev` | 3019 | `http://127.0.0.1:3019` | reserved |  | `` | `` | `` |
+| zacademy | ui | `apps/zAcademy` | `zacademy.zeaz.dev` | 3013 | `http://127.0.0.1:3013` | reserved |  | `` | `` | `` |
+| zow | ui | `apps/openwork` | `zow.zeaz.dev` | 8092 | `http://127.0.0.1:8092` | reserved |  | `` | `` | `` |
+| zfbauto | ui | `apps/zfbauto` | `zfbauto.zeaz.dev` | 3020 | `http://127.0.0.1:3020` | reserved |  | `` | `` | `` |
+| zagents | ui | `apps/zagents` | `zagents.zeaz.dev` | 3009 | `http://127.0.0.1:3009` | active |  | `` | `` | `` |
+| zeaz-api | api | `apps/zeaz-api` | `api.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active |  | `` | `` | `/v1` |
 | zcfdash | ui | `apps/zeaz-web` | `zcfdash.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active |  | `` | `web` | `` |
 | zcfdash-api | api | `apps/zeaz-api` | `api-zcfdash.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active |  | `` | `api-gateway` | `/api/runtime/cloudflare` |
 | ztrader-api | api | `apps/ztrader` | `api-ztrader.zeaz.dev` | 8016 | `http://127.0.0.1:8016` | active |  | `` | `ztrader` | `/api/v1` |
@@ -33,12 +42,18 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | Port | Apps |
 |---:|---|
 | 3000 | zcino |
+| 3001 | zstudio |
 | 3002 | zveo |
 | 3003 | web-root, web-www, zcfdash |
 | 3004 | zcloud |
 | 3008 | zsp-aitool |
-| 3013 | zAcademy |
+| 3009 | zagents |
+| 3013 | zAcademy, zacademy |
 | 3016 | ztrader |
+| 3017 | analytics |
+| 3018 | zpay |
+| 3019 | ztreasury |
+| 3020 | zfbauto |
 | 5172 | release |
 | 5173 | zdash |
 | 8005 | zdash-api |
@@ -46,9 +61,10 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 8012 | zlms |
 | 8014 | zsticker |
 | 8016 | ztrader-api |
-| 8088 | zcfdash-api |
+| 8088 | zeaz-api, zcfdash-api |
 | 8090 | zveo-api |
 | 8091 | zoffice |
+| 8092 | zow |
 | 8710 | zai-factory |
 | 9443 | auth |
 | 22022 | ssh |
