@@ -1,0 +1,160 @@
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+from typing import Any
+
+from fastapi import APIRouter, Depends
+from .auth import require_auth
+
+router = APIRouter(tags=["cloudflare-control"])
+
+ROOT = Path(os.getenv("ZEAZ_PLATFORM_ROOT", "/home/zeazdev/zeaz-platform")).resolve()
+if not ROOT.exists():
+    raise RuntimeError(f"ZEAZ_PLATFORM_ROOT={ROOT} does not exist")
+
+PLAN_PATH = ROOT / "configs/platform/apps-port-plan.json"
+OVERLAY_PATH = ROOT / "configs/platform/zcfdash-route-overlay.json"
+TFVARS_PATH = ROOT / "terraform/cloudflare-apps/apps.auto.tfvars.json"
+INGRESS_PATH = ROOT / "reports/platform/cloudflare-tunnel-ingress.generated.yml"
+PORT_REPORT_PATH = ROOT / "reports/platform/apps-port-refactor.md"
+GO_LIVE_REPORT_PATH = ROOT / "reports/platform/final-go-live-complete.md"
+AUDIT_REPORT_PATH = ROOT / "docs/reports/generated/full-repo-audit-report.md"
+DEPLOYMENT_REPORT_PATH = ROOT / "reports/platform/apps-server-control.md"
+
+
+def _read_json(path: Path, default: Any) -> Any:
+    try:
+        resolved_path = path.resolve()
+        if not resolved_path.is_relative_to(ROOT):
+            raise ValueError(f"Path {path} is not within ROOT")
+        if not resolved_path.exists():
+            return default
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # pragma: no cover - endpoint returns diagnostics
+        return {"error": str(exc), "path": str(path)}
+
+
+def _read_text_tail(path: Path, limit: int = 12000) -> str:
+    try:
+        resolved_path = path.resolve()
+        if not resolved_path.is_relative_to(ROOT):
+            raise ValueError(f"Path {path} is not within ROOT")
+        if not resolved_path.exists():
+            return ""
+        text = path.read_text(encoding="utf-8", errors="replace")
+        return text[-limit:]
+    except Exception as exc:  # pragma: no cover
+        return f"ERROR reading {path}: {exc}"
+
+
+def _combined_routes() -> list[dict[str, Any]]:
+    plan = _read_json(PLAN_PATH, {"routes": []})
+    routes = list(plan.get("routes", [])) if isinstance(plan, dict) else []
+    overlay = _read_json(OVERLAY_PATH, {"routes": []})
+    if isinstance(overlay, dict):
+        routes.extend(overlay.get("routes", []))
+    return routes
+
+
+def _platform_routes() -> list[dict[str, Any]]:
+    """Returns all routes defined in the port plan and overlay."""
+    return _combined_routes()
+
+
+@router.get("/health")
+def health() -> dict[str, Any]:
+    routes = _platform_routes()
+    return {
+        "status": "ok",
+        "service": "api.zeaz.dev",
+        "mode": "read-only",
+        "root": str(ROOT),
+        "route_count": len(routes),
+        "required_files": {
+            "base_plan": PLAN_PATH.exists(),
+            "zcfdash_overlay": OVERLAY_PATH.exists(),
+            "terraform_apps_tfvars": TFVARS_PATH.exists(),
+            "tunnel_ingress_report": INGRESS_PATH.exists(),
+            "port_report": PORT_REPORT_PATH.exists(),
+        },
+    }
+
+
+@router.get("/routes")
+def routes() -> dict[str, Any]:
+    return {
+        "zone": "zeaz.dev",
+        "control_panel": "zcfdash.zeaz.dev",
+        "api": "api.zeaz.dev",
+        "routes": _platform_routes(),
+    }
+
+
+@router.get("/terraform")
+def terraform_assets() -> dict[str, Any]:
+    tfvars = _read_json(TFVARS_PATH, {"app_routes": {}})
+    app_routes = tfvars.get("app_routes", {}) if isinstance(tfvars, dict) else {}
+    return {
+        "path": str(TFVARS_PATH),
+        "exists": TFVARS_PATH.exists(),
+        "routes": app_routes,
+    }
+
+
+@router.get("/ingress")
+def ingress() -> dict[str, Any]:
+    text = _read_text_tail(INGRESS_PATH)
+    return {
+        "path": str(INGRESS_PATH),
+        "exists": INGRESS_PATH.exists(),
+        "matching_lines": text.splitlines() if INGRESS_PATH.exists() else [],
+    }
+
+
+@router.get("/deployment_status")
+def deployment_status() -> dict[str, Any]:
+    return {
+        "path": str(DEPLOYMENT_REPORT_PATH),
+        "exists": DEPLOYMENT_REPORT_PATH.exists(),
+        "tail": _read_text_tail(DEPLOYMENT_REPORT_PATH, 12000),
+    }
+
+
+@router.get("/reports")
+def reports() -> dict[str, Any]:
+    return {
+        "port_report": {
+            "path": str(PORT_REPORT_PATH),
+            "exists": PORT_REPORT_PATH.exists(),
+            "tail": _read_text_tail(PORT_REPORT_PATH, 8000),
+        },
+        "go_live_report": {
+            "path": str(GO_LIVE_REPORT_PATH),
+            "exists": GO_LIVE_REPORT_PATH.exists(),
+            "tail": _read_text_tail(GO_LIVE_REPORT_PATH, 8000),
+        },
+        "audit_report": {
+            "path": str(AUDIT_REPORT_PATH),
+            "exists": AUDIT_REPORT_PATH.exists(),
+            "tail": _read_text_tail(AUDIT_REPORT_PATH, 8000),
+        },
+    }
+
+
+@router.get("/summary")
+def summary() -> dict[str, Any]:
+    return {
+        "title": "ZeaZ Platform Master Control Panel",
+        "ui_hostname": "zeaz.dev",
+        "api_hostname": "api.zeaz.dev",
+        "mode": "platform-wide read-only control and evidence API",
+        "routes": _platform_routes(),
+        "health": health(),
+        "next_local_commands": [
+            "python3 scripts/platform/generate-port-refactor-assets.py",
+            "make -f Makefile -f Makefile.app-servers apps-server-status",
+            "bash scripts/platform/final-go-live-complete.sh",
+        ],
+    }
