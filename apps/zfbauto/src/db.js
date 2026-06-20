@@ -79,6 +79,18 @@ module.exports = {
       return item;
     },
     getPending: () => _db.queue.filter(q => q.status === 'pending'),
+    getPendingReview: () => _db.queue.filter(q => q.status === 'pending_review'),
+    approve: (id, editedMessage = null) => {
+      const item = _db.queue.find(q => q.id === id);
+      if (!item) return null;
+      item.status = 'pending';
+      if (editedMessage) {
+        item.message = editedMessage;
+      }
+      item.updatedAt = new Date().toISOString();
+      saveDb(_db);
+      return item;
+    },
     clear: () => {
       _db.queue = [];
       saveDb(_db);

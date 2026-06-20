@@ -173,6 +173,16 @@
             </form>
           </div>
 
+          <div class="card" id="dashboard-approvals-card">
+            <div class="card-header">
+              <span class="card-title">⏳ Pending AI Approvals</span>
+              <button class="btn btn-ghost btn-sm" id="btn-refresh-approvals">⟳ Refresh</button>
+            </div>
+            <div id="pending-approvals-list" style="max-height: 240px; overflow-y: auto;">
+              <div class="text-muted small" style="padding:16px 0;">Loading pending reviews...</div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-header">
               <span class="card-title">Recent History</span>
@@ -719,6 +729,13 @@
                       <input type="checkbox" id="ai-setting-image" class="toggle-input" checked>
                       <div class="toggle-track"><div class="toggle-thumb"></div></div>
                       Include Images
+                    </label>
+                  </div>
+                   <div class="form-group">
+                    <label class="toggle-label">
+                      <input type="checkbox" id="ai-setting-approval" class="toggle-input" checked>
+                      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+                      Require Human Approval (Guardrails)
                     </label>
                   </div>
                   <div class="form-group">

@@ -57,10 +57,12 @@ app.post('/api/facebook/refresh-token', fb.refreshToken);
 
 // Queue
 app.get('/api/queue', fb.getQueue);
+app.get('/api/queue/pending-review', fb.getPendingReview);
 app.post('/api/queue', fb.addToQueue);
 app.delete('/api/queue', fb.clearQueue);
 app.delete('/api/queue/:id', fb.removeFromQueue);
 app.post('/api/queue/:id/publish', fb.publishQueueItem);
+app.post('/api/queue/:id/approve', fb.approveQueueItem);
 
 // Post History
 app.get('/api/history', fb.getHistory);

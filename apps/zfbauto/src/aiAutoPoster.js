@@ -98,6 +98,41 @@ async function runAiAutoPost(opts = {}) {
     return { dryRun: true, generated };
   }
 
+  // Check if approval flow is active (Always route to pending_review if requireApproval settings is true)
+  const requireApproval = aiSettings.requireApproval !== false; // Default true for safety guardrails
+
+  if (requireApproval) {
+    console.log('[ai-autoposter] Route to queue pending_review: approval flow is active.');
+    const queued = db.queue.add({
+      message: generated.message,
+      imageUrl: generated.imageUrl || null,
+      type: generated.imageUrl ? 'photo' : 'text',
+      source: 'ai-autoposter-approval',
+      topic: generated.topic,
+      format: generated.format,
+      aiProvider: generated.provider,
+      status: 'pending_review',
+    });
+
+    db.history.add({
+      type: 'ai-auto',
+      message: generated.message.substring(0, 120),
+      status: 'pending_review',
+      source: '[ai-autoposter]',
+      topic: generated.topic.tag,
+      queueId: queued.id,
+    });
+
+    // Send Line / Discord Notifications (Non-blocking)
+    const { sendNotification } = require('./notification');
+    const previewMessage = `📢 [zfbauto] New AI content generated & awaiting approval!\n\nTopic: ${generated.topic.emoji} ${generated.topic.th}\nFormat: ${generated.format}\nProvider: ${generated.provider}\n\n"${generated.message.substring(0, 150)}..."\n\nApprove via dashboard: https://${process.env.PRIMARY_DOMAIN || 'localhost'}/settings`;
+    sendNotification(previewMessage, generated.imageUrl).catch(err => {
+      console.error('[ai-autoposter] Notification delivery failed:', err.message);
+    });
+
+    return { queued: true, pendingApproval: true, queueId: queued.id, generated };
+  }
+
   if (!isConfigured()) {
     console.log('[ai-autoposter] Not posting — Facebook credentials not configured. Saving to queue instead.');
     const queued = db.queue.add({
@@ -108,6 +143,7 @@ async function runAiAutoPost(opts = {}) {
       topic: generated.topic,
       format: generated.format,
       aiProvider: generated.provider,
+      status: 'pending',
     });
     db.history.add({
       type: 'ai-auto',

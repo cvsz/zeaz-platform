@@ -401,8 +401,6 @@ const refreshToken = async (req, res) => {
   }
 };
 
-// ── Queue API ─────────────────────────────────────────────────────────────────
-
 /**
  * GET /api/queue
  */
@@ -411,11 +409,33 @@ const getQueue = (req, res) => {
 };
 
 /**
+ * GET /api/queue/pending-review
+ */
+const getPendingReview = (req, res) => {
+  return res.status(200).json({ ok: true, data: db.queue.getPendingReview() });
+};
+
+/**
+ * POST /api/queue/:id/approve
+ * Body: { message? }
+ */
+const approveQueueItem = (req, res) => {
+  const { id } = req.params;
+  const { message } = req.body;
+  const approved = db.queue.approve(id, message);
+  if (!approved) {
+    return res.status(404).json({ ok: false, error: { code: 'NOT_FOUND', message: 'Queue item not found' } });
+  }
+  db.history.add({ type: 'queue-approval', message: message || approved.message, status: 'success', source: '[approval]' });
+  return res.status(200).json({ ok: true, data: approved });
+};
+
+/**
  * POST /api/queue
- * Body: { message, imageUrl?, scheduledAt? }
+ * Body: { message, imageUrl?, scheduledAt?, status? }
  */
 const addToQueue = (req, res) => {
-  const { message, imageUrl, scheduledAt } = req.body;
+  const { message, imageUrl, scheduledAt, status } = req.body;
   if (!message || !message.trim()) {
     return res.status(400).json({ ok: false, error: { code: 'MISSING_MESSAGE', message: 'message is required' } });
   }
@@ -425,6 +445,7 @@ const addToQueue = (req, res) => {
     imageUrl: imageUrl || null,
     scheduledAt: scheduledAt || null,
     type: imageUrl ? 'photo' : 'text',
+    status: status || 'pending'
   });
 
   return res.status(201).json({ ok: true, data: entry });
@@ -587,6 +608,8 @@ module.exports = {
   getInsights,
   getConfig,
   getQueue,
+  getPendingReview,
+  approveQueueItem,
   addToQueue,
   removeFromQueue,
   clearQueue,

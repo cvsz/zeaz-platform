@@ -158,8 +158,10 @@
       loadDashboardInsights(),
       loadDashboardQueue(),
       loadMiniHistory(),
+      loadPendingApprovals(),
     ]);
   }
+
 
   async function loadDashboardInsights() {
     try {
@@ -248,6 +250,58 @@
     }
   }
 
+  async function loadPendingApprovals() {
+    const el = document.getElementById('pending-approvals-list');
+    if (!el) return;
+    try {
+      const data = await api('GET', '/api/queue/pending-review');
+      const items = data.data || [];
+      if (items.length === 0) {
+        el.innerHTML = '<div class="text-muted small" style="padding:16px 0;text-align:center;">No pending reviews. All clean! ✨</div>';
+        return;
+      }
+      el.innerHTML = items.map(item => `
+        <div class="pending-approval-item" id="pa-${item.id}" style="border-bottom:1px solid rgba(255,255,255,0.08);padding:12px 0;">
+          <div style="margin-bottom:8px;">
+            <textarea class="edit-pending-message" id="pa-msg-${item.id}" rows="3" style="width:100%;font-size:0.85rem;line-height:1.4;background:rgba(0,0,0,0.2);color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:6px;">${escHtml(item.message)}</textarea>
+          </div>
+          <div class="meta-row" style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:var(--text-muted);">
+            <span>${fmtDate(item.createdAt)} ${item.imageUrl ? '🖼️ photo' : ''}</span>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-primary btn-sm" onclick="approvePending('${item.id}')">Approve</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectPending('${item.id}')">Reject</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      el.innerHTML = '<div class="text-muted small" style="padding:16px 0;text-align:center;">Failed to load pending approvals.</div>';
+    }
+  }
+
+  window.approvePending = async (id) => {
+    const msgArea = document.getElementById(`pa-msg-${id}`);
+    const message = msgArea ? msgArea.value.trim() : '';
+    try {
+      await api('POST', `/api/queue/${id}/approve`, { message });
+      toast('Approved and queued! ✅');
+      loadDashboard();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  window.rejectPending = async (id) => {
+    try {
+      await api('DELETE', `/api/queue/${id}`);
+      toast('Rejected/Deleted successfully');
+      loadDashboard();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
@@ -300,6 +354,8 @@
   }
 
   document.getElementById('btn-refresh-all')?.addEventListener('click', loadDashboard);
+  document.getElementById('btn-refresh-approvals')?.addEventListener('click', loadPendingApprovals);
+
 
   // ══════════════════════════════════════════════════════════════════
   //  PAGE: COMPOSE
@@ -1151,6 +1207,9 @@
       const imgToggle = document.getElementById('ai-setting-image');
       if (imgToggle) imgToggle.checked = s.withImage !== false;
 
+      const approvalToggle = document.getElementById('ai-setting-approval');
+      if (approvalToggle) approvalToggle.checked = s.requireApproval !== false;
+
       const enableToggle = document.getElementById('ai-setting-enabled');
       if (enableToggle) enableToggle.checked = s.enabled !== false;
 
@@ -1163,11 +1222,12 @@
   document.getElementById('ai-settings-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const updates = {
-      enabled:    document.getElementById('ai-setting-enabled')?.checked,
-      topicTag:   document.getElementById('ai-setting-topic')?.value || undefined,
-      postFormat: document.getElementById('ai-setting-format')?.value || undefined,
-      provider:   document.getElementById('ai-setting-provider')?.value || 'auto',
-      withImage:  document.getElementById('ai-setting-image')?.checked !== false,
+      enabled:         document.getElementById('ai-setting-enabled')?.checked,
+      topicTag:        document.getElementById('ai-setting-topic')?.value || undefined,
+      postFormat:      document.getElementById('ai-setting-format')?.value || undefined,
+      provider:        document.getElementById('ai-setting-provider')?.value || 'auto',
+      withImage:       document.getElementById('ai-setting-image')?.checked !== false,
+      requireApproval: document.getElementById('ai-setting-approval')?.checked !== false,
     };
     try {
       await api('PATCH', '/api/ai/settings', updates);
