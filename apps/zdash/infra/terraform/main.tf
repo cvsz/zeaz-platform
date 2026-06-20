@@ -30,8 +30,5 @@ module "app" {
   vpc_id         = module.network.vpc_id
 }
 
-module "cloudflare" {
-  source            = "./modules/cloudflare"
-  domain            = var.domain
-  cloudflare_config = var.cloudflare_config
-}
+# Cloudflare routing is managed centrally via zeaz-platform/infra/cloudflare
+# See: /home/zeazdev/zeaz-platform/infra/cloudflare/config.yml

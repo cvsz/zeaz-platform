@@ -1,4 +1,4 @@
-tunnel: 6fc5dc60-812e-479c-8f2b-a9e62b568aeb
+tunnel: eebf6c99-b37e-450b-851b-0bc8e427280d
 protocol: http2
 
 originRequest:
@@ -45,4 +45,6 @@ ingress:
     service: http://traefik:80
   - hostname: api-app.zeaz.dev
     service: http://traefik:80
+  - hostname: zagents.zeaz.dev
+    service: http://172.18.0.1:3009
   - service: http_status:404
