@@ -282,6 +282,127 @@ const getInsights = async (req, res) => {
 };
 
 /**
+ * GET /api/facebook/insights/history
+ * Returns 30-day historical metrics: impressions, engaged_users, post_engagements
+ * Query: ?days=30
+ */
+const getInsightsHistory = async (req, res) => {
+  if (!isConfigured(req)) {
+    return res.status(200).json({
+      ok: true,
+      configured: false,
+      data: { labels: [], impressions: [], engagedUsers: [], postEngagements: [] },
+    });
+  }
+
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
+  const days = Math.min(parseInt(req.query.days || '30', 10), 90);
+
+  // Calculate since/until unix timestamps
+  const until = Math.floor(Date.now() / 1000);
+  const since = until - days * 24 * 60 * 60;
+
+  try {
+    const response = await fbAxios.get(`/${pageId}/insights`, {
+      params: {
+        metric: 'page_impressions,page_engaged_users,page_post_engagements',
+        period: 'day',
+        since,
+        until,
+        access_token: token,
+      },
+    });
+
+    const metricsRaw = response.data?.data || [];
+
+    // Parse metric arrays into labeled series
+    const findMetric = (name) => {
+      const m = metricsRaw.find((x) => x.name === name);
+      return m ? m.values || [] : [];
+    };
+
+    const impressionsValues = findMetric('page_impressions');
+    const engagedValues = findMetric('page_engaged_users');
+    const postEngagementsValues = findMetric('page_post_engagements');
+
+    // Use impressions as the label source (all metrics share same timeline)
+    const labels = impressionsValues.map((v) => {
+      const d = new Date(v.end_time);
+      return `${d.getMonth() + 1}/${d.getDate()}`;
+    });
+
+    return res.status(200).json({
+      ok: true,
+      configured: true,
+      data: {
+        labels,
+        impressions: impressionsValues.map((v) => v.value || 0),
+        engagedUsers: engagedValues.map((v) => v.value || 0),
+        postEngagements: postEngagementsValues.map((v) => v.value || 0),
+      },
+    });
+  } catch (error) {
+    const raw = error.response?.data?.error || error.message;
+    return fbError(res, 500, raw?.message || 'Failed to fetch insights history', raw);
+  }
+};
+
+/**
+ * GET /api/facebook/posts/top
+ * Returns Top 5 posts ranked by total engagement (likes + comments + shares)
+ * Query: ?limit=20 (pool of posts to rank from)
+ */
+const getTopPosts = async (req, res) => {
+  if (!isConfigured(req)) {
+    return res.status(200).json({ ok: true, configured: false, data: [] });
+  }
+
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
+  const pool = Math.min(parseInt(req.query.limit || '25', 10), 50);
+
+  try {
+    const response = await fbAxios.get(`/${pageId}/feed`, {
+      params: {
+        access_token: token,
+        limit: pool,
+        fields: 'id,message,story,created_time,permalink_url,full_picture,likes.summary(true),comments.summary(true),shares',
+      },
+    });
+
+    const posts = response.data?.data || [];
+
+    // Compute engagement score per post
+    const ranked = posts
+      .map((post) => {
+        const likes = post.likes?.summary?.total_count || 0;
+        const comments = post.comments?.summary?.total_count || 0;
+        const shares = post.shares?.count || 0;
+        const engagement = likes + comments + shares;
+        return {
+          id: post.id,
+          message: post.message || post.story || '(No text)',
+          createdTime: post.created_time,
+          permalink: post.permalink_url || null,
+          thumbnail: post.full_picture || null,
+          likes,
+          comments,
+          shares,
+          engagement,
+        };
+      })
+      .sort((a, b) => b.engagement - a.engagement)
+      .slice(0, 5);
+
+    return res.status(200).json({ ok: true, configured: true, data: ranked });
+  } catch (error) {
+    const raw = error.response?.data?.error || error.message;
+    return fbError(res, 500, raw?.message || 'Failed to fetch top posts', raw);
+  }
+};
+
+/**
  * GET /api/facebook/config
  */
 const getConfig = (req, res) => {
@@ -719,6 +840,8 @@ module.exports = {
   getPosts,
   deletePost,
   getInsights,
+  getInsightsHistory,
+  getTopPosts,
   getConfig,
   getQueue,
   getPendingReview,

@@ -126,6 +126,8 @@ app.post('/api/facebook/post-photo', requireRole(['admin', 'editor']), upload.si
 app.get('/api/facebook/posts', requireRole(['admin', 'editor', 'viewer']), fb.getPosts);
 app.delete('/api/facebook/posts/:postId', requireRole(['admin', 'editor']), fb.deletePost);
 app.get('/api/facebook/insights', requireRole(['admin', 'editor', 'viewer']), fb.getInsights);
+app.get('/api/facebook/insights/history', requireRole(['admin', 'editor', 'viewer']), fb.getInsightsHistory);
+app.get('/api/facebook/posts/top', requireRole(['admin', 'editor', 'viewer']), fb.getTopPosts);
 app.get('/api/facebook/config', requireRole(['admin', 'editor', 'viewer']), fb.getConfig);
 app.post('/api/facebook/exchange-token', requireRole(['admin']), fb.exchangeToken);
 app.post('/api/facebook/refresh-token', requireRole(['admin']), fb.refreshToken);

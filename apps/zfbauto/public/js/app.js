@@ -1465,4 +1465,233 @@
   // Register page
   pages.ai = { el: document.getElementById('page-ai'), onEnter: initAiPage };
 
+  // ── Analytics Page ───────────────────────────────────────────────────────────
+
+  /** Singleton Chart.js instance for the insights line chart */
+  let insightsChartInstance = null;
+
+  /**
+   * Render (or update) the 30-day insights line chart.
+   * @param {{ labels: string[], impressions: number[], engagedUsers: number[], postEngagements: number[] }} data
+   */
+  function renderInsightsCharts(data) {
+    const ctx = document.getElementById('analytics-insights-chart');
+    if (!ctx) return;
+
+    // Destroy previous chart instance to avoid canvas reuse error
+    if (insightsChartInstance) {
+      insightsChartInstance.destroy();
+      insightsChartInstance = null;
+    }
+
+    const chartColors = {
+      impressions:    { border: 'rgba(79, 142, 247, 1)',  fill: 'rgba(79, 142, 247, 0.15)' },
+      engagedUsers:   { border: 'rgba(16, 185, 129, 1)',  fill: 'rgba(16, 185, 129, 0.15)' },
+      postEngagements:{ border: 'rgba(168, 85, 247, 1)',  fill: 'rgba(168, 85, 247, 0.12)' },
+    };
+
+    insightsChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            label: 'Impressions',
+            data: data.impressions,
+            borderColor: chartColors.impressions.border,
+            backgroundColor: chartColors.impressions.fill,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            borderWidth: 2,
+          },
+          {
+            label: 'Engaged Users',
+            data: data.engagedUsers,
+            borderColor: chartColors.engagedUsers.border,
+            backgroundColor: chartColors.engagedUsers.fill,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            borderWidth: 2,
+          },
+          {
+            label: 'Post Engagements',
+            data: data.postEngagements,
+            borderColor: chartColors.postEngagements.border,
+            backgroundColor: chartColors.postEngagements.fill,
+            tension: 0.4,
+            fill: false,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            borderWidth: 2,
+            borderDash: [5, 3],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: 'rgba(255,255,255,0.75)',
+              font: { family: 'Outfit, Inter, sans-serif', size: 12 },
+              boxWidth: 14,
+              padding: 16,
+            },
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15,20,40,0.92)',
+            titleColor: '#fff',
+            bodyColor: 'rgba(255,255,255,0.8)',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 11 }, maxTicksLimit: 10 },
+            grid:  { color: 'rgba(255,255,255,0.05)' },
+          },
+          y: {
+            ticks: {
+              color: 'rgba(255,255,255,0.5)',
+              font: { size: 11 },
+              callback: (v) => v >= 1000 ? `${(v/1000).toFixed(1)}k` : v,
+            },
+            grid: { color: 'rgba(255,255,255,0.07)' },
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Render the Top 5 Performing Posts leaderboard.
+   * @param {Array} posts
+   */
+  function renderTopPosts(posts) {
+    const container = document.getElementById('top-posts-list');
+    if (!container) return;
+
+    if (!posts || posts.length === 0) {
+      container.innerHTML = `<p class="text-muted small" style="padding:20px 0;text-align:center;">No posts found.</p>`;
+      return;
+    }
+
+    const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+
+    container.innerHTML = posts.map((post, i) => {
+      const preview = post.message.length > 120 ? post.message.slice(0, 117) + '…' : post.message;
+      const dateStr  = post.createdTime ? new Date(post.createdTime).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '';
+      const permalink = post.permalink ? `<a href="${post.permalink}" target="_blank" rel="noopener" style="color:var(--accent-blue);font-size:0.8rem;text-decoration:none;">View post ↗</a>` : '';
+
+      return `
+        <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 4px;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:1.6rem;line-height:1;flex-shrink:0;padding-top:2px;">${medals[i]}</div>
+          ${post.thumbnail ? `<img src="${post.thumbnail}" alt="thumb" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : ''}
+          <div style="flex:1;min-width:0;">
+            <p style="margin:0 0 6px;font-size:0.88rem;color:rgba(255,255,255,0.85);line-height:1.5;">${preview}</p>
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+              <span style="font-size:0.77rem;color:rgba(255,255,255,0.4);">${dateStr}</span>
+              <span style="font-size:0.8rem;color:#4f8ef7;">👍 ${post.likes.toLocaleString()}</span>
+              <span style="font-size:0.8rem;color:#10b981;">💬 ${post.comments.toLocaleString()}</span>
+              <span style="font-size:0.8rem;color:#a855f7;">↗ ${post.shares.toLocaleString()}</span>
+              <span style="font-size:0.8rem;font-weight:600;color:#f59e0b;">⭐ ${post.engagement.toLocaleString()} total</span>
+              ${permalink}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /** Helper to format numbers with k/M suffix */
+  function fmtNum(n) {
+    if (!n || isNaN(n)) return '0';
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000)     return `${(n / 1_000).toFixed(1)}k`;
+    return String(n);
+  }
+
+  /** Main loader for the Analytics page */
+  async function loadAnalytics() {
+    // Reset statuses
+    const chartStatus   = document.getElementById('analytics-chart-status');
+    const topStatus     = document.getElementById('top-posts-status');
+    if (chartStatus) chartStatus.textContent = 'Loading...';
+    if (topStatus)   topStatus.textContent   = 'Loading...';
+
+    // Reset KPIs
+    ['analytics-kpi-impressions','analytics-kpi-engaged','analytics-kpi-post-eng','analytics-kpi-avg-reach']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '--'; });
+
+    // Fetch history + top posts concurrently
+    const [histRes, topRes] = await Promise.allSettled([
+      api('GET', '/api/facebook/insights/history?days=30'),
+      api('GET', '/api/facebook/posts/top?limit=25'),
+    ]);
+
+    // ── Insights history ──
+    if (histRes.status === 'fulfilled') {
+      const body = histRes.value;
+      if (body.ok && body.configured && body.data) {
+        const d = body.data;
+        const totalImpressions = d.impressions.reduce((s, v) => s + v, 0);
+        const totalEngaged     = d.engagedUsers.reduce((s, v) => s + v, 0);
+        const totalPostEng     = d.postEngagements.reduce((s, v) => s + v, 0);
+        const avgReach = d.impressions.length > 0
+          ? Math.round(totalImpressions / d.impressions.length)
+          : 0;
+
+        const setKpi = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = fmtNum(val); };
+        setKpi('analytics-kpi-impressions', totalImpressions);
+        setKpi('analytics-kpi-engaged', totalEngaged);
+        setKpi('analytics-kpi-post-eng', totalPostEng);
+        setKpi('analytics-kpi-avg-reach', avgReach);
+
+        renderInsightsCharts(d);
+        if (chartStatus) chartStatus.textContent = `Last updated ${new Date().toLocaleTimeString()}`;
+      } else if (body.ok && !body.configured) {
+        if (chartStatus) chartStatus.textContent = 'Page not connected — configure Facebook credentials in Settings.';
+      }
+    } else {
+      if (chartStatus) chartStatus.textContent = 'Failed to load chart data.';
+      console.error('[analytics] insights/history error:', histRes.reason);
+    }
+
+    // ── Top posts ──
+    if (topRes.status === 'fulfilled') {
+      const body = topRes.value;
+      if (body.ok && body.configured) {
+        renderTopPosts(body.data || []);
+        if (topStatus) topStatus.textContent = `${(body.data || []).length} posts ranked`;
+      } else if (body.ok && !body.configured) {
+        document.getElementById('top-posts-list').innerHTML =
+          `<p class="text-muted small" style="padding:20px 0;text-align:center;">Page not connected.</p>`;
+        if (topStatus) topStatus.textContent = '';
+      }
+    } else {
+      document.getElementById('top-posts-list').innerHTML =
+        `<p class="text-muted small" style="padding:20px 0;text-align:center;">Failed to fetch posts.</p>`;
+      if (topStatus) topStatus.textContent = 'Error loading';
+      console.error('[analytics] top posts error:', topRes.reason);
+    }
+  }
+
+  // Refresh button
+  document.getElementById('btn-refresh-analytics')?.addEventListener('click', loadAnalytics);
+
+  // Register Analytics page
+  pages.analytics = { el: document.getElementById('page-analytics'), onEnter: loadAnalytics };
+
 })();

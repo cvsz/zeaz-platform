@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <!-- Chart.js for analytics visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
 </head>
 <body>
   <div class="app-container">
@@ -42,6 +44,11 @@
         <a href="#dashboard" class="nav-link active" data-page="dashboard">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
           Overview
+        </a>
+        <a href="#analytics" class="nav-link" data-page="analytics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Analytics
+          <span style="font-size:0.65rem;background:linear-gradient(135deg,#10b981,#4f8ef7);color:white;padding:1px 5px;border-radius:99px;margin-left:auto;">NEW</span>
         </a>
         <a href="#compose" class="nav-link" data-page="compose">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -204,6 +211,82 @@
             <div id="mini-history-list">
               <div class="text-muted small" style="padding:16px 0;">Loading...</div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE: Analytics ── -->
+      <div class="page" id="page-analytics">
+        <div class="page-header">
+          <div>
+            <h1>Analytics</h1>
+            <p class="text-muted">30-day reach & engagement insights for your Facebook page.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-refresh-analytics">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Refresh
+          </button>
+        </div>
+
+        <!-- Analytics KPI row -->
+        <div class="kpi-grid" id="analytics-kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Total Impressions (30d)</div>
+              <div class="kpi-value" id="analytics-kpi-impressions">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Engaged Users (30d)</div>
+              <div class="kpi-value" id="analytics-kpi-engaged">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--purple">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Post Engagements (30d)</div>
+              <div class="kpi-value" id="analytics-kpi-post-eng">--</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon kpi-icon--orange">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-label">Avg Daily Reach</div>
+              <div class="kpi-value" id="analytics-kpi-avg-reach">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Chart -->
+        <div id="analytics-chart-container" class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <span class="card-title">Impressions vs. Engaged Users (30 Days)</span>
+            <div id="analytics-chart-status" class="text-muted small">Loading...</div>
+          </div>
+          <div style="position:relative;height:280px;padding:16px 4px 8px;">
+            <canvas id="analytics-insights-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top Posts Container -->
+        <div id="top-posts-container" class="card">
+          <div class="card-header">
+            <span class="card-title">🏆 Top 5 Performing Posts</span>
+            <div id="top-posts-status" class="text-muted small">Loading...</div>
+          </div>
+          <div id="top-posts-list" style="padding:0 4px;">
+            <div class="text-muted small" style="padding:20px 0 10px;text-align:center;">Fetching top posts...</div>
           </div>
         </div>
       </div>
