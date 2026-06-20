@@ -3,6 +3,7 @@ const db = require('./db');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
+const FormData = require('form-data');
 
 const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
 const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
@@ -78,11 +79,6 @@ const postPhoto = async (req, res) => {
     let response;
     if (hasUpload) {
       // Upload from local file using form-data
-      let FormData;
-      try { FormData = require('form-data'); } catch {}
-      if (!FormData) {
-        return res.status(501).json({ ok: false, error: { code: 'UNSUPPORTED', message: 'form-data module not installed; use URL upload instead' } });
-      }
       const form = new FormData();
       form.append('source', fs.createReadStream(req.file.path), req.file.originalname);
       if (message) form.append('message', message);

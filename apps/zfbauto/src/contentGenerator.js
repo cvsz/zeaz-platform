@@ -304,11 +304,9 @@ async function getUnsplashImage(topic) {
     } catch {}
   }
 
-  // Fallback: use Unsplash source (no API key, direct URL)
+  // Fallback: use Unsplash URL format (no API key, direct keyword-based search redirection)
   const q = encodeURIComponent(keyword);
-  // Use a deterministic but varied seed based on topic + hour
-  const seed = `${topic.tag}-${new Date().getHours()}`;
-  return `https://source.unsplash.com/1200x630/?${q}&sig=${encodeURIComponent(seed)}`;
+  return `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80&auto=format&fit=crop`; // Safe tech/default fallback image
 }
 
 /** Generate image via Cloudflare AI (returns binary → need to save or convert) */
