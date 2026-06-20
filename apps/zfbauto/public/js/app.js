@@ -17,6 +17,8 @@
   };
 
   let currentPage = 'dashboard';
+  let currentPageId = 'default';
+
 
   function navigate(pageId) {
     if (!pages[pageId]) return;
@@ -90,6 +92,9 @@
   // ── API Helper ───────────────────────────────────────────────────────────────
   async function api(method, path, body = null, isFormData = false) {
     const opts = { method, headers: {} };
+    if (currentPageId) {
+      opts.headers['x-page-id'] = currentPageId;
+    }
     if (body && !isFormData) {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);
@@ -97,6 +102,7 @@
       opts.body = body; // FormData — let browser set Content-Type
     }
     const res = await fetch(path, opts);
+
     const json = await res.json();
     if (!json.ok && !res.ok) throw new Error(json.error?.message || 'Request failed');
     return json;
@@ -831,10 +837,12 @@
         schedulerBadge.className = `badge ${jobCount > 0 ? 'badge-green' : ''}`;
       }
       setText('info-env', healthData.environment || '--');
+      loadPagesList();
     } catch (err) {
       toast('Failed to load settings: ' + err.message, 'error');
     }
   }
+
 
   function setVal(id, val) {
     const el = document.getElementById(id);
@@ -909,7 +917,97 @@
 
   // ── Init ─────────────────────────────────────────────────────────────────────
   checkHealth();
+  loadPagesDropdown();
   navigate('dashboard');
+
+  document.getElementById('global-page-select')?.addEventListener('change', function () {
+    currentPageId = this.value;
+    toast(`Switched page context to: ${this.options[this.selectedIndex].text}`);
+    navigate(currentPage);
+  });
+
+  async function loadPagesDropdown() {
+    const select = document.getElementById('global-page-select');
+    if (!select) return;
+    try {
+      const data = await api('GET', '/api/pages');
+      const pages = data.data || [];
+      const oldVal = select.value || 'default';
+      select.innerHTML = '<option value="default">🌐 Primary Page (Default)</option>';
+      pages.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `📄 ${p.name || p.facebookPageId}`;
+        select.appendChild(opt);
+      });
+      select.value = oldVal;
+    } catch (e) {
+      console.error('Failed to load pages dropdown:', e);
+    }
+  }
+
+  async function loadPagesList() {
+    const el = document.getElementById('pages-list');
+    if (!el) return;
+    try {
+      const data = await api('GET', '/api/pages');
+      const pages = data.data || [];
+      if (pages.length === 0) {
+        el.innerHTML = '<div class="text-muted small" style="padding:12px 0;text-align:center;">No custom pages connected yet. Using primary credentials.</div>';
+        return;
+      }
+      el.innerHTML = pages.map(p => `
+        <div class="page-item" id="page-item-${p.id}" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding:8px 0;">
+          <div style="flex:1;">
+            <div style="font-weight:500; font-size:0.9rem;">${escHtml(p.name)}</div>
+            <div class="text-muted" style="font-size:0.75rem;">Page ID: ${escHtml(p.facebookPageId)}</div>
+          </div>
+          <div>
+            <button class="btn btn-danger btn-sm" onclick="disconnectPage('${p.id}')">Disconnect</button>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      el.innerHTML = '<div class="text-muted small" style="padding:12px 0;">Failed to load pages.</div>';
+    }
+  }
+
+  window.disconnectPage = async (id) => {
+    if (!confirm('Disconnect this Facebook Page? All queue items and history for this page will be removed.')) return;
+    try {
+      await api('DELETE', `/api/pages/${id}`);
+      toast('Page disconnected successfully');
+      loadPagesList();
+      loadPagesDropdown();
+      if (currentPageId === id) {
+        currentPageId = 'default';
+        const select = document.getElementById('global-page-select');
+        if (select) select.value = 'default';
+        navigate(currentPage);
+      }
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  document.getElementById('connect-page-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('connect-page-name').value.trim(),
+      facebookPageId: document.getElementById('connect-page-id').value.trim(),
+      facebookAccessToken: document.getElementById('connect-page-token').value.trim(),
+    };
+    try {
+      await api('POST', '/api/pages', payload);
+      toast('Facebook page connected successfully! 🎉');
+      e.target.reset();
+      loadPagesList();
+      loadPagesDropdown();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+
 
   // Poll health every 30s
   setInterval(checkHealth, 30000);

@@ -29,6 +29,14 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
+      <!-- Page Context Switcher -->
+      <div class="page-switcher-container" style="padding:10px 16px 20px 16px; border-bottom:1px solid rgba(255,255,255,0.08);">
+        <label for="global-page-select" style="font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:6px;">Active Page Context</label>
+        <select id="global-page-select" style="width:100%;background:rgba(0,0,0,0.3);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:8px;font-size:0.85rem;outline:none;cursor:pointer;">
+          <option value="default">🌐 Primary Page (Default)</option>
+        </select>
+      </div>
+
 
       <nav class="nav-links">
         <a href="#dashboard" class="nav-link active" data-page="dashboard">
@@ -530,8 +538,35 @@
               </form>
             </div>
           </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Connected Facebook Pages</span></div>
+            <div id="pages-list" style="margin-bottom:16px; max-height:200px; overflow-y:auto;">
+              <!-- Connected pages list rendered dynamically -->
+              <div class="text-muted small" style="padding:12px 0;">Loading pages...</div>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">
+              <h4 style="margin-bottom:8px;font-size:0.95rem;color:var(--primary);">Connect a New Page</h4>
+              <form id="connect-page-form">
+                <div class="form-group">
+                  <label>Page Name / Label</label>
+                  <input type="text" id="connect-page-name" placeholder="My Tech Page" required>
+                </div>
+                <div class="form-group">
+                  <label>Facebook Page ID</label>
+                  <input type="text" id="connect-page-id" placeholder="Facebook Page ID" required>
+                </div>
+                <div class="form-group">
+                  <label>Page Access Token</label>
+                  <input type="text" id="connect-page-token" placeholder="Long-lived Page Access Token" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm" style="width:100%;">Connect Page</button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
+
 
       <!-- ── PAGE: AI Generator ── -->
       <div class="page" id="page-ai">

@@ -18,7 +18,25 @@ if (!fs.existsSync(DATA_DIR)) {
 const loadDb = () => {
   try {
     if (fs.existsSync(DB_FILE)) {
-      return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      const db = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+      if (!db.pages) db.pages = [];
+      if (!db.queue) db.queue = [];
+      if (!db.schedules) db.schedules = [];
+      if (!db.postHistory) db.postHistory = [];
+      if (!db.settings) db.settings = {};
+
+      // Migrate single page credentials to default page if empty
+      if (db.pages.length === 0 && (db.settings.facebookPageId || process.env.FACEBOOK_PAGE_ID)) {
+        db.pages.push({
+          id: 'default',
+          facebookPageId: db.settings.facebookPageId || process.env.FACEBOOK_PAGE_ID,
+          facebookAccessToken: db.settings.facebookAccessToken || process.env.FACEBOOK_ACCESS_TOKEN || '',
+          name: 'Primary Page',
+          enabled: true,
+          createdAt: new Date().toISOString()
+        });
+      }
+      return db;
     }
   } catch (e) {
     console.error('Failed to load db.json, resetting:', e.message);
@@ -27,6 +45,7 @@ const loadDb = () => {
     queue: [],
     schedules: [],
     postHistory: [],
+    pages: [],
     settings: {
       defaultCron: '0 * * * *',
       schedulerEnabled: true,
@@ -50,11 +69,61 @@ let _db = loadDb();
 module.exports = {
   randomUUID,
 
+  /** Pages management */
+  pages: {
+    getAll: () => _db.pages || [],
+    getById: (id) => (_db.pages || []).find(p => p.id === id || p.facebookPageId === id),
+    add: (page) => {
+      if (!_db.pages) _db.pages = [];
+      const entry = {
+        id: randomUUID(),
+        enabled: true,
+        createdAt: new Date().toISOString(),
+        ...page
+      };
+      _db.pages.push(entry);
+      saveDb(_db);
+      return entry;
+    },
+    update: (id, updates) => {
+      const page = (_db.pages || []).find(p => p.id === id || p.facebookPageId === id);
+      if (!page) return null;
+      Object.assign(page, updates, { updatedAt: new Date().toISOString() });
+      saveDb(_db);
+      return page;
+    },
+    remove: (id) => {
+      if (!_db.pages) return null;
+      const idx = _db.pages.findIndex(p => p.id === id || p.facebookPageId === id);
+      if (idx === -1) return null;
+      const removed = _db.pages.splice(idx, 1)[0];
+
+      // Clean up queue, schedules, history linked to this page
+      _db.queue = _db.queue.filter(q => q.pageId !== id && q.pageId !== removed.facebookPageId);
+      _db.schedules = _db.schedules.filter(s => s.pageId !== id && s.pageId !== removed.facebookPageId);
+      _db.postHistory = _db.postHistory.filter(h => h.pageId !== id && h.pageId !== removed.facebookPageId);
+
+      saveDb(_db);
+      return removed;
+    }
+  },
+
   /** Queue operations */
   queue: {
-    getAll: () => _db.queue,
+    getAll: (pageId = null) => {
+      if (pageId) {
+        return (_db.queue || []).filter(q => q.pageId === pageId || (!q.pageId && pageId === 'default'));
+      }
+      return _db.queue || [];
+    },
     add: (item) => {
-      const entry = { id: randomUUID(), createdAt: new Date().toISOString(), status: 'pending', ...item };
+      const entry = {
+        id: randomUUID(),
+        createdAt: new Date().toISOString(),
+        status: 'pending',
+        pageId: item.pageId || 'default',
+        ...item
+      };
       _db.queue.unshift(entry);
       if (_db.queue.length > (_db.settings.maxQueueSize || 100)) {
         _db.queue = _db.queue.slice(0, _db.settings.maxQueueSize || 100);
@@ -78,8 +147,20 @@ module.exports = {
       saveDb(_db);
       return item;
     },
-    getPending: () => _db.queue.filter(q => q.status === 'pending'),
-    getPendingReview: () => _db.queue.filter(q => q.status === 'pending_review'),
+    getPending: (pageId = null) => {
+      const pending = (_db.queue || []).filter(q => q.status === 'pending');
+      if (pageId) {
+        return pending.filter(q => q.pageId === pageId || (!q.pageId && pageId === 'default'));
+      }
+      return pending;
+    },
+    getPendingReview: (pageId = null) => {
+      const pending = (_db.queue || []).filter(q => q.status === 'pending_review');
+      if (pageId) {
+        return pending.filter(q => q.pageId === pageId || (!q.pageId && pageId === 'default'));
+      }
+      return pending;
+    },
     approve: (id, editedMessage = null) => {
       const item = _db.queue.find(q => q.id === id);
       if (!item) return null;
@@ -91,17 +172,32 @@ module.exports = {
       saveDb(_db);
       return item;
     },
-    clear: () => {
-      _db.queue = [];
+    clear: (pageId = null) => {
+      if (pageId) {
+        _db.queue = (_db.queue || []).filter(q => q.pageId !== pageId && (q.pageId || pageId !== 'default'));
+      } else {
+        _db.queue = [];
+      }
       saveDb(_db);
     },
   },
 
   /** Post history */
   history: {
-    getAll: (limit = 50) => _db.postHistory.slice(0, limit),
+    getAll: (pageId = null, limit = 50) => {
+      const hist = _db.postHistory || [];
+      if (pageId) {
+        return hist.filter(h => h.pageId === pageId || (!h.pageId && pageId === 'default')).slice(0, limit);
+      }
+      return hist.slice(0, limit);
+    },
     add: (entry) => {
-      _db.postHistory.unshift({ id: randomUUID(), createdAt: new Date().toISOString(), ...entry });
+      _db.postHistory.unshift({
+        id: randomUUID(),
+        createdAt: new Date().toISOString(),
+        pageId: entry.pageId || 'default',
+        ...entry
+      });
       if (_db.postHistory.length > 500) _db.postHistory = _db.postHistory.slice(0, 500);
       saveDb(_db);
     },
@@ -109,9 +205,20 @@ module.exports = {
 
   /** Schedule rules */
   schedules: {
-    getAll: () => _db.schedules,
+    getAll: (pageId = null) => {
+      if (pageId) {
+        return (_db.schedules || []).filter(s => s.pageId === pageId || (!s.pageId && pageId === 'default'));
+      }
+      return _db.schedules || [];
+    },
     add: (item) => {
-      const entry = { id: randomUUID(), createdAt: new Date().toISOString(), enabled: true, ...item };
+      const entry = {
+        id: randomUUID(),
+        createdAt: new Date().toISOString(),
+        enabled: true,
+        pageId: item.pageId || 'default',
+        ...item
+      };
       _db.schedules.push(entry);
       saveDb(_db);
       return entry;
@@ -148,3 +255,4 @@ module.exports = {
     return _db;
   },
 };
+

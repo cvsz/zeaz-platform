@@ -77,6 +77,13 @@ app.delete('/api/schedules/:id', fb.removeSchedule);
 app.get('/api/settings', fb.getSettings);
 app.patch('/api/settings', fb.updateSettings);
 
+// Pages
+app.get('/api/pages', fb.getPages);
+app.post('/api/pages', fb.addPage);
+app.patch('/api/pages/:id', fb.updatePage);
+app.delete('/api/pages/:id', fb.deletePage);
+
+
 // ── AI Content Generator API ────────────────────────────────────────────────
 const { generateContent, getTopics, getFormats } = require('./contentGenerator');
 const { runAiAutoPost } = require('./aiAutoPoster');

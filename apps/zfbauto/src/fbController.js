@@ -5,7 +5,22 @@ const path = require('path');
 const fs = require('fs');
 const FormData = require('form-data');
 
-const getAccessToken = () => {
+const getPageContext = (arg) => {
+  let pageId = null;
+  if (arg && typeof arg === 'object') {
+    pageId = arg.headers?.['x-page-id'] || arg.query?.pageId || arg.body?.pageId;
+  } else if (typeof arg === 'string') {
+    pageId = arg;
+  }
+  return pageId || 'default';
+};
+
+const getAccessToken = (context = null) => {
+  const pageId = getPageContext(context);
+  if (pageId && pageId !== 'default') {
+    const page = db.pages.getById(pageId);
+    if (page && page.facebookAccessToken) return page.facebookAccessToken;
+  }
   const settings = db.settings.get();
   if (settings.facebookAccessToken && !settings.facebookAccessToken.includes('placeholder')) {
     return settings.facebookAccessToken;
@@ -13,15 +28,20 @@ const getAccessToken = () => {
   return process.env.FACEBOOK_ACCESS_TOKEN;
 };
 
-const getPageId = () => {
+const getPageId = (context = null) => {
+  const pageId = getPageContext(context);
+  if (pageId && pageId !== 'default') {
+    const page = db.pages.getById(pageId);
+    if (page && page.facebookPageId) return page.facebookPageId;
+  }
   const settings = db.settings.get();
   return settings.facebookPageId || process.env.FACEBOOK_PAGE_ID;
 };
 
-const isConfigured = () => {
-  const pageId = getPageId();
-  const token = getAccessToken();
-  return pageId && token && !token.includes('placeholder');
+const isConfigured = (context = null) => {
+  const pId = getPageId(context);
+  const token = getAccessToken(context);
+  return pId && token && !token.includes('placeholder');
 };
 
 const FB_VERSION = process.env.FB_API_VERSION || 'v19.0';
@@ -52,12 +72,13 @@ const postMessage = async (req, res) => {
   if (!message || !message.trim()) {
     return res.status(400).json({ ok: false, error: { code: 'MISSING_MESSAGE', message: 'message is required' } });
   }
-  if (!isConfigured()) {
+  if (!isConfigured(req)) {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
-  const token = getAccessToken();
-  const pageId = getPageId();
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
+  const pageIdContext = getPageContext(req);
 
   try {
     const params = { message: message.trim(), access_token: token };
@@ -65,12 +86,24 @@ const postMessage = async (req, res) => {
 
     const response = await fbAxios.post(`/${pageId}/feed`, null, { params });
 
-    db.history.add({ type: 'text', message: message.trim(), postId: response.data.id, status: 'success' });
+    db.history.add({
+      type: 'text',
+      message: message.trim(),
+      postId: response.data.id,
+      status: 'success',
+      pageId: pageIdContext
+    });
 
     return res.status(200).json({ ok: true, data: response.data });
   } catch (error) {
     const raw = error.response?.data?.error || error.message;
-    db.history.add({ type: 'text', message: message.trim(), status: 'error', error: String(raw) });
+    db.history.add({
+      type: 'text',
+      message: message.trim(),
+      status: 'error',
+      error: String(raw),
+      pageId: pageIdContext
+    });
     return fbError(res, 500, raw?.message || 'Failed to post message', raw);
   }
 };
@@ -86,12 +119,13 @@ const postPhoto = async (req, res) => {
   if (!url && !hasUpload) {
     return res.status(400).json({ ok: false, error: { code: 'MISSING_PHOTO', message: 'url or file upload is required' } });
   }
-  if (!isConfigured()) {
+  if (!isConfigured(req)) {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
-  const token = getAccessToken();
-  const pageId = getPageId();
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
+  const pageIdContext = getPageContext(req);
 
   try {
     let response;
@@ -119,19 +153,30 @@ const postPhoto = async (req, res) => {
 
     // Upload to Google Drive if configured (Non-blocking)
     const { uploadToGoogleDrive } = require('./googleDrive');
-    const sourceForDrive = hasUpload ? null : url; // Temp file is already deleted, url is available
+    const sourceForDrive = hasUpload ? null : url;
     if (sourceForDrive) {
       uploadToGoogleDrive(sourceForDrive, `fb-photo-${response.data.id}.png`).catch(e => {
         console.error('[fbController] Non-blocking Google Drive upload failure:', e.message);
       });
     }
 
-    db.history.add({ type: 'photo', message: message || '', status: 'success', postId: response.data.id });
+    db.history.add({
+      type: 'photo',
+      message: message || '',
+      status: 'success',
+      postId: response.data.id,
+      pageId: pageIdContext
+    });
 
     return res.status(200).json({ ok: true, data: response.data });
   } catch (error) {
     const raw = error.response?.data?.error || error.message;
-    db.history.add({ type: 'photo', status: 'error', error: String(raw) });
+    db.history.add({
+      type: 'photo',
+      status: 'error',
+      error: String(raw),
+      pageId: pageIdContext
+    });
     return fbError(res, 500, raw?.message || 'Failed to post photo', raw);
   }
 };
@@ -141,12 +186,12 @@ const postPhoto = async (req, res) => {
  * Query: ?limit=10&fields=message,created_time,story
  */
 const getPosts = async (req, res) => {
-  if (!isConfigured()) {
+  if (!isConfigured(req)) {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
-  const token = getAccessToken();
-  const pageId = getPageId();
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
 
   try {
     const limit = Math.min(parseInt(req.query.limit || '10', 10), 50);
@@ -171,18 +216,24 @@ const deletePost = async (req, res) => {
   if (!postId) {
     return res.status(400).json({ ok: false, error: { code: 'MISSING_ID', message: 'postId is required' } });
   }
-  if (!isConfigured()) {
+  if (!isConfigured(req)) {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
-  const token = getAccessToken();
+  const token = getAccessToken(req);
+  const pageIdContext = getPageContext(req);
 
   try {
     await fbAxios.delete(`/${postId}`, {
       params: { access_token: token },
     });
 
-    db.history.add({ type: 'delete', postId, status: 'success' });
+    db.history.add({
+      type: 'delete',
+      postId,
+      status: 'success',
+      pageId: pageIdContext
+    });
     return res.status(200).json({ ok: true, message: 'Post deleted successfully' });
   } catch (error) {
     const raw = error.response?.data?.error || error.message;
@@ -195,8 +246,7 @@ const deletePost = async (req, res) => {
  * Fetch page insights: fan count, followers, engagement
  */
 const getInsights = async (req, res) => {
-  if (!isConfigured()) {
-    // Return placeholder data in unconfigured state
+  if (!isConfigured(req)) {
     return res.status(200).json({
       ok: true,
       configured: false,
@@ -204,8 +254,8 @@ const getInsights = async (req, res) => {
     });
   }
 
-  const token = getAccessToken();
-  const pageId = getPageId();
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
 
   try {
     const [pageRes, insightsRes] = await Promise.allSettled([
@@ -236,8 +286,9 @@ const getInsights = async (req, res) => {
  */
 const getConfig = (req, res) => {
   const settings = db.settings.get();
-  const token = getAccessToken();
-  const pageId = getPageId();
+  const token = getAccessToken(req);
+  const pageId = getPageId(req);
+  const pageIdContext = getPageContext(req);
 
   return res.status(200).json({
     ok: true,
@@ -246,8 +297,8 @@ const getConfig = (req, res) => {
       hasAccessToken: !!token && !token.includes('placeholder'),
       schedulerEnabled: settings.schedulerEnabled,
       defaultCron: settings.defaultCron,
-      queueLength: db.queue.getAll().length,
-      pendingCount: db.queue.getPending().length,
+      queueLength: db.queue.getAll(pageIdContext).length,
+      pendingCount: db.queue.getPending(pageIdContext).length,
     },
   });
 };
@@ -257,8 +308,6 @@ const getConfig = (req, res) => {
 /**
  * POST /api/facebook/exchange-token
  * Body: { shortLivedToken }
- * Exchanges a Short-Lived User Access Token into a Long-Lived User Access Token,
- * and then exchanges it into a Long-Lived Page Access Token.
  */
 const exchangeToken = async (req, res) => {
   const { shortLivedToken } = req.body;
@@ -268,7 +317,8 @@ const exchangeToken = async (req, res) => {
 
   const appId = process.env.FACEBOOK_APP_ID;
   const appSecret = process.env.FACEBOOK_APP_SECRET;
-  const pageId = getPageId();
+  const pageId = getPageId(req);
+  const pageIdContext = getPageContext(req);
 
   if (!appId || !appSecret) {
     return res.status(503).json({
@@ -279,7 +329,6 @@ const exchangeToken = async (req, res) => {
 
   try {
     console.log('[fbController] Exchanging short-lived user token for long-lived user token...');
-    // 1. Get long-lived user token
     const userTokenRes = await fbAxios.get('/oauth/access_token', {
       params: {
         grant_type: 'fb_exchange_token',
@@ -295,7 +344,6 @@ const exchangeToken = async (req, res) => {
     }
 
     console.log('[fbController] Fetching long-lived page access tokens...');
-    // 2. Get accounts (pages) using long-lived user token to find the page access token
     const accountsRes = await fbAxios.get('/me/accounts', {
       params: {
         access_token: longLivedUserToken,
@@ -318,15 +366,23 @@ const exchangeToken = async (req, res) => {
 
     const pageAccessToken = targetPage.access_token;
 
-    // Save tokens in DB Settings
-    db.settings.update({
-      facebookAccessToken: pageAccessToken,
-      facebookUserAccessToken: longLivedUserToken,
-      facebookTokenRefreshedAt: new Date().toISOString(),
-      facebookTokenExpiresAt: userTokenRes.data.expires_in
-        ? new Date(Date.now() + userTokenRes.data.expires_in * 1000).toISOString()
-        : null // Long-lived Page Tokens usually don't expire
-    });
+    // Save tokens in DB Settings or Page configuration
+    if (pageIdContext && pageIdContext !== 'default') {
+      db.pages.update(pageIdContext, {
+        facebookAccessToken: pageAccessToken,
+        facebookUserAccessToken: longLivedUserToken,
+        facebookTokenRefreshedAt: new Date().toISOString()
+      });
+    } else {
+      db.settings.update({
+        facebookAccessToken: pageAccessToken,
+        facebookUserAccessToken: longLivedUserToken,
+        facebookTokenRefreshedAt: new Date().toISOString(),
+        facebookTokenExpiresAt: userTokenRes.data.expires_in
+          ? new Date(Date.now() + userTokenRes.data.expires_in * 1000).toISOString()
+          : null
+      });
+    }
 
     console.log('[fbController] Successfully exchanged and saved page access token.');
     return res.status(200).json({
@@ -347,12 +403,19 @@ const exchangeToken = async (req, res) => {
 
 /**
  * POST /api/facebook/refresh-token
- * Automatic/Manual trigger to refresh/re-fetch the Page Access Token using the saved Long-Lived User Access token.
  */
 const refreshToken = async (req, res) => {
-  const settings = db.settings.get();
-  const savedUserToken = settings.facebookUserAccessToken;
-  const pageId = getPageId();
+  const pageIdContext = getPageContext(req);
+  let savedUserToken;
+
+  if (pageIdContext && pageIdContext !== 'default') {
+    const p = db.pages.getById(pageIdContext);
+    savedUserToken = p?.facebookUserAccessToken;
+  } else {
+    savedUserToken = db.settings.get().facebookUserAccessToken;
+  }
+
+  const pageId = getPageId(req);
 
   if (!savedUserToken) {
     return res.status(400).json({
@@ -380,11 +443,17 @@ const refreshToken = async (req, res) => {
       });
     }
 
-    // Save refreshed token
-    db.settings.update({
-      facebookAccessToken: targetPage.access_token,
-      facebookTokenRefreshedAt: new Date().toISOString()
-    });
+    if (pageIdContext && pageIdContext !== 'default') {
+      db.pages.update(pageIdContext, {
+        facebookAccessToken: targetPage.access_token,
+        facebookTokenRefreshedAt: new Date().toISOString()
+      });
+    } else {
+      db.settings.update({
+        facebookAccessToken: targetPage.access_token,
+        facebookTokenRefreshedAt: new Date().toISOString()
+      });
+    }
 
     console.log('[fbController] Page Token refreshed successfully.');
     return res.status(200).json({
@@ -405,19 +474,18 @@ const refreshToken = async (req, res) => {
  * GET /api/queue
  */
 const getQueue = (req, res) => {
-  return res.status(200).json({ ok: true, data: db.queue.getAll() });
+  return res.status(200).json({ ok: true, data: db.queue.getAll(getPageContext(req)) });
 };
 
 /**
  * GET /api/queue/pending-review
  */
 const getPendingReview = (req, res) => {
-  return res.status(200).json({ ok: true, data: db.queue.getPendingReview() });
+  return res.status(200).json({ ok: true, data: db.queue.getPendingReview(getPageContext(req)) });
 };
 
 /**
  * POST /api/queue/:id/approve
- * Body: { message? }
  */
 const approveQueueItem = (req, res) => {
   const { id } = req.params;
@@ -426,13 +494,18 @@ const approveQueueItem = (req, res) => {
   if (!approved) {
     return res.status(404).json({ ok: false, error: { code: 'NOT_FOUND', message: 'Queue item not found' } });
   }
-  db.history.add({ type: 'queue-approval', message: message || approved.message, status: 'success', source: '[approval]' });
+  db.history.add({
+    type: 'queue-approval',
+    message: message || approved.message,
+    status: 'success',
+    source: '[approval]',
+    pageId: approved.pageId
+  });
   return res.status(200).json({ ok: true, data: approved });
 };
 
 /**
  * POST /api/queue
- * Body: { message, imageUrl?, scheduledAt?, status? }
  */
 const addToQueue = (req, res) => {
   const { message, imageUrl, scheduledAt, status } = req.body;
@@ -445,7 +518,8 @@ const addToQueue = (req, res) => {
     imageUrl: imageUrl || null,
     scheduledAt: scheduledAt || null,
     type: imageUrl ? 'photo' : 'text',
-    status: status || 'pending'
+    status: status || 'pending',
+    pageId: getPageContext(req)
   });
 
   return res.status(201).json({ ok: true, data: entry });
@@ -464,15 +538,15 @@ const removeFromQueue = (req, res) => {
 };
 
 /**
- * DELETE /api/queue  — clear entire queue
+ * DELETE /api/queue
  */
 const clearQueue = (req, res) => {
-  db.queue.clear();
+  db.queue.clear(getPageContext(req));
   return res.status(200).json({ ok: true, message: 'Queue cleared' });
 };
 
 /**
- * POST /api/queue/:id/publish — immediately post a queued item
+ * POST /api/queue/:id/publish
  */
 const publishQueueItem = async (req, res) => {
   const { id } = req.params;
@@ -480,12 +554,12 @@ const publishQueueItem = async (req, res) => {
   if (!item) {
     return res.status(404).json({ ok: false, error: { code: 'NOT_FOUND', message: 'Queue item not found' } });
   }
-  if (!isConfigured()) {
+  if (!isConfigured(item.pageId)) {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
-  const token = getAccessToken();
-  const pageId = getPageId();
+  const token = getAccessToken(item.pageId);
+  const pageId = getPageId(item.pageId);
 
   db.queue.updateStatus(id, 'publishing');
   try {
@@ -501,7 +575,13 @@ const publishQueueItem = async (req, res) => {
     }
 
     db.queue.updateStatus(id, 'published', { publishedAt: new Date().toISOString(), postId: response.data.id });
-    db.history.add({ type: item.type, message: item.message, status: 'success', postId: response.data.id });
+    db.history.add({
+      type: item.type,
+      message: item.message,
+      status: 'success',
+      postId: response.data.id,
+      pageId: item.pageId
+    });
 
     return res.status(200).json({ ok: true, data: { queueItem: item, postResult: response.data } });
   } catch (error) {
@@ -513,27 +593,17 @@ const publishQueueItem = async (req, res) => {
 
 // ── History API ───────────────────────────────────────────────────────────────
 
-/**
- * GET /api/history
- */
 const getHistory = (req, res) => {
   const limit = parseInt(req.query.limit || '50', 10);
-  return res.status(200).json({ ok: true, data: db.history.getAll(limit) });
+  return res.status(200).json({ ok: true, data: db.history.getAll(getPageContext(req), limit) });
 };
 
 // ── Scheduler API ─────────────────────────────────────────────────────────────
 
-/**
- * GET /api/schedules
- */
 const getSchedules = (req, res) => {
-  return res.status(200).json({ ok: true, data: db.schedules.getAll() });
+  return res.status(200).json({ ok: true, data: db.schedules.getAll(getPageContext(req)) });
 };
 
-/**
- * POST /api/schedules
- * Body: { name, cron, message, imageUrl? }
- */
 const addSchedule = (req, res) => {
   const { name, cron, message } = req.body;
   if (!name || !cron || !message) {
@@ -543,13 +613,16 @@ const addSchedule = (req, res) => {
     });
   }
 
-  const entry = db.schedules.add({ name, cron, message, imageUrl: req.body.imageUrl || null });
+  const entry = db.schedules.add({
+    name,
+    cron,
+    message,
+    imageUrl: req.body.imageUrl || null,
+    pageId: getPageContext(req)
+  });
   return res.status(201).json({ ok: true, data: entry });
 };
 
-/**
- * PATCH /api/schedules/:id
- */
 const updateSchedule = (req, res) => {
   const { id } = req.params;
   const updated = db.schedules.update(id, req.body);
@@ -559,9 +632,6 @@ const updateSchedule = (req, res) => {
   return res.status(200).json({ ok: true, data: updated });
 };
 
-/**
- * DELETE /api/schedules/:id
- */
 const removeSchedule = (req, res) => {
   const { id } = req.params;
   const removed = db.schedules.remove(id);
@@ -573,16 +643,10 @@ const removeSchedule = (req, res) => {
 
 // ── Settings API ──────────────────────────────────────────────────────────────
 
-/**
- * GET /api/settings
- */
 const getSettings = (req, res) => {
   return res.status(200).json({ ok: true, data: db.settings.get() });
 };
 
-/**
- * PATCH /api/settings
- */
 const updateSettings = (req, res) => {
   const allowed = [
     'defaultCron',
@@ -598,6 +662,55 @@ const updateSettings = (req, res) => {
   }
   const updated = db.settings.update(updates);
   return res.status(200).json({ ok: true, data: updated });
+};
+
+// ── Pages API ─────────────────────────────────────────────────────────────
+
+const getPages = (req, res) => {
+  return res.status(200).json({ ok: true, data: db.pages.getAll() });
+};
+
+const addPage = async (req, res) => {
+  const { facebookPageId, facebookAccessToken, name } = req.body;
+  if (!facebookPageId || !facebookAccessToken) {
+    return res.status(400).json({ ok: false, error: { code: 'VALIDATION_ERROR', message: 'facebookPageId and facebookAccessToken are required' } });
+  }
+
+  let pageName = name || 'Facebook Page';
+  try {
+    const response = await fbAxios.get(`/${facebookPageId}`, {
+      params: { fields: 'name', access_token: facebookAccessToken }
+    });
+    if (response.data?.name) pageName = response.data.name;
+  } catch (err) {
+    console.warn(`[fbController] Failed to fetch page details from FB API: ${err.message}`);
+  }
+
+  const entry = db.pages.add({
+    facebookPageId,
+    facebookAccessToken,
+    name: pageName,
+  });
+
+  return res.status(201).json({ ok: true, data: entry });
+};
+
+const updatePage = (req, res) => {
+  const { id } = req.params;
+  const updated = db.pages.update(id, req.body);
+  if (!updated) {
+    return res.status(404).json({ ok: false, error: { code: 'NOT_FOUND', message: 'Page not found' } });
+  }
+  return res.status(200).json({ ok: true, data: updated });
+};
+
+const deletePage = (req, res) => {
+  const { id } = req.params;
+  const removed = db.pages.remove(id);
+  if (!removed) {
+    return res.status(404).json({ ok: false, error: { code: 'NOT_FOUND', message: 'Page not found' } });
+  }
+  return res.status(200).json({ ok: true, data: removed });
 };
 
 module.exports = {
@@ -624,5 +737,10 @@ module.exports = {
   exchangeToken,
   refreshToken,
   getAccessToken,
-  getPageId
+  getPageId,
+  getPageContext,
+  getPages,
+  addPage,
+  updatePage,
+  deletePage
 };

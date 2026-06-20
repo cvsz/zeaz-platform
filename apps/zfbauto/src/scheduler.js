@@ -5,9 +5,9 @@ const https = require('https');
 
 const FB_VERSION = process.env.FB_API_VERSION || 'v19.0';
 
-const isConfigured = () => {
-  const pageId = fbController.getPageId();
-  const token = fbController.getAccessToken();
+const isConfigured = (context = 'default') => {
+  const pageId = fbController.getPageId(context);
+  const token = fbController.getAccessToken(context);
   return pageId && token && !token.includes('placeholder');
 };
 
@@ -17,7 +17,7 @@ const activeJobs = {};
 /**
  * Post a message to the Facebook page.
  */
-const postToFacebook = async (message, imageUrl = null) => {
+const postToFacebook = async (message, imageUrl = null, pageIdContext = 'default') => {
   const axios = require('axios');
   const fbAxios = axios.create({
     baseURL: `https://graph.facebook.com/${FB_VERSION}`,
@@ -27,8 +27,8 @@ const postToFacebook = async (message, imageUrl = null) => {
     timeout: 15000,
   });
 
-  const pageId = fbController.getPageId();
-  const token = fbController.getAccessToken();
+  const pageId = fbController.getPageId(pageIdContext);
+  const token = fbController.getAccessToken(pageIdContext);
 
   if (imageUrl && !imageUrl.startsWith('data:')) {
     const params = { url: imageUrl, access_token: token };
@@ -44,39 +44,52 @@ const postToFacebook = async (message, imageUrl = null) => {
 };
 
 /**
- * Auto-post logic: pulls next pending item from queue, or uses template.
+ * Auto-post logic: runs single page post
  */
-const autoPostToPage = async (scheduleId = null, customMessage = null) => {
-  const label = scheduleId ? `[schedule:${scheduleId}]` : '[auto]';
+const autoPostToPageSingle = async (scheduleId = null, customMessage = null, pageIdContext = 'default') => {
+  const label = scheduleId ? `[schedule:${scheduleId}:${pageIdContext}]` : `[auto:${pageIdContext}]`;
   console.log(`${label} Running auto-post...`);
 
-  // Check token age / trigger auto-refresh if close to expiration (every 30 days or so, or if checked and saved user token exists)
+  // Check token age / trigger auto-refresh if close to expiration
   try {
-    const settings = db.settings.get();
-    if (settings.facebookUserAccessToken && settings.facebookTokenRefreshedAt) {
-      const refreshedAt = new Date(settings.facebookTokenRefreshedAt).getTime();
+    let savedUserToken;
+    let refreshedAtVal;
+    if (pageIdContext && pageIdContext !== 'default') {
+      const p = db.pages.getById(pageIdContext);
+      savedUserToken = p?.facebookUserAccessToken;
+      refreshedAtVal = p?.facebookTokenRefreshedAt;
+    } else {
+      const settings = db.settings.get();
+      savedUserToken = settings.facebookUserAccessToken;
+      refreshedAtVal = settings.facebookTokenRefreshedAt;
+    }
+
+    if (savedUserToken && refreshedAtVal) {
+      const refreshedAt = new Date(refreshedAtVal).getTime();
       const thirtyDays = 30 * 24 * 60 * 60 * 1000;
       if (Date.now() - refreshedAt > thirtyDays) {
-        console.log('[scheduler] Saved token is older than 30 days. Auto-refreshing Page Access Token...');
-        await fbController.refreshToken();
+        console.log(`[scheduler] Saved token is older than 30 days for ${pageIdContext}. Auto-refreshing...`);
+        const fakeReq = { query: { pageId: pageIdContext } };
+        const fakeRes = { status: () => ({ json: () => {} }) };
+        await fbController.refreshToken(fakeReq, fakeRes);
       }
     }
   } catch (err) {
     console.error('[scheduler] Failed to auto-refresh token during autoPost preflight:', err.message);
   }
 
-  if (!isConfigured()) {
+  if (!isConfigured(pageIdContext)) {
     console.log(`${label} Skipping: credentials not configured.`);
     return;
   }
 
   try {
-    const pending = db.queue.getPending();
+    const pending = db.queue.getPending(pageIdContext);
     if (pending.length > 0) {
       const item = pending[0];
       console.log(`${label} Publishing queued item: ${item.id}`);
       db.queue.updateStatus(item.id, 'publishing');
-      const result = await postToFacebook(item.message, item.imageUrl);
+      const result = await postToFacebook(item.message, item.imageUrl, pageIdContext);
       // Upload to Google Drive if configured (Non-blocking)
       if (item.imageUrl) {
         const { uploadToGoogleDrive } = require('./googleDrive');
@@ -86,7 +99,7 @@ const autoPostToPage = async (scheduleId = null, customMessage = null) => {
       }
 
       db.queue.updateStatus(item.id, 'published', { publishedAt: new Date().toISOString(), postId: result.id });
-      db.history.add({ type: item.type, message: item.message, status: 'success', postId: result.id, source: label });
+      db.history.add({ type: item.type, message: item.message, status: 'success', postId: result.id, source: label, pageId: pageIdContext });
       console.log(`${label} Published queued item ${item.id} → FB post ${result.id}`);
       return;
     }
@@ -95,13 +108,38 @@ const autoPostToPage = async (scheduleId = null, customMessage = null) => {
     const message = customMessage
       || settings.autoPostTemplate.replace('{TIME}', new Date().toLocaleString());
 
-    const result = await postToFacebook(message);
-    db.history.add({ type: 'text', message, status: 'success', postId: result.id, source: label });
+    const result = await postToFacebook(message, null, pageIdContext);
+    db.history.add({ type: 'text', message, status: 'success', postId: result.id, source: label, pageId: pageIdContext });
     console.log(`${label} Auto-posted template → FB post ${result.id}`);
   } catch (error) {
     const msg = error.response?.data?.error?.message || error.message;
     console.error(`${label} Auto-post failed:`, msg);
-    db.history.add({ type: 'auto', status: 'error', error: msg, source: label });
+    db.history.add({ type: 'auto', status: 'error', error: msg, source: label, pageId: pageIdContext });
+  }
+};
+
+/**
+ * Auto-post logic: orchestrates autoPost for all active pages
+ */
+const autoPostToPage = async (scheduleId = null, customMessage = null, pageIdContext = null) => {
+  let targetPageId = pageIdContext;
+  if (scheduleId && !targetPageId) {
+    const s = db.schedules.getAll().find(item => item.id === scheduleId);
+    if (s) targetPageId = s.pageId;
+  }
+
+  if (targetPageId) {
+    return autoPostToPageSingle(scheduleId, customMessage, targetPageId);
+  }
+
+  const pages = db.pages.getAll();
+  const enabledPages = pages.filter(p => p.enabled !== false);
+  if (enabledPages.length === 0) {
+    return autoPostToPageSingle(scheduleId, customMessage, 'default');
+  }
+
+  for (const page of enabledPages) {
+    await autoPostToPageSingle(scheduleId, customMessage, page.id);
   }
 };
 
@@ -119,9 +157,9 @@ const registerSchedule = (schedule) => {
     return;
   }
   activeJobs[schedule.id] = cron.schedule(schedule.cron, () => {
-    autoPostToPage(schedule.id, schedule.message || null);
+    autoPostToPage(schedule.id, schedule.message || null, schedule.pageId || 'default');
   });
-  console.log(`[scheduler] Registered schedule "${schedule.name}" (${schedule.cron})`);
+  console.log(`[scheduler] Registered schedule "${schedule.name}" (${schedule.cron}) for page ${schedule.pageId || 'default'}`);
 };
 
 /**
@@ -139,7 +177,6 @@ const unregisterSchedule = (scheduleId) => {
  * Register the AI Auto-Poster 3-hour job.
  */
 const registerAiAutoPoster = () => {
-  // Lazy require to avoid circular deps
   let aiAutoPoster;
   try { aiAutoPoster = require('./aiAutoPoster'); } catch (e) {
     console.error('[scheduler] Could not load aiAutoPoster:', e.message);
@@ -196,19 +233,33 @@ const initJobs = () => {
 
   // Set up token auto-refresh check job (checks daily at 02:00)
   activeJobs['__token_refresh__'] = cron.schedule('0 2 * * *', async () => {
-    console.log('[scheduler] Running scheduled token refresh check...');
-    try {
-      const currentSettings = db.settings.get();
-      if (currentSettings.facebookUserAccessToken && currentSettings.facebookTokenRefreshedAt) {
-        const refreshedAt = new Date(currentSettings.facebookTokenRefreshedAt).getTime();
-        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-        if (Date.now() - refreshedAt > thirtyDays) {
-          console.log('[scheduler] Saved token is older than 30 days. Auto-refreshing Page Access Token...');
-          await fbController.refreshToken();
+    console.log('[scheduler] Running scheduled token refresh check for all pages...');
+    const pages = [{ id: 'default' }, ...db.pages.getAll()];
+    for (const page of pages) {
+      try {
+        let savedUserToken;
+        let refreshedAtVal;
+        if (page.id !== 'default') {
+          savedUserToken = page.facebookUserAccessToken;
+          refreshedAtVal = page.facebookTokenRefreshedAt;
+        } else {
+          const currentSettings = db.settings.get();
+          savedUserToken = currentSettings.facebookUserAccessToken;
+          refreshedAtVal = currentSettings.facebookTokenRefreshedAt;
         }
+        if (savedUserToken && refreshedAtVal) {
+          const refreshedAt = new Date(refreshedAtVal).getTime();
+          const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+          if (Date.now() - refreshedAt > thirtyDays) {
+            console.log(`[scheduler] Saved token is older than 30 days for page ${page.id}. Auto-refreshing...`);
+            const fakeReq = { query: { pageId: page.id } };
+            const fakeRes = { status: () => ({ json: () => {} }) };
+            await fbController.refreshToken(fakeReq, fakeRes);
+          }
+        }
+      } catch (err) {
+        console.error(`[scheduler] Daily token refresh job error for page ${page.id}:`, err.message);
       }
-    } catch (err) {
-      console.error('[scheduler] Daily token refresh job error:', err.message);
     }
   });
 
@@ -244,7 +295,6 @@ const setAiAutoPosterEnabled = (enabled) => {
       console.log('[scheduler] AI Auto-Poster disabled.');
     }
   }
-  // Persist
   db.settings.update({ aiAutoPoster: { ...(db.settings.get().aiAutoPoster || {}), enabled } });
 };
 
