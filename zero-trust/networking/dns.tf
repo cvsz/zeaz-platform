@@ -1,15 +1,46 @@
-resource "cloudflare_record" "auth_zeaz_dev" {
+# DNS CNAME records routing all zeaz.dev subdomains to zeaz-tunnel
+# Tunnel ID: b84b87a0-ecd5-4eeb-8551-0faa7e8fe189
+locals {
+  tunnel_cname = "b84b87a0-ecd5-4eeb-8551-0faa7e8fe189.cfargotunnel.com"
+
+  # All subdomains routed through zeaz-tunnel
+  subdomains = [
+    # Identity
+    "auth",
+    # AI Platform
+    "zveo", "zstudio", "analytics", "api-zveo",
+    # Financial
+    "app", "zpay", "ztreasury", "zwallet",
+    # Developer Tools
+    "zcloud", "zdash", "api-zdash", "zcfdash", "api-zcfdash", "release",
+    # Algo Trading & Games
+    "ztrader", "api-ztrader", "zcino",
+    # Education & Workspace
+    "zacademy", "academy", "zlms", "zoffice", "zow",
+    # Automation
+    "zfbauto",
+    # Agent UI
+    "zagents",
+    # Root
+    "www", "api",
+  ]
+}
+
+resource "cloudflare_record" "zeaz_tunnel_subdomains" {
+  for_each = toset(local.subdomains)
+
   zone_id = var.zone_id
-  name    = "auth"
+  name    = each.key
   type    = "CNAME"
-  value   = "proxy.zeaz.dev"
+  content = local.tunnel_cname
   proxied = true
 }
 
-resource "cloudflare_record" "zagents_zeaz_dev" {
+# Root apex record
+resource "cloudflare_record" "zeaz_root" {
   zone_id = var.zone_id
-  name    = "zagents"
+  name    = "zeaz.dev"
   type    = "CNAME"
-  value   = "eebf6c99-b37e-450b-851b-0bc8e427280d.cfargotunnel.com"
+  content = local.tunnel_cname
   proxied = true
 }

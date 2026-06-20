@@ -1,50 +1,92 @@
-tunnel: eebf6c99-b37e-450b-851b-0bc8e427280d
+tunnel: b84b87a0-ecd5-4eeb-8551-0faa7e8fe189
+credentials-file: /home/zeazdev/.cloudflared/b84b87a0-ecd5-4eeb-8551-0faa7e8fe189.json
 protocol: http2
 
 originRequest:
-  connectTimeout: 30s
-  keepAliveConnections: 100
-  keepAliveTimeout: 90s
+  http2Origin: true
+  noTLSVerify: false
+  connectTimeout: 10s
+  tlsTimeout: 10s
+  keepAliveTimeout: 1m30s
 
 ingress:
+  # ─── Identity ────────────────────────────────────────────────────────────────
   - hostname: auth.zeaz.dev
+    service: http://traefik:80
+
+  # ─── AI Platform ─────────────────────────────────────────────────────────────
+  - hostname: zveo.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-zveo.zeaz.dev
+    service: http://traefik:80
+  - hostname: zstudio.zeaz.dev
+    service: http://traefik:80
+  - hostname: analytics.zeaz.dev
+    service: http://traefik:80
+
+  # ─── Financial Platform ──────────────────────────────────────────────────────
+  - hostname: app.zeaz.dev
+    service: http://traefik:80
+  - hostname: zpay.zeaz.dev
+    service: http://traefik:80
+  - hostname: ztreasury.zeaz.dev
+    service: http://traefik:80
+  - hostname: zwallet.zeaz.dev
+    service: http://traefik:80
+
+  # ─── Developer Tools & Cockpits ──────────────────────────────────────────────
+  - hostname: zcloud.zeaz.dev
+    service: http://traefik:80
+  - hostname: zdash.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-zdash.zeaz.dev
     service: http://traefik:80
   - hostname: zcfdash.zeaz.dev
     service: http://traefik:80
-  - hostname: openwork.zeaz.dev
+  - hostname: api-zcfdash.zeaz.dev
     service: http://traefik:80
+  - hostname: release.zeaz.dev
+    service: http://traefik:80
+
+  # ─── Algo Trading & Game Services ────────────────────────────────────────────
+  - hostname: ztrader.zeaz.dev
+    service: http://traefik:80
+  - hostname: api-ztrader.zeaz.dev
+    service: http://traefik:80
+  - hostname: zcino.zeaz.dev
+    service: http://traefik:80
+
+  # ─── Educational & Workspace Portals ─────────────────────────────────────────
+  - hostname: zacademy.zeaz.dev
+    service: http://traefik:80
+  - hostname: academy.zeaz.dev
+    service: http://traefik:80
+  - hostname: zlms.zeaz.dev
+    service: http://traefik:80
+  - hostname: zoffice.zeaz.dev
+    service: http://traefik:80
+  - hostname: zow.zeaz.dev
+    service: http://traefik:80
+
+  # ─── Automation ──────────────────────────────────────────────────────────────
+  - hostname: zfbauto.zeaz.dev
+    service: http://traefik:80
+
+  # ─── Root & API ──────────────────────────────────────────────────────────────
   - hostname: www.zeaz.dev
     service: http://traefik:80
   - hostname: zeaz.dev
     service: http://traefik:80
   - hostname: api.zeaz.dev
     service: http://traefik:80
-  - hostname: zcino.zeaz.dev
-    service: http://traefik:80
-  - hostname: zdash.zeaz.dev
-    service: http://traefik:80
-  - hostname: api-zdash.zeaz.dev
-    service: http://traefik:80
-  - hostname: zlms.zeaz.dev
-    service: http://traefik:80
-  - hostname: zoffice.zeaz.dev
-    service: http://traefik:80
-  - hostname: zaiz.zeaz.dev
-    service: http://traefik:80
-  - hostname: api-zveo.zeaz.dev
-    service: http://traefik:80
-  - hostname: zsticker.zeaz.dev
-    service: http://traefik:80
-  - hostname: ztrader.zeaz.dev
-    service: http://traefik:80
-  - hostname: zveo.zeaz.dev
-    service: http://traefik:80
-  - hostname: app.zeaz.dev
-    service: http://traefik:80
-  - hostname: api-apps.zeaz.dev
-    service: http://traefik:80
-  - hostname: api-app.zeaz.dev
-    service: http://traefik:80
+
+  # ─── Agent UI (direct, non-traefik) ──────────────────────────────────────────
   - hostname: zagents.zeaz.dev
     service: http://172.18.0.1:3009
+
+  # ─── Wildcard (*-api.zeaz.dev / other subdomains) → traefik ──────────────────
+  - hostname: "*.zeaz.dev"
+    service: http://traefik:80
+
+  # ─── Catch-all ───────────────────────────────────────────────────────────────
   - service: http_status:404

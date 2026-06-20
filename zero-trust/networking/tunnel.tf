@@ -1,9 +1,7 @@
-# zeaz-tunnel — active tunnel ID: eebf6c99-b37e-450b-851b-0bc8e427280d
-# Credentials: /home/zeazdev/.cloudflared/eebf6c99-b37e-450b-851b-0bc8e427280d.json
-# Config: /home/zeazdev/.cloudflared/config.yml
-# Service: systemd cloudflared (protocol: http2)
-#
-# Tunnel routes all zeaz.dev subdomains including zagents.zeaz.dev -> :3009
+# zeaz-tunnel — active tunnel ID: b84b87a0-ecd5-4eeb-8551-0faa7e8fe189
+# Credentials: /home/zeazdev/.cloudflared/b84b87a0-ecd5-4eeb-8551-0faa7e8fe189.json
+# Config:      /home/zeazdev/.cloudflared/config.yml
+# Service:     systemd cloudflared (protocol: http2)
 
 resource "cloudflare_tunnel" "zeaz_tunnel" {
   account_id = var.account_id
@@ -16,32 +14,147 @@ resource "cloudflare_tunnel_config" "zeaz_tunnel_config" {
   tunnel_id  = cloudflare_tunnel.zeaz_tunnel.id
 
   config {
+    origin_request {
+      http2_origin        = true
+      no_tls_verify       = false
+      connect_timeout     = "10s"
+      tls_timeout         = "10s"
+      keep_alive_timeout  = "1m30s"
+    }
+
+    # ─── Identity ──────────────────────────────────────────────────────────────
     ingress_rule {
-      hostname = "zagents.zeaz.dev"
-      service  = "http://127.0.0.1:3009"
+      hostname = "auth.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── AI Platform ───────────────────────────────────────────────────────────
+    ingress_rule {
+      hostname = "zveo.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "api-zveo.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zstudio.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "analytics.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Financial Platform ─────────────────────────────────────────────────────
+    ingress_rule {
+      hostname = "app.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zpay.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "ztreasury.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zwallet.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Developer Tools & Cockpits ────────────────────────────────────────────
+    ingress_rule {
+      hostname = "zcloud.zeaz.dev"
+      service  = "http://traefik:80"
     }
     ingress_rule {
       hostname = "zdash.zeaz.dev"
-      service  = "http://127.0.0.1:5173"
+      service  = "http://traefik:80"
     }
     ingress_rule {
       hostname = "api-zdash.zeaz.dev"
-      service  = "http://127.0.0.1:8005"
+      service  = "http://traefik:80"
     }
     ingress_rule {
-      hostname = "zveo.zeaz.dev"
-      service  = "http://127.0.0.1:3002"
+      hostname = "zcfdash.zeaz.dev"
+      service  = "http://traefik:80"
     }
+    ingress_rule {
+      hostname = "api-zcfdash.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "release.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Algo Trading & Game Services ──────────────────────────────────────────
+    ingress_rule {
+      hostname = "ztrader.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "api-ztrader.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zcino.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Educational & Workspace Portals ───────────────────────────────────────
+    ingress_rule {
+      hostname = "zacademy.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "academy.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zlms.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zoffice.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+    ingress_rule {
+      hostname = "zow.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Automation ────────────────────────────────────────────────────────────
+    ingress_rule {
+      hostname = "zfbauto.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Agent UI (direct bypass traefik) ──────────────────────────────────────
+    ingress_rule {
+      hostname = "zagents.zeaz.dev"
+      service  = "http://172.18.0.1:3009"
+    }
+
+    # ─── Root & API ────────────────────────────────────────────────────────────
     ingress_rule {
       hostname = "www.zeaz.dev"
-      service  = "http://127.0.0.1:3003"
+      service  = "http://traefik:80"
     }
     ingress_rule {
       hostname = "zeaz.dev"
-      service  = "http://127.0.0.1:3003"
+      service  = "http://traefik:80"
     }
     ingress_rule {
-      service = "http_status:404"
+      hostname = "api.zeaz.dev"
+      service  = "http://traefik:80"
+    }
+
+    # ─── Wildcard catch-all subdomains → traefik ───────────────────────────────
+    ingress_rule {
+      service = "http://traefik:80"
     }
   }
 }

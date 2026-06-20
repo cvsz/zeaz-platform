@@ -212,6 +212,88 @@
       "origin": "http://127.0.0.1:8710",
       "status": "reserved",
       "api_gateway_prefix": "/v1/factory"
+    },
+    {
+      "app_id": "zstudio",
+      "role": "ui",
+      "path": "apps/zstudio",
+      "hostname": "zstudio.zeaz.dev",
+      "port": 3001,
+      "origin": "http://127.0.0.1:3001",
+      "status": "active"
+    },
+    {
+      "app_id": "analytics",
+      "role": "ui",
+      "path": "apps/analytics",
+      "hostname": "analytics.zeaz.dev",
+      "port": 3017,
+      "origin": "http://127.0.0.1:3017",
+      "status": "reserved"
+    },
+    {
+      "app_id": "zpay",
+      "role": "api-ui",
+      "path": "apps/zpay",
+      "hostname": "zpay.zeaz.dev",
+      "port": 3018,
+      "origin": "http://127.0.0.1:3018",
+      "status": "reserved"
+    },
+    {
+      "app_id": "ztreasury",
+      "role": "api-ui",
+      "path": "apps/ztreasury",
+      "hostname": "ztreasury.zeaz.dev",
+      "port": 3019,
+      "origin": "http://127.0.0.1:3019",
+      "status": "reserved"
+    },
+    {
+      "app_id": "zacademy",
+      "role": "ui",
+      "path": "apps/zAcademy",
+      "hostname": "zacademy.zeaz.dev",
+      "port": 3013,
+      "origin": "http://127.0.0.1:3013",
+      "status": "reserved"
+    },
+    {
+      "app_id": "zow",
+      "role": "ui",
+      "path": "apps/openwork",
+      "hostname": "zow.zeaz.dev",
+      "port": 8092,
+      "origin": "http://127.0.0.1:8092",
+      "status": "reserved"
+    },
+    {
+      "app_id": "zfbauto",
+      "role": "ui",
+      "path": "apps/zfbauto",
+      "hostname": "zfbauto.zeaz.dev",
+      "port": 3020,
+      "origin": "http://127.0.0.1:3020",
+      "status": "reserved"
+    },
+    {
+      "app_id": "zagents",
+      "role": "ui",
+      "path": "apps/zagents",
+      "hostname": "zagents.zeaz.dev",
+      "port": 3009,
+      "origin": "http://127.0.0.1:3009",
+      "status": "active"
+    },
+    {
+      "app_id": "zeaz-api",
+      "role": "api",
+      "path": "apps/zeaz-api",
+      "hostname": "api.zeaz.dev",
+      "port": 8088,
+      "origin": "http://127.0.0.1:8088",
+      "status": "active",
+      "api_gateway_prefix": "/v1"
     }
   ]
 }
