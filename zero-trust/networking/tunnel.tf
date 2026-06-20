@@ -1,4 +1,4 @@
-# zeaz-tunnel — active tunnel ID: b84b87a0-ecd5-4eeb-8551-0faa7e8fe189
+# zeaz-platform tunnel — ID: 45667e7e-7383-4265-b53e-6a9e770a8554
 # Credentials: /home/zeazdev/.cloudflared/b84b87a0-ecd5-4eeb-8551-0faa7e8fe189.json
 # Config:      /home/zeazdev/.cloudflared/config.yml
 # Service:     systemd cloudflared (protocol: http2)
