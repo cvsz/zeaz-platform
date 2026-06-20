@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T22:27:09.501466+00:00",
+  "generated_at": "2026-06-20T07:16:50Z",
   "source": "apps",
   "apps": [
     {
@@ -1496,6 +1496,51 @@
       "configs": [
         "apps/zwallet/services/wallet-engine/tsconfig.json"
       ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zeaz-web",
+      "path": "apps/zeaz-web",
+      "package_name": "@zeaz/web",
+      "version": "1.0.0",
+      "frameworks": [
+        "next"
+      ],
+      "scripts": {
+        "dev": "next dev -p 3003",
+        "build": "NODE_ENV=production next build",
+        "start": "next start -p 3003",
+        "lint": "eslint"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zfbauto",
+      "path": "apps/zfbauto",
+      "package_name": "@zeaz/zfbauto",
+      "version": "1.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "start": "node src/server.js",
+        "dev": "node --watch src/server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "configs": [],
       "factory": {
         "develop": true,
         "plan": true,
