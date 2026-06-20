@@ -391,6 +391,30 @@ async function generateContent(options = {}) {
     usedProvider = 'local-fallback';
   }
 
+  // ── Prompt Branding Guardrails & Content Filter ────────────────────────
+  // Simple safety net to check for unwanted strings, AI artifacts, or marketing slang
+  const FORBIDDEN_PATTERNS = [
+    /As an AI/i,
+    /Here is the post/i,
+    /I cannot write/i,
+    /gambling|casino|crypto-scam|spam/i
+  ];
+  let isClean = true;
+  for (const pattern of FORBIDDEN_PATTERNS) {
+    if (pattern.test(message)) {
+      isClean = false;
+      break;
+    }
+  }
+  if (!isClean) {
+    console.warn(`[content-generator] AI response failed branding guardrails. Falling back to local template.`);
+    message = generateTextLocal(topic, format);
+    usedProvider = 'local-guardrail-fallback';
+  }
+  
+  // Format message - strip markdown code block wraps (common in AI responses)
+  message = message.replace(/^```[a-z]*\n/i, '').replace(/\n```$/, '').trim();
+
   // ── Image pipeline ──────────────────────────────────────────────────────
   let imageUrl = null;
   if (withImage) {

@@ -1,13 +1,15 @@
 const cron = require('node-cron');
 const db = require('./db');
+const fbController = require('./fbController');
 const https = require('https');
 
-const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
-const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
 const FB_VERSION = process.env.FB_API_VERSION || 'v19.0';
 
-const isConfigured = () =>
-  PAGE_ID && ACCESS_TOKEN && !ACCESS_TOKEN.includes('placeholder');
+const isConfigured = () => {
+  const pageId = fbController.getPageId();
+  const token = fbController.getAccessToken();
+  return pageId && token && !token.includes('placeholder');
+};
 
 // Active cron job registry: { [scheduleId]: cronJob }
 const activeJobs = {};
@@ -25,14 +27,17 @@ const postToFacebook = async (message, imageUrl = null) => {
     timeout: 15000,
   });
 
+  const pageId = fbController.getPageId();
+  const token = fbController.getAccessToken();
+
   if (imageUrl && !imageUrl.startsWith('data:')) {
-    const params = { url: imageUrl, access_token: ACCESS_TOKEN };
+    const params = { url: imageUrl, access_token: token };
     if (message) params.message = message;
-    const r = await fbAxios.post(`/${PAGE_ID}/photos`, null, { params });
+    const r = await fbAxios.post(`/${pageId}/photos`, null, { params });
     return r.data;
   } else {
-    const r = await fbAxios.post(`/${PAGE_ID}/feed`, null, {
-      params: { message, access_token: ACCESS_TOKEN },
+    const r = await fbAxios.post(`/${pageId}/feed`, null, {
+      params: { message, access_token: token },
     });
     return r.data;
   }
@@ -44,6 +49,21 @@ const postToFacebook = async (message, imageUrl = null) => {
 const autoPostToPage = async (scheduleId = null, customMessage = null) => {
   const label = scheduleId ? `[schedule:${scheduleId}]` : '[auto]';
   console.log(`${label} Running auto-post...`);
+
+  // Check token age / trigger auto-refresh if close to expiration (every 30 days or so, or if checked and saved user token exists)
+  try {
+    const settings = db.settings.get();
+    if (settings.facebookUserAccessToken && settings.facebookTokenRefreshedAt) {
+      const refreshedAt = new Date(settings.facebookTokenRefreshedAt).getTime();
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      if (Date.now() - refreshedAt > thirtyDays) {
+        console.log('[scheduler] Saved token is older than 30 days. Auto-refreshing Page Access Token...');
+        await fbController.refreshToken();
+      }
+    }
+  } catch (err) {
+    console.error('[scheduler] Failed to auto-refresh token during autoPost preflight:', err.message);
+  }
 
   if (!isConfigured()) {
     console.log(`${label} Skipping: credentials not configured.`);
@@ -173,6 +193,24 @@ const initJobs = () => {
   for (const schedule of schedules) {
     registerSchedule(schedule);
   }
+
+  // Set up token auto-refresh check job (checks daily at 02:00)
+  activeJobs['__token_refresh__'] = cron.schedule('0 2 * * *', async () => {
+    console.log('[scheduler] Running scheduled token refresh check...');
+    try {
+      const currentSettings = db.settings.get();
+      if (currentSettings.facebookUserAccessToken && currentSettings.facebookTokenRefreshedAt) {
+        const refreshedAt = new Date(currentSettings.facebookTokenRefreshedAt).getTime();
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+        if (Date.now() - refreshedAt > thirtyDays) {
+          console.log('[scheduler] Saved token is older than 30 days. Auto-refreshing Page Access Token...');
+          await fbController.refreshToken();
+        }
+      }
+    } catch (err) {
+      console.error('[scheduler] Daily token refresh job error:', err.message);
+    }
+  });
 
   console.log(`[scheduler] Initialized ${Object.keys(activeJobs).length} cron job(s).`);
 };

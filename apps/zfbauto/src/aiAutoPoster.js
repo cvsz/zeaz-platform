@@ -11,14 +11,16 @@
 
 const db = require('./db');
 const { generateContent } = require('./contentGenerator');
+const fbController = require('./fbController');
 const https = require('https');
 
-const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
-const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
 const FB_VERSION = process.env.FB_API_VERSION || 'v19.0';
 
-const isConfigured = () =>
-  PAGE_ID && ACCESS_TOKEN && !ACCESS_TOKEN.includes('placeholder');
+const isConfigured = () => {
+  const pageId = fbController.getPageId();
+  const token = fbController.getAccessToken();
+  return pageId && token && !token.includes('placeholder');
+};
 
 // ── Jitter ─────────────────────────────────────────────────────────────────────
 // Adds ±0 to 30 minutes of randomness to make posts look organic
@@ -37,16 +39,19 @@ async function postToFacebook(message, imageUrl) {
     timeout: 20000,
   });
 
+  const token = fbController.getAccessToken();
+  const pageId = fbController.getPageId();
+
   if (imageUrl && !imageUrl.startsWith('data:')) {
     // Post with photo URL
-    const params = { url: imageUrl, access_token: ACCESS_TOKEN };
+    const params = { url: imageUrl, access_token: token };
     if (message) params.message = message;
-    const res = await fbAxios.post(`/${PAGE_ID}/photos`, null, { params });
+    const res = await fbAxios.post(`/${pageId}/photos`, null, { params });
     return res.data;
   } else {
     // Text-only post
-    const res = await fbAxios.post(`/${PAGE_ID}/feed`, null, {
-      params: { message, access_token: ACCESS_TOKEN },
+    const res = await fbAxios.post(`/${pageId}/feed`, null, {
+      params: { message, access_token: token },
     });
     return res.data;
   }

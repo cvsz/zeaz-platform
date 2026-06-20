@@ -470,7 +470,7 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><span class="card-title">Connection Info</span></div>
+            <div class="card-header"><span class="card-title">Connection Info &amp; OAuth Token Manager</span></div>
             <div class="info-table" id="settings-info-table">
               <div class="info-row">
                 <span class="info-label">Page ID</span>
@@ -489,10 +489,35 @@
                 <code id="info-env">--</code>
               </div>
             </div>
-            <div style="margin-top:20px;">
-              <p class="text-muted small">Configure credentials in <code>.env</code> file:</p>
-              <pre class="code-block">FACEBOOK_PAGE_ID=your_page_id
-FACEBOOK_ACCESS_TOKEN=your_token</pre>
+            
+            <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">
+              <h4 style="margin-bottom:8px;font-size:0.95rem;color:var(--primary);">Token Auto-Refresh &amp; Manual Credentials</h4>
+              <form id="manual-credentials-form">
+                <div class="form-group">
+                  <label>Facebook Page ID</label>
+                  <input type="text" id="setting-page-id" placeholder="Page ID from Facebook page profile">
+                </div>
+                <div class="form-group">
+                  <label>Facebook Access Token</label>
+                  <input type="text" id="setting-access-token" placeholder="Long-lived Page Access Token">
+                </div>
+                <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;margin-top:4px;">Save Credentials</button>
+              </form>
+            </div>
+
+            <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">
+              <h4 style="margin-bottom:8px;font-size:0.95rem;color:var(--accent);">OAuth 2.0 Token Exchange</h4>
+              <p class="text-muted small" style="margin-bottom:8px;">Exchange a Short-Lived User Access Token into a Long-Lived Page Access Token automatically.</p>
+              <form id="token-exchange-form">
+                <div class="form-group">
+                  <label>Short-Lived User Access Token</label>
+                  <input type="text" id="exchange-user-token" placeholder="Paste short-lived access token..." required>
+                </div>
+                <div class="btn-row">
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-manual-refresh">⟳ Force Refresh Page Token</button>
+                  <button type="submit" class="btn btn-primary btn-sm" id="btn-exchange-submit">Exchange &amp; Save</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

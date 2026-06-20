@@ -757,6 +757,10 @@
       const schedulerToggle = document.getElementById('setting-scheduler-enabled');
       if (schedulerToggle) schedulerToggle.checked = !!s.schedulerEnabled;
 
+      // Fill Page ID & Token fields in Settings form if present in DB
+      setVal('setting-page-id', s.facebookPageId || '');
+      setVal('setting-access-token', s.facebookAccessToken || '');
+
       // Connection info
       setText('info-page-id', c.pageId || 'Not set');
       const tokenBadge = document.getElementById('info-token-badge');
@@ -794,6 +798,56 @@
       toast('Settings saved! ✅');
     } catch (err) {
       toast(err.message, 'error');
+    }
+  });
+
+  // Manual Credentials form handler
+  document.getElementById('manual-credentials-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const updates = {
+      facebookPageId:      document.getElementById('setting-page-id').value.trim(),
+      facebookAccessToken: document.getElementById('setting-access-token').value.trim()
+    };
+    try {
+      await api('PATCH', '/api/settings', updates);
+      toast('Credentials saved to DB settings! ✅');
+      loadSettings();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+
+  // Token Exchange form handler
+  document.getElementById('token-exchange-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btnExchange = document.getElementById('btn-exchange-submit');
+    const token = document.getElementById('exchange-user-token').value.trim();
+    if (!token) return;
+    setLoading(btnExchange, true);
+    try {
+      const res = await api('POST', '/api/facebook/exchange-token', { shortLivedToken: token });
+      toast(`Successfully exchanged token! Page Name: ${res.data.pageName} 🎉`);
+      document.getElementById('exchange-user-token').value = '';
+      loadSettings();
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally {
+      setLoading(btnExchange, false);
+    }
+  });
+
+  // Manual Force Refresh Token
+  document.getElementById('btn-manual-refresh')?.addEventListener('click', async () => {
+    const btnRefresh = document.getElementById('btn-manual-refresh');
+    setLoading(btnRefresh, true);
+    try {
+      const res = await api('POST', '/api/facebook/refresh-token');
+      toast(`Page Token Refreshed successfully! Page: ${res.data.pageName} ⟳`);
+      loadSettings();
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally {
+      setLoading(btnRefresh, false);
     }
   });
 

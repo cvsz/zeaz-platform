@@ -5,11 +5,25 @@ const path = require('path');
 const fs = require('fs');
 const FormData = require('form-data');
 
-const PAGE_ID = process.env.FACEBOOK_PAGE_ID;
-const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
-const FB_API_URL = 'https://graph.facebook.com/v19.0';
+const getAccessToken = () => {
+  const settings = db.settings.get();
+  if (settings.facebookAccessToken && !settings.facebookAccessToken.includes('placeholder')) {
+    return settings.facebookAccessToken;
+  }
+  return process.env.FACEBOOK_ACCESS_TOKEN;
+};
 
-// Axios instance that tolerates self-signed certs in development
+const getPageId = () => {
+  const settings = db.settings.get();
+  return settings.facebookPageId || process.env.FACEBOOK_PAGE_ID;
+};
+
+const isConfigured = () => {
+  const pageId = getPageId();
+  const token = getAccessToken();
+  return pageId && token && !token.includes('placeholder');
+};
+
 const FB_VERSION = process.env.FB_API_VERSION || 'v19.0';
 const fbAxios = axios.create({
   baseURL: `https://graph.facebook.com/${FB_VERSION}`,
@@ -29,8 +43,6 @@ const fbError = (res, status, msg, raw) => {
   });
 };
 
-const isConfigured = () => PAGE_ID && ACCESS_TOKEN && !ACCESS_TOKEN.includes('placeholder');
-
 /**
  * POST /api/facebook/post-message
  * Body: { message, link? }
@@ -44,11 +56,14 @@ const postMessage = async (req, res) => {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
+  const token = getAccessToken();
+  const pageId = getPageId();
+
   try {
-    const params = { message: message.trim(), access_token: ACCESS_TOKEN };
+    const params = { message: message.trim(), access_token: token };
     if (link) params.link = link;
 
-    const response = await fbAxios.post(`/${PAGE_ID}/feed`, null, { params });
+    const response = await fbAxios.post(`/${pageId}/feed`, null, { params });
 
     db.history.add({ type: 'text', message: message.trim(), postId: response.data.id, status: 'success' });
 
@@ -75,6 +90,9 @@ const postPhoto = async (req, res) => {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
+  const token = getAccessToken();
+  const pageId = getPageId();
+
   try {
     let response;
     if (hasUpload) {
@@ -82,9 +100,9 @@ const postPhoto = async (req, res) => {
       const form = new FormData();
       form.append('source', fs.createReadStream(req.file.path), req.file.originalname);
       if (message) form.append('message', message);
-      form.append('access_token', ACCESS_TOKEN);
+      form.append('access_token', token);
 
-      response = await fbAxios.post(`/${PAGE_ID}/photos`, form, {
+      response = await fbAxios.post(`/${pageId}/photos`, form, {
         headers: form.getHeaders(),
         httpsAgent: process.env.NODE_ENV !== 'production'
           ? new https.Agent({ rejectUnauthorized: false })
@@ -94,9 +112,9 @@ const postPhoto = async (req, res) => {
       // Clean up temp upload
       fs.unlinkSync(req.file.path);
     } else {
-      const params = { url, access_token: ACCESS_TOKEN };
+      const params = { url, access_token: token };
       if (message) params.message = message;
-      response = await fbAxios.post(`/${PAGE_ID}/photos`, null, { params });
+      response = await fbAxios.post(`/${pageId}/photos`, null, { params });
     }
 
     // Upload to Google Drive if configured (Non-blocking)
@@ -127,12 +145,15 @@ const getPosts = async (req, res) => {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
+  const token = getAccessToken();
+  const pageId = getPageId();
+
   try {
     const limit = Math.min(parseInt(req.query.limit || '10', 10), 50);
     const fields = req.query.fields || 'message,created_time,story,full_picture,permalink_url';
 
-    const response = await fbAxios.get(`/${PAGE_ID}/feed`, {
-      params: { access_token: ACCESS_TOKEN, limit, fields },
+    const response = await fbAxios.get(`/${pageId}/feed`, {
+      params: { access_token: token, limit, fields },
     });
 
     return res.status(200).json({ ok: true, data: response.data });
@@ -154,9 +175,11 @@ const deletePost = async (req, res) => {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
+  const token = getAccessToken();
+
   try {
     await fbAxios.delete(`/${postId}`, {
-      params: { access_token: ACCESS_TOKEN },
+      params: { access_token: token },
     });
 
     db.history.add({ type: 'delete', postId, status: 'success' });
@@ -181,16 +204,19 @@ const getInsights = async (req, res) => {
     });
   }
 
+  const token = getAccessToken();
+  const pageId = getPageId();
+
   try {
     const [pageRes, insightsRes] = await Promise.allSettled([
-      fbAxios.get(`/${PAGE_ID}`, {
-        params: { fields: 'fan_count,followers_count,name,about,category,picture', access_token: ACCESS_TOKEN },
+      fbAxios.get(`/${pageId}`, {
+        params: { fields: 'fan_count,followers_count,name,about,category,picture', access_token: token },
       }),
-      fbAxios.get(`/${PAGE_ID}/insights`, {
+      fbAxios.get(`/${pageId}/insights`, {
         params: {
           metric: 'page_impressions,page_engaged_users,page_post_engagements',
           period: 'day',
-          access_token: ACCESS_TOKEN,
+          access_token: token,
         },
       }),
     ]);
@@ -210,17 +236,169 @@ const getInsights = async (req, res) => {
  */
 const getConfig = (req, res) => {
   const settings = db.settings.get();
+  const token = getAccessToken();
+  const pageId = getPageId();
+
   return res.status(200).json({
     ok: true,
     data: {
-      pageId: PAGE_ID || null,
-      hasAccessToken: !!ACCESS_TOKEN && !ACCESS_TOKEN.includes('placeholder'),
+      pageId: pageId || null,
+      hasAccessToken: !!token && !token.includes('placeholder'),
       schedulerEnabled: settings.schedulerEnabled,
       defaultCron: settings.defaultCron,
       queueLength: db.queue.getAll().length,
       pendingCount: db.queue.getPending().length,
     },
   });
+};
+
+// ── Token Management & Auto-Refresh API ──────────────────────────────────────
+
+/**
+ * POST /api/facebook/exchange-token
+ * Body: { shortLivedToken }
+ * Exchanges a Short-Lived User Access Token into a Long-Lived User Access Token,
+ * and then exchanges it into a Long-Lived Page Access Token.
+ */
+const exchangeToken = async (req, res) => {
+  const { shortLivedToken } = req.body;
+  if (!shortLivedToken) {
+    return res.status(400).json({ ok: false, error: { code: 'MISSING_TOKEN', message: 'shortLivedToken is required' } });
+  }
+
+  const appId = process.env.FACEBOOK_APP_ID;
+  const appSecret = process.env.FACEBOOK_APP_SECRET;
+  const pageId = getPageId();
+
+  if (!appId || !appSecret) {
+    return res.status(503).json({
+      ok: false,
+      error: { code: 'APP_CREDENTIALS_MISSING', message: 'FACEBOOK_APP_ID and FACEBOOK_APP_SECRET are not configured on the server environment' }
+    });
+  }
+
+  try {
+    console.log('[fbController] Exchanging short-lived user token for long-lived user token...');
+    // 1. Get long-lived user token
+    const userTokenRes = await fbAxios.get('/oauth/access_token', {
+      params: {
+        grant_type: 'fb_exchange_token',
+        client_id: appId,
+        client_secret: appSecret,
+        fb_exchange_token: shortLivedToken
+      }
+    });
+
+    const longLivedUserToken = userTokenRes.data.access_token;
+    if (!longLivedUserToken) {
+      throw new Error('Failed to retrieve long-lived user access token');
+    }
+
+    console.log('[fbController] Fetching long-lived page access tokens...');
+    // 2. Get accounts (pages) using long-lived user token to find the page access token
+    const accountsRes = await fbAxios.get('/me/accounts', {
+      params: {
+        access_token: longLivedUserToken,
+        limit: 100
+      }
+    });
+
+    const pagesList = accountsRes.data.data || [];
+    const targetPage = pagesList.find(p => p.id === pageId);
+
+    if (!targetPage) {
+      return res.status(404).json({
+        ok: false,
+        error: {
+          code: 'PAGE_NOT_FOUND',
+          message: `The configured Facebook Page ID (${pageId}) was not found in the accounts list for this user token. Available pages: ${pagesList.map(p => p.name).join(', ')}`
+        }
+      });
+    }
+
+    const pageAccessToken = targetPage.access_token;
+
+    // Save tokens in DB Settings
+    db.settings.update({
+      facebookAccessToken: pageAccessToken,
+      facebookUserAccessToken: longLivedUserToken,
+      facebookTokenRefreshedAt: new Date().toISOString(),
+      facebookTokenExpiresAt: userTokenRes.data.expires_in
+        ? new Date(Date.now() + userTokenRes.data.expires_in * 1000).toISOString()
+        : null // Long-lived Page Tokens usually don't expire
+    });
+
+    console.log('[fbController] Successfully exchanged and saved page access token.');
+    return res.status(200).json({
+      ok: true,
+      message: 'Token exchanged and saved successfully',
+      data: {
+        pageName: targetPage.name,
+        pageId: targetPage.id,
+        refreshedAt: new Date().toISOString()
+      }
+    });
+
+  } catch (error) {
+    const raw = error.response?.data?.error || error.message;
+    return fbError(res, 500, 'Token exchange flow failed: ' + (raw?.message || error.message), raw);
+  }
+};
+
+/**
+ * POST /api/facebook/refresh-token
+ * Automatic/Manual trigger to refresh/re-fetch the Page Access Token using the saved Long-Lived User Access token.
+ */
+const refreshToken = async (req, res) => {
+  const settings = db.settings.get();
+  const savedUserToken = settings.facebookUserAccessToken;
+  const pageId = getPageId();
+
+  if (!savedUserToken) {
+    return res.status(400).json({
+      ok: false,
+      error: { code: 'NO_SAVED_USER_TOKEN', message: 'No saved Long-Lived User Token found. Please authenticate via OAuth flow first.' }
+    });
+  }
+
+  try {
+    console.log('[fbController] Refreshing Page Token using stored User Token...');
+    const accountsRes = await fbAxios.get('/me/accounts', {
+      params: {
+        access_token: savedUserToken,
+        limit: 100
+      }
+    });
+
+    const pagesList = accountsRes.data.data || [];
+    const targetPage = pagesList.find(p => p.id === pageId);
+
+    if (!targetPage) {
+      return res.status(404).json({
+        ok: false,
+        error: { code: 'PAGE_NOT_FOUND', message: `Facebook Page ID ${pageId} not found in accounts listing during refresh.` }
+      });
+    }
+
+    // Save refreshed token
+    db.settings.update({
+      facebookAccessToken: targetPage.access_token,
+      facebookTokenRefreshedAt: new Date().toISOString()
+    });
+
+    console.log('[fbController] Page Token refreshed successfully.');
+    return res.status(200).json({
+      ok: true,
+      message: 'Page token refreshed successfully',
+      data: {
+        pageName: targetPage.name,
+        refreshedAt: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    const raw = error.response?.data?.error || error.message;
+    return fbError(res, 500, 'Page token refresh failed: ' + (raw?.message || error.message), raw);
+  }
 };
 
 // ── Queue API ─────────────────────────────────────────────────────────────────
@@ -285,16 +463,19 @@ const publishQueueItem = async (req, res) => {
     return res.status(503).json({ ok: false, error: { code: 'NOT_CONFIGURED', message: 'Facebook credentials are not configured' } });
   }
 
+  const token = getAccessToken();
+  const pageId = getPageId();
+
   db.queue.updateStatus(id, 'publishing');
   try {
     let response;
     if (item.imageUrl) {
-      const params = { url: item.imageUrl, access_token: ACCESS_TOKEN };
+      const params = { url: item.imageUrl, access_token: token };
       if (item.message) params.message = item.message;
-      response = await fbAxios.post(`/${PAGE_ID}/photos`, null, { params });
+      response = await fbAxios.post(`/${pageId}/photos`, null, { params });
     } else {
-      response = await fbAxios.post(`/${PAGE_ID}/feed`, null, {
-        params: { message: item.message, access_token: ACCESS_TOKEN },
+      response = await fbAxios.post(`/${pageId}/feed`, null, {
+        params: { message: item.message, access_token: token },
       });
     }
 
@@ -382,7 +563,14 @@ const getSettings = (req, res) => {
  * PATCH /api/settings
  */
 const updateSettings = (req, res) => {
-  const allowed = ['defaultCron', 'schedulerEnabled', 'autoPostTemplate', 'maxQueueSize'];
+  const allowed = [
+    'defaultCron',
+    'schedulerEnabled',
+    'autoPostTemplate',
+    'maxQueueSize',
+    'facebookPageId',
+    'facebookAccessToken'
+  ];
   const updates = {};
   for (const k of allowed) {
     if (req.body[k] !== undefined) updates[k] = req.body[k];
@@ -410,4 +598,8 @@ module.exports = {
   removeSchedule,
   getSettings,
   updateSettings,
+  exchangeToken,
+  refreshToken,
+  getAccessToken,
+  getPageId
 };

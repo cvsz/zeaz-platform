@@ -52,6 +52,8 @@ app.get('/api/facebook/posts', fb.getPosts);
 app.delete('/api/facebook/posts/:postId', fb.deletePost);
 app.get('/api/facebook/insights', fb.getInsights);
 app.get('/api/facebook/config', fb.getConfig);
+app.post('/api/facebook/exchange-token', fb.exchangeToken);
+app.post('/api/facebook/refresh-token', fb.refreshToken);
 
 // Queue
 app.get('/api/queue', fb.getQueue);
