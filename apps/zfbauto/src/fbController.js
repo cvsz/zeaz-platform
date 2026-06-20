@@ -99,6 +99,15 @@ const postPhoto = async (req, res) => {
       response = await fbAxios.post(`/${PAGE_ID}/photos`, null, { params });
     }
 
+    // Upload to Google Drive if configured (Non-blocking)
+    const { uploadToGoogleDrive } = require('./googleDrive');
+    const sourceForDrive = hasUpload ? null : url; // Temp file is already deleted, url is available
+    if (sourceForDrive) {
+      uploadToGoogleDrive(sourceForDrive, `fb-photo-${response.data.id}.png`).catch(e => {
+        console.error('[fbController] Non-blocking Google Drive upload failure:', e.message);
+      });
+    }
+
     db.history.add({ type: 'photo', message: message || '', status: 'success', postId: response.data.id });
 
     return res.status(200).json({ ok: true, data: response.data });

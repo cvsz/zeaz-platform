@@ -57,6 +57,14 @@ const autoPostToPage = async (scheduleId = null, customMessage = null) => {
       console.log(`${label} Publishing queued item: ${item.id}`);
       db.queue.updateStatus(item.id, 'publishing');
       const result = await postToFacebook(item.message, item.imageUrl);
+      // Upload to Google Drive if configured (Non-blocking)
+      if (item.imageUrl) {
+        const { uploadToGoogleDrive } = require('./googleDrive');
+        uploadToGoogleDrive(item.imageUrl, `queue-photo-${result.id}.png`).catch(e => {
+          console.error('[scheduler] Non-blocking Google Drive upload failure:', e.message);
+        });
+      }
+
       db.queue.updateStatus(item.id, 'published', { publishedAt: new Date().toISOString(), postId: result.id });
       db.history.add({ type: item.type, message: item.message, status: 'success', postId: result.id, source: label });
       console.log(`${label} Published queued item ${item.id} → FB post ${result.id}`);

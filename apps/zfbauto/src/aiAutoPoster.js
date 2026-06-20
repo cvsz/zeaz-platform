@@ -120,6 +120,14 @@ async function runAiAutoPost(opts = {}) {
     const result = await postToFacebook(generated.message, generated.imageUrl);
     console.log(`[ai-autoposter] Posted to Facebook! Post ID: ${result.id}`);
 
+    // Upload to Google Drive if configured (Non-blocking)
+    if (generated.imageUrl) {
+      const { uploadToGoogleDrive } = require('./googleDrive');
+      uploadToGoogleDrive(generated.imageUrl, `ai-photo-${result.id}.png`).catch(e => {
+        console.error('[ai-autoposter] Non-blocking Google Drive upload failure:', e.message);
+      });
+    }
+
     db.history.add({
       type: 'ai-auto',
       message: generated.message.substring(0, 120),
