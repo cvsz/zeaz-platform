@@ -108,7 +108,46 @@ async function uploadToGoogleDrive(source, fileName = 'fb-auto-post-image.png') 
   }
 }
 
+/**
+ * List image files in the configured Google Drive folder.
+ * @param {number} limit - Maximum number of files to fetch
+ * @returns {Promise<Array>} - List of file metadata objects {id, name, webContentLink, webViewLink}
+ */
+async function listFilesFromGoogleDrive(limit = 20) {
+  if (!isConfigured()) {
+    console.log('[google-drive] Skipping listFiles: GOOGLE_DRIVE_ACCESS_TOKEN is not configured.');
+    return [];
+  }
+
+  try {
+    let q = "mimeType startswith 'image/' and trashed = false";
+    if (FOLDER_ID) {
+      q += ` and '${FOLDER_ID}' in parents`;
+    }
+
+    console.log(`[google-drive] Listing files with query: "${q}"...`);
+    const response = await axios.get('https://www.googleapis.com/drive/v3/files', {
+      params: {
+        q,
+        pageSize: limit,
+        fields: 'files(id, name, mimeType, webContentLink, webViewLink)',
+      },
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+      timeout: 15000,
+    });
+
+    return response.data?.files || [];
+  } catch (error) {
+    const detail = error.response?.data || error.message;
+    console.error('[google-drive] Error listing files from Drive:', detail);
+    return [];
+  }
+}
+
 module.exports = {
   uploadToGoogleDrive,
+  listFilesFromGoogleDrive,
   isConfigured
 };

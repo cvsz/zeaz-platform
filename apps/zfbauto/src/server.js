@@ -151,6 +151,22 @@ app.get('/api/ai/settings', (req, res) => {
   return res.status(200).json({ ok: true, data: settings.aiAutoPoster || { enabled: true } });
 });
 
+// ── Google Drive Media Library API ───────────────────────────────────────────
+const googleDrive = require('./googleDrive');
+
+/**
+ * GET /api/google-drive/images — list image files from Google Drive
+ */
+app.get('/api/google-drive/images', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit || '20', 10), 100);
+    const files = await googleDrive.listFilesFromGoogleDrive(limit);
+    return res.status(200).json({ ok: true, data: files });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: { message: e.message } });
+  }
+});
+
 // Scheduler control
 app.post('/api/scheduler/trigger', async (req, res) => {
   try {
