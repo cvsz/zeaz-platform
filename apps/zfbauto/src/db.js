@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const { randomUUID } = require('crypto');
+const crypto = require('./crypto');
 
 const DATA_DIR = path.join(__dirname, '../data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
@@ -24,6 +25,26 @@ const loadDb = () => {
       if (!db.schedules) db.schedules = [];
       if (!db.postHistory) db.postHistory = [];
       if (!db.settings) db.settings = {};
+
+      // Decrypt settings tokens
+      if (db.settings.facebookAccessToken) {
+        db.settings.facebookAccessToken = crypto.decrypt(db.settings.facebookAccessToken);
+      }
+      if (db.settings.facebookUserAccessToken) {
+        db.settings.facebookUserAccessToken = crypto.decrypt(db.settings.facebookUserAccessToken);
+      }
+
+      // Decrypt pages tokens
+      if (db.pages) {
+        db.pages.forEach(p => {
+          if (p.facebookAccessToken) {
+            p.facebookAccessToken = crypto.decrypt(p.facebookAccessToken);
+          }
+          if (p.facebookUserAccessToken) {
+            p.facebookUserAccessToken = crypto.decrypt(p.facebookUserAccessToken);
+          }
+        });
+      }
 
       // Migrate single page credentials to default page if empty
       if (db.pages.length === 0 && (db.settings.facebookPageId || process.env.FACEBOOK_PAGE_ID)) {
@@ -57,7 +78,32 @@ const loadDb = () => {
 
 const saveDb = (db) => {
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
+    // Deep clone DB to avoid mutating in-memory plaintext state
+    const clone = JSON.parse(JSON.stringify(db));
+
+    // Encrypt settings tokens
+    if (clone.settings) {
+      if (clone.settings.facebookAccessToken) {
+        clone.settings.facebookAccessToken = crypto.encrypt(clone.settings.facebookAccessToken);
+      }
+      if (clone.settings.facebookUserAccessToken) {
+        clone.settings.facebookUserAccessToken = crypto.encrypt(clone.settings.facebookUserAccessToken);
+      }
+    }
+
+    // Encrypt pages tokens
+    if (clone.pages) {
+      clone.pages.forEach(p => {
+        if (p.facebookAccessToken) {
+          p.facebookAccessToken = crypto.encrypt(p.facebookAccessToken);
+        }
+        if (p.facebookUserAccessToken) {
+          p.facebookUserAccessToken = crypto.encrypt(p.facebookUserAccessToken);
+        }
+      });
+    }
+
+    fs.writeFileSync(DB_FILE, JSON.stringify(clone, null, 2), 'utf-8');
   } catch (e) {
     console.error('Failed to save db.json:', e.message);
   }
