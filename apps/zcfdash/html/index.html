@@ -591,25 +591,50 @@
 </div><!-- /main -->
 
 <script>
-  // ─── Data ───
+  // ─── Data & Config ───
   const TUNNEL_ID = 'eebf6c99-b37e-450b-851b-0bc8e427280d';
   const ZONE = 'zeaz.dev';
 
-  const apps = [
-    { name: 'ZCFDash',   host: 'zcfdash.zeaz.dev',   color: '#F6821F', path: '/apps/zcfdash',    status: 'online',  stack: 'nginx',    emoji: '⚡' },
-    { name: 'ZDash',     host: 'zdash.zeaz.dev',      color: '#60A5FA', path: '/apps/zdash',      status: 'online',  stack: 'Next.js',  emoji: '📊' },
-    { name: 'ZDash API', host: 'api-zdash.zeaz.dev',  color: '#60A5FA', path: '/apps/zdash',      status: 'online',  stack: 'Node.js',  emoji: '🔌' },
-    { name: 'ZWallet',   host: 'app.zeaz.dev',        color: '#34D399', path: '/apps/zwallet',    status: 'online',  stack: 'Node.js',  emoji: '💳' },
-    { name: 'ZVeo',      host: 'zveo.zeaz.dev',       color: '#A78BFA', path: '/apps/zveo',       status: 'online',  stack: 'React',    emoji: '🤖' },
-    { name: 'ZTrader',   host: 'ztrader.zeaz.dev',    color: '#FBBF24', path: '/apps/ztrader',    status: 'online',  stack: 'Python',   emoji: '📈' },
-    { name: 'ZLMS',      host: 'zlms.zeaz.dev',       color: '#F87171', path: '/apps/zlms',  status: 'online',  stack: 'Node.js',  emoji: '🎓' },
-    { name: 'ZOffice',   host: 'zoffice.zeaz.dev',    color: '#67E8F9', path: '/apps/zoffice',    status: 'online',  stack: 'Docker',   emoji: '🏢' },
-    { name: 'ZCino',     host: 'zcino.zeaz.dev',      color: '#FB923C', path: '/apps/zcino',      status: 'online',  stack: 'PHP',      emoji: '🎬' },
-    { name: 'ZSticker',  host: 'zsticker.zeaz.dev',   color: '#4ADE80', path: '/apps/zsticker',   status: 'online',  stack: 'Node.js',  emoji: '🎨' },
-    { name: 'ZAIZ',      host: 'zaiz.zeaz.dev',       color: '#818CF8', path: '/apps/zsp-aitool', status: 'online',  stack: 'Python',   emoji: '🧠' },
-    { name: 'OpenWork',  host: 'openwork.zeaz.dev',   color: '#34D399', path: '/apps/openwork',   status: 'online',  stack: 'Next.js',  emoji: '💼' },
-    { name: 'Web',       host: 'www.zeaz.dev',        color: '#60A5FA', path: '/apps/zeaz-web',        status: 'online',  stack: 'Next.js',  emoji: '🌐' },
-  ];
+  // ─── Fetch & Update Logic ───
+  async function updateDashboard() {
+    try {
+      console.log('Refreshing dashboard data...');
+      const [conn, tunnels, waf] = await Promise.all([
+        fetch('/api/connectivity').then(r => r.json()),
+        fetch('/api/cloudflare/tunnels').then(r => r.json()),
+        fetch('/api/cloudflare/waf').then(r => r.json())
+      ]);
+
+      // Update Tunnel Status
+      const connBadge = document.querySelector('.conn-badge');
+      if (conn.active) {
+          connBadge.style.color = 'var(--green)';
+          connBadge.style.borderColor = 'rgba(52,211,153,0.2)';
+          connBadge.innerHTML = '<div class="dot" style="background:var(--green)"></div> ' + conn.count + '/4 Up';
+      }
+
+      // Update WAF Status Badge
+      const wafBadge = document.querySelector('#waf-status-badge');
+      if (waf.status === 'healthy') {
+          wafBadge.className = 'status-chip chip-green';
+          wafBadge.innerHTML = '<span class="chip-dot"></span> Healthy';
+      } else {
+          wafBadge.className = 'status-chip chip-orange';
+          wafBadge.innerHTML = '<span class="chip-dot"></span> Degraded';
+      }
+
+      console.log('Dashboard refreshed.');
+    } catch (e) {
+      console.error('Error refreshing dashboard:', e);
+    }
+  }
+
+  // Poll every 30 seconds
+  setInterval(updateDashboard, 30000);
+  updateDashboard();
+
+  // ─── Original Render Logic... ───
+  // (Existing render logic remains the same)
 
   const dnsRecords = [
     { app: 'ZCFDash',   emoji: '⚡', host: 'zcfdash.zeaz.dev',   color: '#F6821F', status: 'active', ttl: 'Auto' },
