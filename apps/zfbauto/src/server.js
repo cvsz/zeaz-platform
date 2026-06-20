@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const multer = require('multer');
 const os = require('os');
+const db = require('./db');
 
 dotenv.config();
 
@@ -27,6 +28,40 @@ const upload = multer({
   },
 });
 
+// ── Auth Middleware & Role Checks ────────────────────────────────────────────
+const authMiddleware = (req, res, next) => {
+  // Allow login endpoint without auth
+  if (req.path === '/auth/login' || req.path === '/api/auth/login') {
+    return next();
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ ok: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } });
+  }
+
+  const token = authHeader.substring(7);
+  const session = db.sessions.get(token);
+  if (!session) {
+    return res.status(401).json({ ok: false, error: { code: 'UNAUTHORIZED', message: 'Invalid or expired session token' } });
+  }
+
+  req.user = session;
+  next();
+};
+
+const requireRole = (allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ ok: false, error: { code: 'FORBIDDEN', message: 'Access denied: insufficient permissions' } });
+    }
+    next();
+  };
+};
+
+// Mount Auth globally for all /api endpoints
+app.use('/api', authMiddleware);
+
 // ── Controllers ───────────────────────────────────────────────────────────────
 const fb = require('./fbController');
 const scheduler = require('./scheduler');
@@ -45,69 +80,106 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Auth Endpoints
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ ok: false, error: { message: 'Username and password are required' } });
+  }
+  const user = db.users.getByUsername(username);
+  if (!user || !db.users.verifyPassword(user, password)) {
+    return res.status(401).json({ ok: false, error: { message: 'Invalid username or password' } });
+  }
+  const token = db.sessions.create(user.id, user.role);
+  return res.status(200).json({
+    ok: true,
+    data: {
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role
+      }
+    }
+  });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    db.sessions.remove(token);
+  }
+  return res.status(200).json({ ok: true, message: 'Logged out successfully' });
+});
+
+app.get('/api/auth/me', (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ ok: false, error: { message: 'Not logged in' } });
+  }
+  return res.status(200).json({ ok: true, data: { role: req.user.role } });
+});
+
 // Facebook API
-app.post('/api/facebook/post-message', fb.postMessage);
-app.post('/api/facebook/post-photo', upload.single('image'), fb.postPhoto);
-app.get('/api/facebook/posts', fb.getPosts);
-app.delete('/api/facebook/posts/:postId', fb.deletePost);
-app.get('/api/facebook/insights', fb.getInsights);
-app.get('/api/facebook/config', fb.getConfig);
-app.post('/api/facebook/exchange-token', fb.exchangeToken);
-app.post('/api/facebook/refresh-token', fb.refreshToken);
+app.post('/api/facebook/post-message', requireRole(['admin', 'editor']), fb.postMessage);
+app.post('/api/facebook/post-photo', requireRole(['admin', 'editor']), upload.single('image'), fb.postPhoto);
+app.get('/api/facebook/posts', requireRole(['admin', 'editor', 'viewer']), fb.getPosts);
+app.delete('/api/facebook/posts/:postId', requireRole(['admin', 'editor']), fb.deletePost);
+app.get('/api/facebook/insights', requireRole(['admin', 'editor', 'viewer']), fb.getInsights);
+app.get('/api/facebook/config', requireRole(['admin', 'editor', 'viewer']), fb.getConfig);
+app.post('/api/facebook/exchange-token', requireRole(['admin']), fb.exchangeToken);
+app.post('/api/facebook/refresh-token', requireRole(['admin']), fb.refreshToken);
 
 // Queue
-app.get('/api/queue', fb.getQueue);
-app.get('/api/queue/pending-review', fb.getPendingReview);
-app.post('/api/queue', fb.addToQueue);
-app.delete('/api/queue', fb.clearQueue);
-app.delete('/api/queue/:id', fb.removeFromQueue);
-app.post('/api/queue/:id/publish', fb.publishQueueItem);
-app.post('/api/queue/:id/approve', fb.approveQueueItem);
+app.get('/api/queue', requireRole(['admin', 'editor', 'viewer']), fb.getQueue);
+app.get('/api/queue/pending-review', requireRole(['admin', 'editor', 'viewer']), fb.getPendingReview);
+app.post('/api/queue', requireRole(['admin', 'editor']), fb.addToQueue);
+app.delete('/api/queue', requireRole(['admin', 'editor']), fb.clearQueue);
+app.delete('/api/queue/:id', requireRole(['admin', 'editor']), fb.removeFromQueue);
+app.post('/api/queue/:id/publish', requireRole(['admin', 'editor']), fb.publishQueueItem);
+app.post('/api/queue/:id/approve', requireRole(['admin', 'editor']), fb.approveQueueItem);
 
 // Post History
-app.get('/api/history', fb.getHistory);
+app.get('/api/history', requireRole(['admin', 'editor', 'viewer']), fb.getHistory);
 
 // Schedules
-app.get('/api/schedules', fb.getSchedules);
-app.post('/api/schedules', fb.addSchedule);
-app.patch('/api/schedules/:id', fb.updateSchedule);
-app.delete('/api/schedules/:id', fb.removeSchedule);
+app.get('/api/schedules', requireRole(['admin', 'editor', 'viewer']), fb.getSchedules);
+app.post('/api/schedules', requireRole(['admin', 'editor']), fb.addSchedule);
+app.patch('/api/schedules/:id', requireRole(['admin', 'editor']), fb.updateSchedule);
+app.delete('/api/schedules/:id', requireRole(['admin', 'editor']), fb.removeSchedule);
 
 // Settings
-app.get('/api/settings', fb.getSettings);
-app.patch('/api/settings', fb.updateSettings);
+app.get('/api/settings', requireRole(['admin', 'editor', 'viewer']), fb.getSettings);
+app.patch('/api/settings', requireRole(['admin']), fb.updateSettings);
 
 // Pages
-app.get('/api/pages', fb.getPages);
-app.post('/api/pages', fb.addPage);
-app.patch('/api/pages/:id', fb.updatePage);
-app.delete('/api/pages/:id', fb.deletePage);
-
+app.get('/api/pages', requireRole(['admin', 'editor', 'viewer']), fb.getPages);
+app.post('/api/pages', requireRole(['admin']), fb.addPage);
+app.patch('/api/pages/:id', requireRole(['admin']), fb.updatePage);
+app.delete('/api/pages/:id', requireRole(['admin']), fb.deletePage);
 
 // ── AI Content Generator API ────────────────────────────────────────────────
 const { generateContent, getTopics, getFormats } = require('./contentGenerator');
 const { runAiAutoPost } = require('./aiAutoPoster');
-const db = require('./db');
 
 /**
- * GET /api/ai/topics — list all available topics
+ * GET /api/ai/topics
  */
-app.get('/api/ai/topics', (req, res) => {
+app.get('/api/ai/topics', requireRole(['admin', 'editor', 'viewer']), (req, res) => {
   return res.status(200).json({ ok: true, data: getTopics() });
 });
 
 /**
- * GET /api/ai/formats — list all post formats
+ * GET /api/ai/formats
  */
-app.get('/api/ai/formats', (req, res) => {
+app.get('/api/ai/formats', requireRole(['admin', 'editor', 'viewer']), (req, res) => {
   return res.status(200).json({ ok: true, data: getFormats() });
 });
 
 /**
- * POST /api/ai/generate — generate content (preview, don't post)
- * Body: { tag?, format?, withImage?, provider? }
+ * POST /api/ai/generate
  */
-app.post('/api/ai/generate', async (req, res) => {
+app.post('/api/ai/generate', requireRole(['admin', 'editor']), async (req, res) => {
   try {
     const { tag, format, withImage, provider } = req.body;
     const content = await generateContent({ tag, format, withImage: withImage !== false, provider: provider || 'auto' });
@@ -118,10 +190,9 @@ app.post('/api/ai/generate', async (req, res) => {
 });
 
 /**
- * POST /api/ai/generate-and-post — generate + post to Facebook immediately
- * Body: { tag?, format?, withImage?, provider? }
+ * POST /api/ai/generate-and-post
  */
-app.post('/api/ai/generate-and-post', async (req, res) => {
+app.post('/api/ai/generate-and-post', requireRole(['admin', 'editor']), async (req, res) => {
   try {
     const { tag, format, withImage, provider, dryRun } = req.body;
     const result = await runAiAutoPost({ tag, format, withImage, provider, dryRun });
@@ -132,10 +203,9 @@ app.post('/api/ai/generate-and-post', async (req, res) => {
 });
 
 /**
- * PATCH /api/ai/settings — update AI auto-poster configuration
- * Body: { enabled?, topicTag?, postFormat?, withImage?, provider?, intervalHours? }
+ * PATCH /api/ai/settings
  */
-app.patch('/api/ai/settings', (req, res) => {
+app.patch('/api/ai/settings', requireRole(['admin']), (req, res) => {
   const allowed = ['enabled', 'topicTag', 'postFormat', 'withImage', 'provider', 'intervalHours'];
   const updates = {};
   for (const k of allowed) {
@@ -146,7 +216,6 @@ app.patch('/api/ai/settings', (req, res) => {
   const aiSettings = { ...(current.aiAutoPoster || {}), ...updates };
   db.settings.update({ aiAutoPoster: aiSettings });
 
-  // Apply enable/disable change at runtime
   if ('enabled' in updates) {
     scheduler.setAiAutoPosterEnabled(updates.enabled);
   }
@@ -155,9 +224,9 @@ app.patch('/api/ai/settings', (req, res) => {
 });
 
 /**
- * GET /api/ai/settings — get AI auto-poster configuration
+ * GET /api/ai/settings
  */
-app.get('/api/ai/settings', (req, res) => {
+app.get('/api/ai/settings', requireRole(['admin', 'editor', 'viewer']), (req, res) => {
   const settings = db.settings.get();
   return res.status(200).json({ ok: true, data: settings.aiAutoPoster || { enabled: true } });
 });
@@ -166,9 +235,9 @@ app.get('/api/ai/settings', (req, res) => {
 const googleDrive = require('./googleDrive');
 
 /**
- * GET /api/google-drive/images — list image files from Google Drive
+ * GET /api/google-drive/images
  */
-app.get('/api/google-drive/images', async (req, res) => {
+app.get('/api/google-drive/images', requireRole(['admin', 'editor', 'viewer']), async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit || '20', 10), 100);
     const files = await googleDrive.listFilesFromGoogleDrive(limit);
@@ -179,7 +248,7 @@ app.get('/api/google-drive/images', async (req, res) => {
 });
 
 // Scheduler control
-app.post('/api/scheduler/trigger', async (req, res) => {
+app.post('/api/scheduler/trigger', requireRole(['admin']), async (req, res) => {
   try {
     await scheduler.autoPostToPage();
     return res.status(200).json({ ok: true, message: 'Manual trigger executed' });
@@ -188,7 +257,7 @@ app.post('/api/scheduler/trigger', async (req, res) => {
   }
 });
 
-app.post('/api/scheduler/restart', (req, res) => {
+app.post('/api/scheduler/restart', requireRole(['admin']), (req, res) => {
   const { cron } = req.body;
   const ok = scheduler.restartDefaultJob(cron);
   if (ok) return res.status(200).json({ ok: true, message: `Default job restarted with ${cron}` });

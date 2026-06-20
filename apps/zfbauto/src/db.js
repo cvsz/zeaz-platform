@@ -4,7 +4,8 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { randomUUID } = require('crypto');
+const { randomUUID, pbkdf2Sync, randomBytes } = require('crypto');
+
 const crypto = require('./crypto');
 
 const DATA_DIR = path.join(__dirname, '../data');
@@ -25,6 +26,23 @@ const loadDb = () => {
       if (!db.schedules) db.schedules = [];
       if (!db.postHistory) db.postHistory = [];
       if (!db.settings) db.settings = {};
+      if (!db.users) db.users = [];
+      if (!db.sessions) db.sessions = {};
+
+      // Seed default admin user if no users exist
+      if (db.users.length === 0) {
+        const salt = randomBytes(16).toString('hex');
+        const hash = pbkdf2Sync('password', salt, 10000, 64, 'sha512').toString('hex');
+        db.users.push({
+          id: 'admin-uuid',
+          username: 'admin',
+          salt,
+          hash,
+          role: 'admin',
+          createdAt: new Date().toISOString()
+        });
+      }
+
 
       // Decrypt settings tokens
       if (db.settings.facebookAccessToken) {
@@ -67,6 +85,16 @@ const loadDb = () => {
     schedules: [],
     postHistory: [],
     pages: [],
+    users: [
+      {
+        id: 'admin-uuid',
+        username: 'admin',
+        salt: 'seeded-salt',
+        hash: 'seeded-hash',
+        role: 'admin'
+      }
+    ],
+    sessions: {},
     settings: {
       defaultCron: '0 * * * *',
       schedulerEnabled: true,
@@ -75,6 +103,7 @@ const loadDb = () => {
     },
   };
 };
+
 
 const saveDb = (db) => {
   try {
@@ -295,10 +324,62 @@ module.exports = {
     },
   },
 
+  /** Users management */
+  users: {
+    getAll: () => _db.users || [],
+    getByUsername: (username) => (_db.users || []).find(u => u.username.toLowerCase() === username.toLowerCase()),
+    add: (username, password, role = 'editor') => {
+      if (!_db.users) _db.users = [];
+      const salt = randomBytes(16).toString('hex');
+      const hash = pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+      const entry = {
+        id: randomUUID(),
+        username,
+        salt,
+        hash,
+        role,
+        createdAt: new Date().toISOString()
+      };
+      _db.users.push(entry);
+      saveDb(_db);
+      return entry;
+    },
+    verifyPassword: (user, password) => {
+      const hash = pbkdf2Sync(password, user.salt, 10000, 64, 'sha512').toString('hex');
+      return user.hash === hash;
+    }
+  },
+
+  /** Sessions management */
+  sessions: {
+    create: (userId, role) => {
+      if (!_db.sessions) _db.sessions = {};
+      const token = randomBytes(32).toString('hex');
+      _db.sessions[token] = {
+        userId,
+        role,
+        createdAt: new Date().toISOString()
+      };
+      saveDb(_db);
+      return token;
+    },
+    get: (token) => {
+      if (!_db.sessions) return null;
+      return _db.sessions[token] || null;
+    },
+    remove: (token) => {
+      if (!_db.sessions || !_db.sessions[token]) return false;
+      delete _db.sessions[token];
+      saveDb(_db);
+      return true;
+    }
+  },
+
   /** Reload from disk (if external edits) */
   reload: () => {
     _db = loadDb();
     return _db;
   },
 };
+
 

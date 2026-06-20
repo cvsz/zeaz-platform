@@ -18,6 +18,8 @@
 
   let currentPage = 'dashboard';
   let currentPageId = 'default';
+  let userRole = 'viewer';
+
 
 
   function navigate(pageId) {
@@ -95,6 +97,10 @@
     if (currentPageId) {
       opts.headers['x-page-id'] = currentPageId;
     }
+    const token = localStorage.getItem('zfbauto_token');
+    if (token) {
+      opts.headers['Authorization'] = `Bearer ${token}`;
+    }
     if (body && !isFormData) {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);
@@ -103,10 +109,16 @@
     }
     const res = await fetch(path, opts);
 
+    if (res.status === 401 && path !== '/api/auth/login') {
+      logoutLocal();
+      throw new Error('Session expired. Please log in again.');
+    }
+
     const json = await res.json();
     if (!json.ok && !res.ok) throw new Error(json.error?.message || 'Request failed');
     return json;
   }
+
 
   // ── Health Check ─────────────────────────────────────────────────────────────
   let healthOk = false;
@@ -917,13 +929,128 @@
 
   // ── Init ─────────────────────────────────────────────────────────────────────
   checkHealth();
-  loadPagesDropdown();
-  navigate('dashboard');
+  checkAuthAndInit();
 
   document.getElementById('global-page-select')?.addEventListener('change', function () {
     currentPageId = this.value;
     toast(`Switched page context to: ${this.options[this.selectedIndex].text}`);
     navigate(currentPage);
+  });
+
+  function logoutLocal() {
+    localStorage.removeItem('zfbauto_token');
+    localStorage.removeItem('zfbauto_role');
+    const loginScreen = document.getElementById('login-screen');
+    if (loginScreen) loginScreen.style.display = 'flex';
+  }
+
+  async function checkAuthAndInit() {
+    const token = localStorage.getItem('zfbauto_token');
+    const loginScreen = document.getElementById('login-screen');
+
+    if (!token) {
+      if (loginScreen) loginScreen.style.display = 'flex';
+      return;
+    }
+
+    if (loginScreen) loginScreen.style.display = 'none';
+
+    try {
+      const res = await api('GET', '/api/auth/me');
+      userRole = res.data?.role || 'viewer';
+      localStorage.setItem('zfbauto_role', userRole);
+
+      applyRolePrivileges();
+
+      // Load app views
+      loadPagesDropdown();
+      navigate(currentPage);
+    } catch (e) {
+      console.error('Auth verification failed:', e);
+      logoutLocal();
+    }
+  }
+
+  function applyRolePrivileges() {
+    // Enable all inputs/buttons first to reset states
+    document.querySelectorAll('input, textarea, select, button').forEach(el => {
+      el.disabled = false;
+    });
+
+    const connectForm = document.getElementById('connect-page-form');
+    if (connectForm) connectForm.style.display = 'block';
+    const quickPostForm = document.getElementById('quick-post-form');
+    if (quickPostForm) quickPostForm.style.display = 'block';
+    const settingsForm = document.getElementById('settings-form');
+    if (settingsForm) settingsForm.style.display = 'block';
+    const aiSettingsForm = document.getElementById('ai-settings-form');
+    if (aiSettingsForm) aiSettingsForm.style.display = 'block';
+    const schedulerDefaultForm = document.getElementById('scheduler-default-form');
+    if (schedulerDefaultForm) schedulerDefaultForm.style.display = 'block';
+    const scheduleAddForm = document.getElementById('schedule-add-form');
+    if (scheduleAddForm) scheduleAddForm.style.display = 'block';
+    const composeForm = document.getElementById('compose-form');
+    if (composeForm) composeForm.style.display = 'block';
+    
+    // Show disconnect buttons
+    document.querySelectorAll('#pages-list button').forEach(b => b.style.display = 'inline-block');
+
+    if (userRole === 'viewer') {
+      document.querySelectorAll('input, textarea, select:not(#global-page-select), button:not(#btn-logout)').forEach(el => {
+        if (el.id !== 'global-page-select' && el.id !== 'btn-logout') {
+          el.disabled = true;
+        }
+      });
+      if (connectForm) connectForm.style.display = 'none';
+      if (quickPostForm) quickPostForm.style.display = 'none';
+      if (settingsForm) settingsForm.style.display = 'none';
+      if (aiSettingsForm) aiSettingsForm.style.display = 'none';
+      if (schedulerDefaultForm) schedulerDefaultForm.style.display = 'none';
+      if (scheduleAddForm) scheduleAddForm.style.display = 'none';
+      if (composeForm) composeForm.style.display = 'none';
+      
+      toast('Logged in as Viewer (Read-only) 👁️', 'warning');
+    }
+    else if (userRole === 'editor') {
+      if (connectForm) connectForm.style.display = 'none';
+      if (settingsForm) settingsForm.style.display = 'none';
+      if (aiSettingsForm) aiSettingsForm.style.display = 'none';
+      const manualCredentialsForm = document.getElementById('manual-credentials-form');
+      if (manualCredentialsForm) manualCredentialsForm.style.display = 'none';
+      const tokenExchangeForm = document.getElementById('token-exchange-form');
+      if (tokenExchangeForm) tokenExchangeForm.style.display = 'none';
+      
+      document.querySelectorAll('#pages-list button').forEach(b => b.style.display = 'none');
+      
+      toast('Logged in as Editor ✍️');
+    }
+    else {
+      toast('Logged in as Administrator 🛡️');
+    }
+  }
+
+  // Auth Forms Bindings
+  document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    try {
+      const res = await api('POST', '/api/auth/login', { username, password });
+      localStorage.setItem('zfbauto_token', res.data.token);
+      localStorage.setItem('zfbauto_role', res.data.user.role);
+      toast(`Welcome back, ${res.data.user.username}!`);
+      checkAuthAndInit();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+
+  document.getElementById('btn-logout')?.addEventListener('click', async () => {
+    try {
+      await api('POST', '/api/auth/logout');
+    } catch {}
+    logoutLocal();
+    toast('Logged out successfully');
   });
 
   async function loadPagesDropdown() {
@@ -1007,7 +1134,6 @@
       toast(err.message, 'error');
     }
   });
-
 
   // Poll health every 30s
   setInterval(checkHealth, 30000);
