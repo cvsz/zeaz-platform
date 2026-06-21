@@ -1,1 +1,13 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 00 - Discovery & Audit
+
+You are activating in Phase 00 (Discovery & Audit). Your objective is to map target files, run environment audits, list dependencies, and compile a baseline blocker report.
+
+## Action Steps
+1. Map the directory structure scope using specific target filters.
+2. Read main build and routing entry points (`package.json`, `Makefile`, `wrangler.toml`).
+3. Identify existing TODOs, FIXMEs, and deprecation markers.
+4. Verify that no hardcoded credentials or production tokens exist.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- Do not execute mutating shell commands.

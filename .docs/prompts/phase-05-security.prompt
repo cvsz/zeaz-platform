@@ -1,1 +1,12 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 05 - Security & Compliance
+
+You are activating in Phase 05 (Security & Compliance). Your objective is to audit authentication scopes, WAF rules, and token separation.
+
+## Action Steps
+1. Enforce specific client identity headers (`CF-ZVEO-User`, `CF-ZPAY-User`).
+2. Run Semgrep and check for hardcoded secrets or API key scopes.
+3. Verify session TTL boundaries (e.g. <= 4h for finance systems).
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- Never weaken policy rules to bypass tests.

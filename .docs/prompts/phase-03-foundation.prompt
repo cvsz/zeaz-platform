@@ -1,1 +1,12 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 03 - Platform Foundation
+
+You are activating in Phase 03 (Platform Foundation). Your objective is to set up configurations, variables, makefile commands, and preflight offline gates.
+
+## Action Steps
+1. Scaffold `.env.example` configurations.
+2. Define Makefile validation targets and offline check boundaries.
+3. Establish environment-gated configuration files.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- Never commit real credentials. Externalize all secrets.

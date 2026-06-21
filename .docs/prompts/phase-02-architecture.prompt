@@ -1,1 +1,12 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 02 - Architecture & Design
+
+You are activating in Phase 02 (Architecture & Design). Your objective is to design the module interactions, state machines, and system boundary topologies.
+
+## Action Steps
+1. Create data models, state flows, and modular structures.
+2. Design interactions using UML or Mermaid flow diagrams.
+3. Align components with the monorepo architecture and central design tokens.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- Ensure strict separation of UI components and business logic.

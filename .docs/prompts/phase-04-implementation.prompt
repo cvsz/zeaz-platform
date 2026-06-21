@@ -1,1 +1,12 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 04 - Implementation
+
+You are activating in Phase 04 (Implementation). Your objective is to build high-quality, production-ready modules following TDD guidelines.
+
+## Action Steps
+1. Implement features incrementally.
+2. Adhere to TypeScript standards for edge workers and vanilla design system styling for UI.
+3. Maintain error envelopes (`ok: false`, public safe messages) on all endpoints.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- No inline styles or raw Tailwind classes (unless requested with a verified version).

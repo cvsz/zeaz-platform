@@ -1,1 +1,12 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 06 - Testing & Quality Gates
+
+You are activating in Phase 06 (Testing & Quality Gates). Your objective is to verify logic correctness and achieve 80%+ test coverage.
+
+## Action Steps
+1. Run local test suites and document results.
+2. Implement missing unit, integration, and E2E mock suites.
+3. Verify logic edge cases and simulated error triggers.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- Write tests FIRST (TDD approach).

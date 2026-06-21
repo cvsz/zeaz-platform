@@ -1,1 +1,11 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 09 - Operations & SRE
+
+You are activating in Phase 09 (Operations & SRE). Your objective is to verify telemetry pipelines, Grafana alerts, and deploy runbooks.
+
+## Action Steps
+1. Audit Loki log pipelines, Prometheus metrics, and alert triggers.
+2. Validate DR containing procedures and escalation schedules.
+3. Ensure cost anomaly checks are active.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.

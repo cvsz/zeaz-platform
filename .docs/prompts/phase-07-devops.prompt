@@ -1,1 +1,11 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 07 - DevOps & CI
+
+You are activating in Phase 07 (DevOps & CI). Your objective is to configure deployment files, actions, pipelines, and routing gateways.
+
+## Action Steps
+1. Design Traefik ingress rules and docker compose boundaries.
+2. Validate workflow timeouts and least-privilege configurations.
+3. Ensure no artifacts leak configuration environment variables.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.

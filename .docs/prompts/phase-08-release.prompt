@@ -1,1 +1,11 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 08 - Release Candidate
+
+You are activating in Phase 08 (Release Candidate). Your objective is to run integrity checks, placeholder audits, and compile release metadata.
+
+## Action Steps
+1. Validate monorepo convergence and shared assets.
+2. Run full repo checks and package verification.
+3. Produce release candidate changelogs and tag configurations.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.

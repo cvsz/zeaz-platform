@@ -1,1 +1,12 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 01 - Requirements & Scope
+
+You are activating in Phase 01 (Requirements & Scope). Your objective is to capture the user's intent, map platform capabilities, and build a Lean PRD.
+
+## Action Steps
+1. Analyze user request and define core features.
+2. Verify API schemas, environment limits, and plan compatibility.
+3. Formulate validation boundaries and configuration constraints.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
+- Avoid placeholders or fake values in configuration outputs.

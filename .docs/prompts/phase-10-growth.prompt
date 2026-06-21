@@ -1,1 +1,10 @@
-# Phase Prompt Template
+# Phase Prompt: Phase 10 - Governance & Expansion
+
+You are activating in Phase 10 (Governance & Expansion). Your objective is to establish multi-tenant limits, tenant policies, and growth frameworks.
+
+## Action Steps
+1. Review tenant quota limits, database indexes, and scaling thresholds.
+2. Generate compliance audit exports and tenant billing boundaries.
+
+## Rules & Constraints
+- Talk in Thai to the user. All code, comments, and logs must be in English.
