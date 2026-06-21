@@ -68,6 +68,13 @@ const WELCOME_MESSAGE = {
   isWelcome: true,
 };
 
+const QUICK_PROMPTS = [
+  'Draft a concise project update for the team',
+  'Compare the free model options I can use here',
+  'Summarize the last reply into action items',
+  'Help me debug a React UI issue step by step',
+];
+
 // ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
@@ -251,12 +258,23 @@ function ProviderBadge({ source, latencyMs }) {
 function MessageBubble({ message, copiedId, onCopy }) {
   const isUser = message.role === 'user';
   const isError = Boolean(message.isError);
+  const isWelcome = Boolean(message.isWelcome);
 
   return (
-    <div className={`message-wrapper ${isUser ? 'message-user' : 'message-assistant'}`}>
+    <div
+      className={`message-wrapper ${
+        isUser ? 'message-user' : 'message-assistant'
+      } ${isWelcome ? 'message-welcome' : ''}`}
+    >
       <div
         className={`message-bubble ${
-          isUser ? 'bubble-user' : isError ? 'bubble-error' : 'bubble-assistant'
+          isUser
+            ? 'bubble-user'
+            : isError
+            ? 'bubble-error'
+            : isWelcome
+            ? 'bubble-welcome'
+            : 'bubble-assistant'
         }`}
       >
         {/* Simple markdown-ish rendering: bold **text** */}
@@ -368,6 +386,15 @@ export default function AIChatFallback() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+
+    el.style.height = 'auto';
+    const nextHeight = Math.min(el.scrollHeight, 160);
+    el.style.height = `${nextHeight}px`;
+  }, [input]);
 
   // Persist messages whenever they change
   useEffect(() => {
@@ -501,12 +528,22 @@ export default function AIChatFallback() {
     inputRef.current?.focus();
   }, [messages]);
 
+  const handlePromptPick = useCallback((prompt) => {
+    setInput(prompt);
+    setError(null);
+    inputRef.current?.focus();
+  }, []);
+
   const handleNewChat = useCallback(() => {
     setMessages([WELCOME_MESSAGE]);
+    setInput('');
     persistChat.clear();
     setError(null);
     rateLimiter?.reset();
     setRateLimitRemaining(rateLimiter ? rateLimiter.remaining() : null);
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto';
+    }
     inputRef.current?.focus();
     log.info('UI', 'New chat session started');
   }, []);
@@ -578,6 +615,9 @@ export default function AIChatFallback() {
       ? { label: `${enabledProviderCount} provider${enabledProviderCount > 1 ? 's' : ''} active`, ok: true }
       : { label: 'Offline fallback', ok: false };
 
+  const visibleProviders = providerStatuses.filter((provider) => provider.enabled);
+  const favoritePromptCount = QUICK_PROMPTS.length;
+
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
@@ -627,25 +667,69 @@ export default function AIChatFallback() {
           display: flex;
           height: 100vh;
           font-family: var(--font-family);
-          background: var(--color-bg-base);
+          background:
+            radial-gradient(circle at top left, rgba(139, 92, 246, 0.16), transparent 32%),
+            radial-gradient(circle at top right, rgba(6, 182, 212, 0.12), transparent 28%),
+            linear-gradient(180deg, #05070c 0%, #07090f 50%, #04050a 100%);
           color: var(--color-text);
           overflow: hidden;
+          position: relative;
+        }
+
+        .omega-root::before,
+        .omega-root::after {
+          content: '';
+          position: absolute;
+          inset: auto;
+          pointer-events: none;
+          border-radius: 999px;
+          filter: blur(36px);
+          opacity: 0.45;
+        }
+
+        .omega-root::before {
+          width: 320px;
+          height: 320px;
+          left: -120px;
+          bottom: -120px;
+          background: rgba(139, 92, 246, 0.18);
+        }
+
+        .omega-root::after {
+          width: 280px;
+          height: 280px;
+          right: -100px;
+          top: 72px;
+          background: rgba(6, 182, 212, 0.12);
+        }
+
+        .omega-aura {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(circle at 50% 10%, rgba(139, 92, 246, 0.08), transparent 28%),
+            radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.06), transparent 24%);
+          pointer-events: none;
+          z-index: 0;
         }
 
         /* ---- Sidebar ---- */
         .sidebar {
           width: var(--sidebar-width);
-          background: var(--color-bg-surface);
-          border-right: 1px solid var(--color-border);
+          background: linear-gradient(180deg, rgba(13, 17, 23, 0.94), rgba(9, 12, 18, 0.82));
+          border-right: 1px solid rgba(139, 92, 246, 0.12);
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
-          backdrop-filter: blur(20px);
+          backdrop-filter: blur(24px);
+          position: relative;
+          z-index: 1;
+          box-shadow: inset -1px 0 0 rgba(255,255,255,0.02);
         }
 
         .sidebar-header {
           padding: 20px 16px 16px;
-          border-bottom: 1px solid var(--color-border-subtle);
+          border-bottom: 1px solid rgba(255,255,255,0.04);
         }
 
         .sidebar-logo {
@@ -656,15 +740,17 @@ export default function AIChatFallback() {
         }
 
         .sidebar-logo-icon {
-          width: 32px;
-          height: 32px;
-          background: var(--color-user-bubble);
-          border-radius: var(--radius-sm);
+          width: 38px;
+          height: 38px;
+          background:
+            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 34%),
+            linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #06b6d4 100%);
+          border-radius: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
-          box-shadow: var(--shadow-glow);
+          font-size: 18px;
+          box-shadow: 0 12px 28px rgba(99, 102, 241, 0.28);
         }
 
         .sidebar-title {
@@ -680,6 +766,78 @@ export default function AIChatFallback() {
           margin-top: 2px;
         }
 
+        .sidebar-summary {
+          margin: 0 12px 12px;
+          padding: 14px;
+          border-radius: 18px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+            rgba(13, 17, 23, 0.7);
+          border: 1px solid rgba(255,255,255,0.06);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.24);
+        }
+
+        .sidebar-summary-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .sidebar-summary-label {
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--color-text-muted);
+        }
+
+        .sidebar-summary-value {
+          margin-top: 4px;
+          font-size: 16px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+        }
+
+        .sidebar-summary-subvalue {
+          margin-top: 4px;
+          font-size: 12px;
+          line-height: 1.5;
+          color: var(--color-text-muted);
+        }
+
+        .summary-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .summary-grid-spaced {
+          margin-top: 12px;
+        }
+
+        .summary-card {
+          padding: 10px 12px;
+          border-radius: 14px;
+          background: rgba(7, 9, 15, 0.5);
+          border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .summary-card-label {
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--color-text-muted);
+        }
+
+        .summary-card-value {
+          margin-top: 4px;
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--color-text);
+          line-height: 1.35;
+        }
+
         .sidebar-body {
           flex: 1;
           overflow-y: auto;
@@ -687,6 +845,10 @@ export default function AIChatFallback() {
           display: flex;
           flex-direction: column;
           gap: 8px;
+        }
+
+        .sidebar-provider-toggle-wrap {
+          margin-top: 8px;
         }
 
         .btn {
@@ -703,6 +865,7 @@ export default function AIChatFallback() {
           transition: all var(--transition);
           text-decoration: none;
           white-space: nowrap;
+          min-height: 40px;
         }
 
         .btn-primary {
@@ -738,7 +901,7 @@ export default function AIChatFallback() {
           align-items: center;
           justify-content: space-between;
           padding: 8px 12px;
-          border-radius: var(--radius-sm);
+          border-radius: 14px;
           cursor: pointer;
           color: var(--color-text-muted);
           font-size: 12px;
@@ -752,13 +915,29 @@ export default function AIChatFallback() {
         }
         .provider-panel-toggle:hover { background: var(--color-bg-hover); color: var(--color-text); }
 
+        .provider-panel-label {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .provider-chevron {
+          transition: transform var(--transition);
+        }
+
+        .provider-chevron.open {
+          transform: rotate(180deg);
+        }
+
         .provider-panel {
           background: rgba(255,255,255,0.03);
-          border-radius: var(--radius-sm);
-          padding: 8px;
+          border-radius: 16px;
+          padding: 10px;
           display: flex;
           flex-direction: column;
           gap: 4px;
+          margin-top: 8px;
+          border: 1px solid rgba(255,255,255,0.04);
         }
 
         .provider-status-row {
@@ -787,10 +966,11 @@ export default function AIChatFallback() {
 
         .sidebar-footer {
           padding: 12px;
-          border-top: 1px solid var(--color-border-subtle);
+          border-top: 1px solid rgba(255,255,255,0.04);
           display: flex;
           flex-direction: column;
           gap: 6px;
+          background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01));
         }
 
         /* ---- Main area ---- */
@@ -798,28 +978,82 @@ export default function AIChatFallback() {
           flex: 1;
           display: flex;
           flex-direction: column;
-          background: var(--color-bg-base);
+          background:
+            linear-gradient(180deg, rgba(8, 11, 18, 0.82), rgba(8, 10, 16, 0.96));
           min-width: 0;
+          position: relative;
+          z-index: 1;
         }
 
         /* ---- Chat header ---- */
         .chat-header {
-          padding: 14px 20px;
-          border-bottom: 1px solid var(--color-border-subtle);
+          padding: 16px 20px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: rgba(13, 17, 23, 0.8);
-          backdrop-filter: blur(12px);
+          background: rgba(10, 13, 19, 0.82);
+          backdrop-filter: blur(20px);
           flex-shrink: 0;
+          box-shadow: inset 0 -1px 0 rgba(255,255,255,0.02);
         }
 
-        .chat-header-left { display: flex; align-items: center; gap: 12px; }
+        .chat-header-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+        }
+
+        .header-copy {
+          min-width: 0;
+        }
 
         .chat-title {
           font-size: 15px;
-          font-weight: 600;
+          font-weight: 700;
           color: var(--color-text);
+        }
+
+        .chat-subtitle {
+          margin-top: 2px;
+          font-size: 11px;
+          color: var(--color-text-muted);
+          line-height: 1.45;
+        }
+
+        .chat-header-badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 8px;
+        }
+
+        .status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 10px;
+          border-radius: 999px;
+          font-size: 11px;
+          color: var(--color-text-muted);
+          border: 1px solid rgba(255,255,255,0.06);
+          background: rgba(255,255,255,0.03);
+        }
+
+        .status-pill.ok {
+          border-color: rgba(16, 185, 129, 0.18);
+          background: rgba(16, 185, 129, 0.08);
+        }
+
+        .status-pill.offline {
+          border-color: rgba(245, 158, 11, 0.18);
+          background: rgba(245, 158, 11, 0.08);
+        }
+
+        .status-pill strong {
+          color: var(--color-text);
+          font-weight: 600;
         }
 
         .connection-badge {
@@ -844,14 +1078,24 @@ export default function AIChatFallback() {
 
         .chat-header-right { display: flex; align-items: center; gap: 8px; }
 
+        .header-action {
+          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(255,255,255,0.03);
+          color: var(--color-text);
+        }
+        .header-action:hover {
+          background: rgba(255,255,255,0.06);
+          border-color: rgba(139, 92, 246, 0.2);
+        }
+
         /* ---- Messages ---- */
         .messages-container {
           flex: 1;
           overflow-y: auto;
-          padding: 24px 20px;
+          padding: 24px 20px 20px;
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
           scroll-behavior: smooth;
         }
 
@@ -861,7 +1105,7 @@ export default function AIChatFallback() {
 
         .message-wrapper {
           display: flex;
-          animation: msgFadeIn 0.2s ease-out;
+          animation: msgFadeIn 0.28s ease-out;
         }
         @keyframes msgFadeIn {
           from { opacity: 0; transform: translateY(6px); }
@@ -873,31 +1117,47 @@ export default function AIChatFallback() {
 
         .message-bubble {
           max-width: min(560px, 85%);
-          padding: 12px 16px;
+          padding: 13px 16px;
           border-radius: var(--radius-lg);
           position: relative;
         }
 
         .bubble-user {
-          background: var(--color-user-bubble);
+          background:
+            radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 30%),
+            linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
           color: white;
-          border-bottom-right-radius: var(--radius-sm);
-          box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+          border-bottom-right-radius: 10px;
+          box-shadow: 0 14px 40px rgba(99, 102, 241, 0.24);
         }
 
         .bubble-assistant {
-          background: var(--color-bg-glass);
-          border: 1px solid var(--color-border);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+            rgba(16, 21, 31, 0.88);
+          border: 1px solid rgba(139, 92, 246, 0.12);
           color: var(--color-text);
-          border-bottom-left-radius: var(--radius-sm);
-          backdrop-filter: blur(12px);
+          border-bottom-left-radius: 10px;
+          backdrop-filter: blur(18px);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.22);
         }
 
         .bubble-error {
           background: rgba(239, 68, 68, 0.1);
           border: 1px solid rgba(239, 68, 68, 0.3);
           color: #fca5a5;
-          border-bottom-left-radius: var(--radius-sm);
+          border-bottom-left-radius: 10px;
+        }
+
+        .bubble-welcome {
+          max-width: min(700px, 92%);
+          padding: 18px 18px 16px;
+          background:
+            radial-gradient(circle at top left, rgba(139, 92, 246, 0.22), transparent 40%),
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)),
+            rgba(16, 21, 31, 0.92);
+          border: 1px solid rgba(139, 92, 246, 0.2);
+          box-shadow: 0 18px 60px rgba(99, 102, 241, 0.18);
         }
 
         .message-content {
@@ -905,6 +1165,11 @@ export default function AIChatFallback() {
           line-height: 1.6;
           white-space: pre-wrap;
           word-break: break-word;
+        }
+
+        .message-welcome .message-content {
+          font-size: 15px;
+          line-height: 1.65;
         }
 
         /* Provider badge */
@@ -930,6 +1195,10 @@ export default function AIChatFallback() {
           transition: opacity var(--transition);
         }
         .message-bubble:hover .message-meta { opacity: 1; }
+
+        .message-welcome .message-meta {
+          opacity: 1;
+        }
 
         .copy-btn {
           display: flex;
@@ -982,7 +1251,7 @@ export default function AIChatFallback() {
           border: 1px solid rgba(239, 68, 68, 0.2);
           border-radius: var(--radius-md);
           padding: 12px 16px;
-          margin: 0 20px;
+          margin: 0 20px 12px;
           animation: msgFadeIn 0.2s ease-out;
         }
         .error-icon { color: var(--color-error); flex-shrink: 0; margin-top: 1px; }
@@ -992,11 +1261,21 @@ export default function AIChatFallback() {
 
         /* ---- Input area ---- */
         .input-area {
-          padding: 16px 20px;
-          border-top: 1px solid var(--color-border-subtle);
-          background: rgba(13, 17, 23, 0.8);
-          backdrop-filter: blur(12px);
+          padding: 16px 20px 18px;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          background: rgba(10, 13, 19, 0.82);
+          backdrop-filter: blur(20px);
           flex-shrink: 0;
+        }
+
+        .composer-shell {
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+            rgba(16, 21, 31, 0.74);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 24px;
+          padding: 14px;
+          box-shadow: 0 18px 50px rgba(0,0,0,0.24);
         }
 
         .input-row {
@@ -1007,32 +1286,40 @@ export default function AIChatFallback() {
 
         .chat-input {
           flex: 1;
-          background: var(--color-bg-elevated);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
-          padding: 12px 16px;
+          background: rgba(7, 9, 15, 0.72);
+          border: 1px solid rgba(139, 92, 246, 0.12);
+          border-radius: 18px;
+          padding: 14px 16px;
           font-family: var(--font-family);
           font-size: 14px;
           color: var(--color-text);
           outline: none;
           resize: none;
           min-height: 44px;
-          max-height: 120px;
-          transition: border-color var(--transition), box-shadow var(--transition);
+          max-height: 160px;
+          overflow-y: hidden;
+          scrollbar-width: none;
+          transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
           line-height: 1.5;
+        }
+        .chat-input::-webkit-scrollbar {
+          display: none;
         }
         .chat-input::placeholder { color: var(--color-text-muted); }
         .chat-input:focus {
           border-color: var(--color-primary);
-          box-shadow: 0 0 0 3px var(--color-primary-glow);
+          box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+          background: rgba(10, 13, 19, 0.9);
         }
         .chat-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .send-btn {
-          width: 44px;
-          height: 44px;
-          border-radius: var(--radius-md);
-          background: var(--color-primary);
+          width: 50px;
+          height: 50px;
+          border-radius: 18px;
+          background:
+            radial-gradient(circle at 30% 20%, rgba(255,255,255,0.18), transparent 26%),
+            linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
           border: none;
           cursor: pointer;
           display: flex;
@@ -1041,10 +1328,10 @@ export default function AIChatFallback() {
           color: white;
           flex-shrink: 0;
           transition: all var(--transition);
+          box-shadow: 0 14px 32px rgba(99, 102, 241, 0.28);
         }
         .send-btn:hover:not(:disabled) {
-          background: var(--color-primary-hover);
-          box-shadow: var(--shadow-glow);
+          box-shadow: 0 16px 40px rgba(99, 102, 241, 0.35);
           transform: translateY(-1px);
         }
         .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
@@ -1053,7 +1340,9 @@ export default function AIChatFallback() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-top: 8px;
+          margin-top: 10px;
+          gap: 12px;
+          flex-wrap: wrap;
         }
 
         .input-hint {
@@ -1070,28 +1359,79 @@ export default function AIChatFallback() {
         }
         .rate-limit-low { color: var(--color-warning); }
 
+        .prompt-rail {
+          padding: 18px 20px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .prompt-rail-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .prompt-rail-title {
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+          color: var(--color-text-muted);
+        }
+
+        .prompt-rail-note {
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+
+        .prompt-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .prompt-chip {
+          border: 1px solid rgba(255,255,255,0.06);
+          background: rgba(255,255,255,0.03);
+          color: var(--color-text);
+          border-radius: 999px;
+          padding: 9px 12px;
+          font-size: 12px;
+          transition: all var(--transition);
+        }
+
+        .prompt-chip:hover {
+          background: rgba(139, 92, 246, 0.11);
+          border-color: rgba(139, 92, 246, 0.18);
+          transform: translateY(-1px);
+        }
+
         /* Settings drawer (simple overlay) */
         .settings-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.5);
-          backdrop-filter: blur(4px);
+          background: rgba(2, 4, 10, 0.68);
+          backdrop-filter: blur(14px);
           z-index: 100;
           display: flex;
-          align-items: center;
-          justify-content: center;
+          align-items: stretch;
+          justify-content: flex-end;
           animation: fadeIn 0.15s ease-out;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .settings-drawer {
-          background: var(--color-bg-surface);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-xl);
-          padding: 24px;
-          width: min(640px, 92vw);
-          max-height: 80vh;
+          background:
+            linear-gradient(180deg, rgba(16, 21, 31, 0.97), rgba(11, 14, 21, 0.96));
+          border-left: 1px solid rgba(139, 92, 246, 0.12);
+          padding: 22px;
+          width: min(720px, 100vw);
+          max-height: 100vh;
           overflow-y: auto;
+          box-shadow: -24px 0 60px rgba(0,0,0,0.4);
+          backdrop-filter: blur(24px);
         }
 
         .settings-header {
@@ -1124,9 +1464,10 @@ export default function AIChatFallback() {
           align-items: center;
           gap: 10px;
           padding: 8px 12px;
-          background: var(--color-bg-elevated);
-          border-radius: var(--radius-sm);
-          margin-bottom: 4px;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.04);
+          border-radius: 16px;
+          margin-bottom: 8px;
           font-size: 13px;
         }
         .settings-provider-status { flex: 1; }
@@ -1136,6 +1477,10 @@ export default function AIChatFallback() {
           display: flex;
           flex-direction: column;
           gap: 12px;
+          padding: 14px;
+          border-radius: 20px;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.05);
         }
 
         .hf-model-manager-header {
@@ -1168,9 +1513,9 @@ export default function AIChatFallback() {
         .hf-model-select {
           width: 100%;
           min-width: 0;
-          background: var(--color-bg-elevated);
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-md);
+          background: rgba(7, 9, 15, 0.72);
+          border: 1px solid rgba(139, 92, 246, 0.12);
+          border-radius: 14px;
           padding: 10px 12px;
           color: var(--color-text);
           font-family: var(--font-family);
@@ -1187,6 +1532,9 @@ export default function AIChatFallback() {
           display: flex;
           flex-direction: column;
           gap: 6px;
+          max-height: 340px;
+          overflow: auto;
+          padding-right: 2px;
         }
 
         .hf-model-row {
@@ -1194,10 +1542,10 @@ export default function AIChatFallback() {
           align-items: center;
           justify-content: space-between;
           gap: 10px;
-          padding: 8px 10px;
-          background: var(--color-bg-elevated);
-          border-radius: var(--radius-sm);
-          border: 1px solid transparent;
+          padding: 10px 12px;
+          background: rgba(7, 9, 15, 0.55);
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.04);
         }
 
         .hf-model-row:hover {
@@ -1266,18 +1614,68 @@ export default function AIChatFallback() {
           flex-wrap: wrap;
         }
 
+        .settings-footer-note {
+          margin-top: 16px;
+          padding: 14px;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(255,255,255,0.03);
+          font-size: 12px;
+          color: var(--color-text-muted);
+          line-height: 1.6;
+        }
+
+        .settings-export-row {
+          display: flex;
+          gap: 8px;
+        }
+
+        .settings-export-btn {
+          flex: 1;
+        }
+
         .divider {
           height: 1px;
-          background: var(--color-border-subtle);
+          background: rgba(255,255,255,0.06);
           margin: 12px 0;
         }
 
+        .spin {
+          animation: spin 1s linear infinite;
+        }
+
         /* Responsive */
+        @media (max-width: 1080px) {
+          .sidebar {
+            width: 236px;
+          }
+        }
+
         @media (max-width: 640px) {
           .sidebar { display: none; }
-          .messages-container { padding: 16px 12px; }
+          .messages-container { padding: 16px 12px 16px; }
           .input-area { padding: 12px; }
-          .chat-header { padding: 10px 12px; }
+          .chat-header { padding: 12px; align-items: flex-start; }
+          .chat-header-left { flex-direction: column; align-items: flex-start; gap: 8px; }
+          .chat-header-right { gap: 6px; }
+          .header-action { padding: 8px; }
+          .prompt-rail { padding: 14px 12px 0; }
+          .message-bubble { max-width: 94%; }
+          .composer-shell { padding: 12px; border-radius: 18px; }
+          .input-row { align-items: stretch; }
+          .send-btn { width: 46px; height: 46px; border-radius: 16px; }
+          .settings-drawer {
+            width: 100vw;
+            border-left: none;
+            padding: 18px 14px;
+          }
+          .hf-model-picker {
+            grid-template-columns: 1fr;
+          }
+          .hf-model-footer {
+            flex-direction: column;
+            align-items: flex-start;
+          }
         }
       `}</style>
 
@@ -1285,6 +1683,7 @@ export default function AIChatFallback() {
       {/* Layout                                                               */}
       {/* ------------------------------------------------------------------ */}
       <div className="omega-root">
+        <div className="omega-aura" aria-hidden="true" />
         {/* ---- Sidebar ---- */}
         <aside className="sidebar">
           <div className="sidebar-header">
@@ -1297,27 +1696,62 @@ export default function AIChatFallback() {
             </div>
           </div>
 
+          <div className="sidebar-summary">
+            <div className="sidebar-summary-top">
+              <div>
+                <div className="sidebar-summary-label">Session</div>
+                <div className="sidebar-summary-value">
+                  {messages.length} turns
+                </div>
+              </div>
+              <span className={`connection-badge ${connectionStatus.ok ? 'ok' : 'offline'}`}>
+                {connectionStatus.ok ? <Wifi size={10} /> : <WifiOff size={10} />}
+                {connectionStatus.ok ? 'Online' : 'Offline'}
+              </span>
+            </div>
+            <div className="sidebar-summary-subvalue">
+              Premium fallback keeps the conversation alive across provider failures.
+            </div>
+            <div className="summary-grid summary-grid-spaced">
+              <div className="summary-card">
+                <div className="summary-card-label">Providers</div>
+                <div className="summary-card-value">{enabledProviderCount}/{providerStatuses.length || 0} active</div>
+              </div>
+              <div className="summary-card">
+                <div className="summary-card-label">HF Chain</div>
+                <div className="summary-card-value">{hfModelSource}</div>
+              </div>
+              <div className="summary-card">
+                <div className="summary-card-label">Prompt Deck</div>
+                <div className="summary-card-value">{favoritePromptCount} quick starts</div>
+              </div>
+              <div className="summary-card">
+                <div className="summary-card-label">Rate Limit</div>
+                <div className="summary-card-value">
+                  {rateLimitRemaining !== null ? `${rateLimitRemaining} left` : 'Off'}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="sidebar-body">
             <button className="btn btn-primary btn-full" onClick={handleNewChat}>
               <Plus size={16} />
               New Chat
             </button>
 
-            <div style={{ marginTop: '8px' }}>
+            <div className="sidebar-provider-toggle-wrap">
               <button
                 className="provider-panel-toggle"
                 onClick={() => setShowProviderPanel((v) => !v)}
               >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="provider-panel-label">
                   <Activity size={13} />
                   Providers
                 </span>
                 <ChevronDown
                   size={13}
-                  style={{
-                    transform: showProviderPanel ? 'rotate(180deg)' : 'none',
-                    transition: 'transform var(--transition)',
-                  }}
+                  className={`provider-chevron ${showProviderPanel ? 'open' : ''}`}
                 />
               </button>
 
@@ -1356,17 +1790,30 @@ export default function AIChatFallback() {
           {/* Header */}
           <div className="chat-header">
             <div className="chat-header-left">
-              <span className="chat-title">Chat</span>
-              <div
-                className={`connection-badge ${connectionStatus.ok ? 'ok' : 'offline'}`}
-              >
-                {connectionStatus.ok ? <Wifi size={10} /> : <WifiOff size={10} />}
-                {connectionStatus.label}
+              <div className="header-copy">
+                <div className="chat-title">Omega Chat</div>
+                <div className="chat-subtitle">
+                  Premium fallback messaging with tuned provider order and browser-saved Hugging Face preferences.
+                </div>
+                <div className="chat-header-badges">
+                  <span className={`status-pill ${connectionStatus.ok ? 'ok' : 'offline'}`}>
+                    {connectionStatus.ok ? <Wifi size={10} /> : <WifiOff size={10} />}
+                    <strong>{connectionStatus.label}</strong>
+                  </span>
+                  <span className="status-pill">
+                    <Activity size={10} />
+                    <strong>{visibleProviders.length}</strong> enabled providers
+                  </span>
+                  <span className="status-pill">
+                    <Clock size={10} />
+                    HF source: <strong>{hfModelSource}</strong>
+                  </span>
+                </div>
               </div>
             </div>
             <div className="chat-header-right">
               <button
-                className="btn btn-icon"
+                className="btn btn-icon header-action"
                 onClick={handleNewChat}
                 title="New chat"
                 aria-label="New chat"
@@ -1374,7 +1821,7 @@ export default function AIChatFallback() {
                 <Plus size={16} />
               </button>
               <button
-                className="btn btn-icon"
+                className="btn btn-icon header-action"
                 onClick={() => setShowSettings(true)}
                 title="Settings"
                 aria-label="Settings"
@@ -1382,7 +1829,7 @@ export default function AIChatFallback() {
                 <Settings size={16} />
               </button>
               <button
-                className="btn btn-icon"
+                className="btn btn-icon header-action"
                 onClick={() => {
                   setMessages([WELCOME_MESSAGE]);
                   persistChat.clear();
@@ -1392,6 +1839,27 @@ export default function AIChatFallback() {
               >
                 <Trash2 size={16} />
               </button>
+            </div>
+          </div>
+
+          <div className="prompt-rail">
+            <div className="prompt-rail-header">
+              <div className="prompt-rail-title">Quick prompts</div>
+              <div className="prompt-rail-note">
+                Tap a prompt to preload the composer, then edit before sending.
+              </div>
+            </div>
+            <div className="prompt-chips">
+              {QUICK_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  className="prompt-chip"
+                  onClick={() => handlePromptPick(prompt)}
+                >
+                  {prompt}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -1416,45 +1884,47 @@ export default function AIChatFallback() {
 
           {/* Input area */}
           <div className="input-area">
-            <div className="input-row">
-              <textarea
-                ref={inputRef}
-                className="chat-input"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Ask anything… Shift+Enter for newline"
-                disabled={loading}
-                rows={1}
-                id="omega-chat-input"
-                aria-label="Message input"
-              />
-              <button
-                className="send-btn"
-                onClick={handleSend}
-                disabled={loading || !input.trim()}
-                title="Send message"
-                aria-label="Send message"
-                id="omega-chat-send"
-              >
-                {loading ? (
-                  <RefreshCw size={18} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
-                ) : (
-                  <Send size={18} />
-                )}
-              </button>
-            </div>
+            <div className="composer-shell">
+              <div className="input-row">
+                <textarea
+                  ref={inputRef}
+                  className="chat-input"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Ask anything… Shift+Enter for newline"
+                  disabled={loading}
+                  rows={1}
+                  id="omega-chat-input"
+                  aria-label="Message input"
+                />
+                <button
+                  className="send-btn"
+                  onClick={handleSend}
+                  disabled={loading || !input.trim()}
+                  title="Send message"
+                  aria-label="Send message"
+                  id="omega-chat-send"
+                >
+                  {loading ? (
+                    <RefreshCw size={18} className="spin" />
+                  ) : (
+                    <Send size={18} />
+                  )}
+                </button>
+              </div>
 
-            <div className="input-footer">
-              <span className="input-hint">
-                Fallback: Gemini → Groq → Cohere → HuggingFace → OpenRouter → Mistral → Together → Ollama → Offline
-              </span>
-              {rateLimiter && rateLimitRemaining !== null && (
-                <span className={`rate-limit-indicator ${rateLimitRemaining <= 3 ? 'rate-limit-low' : ''}`}>
-                  <Activity size={10} />
-                  {rateLimitRemaining} req left
+              <div className="input-footer">
+                <span className="input-hint">
+                  Fallback: Gemini → Groq → Cohere → HuggingFace → OpenRouter → Mistral → Together → Ollama → Offline
                 </span>
-              )}
+                {rateLimiter && rateLimitRemaining !== null && (
+                  <span className={`rate-limit-indicator ${rateLimitRemaining <= 3 ? 'rate-limit-low' : ''}`}>
+                    <Activity size={10} />
+                    {rateLimitRemaining} req left
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -1529,12 +1999,12 @@ export default function AIChatFallback() {
                 <div className="divider" />
                 <div className="settings-section">
                   <div className="settings-section-title">Export</div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn btn-ghost" onClick={handleExportMarkdown} style={{ flex: 1 }}>
+                  <div className="settings-export-row">
+                    <button className="btn btn-ghost settings-export-btn" onClick={handleExportMarkdown}>
                       <Download size={14} />
                       Markdown
                     </button>
-                    <button className="btn btn-ghost" onClick={handleExportJSON} style={{ flex: 1 }}>
+                    <button className="btn btn-ghost settings-export-btn" onClick={handleExportJSON}>
                       <Download size={14} />
                       JSON
                     </button>
@@ -1545,10 +2015,10 @@ export default function AIChatFallback() {
 
             <div className="divider" />
 
-            <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+            <div className="settings-footer-note">
               <strong>Setup:</strong> Add API keys to <code>.env.local</code>.<br />
               See <code>PROVIDER_SETUP.md</code> for step-by-step instructions.<br />
-              Recommended: Gemini + Groq (both free, no credit card).
+              Recommended: Gemini + Groq for the fastest free fallback coverage.
             </div>
           </div>
         </div>
