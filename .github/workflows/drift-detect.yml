@@ -34,7 +34,7 @@ jobs:
 
       - name: Upload drift reports
         if: ${{ hashFiles('reports/drift/**', 'terraform/**/drift-*.txt') != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: drift-detection-artifacts
           if-no-files-found: warn

@@ -33,7 +33,7 @@ jobs:
 
       - name: Upload tunnel validation artifacts
         if: ${{ hashFiles('reports/tunnel/**', 'tunnels/**/*.json') != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tunnel-validation-artifacts
           if-no-files-found: warn
