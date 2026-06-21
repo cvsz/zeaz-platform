@@ -1,18 +1,26 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  // Check for required Cloudflare Zero Trust headers
+export async function middleware(request: NextRequest) {
+  // 1. Check for Cloudflare Zero Trust headers (Primary Auth)
   const user = request.headers.get('CF-ZVEO-User');
-  const groups = request.headers.get('CF-ZVEO-Groups');
-
-  // In production, ZT will inject these headers.
-  // For development, we might need a bypass or mock mechanism.
+  
   if (!user && process.env.ENVIRONMENT === 'production') {
-    return new NextResponse(JSON.stringify({ ok: false, error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'content-type': 'application/json' },
-    });
+    return NextResponse.json({
+      ok: false,
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Missing identity headers',
+        request_id: crypto.randomUUID(),
+      }
+    }, { status: 401 });
+  }
+
+  // 2. JWT Verification Hook (Placeholder for future implementation)
+  const jwt = request.headers.get('Authorization')?.replace('Bearer ', '');
+  if (jwt) {
+    // TODO: Integrate JWT verification logic here (e.g., using jose library)
+    // Validate JWT and proceed or return 401
   }
 
   return NextResponse.next();
