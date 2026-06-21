@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
+import './process-shim';
 import AIChatFallback from '../ai-chat-fallback.jsx';
 
 const rootElement = document.getElementById('root');

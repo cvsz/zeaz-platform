@@ -171,6 +171,66 @@ export const cohereAdapter = {
 // Free serverless inference on open models
 // Sign up: https://huggingface.co/settings/tokens
 // ---------------------------------------------------------------------------
+const DEFAULT_HUGGINGFACE_FREE_MODELS = [
+  'Qwen/Qwen3-0.6B',
+  'TinyLlama/TinyLlama-1.1B-Chat-v1.0',
+  'Qwen/Qwen2.5-1.5B-Instruct',
+  'microsoft/phi-2',
+  'openai-community/gpt2',
+  'Qwen/Qwen3-4B',
+  'mistralai/Mistral-7B-Instruct-v0.3',
+  'Qwen/Qwen3-8B',
+];
+
+function parseModelList(rawValue) {
+  return rawValue
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function getHuggingFaceModelCandidates() {
+  const override = process.env.REACT_APP_HUGGINGFACE_MODEL_CANDIDATES;
+  if (override) {
+    return [...new Set(parseModelList(override))];
+  }
+
+  const preferred = process.env.REACT_APP_HUGGINGFACE_MODEL?.trim();
+  const models = [
+    preferred || DEFAULT_HUGGINGFACE_FREE_MODELS[0],
+    ...DEFAULT_HUGGINGFACE_FREE_MODELS,
+  ].filter(Boolean);
+
+  return [...new Set(models)];
+}
+
+async function fetchHuggingFaceModel(model, message) {
+  const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.REACT_APP_HUGGINGFACE_API_KEY}`,
+    },
+    body: JSON.stringify({
+      inputs: message,
+      parameters: { max_new_tokens: 200, return_full_text: false },
+    }),
+  });
+
+  if (!response.ok) {
+    const errBody = await response.text().catch(() => '');
+    throw new Error(`HuggingFace HTTP ${response.status}: ${errBody.slice(0, 200)}`);
+  }
+
+  const data = await response.json();
+  if (data?.error) throw new Error(`HuggingFace: ${data.error}`);
+
+  const raw = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+  if (!raw) throw new Error('HuggingFace: empty response');
+
+  return raw;
+}
+
 export const huggingFaceAdapter = {
   name: 'Hugging Face',
   get enabled() {
@@ -183,38 +243,33 @@ export const huggingFaceAdapter = {
     return parseInt(process.env.REACT_APP_HUGGINGFACE_TIMEOUT, 10) || 30000;
   },
   async call(message) {
-    const model =
-      process.env.REACT_APP_HUGGINGFACE_MODEL || 'microsoft/DialoGPT-large';
-    log.debug('HUGGINGFACE', `Calling model=${model}`);
+    const candidates = getHuggingFaceModelCandidates();
+    log.debug('HUGGINGFACE', 'Model candidates selected', { candidates });
 
-    const response = await fetch(
-      `https://api-inference.huggingface.co/models/${model}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.REACT_APP_HUGGINGFACE_API_KEY}`,
-        },
-        body: JSON.stringify({
-          inputs: message,
-          parameters: { max_new_tokens: 200, return_full_text: false },
-        }),
+    let lastError = null;
+
+    for (const model of candidates) {
+      const attemptStart = Date.now();
+      log.info('HUGGINGFACE', `Attempting model="${model}"`);
+
+      try {
+        const raw = await fetchHuggingFaceModel(model, message);
+        const text = raw.startsWith(message) ? raw.slice(message.length).trim() : raw;
+        const durationMs = Date.now() - attemptStart;
+        log.info('HUGGINGFACE', `Success model="${model}"`, {
+          chars: (text || raw).length,
+          durationMs,
+        });
+        return text || raw;
+      } catch (error) {
+        lastError = error;
+        log.warn('HUGGINGFACE', `Model failed model="${model}"`, error.message);
       }
+    }
+
+    throw new Error(
+      `HuggingFace: all ${candidates.length} free models failed. Last error: ${lastError?.message ?? 'unknown'}`
     );
-
-    if (!response.ok) throw new Error(`HuggingFace HTTP ${response.status}`);
-    const data = await response.json();
-
-    // Handle model loading 503
-    if (data?.error) throw new Error(`HuggingFace: ${data.error}`);
-
-    const raw = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
-    if (!raw) throw new Error('HuggingFace: empty response');
-
-    // Strip echo of input if present
-    const text = raw.startsWith(message) ? raw.slice(message.length).trim() : raw;
-    log.debug('HUGGINGFACE', 'Success', { chars: text.length });
-    return text || raw;
   },
 };
 

@@ -24,6 +24,19 @@ ZeaZ Omega Chat is a React/Vite chat app with a 9-provider free fallback chain. 
 8. Ollama
 9. Smart Offline
 
+### Hugging Face Free Model Chain
+
+The Hugging Face provider now cycles through a curated set of free/open text-generation models before giving up:
+
+1. `Qwen/Qwen3-0.6B`
+2. `TinyLlama/TinyLlama-1.1B-Chat-v1.0`
+3. `Qwen/Qwen2.5-1.5B-Instruct`
+4. `microsoft/phi-2`
+5. `openai-community/gpt2`
+6. `Qwen/Qwen3-4B`
+7. `mistralai/Mistral-7B-Instruct-v0.3`
+8. `Qwen/Qwen3-8B`
+
 ## Getting Started
 
 ```bash
@@ -56,6 +69,8 @@ Key runtime flags:
 - `REACT_APP_ENABLE_EXPORT`
 - `REACT_APP_FALLBACK_CIRCUIT_BREAKER_THRESHOLD`
 - `REACT_APP_FALLBACK_CIRCUIT_BREAKER_COOLDOWN_MS`
+- `REACT_APP_HUGGINGFACE_MODEL`
+- `REACT_APP_HUGGINGFACE_MODEL_CANDIDATES`
 
 Provider keys are optional. Enable only the providers you want to use.
 

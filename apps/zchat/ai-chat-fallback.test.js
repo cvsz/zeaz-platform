@@ -40,6 +40,7 @@ beforeEach(() => {
   process.env.REACT_APP_COHERE_API_KEY = 'test-cohere-key';
   process.env.REACT_APP_HUGGINGFACE_ENABLED = 'true';
   process.env.REACT_APP_HUGGINGFACE_API_KEY = 'test-hf-key';
+  process.env.REACT_APP_HUGGINGFACE_MODEL_CANDIDATES = 'microsoft/DialoGPT-large';
   process.env.REACT_APP_OPENROUTER_ENABLED = 'true';
   process.env.REACT_APP_OPENROUTER_API_KEY = 'test-or-key';
   process.env.REACT_APP_MISTRAL_ENABLED = 'true';
@@ -220,6 +221,15 @@ describe('C4. huggingFaceAdapter', () => {
     const result = await huggingFaceAdapter.call('question');
     // Should strip the input echo
     expect(result).toBe('Hello from HF');
+  });
+
+  it('retries later free models when the first candidate fails', async () => {
+    process.env.REACT_APP_HUGGINGFACE_MODEL_CANDIDATES =
+      'Qwen/Qwen3-0.6B,TinyLlama/TinyLlama-1.1B-Chat-v1.0';
+    mockFetch(503, { error: 'Model is loading' });
+    mockFetch(200, [{ generated_text: 'question Free model fallback works' }]);
+    const result = await huggingFaceAdapter.call('question');
+    expect(result).toBe('Free model fallback works');
   });
 
   it('throws on non-200 status', async () => {
