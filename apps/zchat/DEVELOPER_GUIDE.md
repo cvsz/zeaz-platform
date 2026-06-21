@@ -13,6 +13,11 @@ This app is intentionally small and modular. The main chat experience lives in `
 - `src/chatPersistence.js` stores messages in `localStorage`
 - `src/rateLimiter.js` enforces client-side request limits
 - `src/exportChat.js` exports Markdown and JSON
+- `server/user-key-store.js` persists generated user keys as hashes
+- `server/user-key-api.js` exposes the Node API for create/list/verify
+- `server/api-key-auth.js` enforces auth and scope checks for downstream APIs
+- `server/third-party-store.js` tracks third-party application requests
+- `server/oauth-client-store.js` issues and verifies OAuth client credentials and access tokens
 
 ## Env Handling
 
@@ -58,3 +63,8 @@ The unit test suite is in `ai-chat-fallback.test.js`. It covers:
 ## Build Notes
 
 The app is bundled with Vite. If you add new runtime env keys, make sure they are included in `.env.example` and referenced through the existing `process.env.REACT_APP_*` pattern so the build-time mapping continues to work.
+
+The Node API reads `CHAT_API_*` environment variables at runtime. Keep those values on the server side only; do not expose them to the browser bundle.
+
+The browser UI uses `REACT_APP_USER_KEY_API_BASE_URL` to reach the local key server during development.
+The Settings modal includes third-party application submission and pending review controls, plus a periodic Hugging Face model refresh loop for browser sync.

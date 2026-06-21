@@ -18,23 +18,23 @@ import {
   Clock,
 } from 'lucide-react';
 
-import { callAIWithFallback, getProviderStatuses } from './src/orchestrator';
-import { persistChat } from './src/chatPersistence';
-import { createRateLimiter } from './src/rateLimiter';
+import { callAIWithFallback, getProviderStatuses } from './src/orchestrator.js';
+import { persistChat } from './src/chatPersistence.js';
+import { createRateLimiter } from './src/rateLimiter.js';
 import {
   DEFAULT_HUGGINGFACE_FREE_MODELS,
   getHuggingFaceModelCandidatesSource,
   getResolvedHuggingFaceModelCandidates,
   resetHuggingFaceModelCandidates,
   saveHuggingFaceModelCandidates,
-} from './src/huggingFaceModels';
+} from './src/huggingFaceModels.js';
 import {
   exportAsMarkdown,
   exportAsJSON,
   triggerDownload,
   generateExportFilename,
-} from './src/exportChat';
-import { log } from './src/logger';
+} from './src/exportChat.js';
+import { log } from './src/logger.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -49,6 +49,38 @@ const RATE_LIMIT_WINDOW_MS =
 const SHOW_PROVIDER_BADGE = process.env.REACT_APP_SHOW_PROVIDER_BADGE !== 'false';
 const SHOW_LATENCY = process.env.REACT_APP_SHOW_LATENCY !== 'false';
 const ENABLE_EXPORT = process.env.REACT_APP_ENABLE_EXPORT !== 'false';
+const HUGGINGFACE_MODEL_REFRESH_INTERVAL_MS =
+  parseInt(process.env.REACT_APP_HUGGINGFACE_MODEL_REFRESH_INTERVAL_MS, 10) || 300000;
+const USER_KEY_API_BASE_URL =
+  process.env.REACT_APP_USER_KEY_API_BASE_URL || 'http://127.0.0.1:8787';
+
+const USER_KEY_PERMISSION_OPTIONS = [
+  {
+    value: 'api:access',
+    label: 'API access',
+    description: 'Allow the key to authenticate against system APIs.',
+  },
+  {
+    value: 'chat:read',
+    label: 'Chat read',
+    description: 'Allow read-only access to chat resources.',
+  },
+  {
+    value: 'chat:write',
+    label: 'Chat write',
+    description: 'Allow sending chat messages and mutating chat state.',
+  },
+  {
+    value: 'settings:read',
+    label: 'Settings read',
+    description: 'Allow read-only access to settings or profile endpoints.',
+  },
+  {
+    value: 'settings:write',
+    label: 'Settings write',
+    description: 'Allow mutating settings or profile endpoints.',
+  },
+];
 
 // Rate limiter singleton
 const rateLimiter = ENABLE_RATE_LIMIT
@@ -232,6 +264,346 @@ function HuggingFaceModelManager({
   );
 }
 
+function UserKeyManager({
+  apiBaseUrl,
+  userId,
+  label,
+  expiresInDays,
+  selectedScopes,
+  isCreating,
+  createError,
+  createdKey,
+  copiedKeyId,
+  onUserIdChange,
+  onLabelChange,
+  onExpiresInDaysChange,
+  onToggleScope,
+  onCreateKey,
+  onCopyKey,
+  onClearCreatedKey,
+}) {
+  const activeScopeSet = new Set(selectedScopes);
+
+  return (
+    <div className="user-key-manager">
+      <div className="user-key-manager-header">
+        <div>
+          <div className="user-key-manager-title">User key generator</div>
+          <div className="user-key-manager-note">
+            Create a reusable API key, copy it once, and use it as `Authorization: Bearer ...`.
+          </div>
+        </div>
+        <span className="provider-status-badge badge-info">Base URL: {apiBaseUrl}</span>
+      </div>
+
+      <div className="user-key-form">
+        <label className="user-key-field">
+          <span>User ID</span>
+          <input
+            className="user-key-input"
+            value={userId}
+            onChange={(e) => onUserIdChange(e.target.value)}
+            placeholder="user-123"
+            autoComplete="off"
+          />
+        </label>
+
+        <label className="user-key-field">
+          <span>Label</span>
+          <input
+            className="user-key-input"
+            value={label}
+            onChange={(e) => onLabelChange(e.target.value)}
+            placeholder="CLI access"
+            autoComplete="off"
+          />
+        </label>
+
+        <label className="user-key-field">
+          <span>Expires in days</span>
+          <input
+            className="user-key-input"
+            type="number"
+            min="1"
+            max="3650"
+            value={expiresInDays}
+            onChange={(e) => onExpiresInDaysChange(e.target.value)}
+          />
+        </label>
+      </div>
+
+      <div className="user-key-scope-grid">
+        {USER_KEY_PERMISSION_OPTIONS.map((scope) => (
+          <button
+            key={scope.value}
+            type="button"
+            className={`user-key-scope-chip ${activeScopeSet.has(scope.value) ? 'active' : ''}`}
+            onClick={() => onToggleScope(scope.value)}
+          >
+            <span className="user-key-scope-chip-title">{scope.label}</span>
+            <span className="user-key-scope-chip-note">{scope.description}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="user-key-actions">
+        <button className="btn btn-primary btn-sm" onClick={onCreateKey} disabled={isCreating}>
+          {isCreating ? 'Creating...' : 'Generate key'}
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={onClearCreatedKey} disabled={!createdKey}>
+          Clear
+        </button>
+      </div>
+
+      {createError && <div className="user-key-error">{createError}</div>}
+
+      {createdKey && (
+        <div className="user-key-result">
+          <div className="user-key-result-top">
+            <div>
+              <div className="user-key-result-label">Generated once</div>
+              <div className="user-key-result-meta">
+                Owner: {createdKey.record.userId} · Scopes: {createdKey.record.scopes.join(', ')}
+              </div>
+            </div>
+            <span className="provider-status-badge badge-info">
+              Expires {createdKey.record.expiresAt ? new Date(createdKey.record.expiresAt).toLocaleDateString() : 'never'}
+            </span>
+          </div>
+
+          <div className="user-key-secret-row">
+            <code className="user-key-secret">{createdKey.rawKey}</code>
+            <button className="btn btn-ghost btn-sm" onClick={() => onCopyKey(createdKey.rawKey)}>
+              {copiedKeyId === createdKey.rawKey ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+
+          <div className="user-key-result-note">
+            Use `X-ZChat-Api-Key`, `X-API-Key`, or `Authorization: Bearer ...` to call protected endpoints.
+            The key is stored only as a hash on the server.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ThirdPartyConnectManager({
+  apiBaseUrl,
+  name,
+  contactEmail,
+  website,
+  callbackUrl,
+  selectedScopes,
+  isApplying,
+  applyError,
+  appliedApplication,
+  copiedApplicationId,
+  onNameChange,
+  onContactEmailChange,
+  onWebsiteChange,
+  onCallbackUrlChange,
+  onToggleScope,
+  onApply,
+  onCopyApplicationId,
+  onClearApplication,
+}) {
+  const activeScopeSet = new Set(selectedScopes);
+
+  return (
+    <div className="user-key-manager">
+      <div className="user-key-manager-header">
+        <div>
+          <div className="user-key-manager-title">Third-party connect</div>
+          <div className="user-key-manager-note">
+            Third-party apps can apply for access here. The request stays pending until you approve it.
+          </div>
+        </div>
+        <span className="provider-status-badge badge-info">Base URL: {apiBaseUrl}</span>
+      </div>
+
+      <div className="user-key-form">
+        <label className="user-key-field">
+          <span>App name</span>
+          <input
+            className="user-key-input"
+            value={name}
+            onChange={(e) => onNameChange(e.target.value)}
+            placeholder="Acme Analytics"
+            autoComplete="off"
+          />
+        </label>
+
+        <label className="user-key-field">
+          <span>Contact email</span>
+          <input
+            className="user-key-input"
+            type="email"
+            value={contactEmail}
+            onChange={(e) => onContactEmailChange(e.target.value)}
+            placeholder="ops@example.com"
+            autoComplete="off"
+          />
+        </label>
+
+        <label className="user-key-field">
+          <span>Website</span>
+          <input
+            className="user-key-input"
+            value={website}
+            onChange={(e) => onWebsiteChange(e.target.value)}
+            placeholder="https://example.com"
+            autoComplete="off"
+          />
+        </label>
+
+        <label className="user-key-field">
+          <span>Callback URL</span>
+          <input
+            className="user-key-input"
+            value={callbackUrl}
+            onChange={(e) => onCallbackUrlChange(e.target.value)}
+            placeholder="https://example.com/oauth/callback"
+            autoComplete="off"
+          />
+        </label>
+      </div>
+
+      <div className="user-key-scope-grid">
+        {USER_KEY_PERMISSION_OPTIONS.map((scope) => (
+          <button
+            key={scope.value}
+            type="button"
+            className={`user-key-scope-chip ${activeScopeSet.has(scope.value) ? 'active' : ''}`}
+            onClick={() => onToggleScope(scope.value)}
+          >
+            <span className="user-key-scope-chip-title">{scope.label}</span>
+            <span className="user-key-scope-chip-note">{scope.description}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="user-key-actions">
+        <button className="btn btn-primary btn-sm" onClick={onApply} disabled={isApplying}>
+          {isApplying ? 'Submitting...' : 'Apply for access'}
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={onClearApplication} disabled={!appliedApplication}>
+          Clear
+        </button>
+      </div>
+
+      {applyError && <div className="user-key-error">{applyError}</div>}
+
+      {appliedApplication && (
+        <div className="user-key-result">
+          <div className="user-key-result-top">
+            <div>
+              <div className="user-key-result-label">Application submitted</div>
+              <div className="user-key-result-meta">
+                {appliedApplication.name} · {appliedApplication.contactEmail}
+              </div>
+            </div>
+            <span className="provider-status-badge badge-info">
+              Status: {appliedApplication.status}
+            </span>
+          </div>
+
+          <div className="user-key-secret-row">
+            <code className="user-key-secret">{appliedApplication.id}</code>
+            <button className="btn btn-ghost btn-sm" onClick={() => onCopyApplicationId(appliedApplication.id)}>
+              {copiedApplicationId === appliedApplication.id ? 'Copied' : 'Copy ID'}
+            </button>
+          </div>
+
+          <div className="user-key-result-note">
+            After approval, the app will receive a generated key tied to the requested scopes.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ThirdPartyPendingList({
+  applications,
+  loading,
+  error,
+  approvedOauth,
+  copiedClientId,
+  onRefresh,
+  onApprove,
+  onReject,
+  onCopyClientId,
+}) {
+  return (
+    <div className="user-key-manager">
+      <div className="user-key-manager-header">
+        <div>
+          <div className="user-key-manager-title">Pending applications</div>
+          <div className="user-key-manager-note">
+            Review applications before issuing OAuth client credentials.
+          </div>
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={onRefresh} disabled={loading}>
+          {loading ? 'Refreshing...' : 'Refresh'}
+        </button>
+      </div>
+
+      {error && <div className="user-key-error">{error}</div>}
+
+      <div className="hf-model-list" style={{ maxHeight: '280px' }}>
+        {applications.length === 0 && !loading ? (
+          <div className="settings-footer-note">No pending applications.</div>
+        ) : (
+          applications.map((application) => (
+            <div key={application.id} className="hf-model-row">
+              <div className="hf-model-row-label">
+                <span className="hf-model-index">{application.requestedScopes.length}</span>
+                <span className="hf-model-name">
+                  {application.name} · {application.contactEmail}
+                </span>
+              </div>
+              <div className="hf-model-row-actions">
+                <button className="btn btn-ghost btn-sm" onClick={() => onReject(application.id)}>
+                  Reject
+                </button>
+                <button className="btn btn-primary btn-sm" onClick={() => onApprove(application.id)}>
+                  Approve
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {approvedOauth && (
+        <div className="user-key-result">
+          <div className="user-key-result-top">
+            <div>
+              <div className="user-key-result-label">OAuth client issued</div>
+              <div className="user-key-result-meta">
+                Client ID: {approvedOauth.clientId}
+              </div>
+            </div>
+            <span className="provider-status-badge badge-info">
+              Scopes: {approvedOauth.scopes.join(', ')}
+            </span>
+          </div>
+          <div className="user-key-secret-row">
+            <code className="user-key-secret">{approvedOauth.clientSecret}</code>
+            <button className="btn btn-ghost btn-sm" onClick={() => onCopyClientId(approvedOauth.clientId)}>
+              {copiedClientId === approvedOauth.clientId ? 'Copied' : 'Copy ID'}
+            </button>
+          </div>
+          <div className="user-key-result-note">
+            Exchange this client with `POST /api/oauth/token` using `grant_type=client_credentials`.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /**
  * Provider badge shown on assistant messages.
  */
@@ -377,6 +749,28 @@ export default function AIChatFallback() {
   const [rateLimitRemaining, setRateLimitRemaining] = useState(
     rateLimiter ? rateLimiter.remaining() : null
   );
+  const [userKeyUserId, setUserKeyUserId] = useState('local-user');
+  const [userKeyLabel, setUserKeyLabel] = useState('browser access');
+  const [userKeyExpiresInDays, setUserKeyExpiresInDays] = useState('30');
+  const [userKeyScopes, setUserKeyScopes] = useState(['api:access', 'chat:read', 'chat:write']);
+  const [userKeyCreating, setUserKeyCreating] = useState(false);
+  const [userKeyError, setUserKeyError] = useState('');
+  const [createdUserKey, setCreatedUserKey] = useState(null);
+  const [copiedGeneratedKey, setCopiedGeneratedKey] = useState(null);
+  const [thirdPartyName, setThirdPartyName] = useState('Acme Analytics');
+  const [thirdPartyContactEmail, setThirdPartyContactEmail] = useState('ops@example.com');
+  const [thirdPartyWebsite, setThirdPartyWebsite] = useState('https://example.com');
+  const [thirdPartyCallbackUrl, setThirdPartyCallbackUrl] = useState('https://example.com/oauth/callback');
+  const [thirdPartyScopes, setThirdPartyScopes] = useState(['api:access', 'chat:read']);
+  const [thirdPartyApplying, setThirdPartyApplying] = useState(false);
+  const [thirdPartyError, setThirdPartyError] = useState('');
+  const [thirdPartyApplication, setThirdPartyApplication] = useState(null);
+  const [copiedThirdPartyApplicationId, setCopiedThirdPartyApplicationId] = useState(null);
+  const [pendingThirdPartyApplications, setPendingThirdPartyApplications] = useState([]);
+  const [pendingThirdPartyLoading, setPendingThirdPartyLoading] = useState(false);
+  const [pendingThirdPartyError, setPendingThirdPartyError] = useState('');
+  const [approvedThirdPartyOauth, setApprovedThirdPartyOauth] = useState(null);
+  const [copiedOAuthClientId, setCopiedOAuthClientId] = useState(null);
 
   // --- Refs ---
   const messagesEndRef = useRef(null);
@@ -420,7 +814,31 @@ export default function AIChatFallback() {
     setHfModelPicker((current) =>
       resolvedCandidates.includes(current) ? current : ''
     );
-  }, [showSettings]);
+    refreshPendingThirdPartyApplications();
+  }, [refreshPendingThirdPartyApplications, showSettings]);
+
+  useEffect(() => {
+    const refreshModels = () => {
+      setHfModelCandidates(getResolvedHuggingFaceModelCandidates());
+      setHfModelSource(getHuggingFaceModelCandidatesSource());
+    };
+
+    refreshModels();
+
+    const handleStorage = (event) => {
+      if (event.key === 'omega_chat_hf_model_candidates') {
+        refreshModels();
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    const interval = setInterval(refreshModels, HUGGINGFACE_MODEL_REFRESH_INTERVAL_MS);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Update rate limit display
   useEffect(() => {
@@ -434,6 +852,24 @@ export default function AIChatFallback() {
     navigator.clipboard.writeText(content).catch(() => {});
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  }, []);
+
+  const copyGeneratedKey = useCallback((key) => {
+    navigator.clipboard.writeText(key).catch(() => {});
+    setCopiedGeneratedKey(key);
+    setTimeout(() => setCopiedGeneratedKey(null), 2000);
+  }, []);
+
+  const copyThirdPartyApplicationId = useCallback((id) => {
+    navigator.clipboard.writeText(id).catch(() => {});
+    setCopiedThirdPartyApplicationId(id);
+    setTimeout(() => setCopiedThirdPartyApplicationId(null), 2000);
+  }, []);
+
+  const copyOAuthClientId = useCallback((id) => {
+    navigator.clipboard.writeText(id).catch(() => {});
+    setCopiedOAuthClientId(id);
+    setTimeout(() => setCopiedOAuthClientId(null), 2000);
   }, []);
 
   const buildHistory = useCallback(
@@ -604,6 +1040,227 @@ export default function AIChatFallback() {
     setHfModelSource(getHuggingFaceModelCandidatesSource());
     setHfModelPicker('');
   }, []);
+
+  const handleToggleUserKeyScope = useCallback((scope) => {
+    setUserKeyScopes((current) => {
+      if (current.includes(scope)) {
+        const next = current.filter((item) => item !== scope);
+        return next.length > 0 ? next : ['api:access'];
+      }
+
+      return [...current, scope];
+    });
+  }, []);
+
+  const handleCreateUserKey = useCallback(async () => {
+    const userId = userKeyUserId.trim();
+    if (!userId) {
+      setUserKeyError('User ID is required');
+      return;
+    }
+
+    setUserKeyCreating(true);
+    setUserKeyError('');
+
+    try {
+      const response = await fetch(`${USER_KEY_API_BASE_URL}/api/user-keys`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          label: userKeyLabel.trim(),
+          expiresInDays: userKeyExpiresInDays,
+          scopes: userKeyScopes,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(payload?.error?.message || `Request failed (${response.status})`);
+      }
+
+      const nextKey = payload?.data;
+      if (!nextKey?.key) {
+        throw new Error('API did not return a generated key');
+      }
+
+      setCreatedUserKey({
+        rawKey: nextKey.key,
+        record: nextKey,
+      });
+      copyGeneratedKey(nextKey.key);
+      log.info('UI', 'Generated user key', {
+        scopes: nextKey.scopes?.length || 0,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to generate key';
+      setUserKeyError(message);
+      log.error('UI', 'User key generation failed', err);
+    } finally {
+      setUserKeyCreating(false);
+    }
+  }, [copyGeneratedKey, userKeyExpiresInDays, userKeyLabel, userKeyScopes, userKeyUserId]);
+
+  const handleClearCreatedUserKey = useCallback(() => {
+    setCreatedUserKey(null);
+    setCopiedGeneratedKey(null);
+    setUserKeyError('');
+  }, []);
+
+  const handleToggleThirdPartyScope = useCallback((scope) => {
+    setThirdPartyScopes((current) => {
+      if (current.includes(scope)) {
+        const next = current.filter((item) => item !== scope);
+        return next.length > 0 ? next : ['api:access'];
+      }
+
+      return [...current, scope];
+    });
+  }, []);
+
+  const handleApplyThirdParty = useCallback(async () => {
+    const name = thirdPartyName.trim();
+    const contactEmail = thirdPartyContactEmail.trim();
+
+    if (!name) {
+      setThirdPartyError('App name is required');
+      return;
+    }
+
+    if (!contactEmail) {
+      setThirdPartyError('Contact email is required');
+      return;
+    }
+
+    setThirdPartyApplying(true);
+    setThirdPartyError('');
+
+    try {
+      const response = await fetch(`${USER_KEY_API_BASE_URL}/api/third-party/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          contactEmail,
+          website: thirdPartyWebsite.trim(),
+          callbackUrl: thirdPartyCallbackUrl.trim(),
+          requestedScopes: thirdPartyScopes,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(payload?.error?.message || `Request failed (${response.status})`);
+      }
+
+      const application = payload?.data?.application;
+      if (!application?.id) {
+        throw new Error('API did not return an application id');
+      }
+
+      setThirdPartyApplication(application);
+      copyThirdPartyApplicationId(application.id);
+      log.info('UI', 'Third-party application submitted', {
+        scopes: application.requestedScopes?.length || 0,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to submit application';
+      setThirdPartyError(message);
+      log.error('UI', 'Third-party application failed', err);
+    } finally {
+      setThirdPartyApplying(false);
+    }
+  }, [
+    copyThirdPartyApplicationId,
+    thirdPartyCallbackUrl,
+    thirdPartyContactEmail,
+    thirdPartyName,
+    thirdPartyScopes,
+    thirdPartyWebsite,
+  ]);
+
+  const handleClearThirdPartyApplication = useCallback(() => {
+    setThirdPartyApplication(null);
+    setCopiedThirdPartyApplicationId(null);
+    setThirdPartyError('');
+  }, []);
+
+  const refreshPendingThirdPartyApplications = useCallback(async () => {
+    setPendingThirdPartyLoading(true);
+    setPendingThirdPartyError('');
+
+    try {
+      const response = await fetch(`${USER_KEY_API_BASE_URL}/api/third-party/applications?status=pending`);
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(payload?.error?.message || `Request failed (${response.status})`);
+      }
+
+      setPendingThirdPartyApplications(payload?.data?.applications || []);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load applications';
+      setPendingThirdPartyError(message);
+      log.error('UI', 'Failed to refresh third-party applications', err);
+    } finally {
+      setPendingThirdPartyLoading(false);
+    }
+  }, []);
+
+  const handleApproveThirdPartyApplication = useCallback(async (applicationId) => {
+    try {
+      const response = await fetch(`${USER_KEY_API_BASE_URL}/api/third-party/applications/${applicationId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(payload?.error?.message || `Request failed (${response.status})`);
+      }
+
+      const oauth = payload?.data?.oauth;
+      if (oauth?.clientId && oauth?.clientSecret) {
+        setApprovedThirdPartyOauth(oauth);
+        copyOAuthClientId(oauth.clientId);
+      }
+
+      await refreshPendingThirdPartyApplications();
+      log.info('UI', 'Approved third-party application', { applicationId });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to approve application';
+      setPendingThirdPartyError(message);
+      log.error('UI', 'Third-party approval failed', err);
+    }
+  }, [copyOAuthClientId, refreshPendingThirdPartyApplications]);
+
+  const handleRejectThirdPartyApplication = useCallback(async (applicationId) => {
+    try {
+      const response = await fetch(`${USER_KEY_API_BASE_URL}/api/third-party/applications/${applicationId}/reject`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(payload?.error?.message || `Request failed (${response.status})`);
+      }
+
+      await refreshPendingThirdPartyApplications();
+      log.info('UI', 'Rejected third-party application', { applicationId });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to reject application';
+      setPendingThirdPartyError(message);
+      log.error('UI', 'Third-party rejection failed', err);
+    }
+  }, [refreshPendingThirdPartyApplications]);
 
   // --- Derived values ---
   const enabledProviderCount = providerStatuses.filter(
@@ -1614,6 +2271,180 @@ export default function AIChatFallback() {
           flex-wrap: wrap;
         }
 
+        .user-key-manager {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          padding: 14px;
+          border-radius: 20px;
+          background:
+            radial-gradient(circle at top right, rgba(6, 182, 212, 0.08), transparent 32%),
+            rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .user-key-manager-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .user-key-manager-title {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--color-text);
+        }
+
+        .user-key-manager-note {
+          margin-top: 4px;
+          font-size: 11px;
+          color: var(--color-text-muted);
+          line-height: 1.5;
+        }
+
+        .user-key-form {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .user-key-field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+
+        .user-key-input {
+          background: rgba(7, 9, 15, 0.72);
+          border: 1px solid rgba(139, 92, 246, 0.12);
+          border-radius: 14px;
+          padding: 10px 12px;
+          color: var(--color-text);
+          font-family: var(--font-family);
+          font-size: 13px;
+          outline: none;
+          transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .user-key-input:focus {
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px var(--color-primary-glow);
+        }
+
+        .user-key-scope-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .user-key-scope-chip {
+          text-align: left;
+          background: rgba(7, 9, 15, 0.56);
+          border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 16px;
+          padding: 10px 12px;
+          color: var(--color-text-muted);
+          transition: all var(--transition);
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .user-key-scope-chip:hover {
+          background: rgba(139, 92, 246, 0.08);
+          color: var(--color-text);
+          transform: translateY(-1px);
+        }
+
+        .user-key-scope-chip.active {
+          background: rgba(139, 92, 246, 0.12);
+          border-color: rgba(139, 92, 246, 0.24);
+          color: var(--color-text);
+          box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.12) inset;
+        }
+
+        .user-key-scope-chip-title {
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .user-key-scope-chip-note {
+          font-size: 10px;
+          line-height: 1.4;
+          color: inherit;
+          opacity: 0.72;
+        }
+
+        .user-key-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .user-key-error {
+          padding: 10px 12px;
+          border-radius: 14px;
+          border: 1px solid rgba(239, 68, 68, 0.25);
+          background: rgba(239, 68, 68, 0.08);
+          color: #fca5a5;
+          font-size: 12px;
+          line-height: 1.5;
+        }
+
+        .user-key-result {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding: 12px;
+          border-radius: 18px;
+          background: rgba(7, 9, 15, 0.6);
+          border: 1px solid rgba(139, 92, 246, 0.12);
+        }
+
+        .user-key-result-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .user-key-result-label {
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--color-text);
+        }
+
+        .user-key-result-meta,
+        .user-key-result-note {
+          font-size: 11px;
+          color: var(--color-text-muted);
+          line-height: 1.5;
+        }
+
+        .user-key-secret-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .user-key-secret {
+          flex: 1;
+          min-width: 0;
+          padding: 12px 14px;
+          border-radius: 14px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.06);
+          color: #f8fafc;
+          font-size: 12px;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+
         .settings-footer-note {
           margin-top: 16px;
           padding: 14px;
@@ -1671,6 +2502,17 @@ export default function AIChatFallback() {
           }
           .hf-model-picker {
             grid-template-columns: 1fr;
+          }
+          .user-key-form {
+            grid-template-columns: 1fr;
+          }
+          .user-key-scope-grid {
+            grid-template-columns: 1fr;
+          }
+          .user-key-result-top,
+          .user-key-secret-row {
+            flex-direction: column;
+            align-items: stretch;
           }
           .hf-model-footer {
             flex-direction: column;
@@ -1987,6 +2829,73 @@ export default function AIChatFallback() {
             <div className="divider" />
 
             <div className="settings-section">
+              <div className="settings-section-title">User Keys</div>
+              <UserKeyManager
+                apiBaseUrl={USER_KEY_API_BASE_URL}
+                userId={userKeyUserId}
+                label={userKeyLabel}
+                expiresInDays={userKeyExpiresInDays}
+                selectedScopes={userKeyScopes}
+                isCreating={userKeyCreating}
+                createError={userKeyError}
+                createdKey={createdUserKey}
+                copiedKeyId={copiedGeneratedKey}
+                onUserIdChange={setUserKeyUserId}
+                onLabelChange={setUserKeyLabel}
+                onExpiresInDaysChange={setUserKeyExpiresInDays}
+                onToggleScope={handleToggleUserKeyScope}
+                onCreateKey={handleCreateUserKey}
+                onCopyKey={copyGeneratedKey}
+                onClearCreatedKey={handleClearCreatedUserKey}
+              />
+            </div>
+
+            <div className="divider" />
+
+            <div className="settings-section">
+              <div className="settings-section-title">Third-party Connect</div>
+              <ThirdPartyConnectManager
+                apiBaseUrl={USER_KEY_API_BASE_URL}
+                name={thirdPartyName}
+                contactEmail={thirdPartyContactEmail}
+                website={thirdPartyWebsite}
+                callbackUrl={thirdPartyCallbackUrl}
+                selectedScopes={thirdPartyScopes}
+                isApplying={thirdPartyApplying}
+                applyError={thirdPartyError}
+                appliedApplication={thirdPartyApplication}
+                copiedApplicationId={copiedThirdPartyApplicationId}
+                onNameChange={setThirdPartyName}
+                onContactEmailChange={setThirdPartyContactEmail}
+                onWebsiteChange={setThirdPartyWebsite}
+                onCallbackUrlChange={setThirdPartyCallbackUrl}
+                onToggleScope={handleToggleThirdPartyScope}
+                onApply={handleApplyThirdParty}
+                onCopyApplicationId={copyThirdPartyApplicationId}
+                onClearApplication={handleClearThirdPartyApplication}
+              />
+            </div>
+
+            <div className="divider" />
+
+            <div className="settings-section">
+              <div className="settings-section-title">Third-party Review</div>
+              <ThirdPartyPendingList
+                applications={pendingThirdPartyApplications}
+                loading={pendingThirdPartyLoading}
+                error={pendingThirdPartyError}
+                approvedOauth={approvedThirdPartyOauth}
+                copiedClientId={copiedOAuthClientId}
+                onRefresh={refreshPendingThirdPartyApplications}
+                onApprove={handleApproveThirdPartyApplication}
+                onReject={handleRejectThirdPartyApplication}
+                onCopyClientId={copyOAuthClientId}
+              />
+            </div>
+
+            <div className="divider" />
+
+            <div className="settings-section">
               <div className="settings-section-title">Session</div>
               <button className="btn btn-ghost btn-full" onClick={() => { handleNewChat(); setShowSettings(false); }}>
                 <Plus size={14} />
@@ -2017,6 +2926,7 @@ export default function AIChatFallback() {
 
             <div className="settings-footer-note">
               <strong>Setup:</strong> Add API keys to <code>.env.local</code>.<br />
+              <strong>API keys:</strong> Run the Node key server, then generate a key here and copy it once.<br />
               See <code>PROVIDER_SETUP.md</code> for step-by-step instructions.<br />
               Recommended: Gemini + Groq for the fastest free fallback coverage.
             </div>

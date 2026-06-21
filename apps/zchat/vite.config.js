@@ -13,4 +13,9 @@ function buildProcessEnv(mode) {
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
   define: buildProcessEnv(mode),
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./vitest.setup.js'],
+  },
 }));

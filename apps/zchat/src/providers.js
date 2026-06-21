@@ -9,8 +9,8 @@
  * Keys are NEVER logged — only their presence (boolean) is logged.
  */
 
-import { log } from './logger';
-import { getResolvedHuggingFaceModelCandidates } from './huggingFaceModels';
+import { log } from './logger.js';
+import { getResolvedHuggingFaceModelCandidates } from './huggingFaceModels.js';
 
 // ---------------------------------------------------------------------------
 // Utility: build OpenAI-compatible messages array from history

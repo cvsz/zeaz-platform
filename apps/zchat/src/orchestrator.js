@@ -12,9 +12,9 @@
  * Throws:  Error if all providers fail
  */
 
-import { CircuitBreaker } from './circuitBreaker';
-import { log } from './logger';
-import { ALL_ADAPTERS } from './providers';
+import { CircuitBreaker } from './circuitBreaker.js';
+import { log } from './logger.js';
+import { ALL_ADAPTERS } from './providers.js';
 
 function getCircuitBreakerThreshold() {
   return (
