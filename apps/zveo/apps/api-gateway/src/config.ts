@@ -23,7 +23,7 @@ const secretSource = {
   name: "AUTH_SHARED_SECRET",
   minLength: 32,
   ...(raw.AUTH_SHARED_SECRET_FILE === undefined ? {} : { file: raw.AUTH_SHARED_SECRET_FILE }),
-  ...(raw.AUTH_SHARED_SECRET === undefined && raw.NODE_ENV === "production" ? {} : { env: raw.AUTH_SHARED_SECRET ?? "development-only-secret-change-before-production" }),
+  ...(raw.AUTH_SHARED_SECRET === undefined && raw.NODE_ENV === "production" ? {} : { env: raw.AUTH_SHARED_SECRET ?? "development-only-signing-key-change-before-production" }),
 };
 
 export const config = {

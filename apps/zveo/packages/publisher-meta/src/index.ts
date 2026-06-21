@@ -43,7 +43,12 @@ export class FacebookPublisherService {
     const response = await this.fetchImpl(`https://graph.facebook.com/${this.env.graphVersion}/${target.pageId}/videos`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ file_url: videoUrl, description: job.caption, access_token: token, appsecret_proof }) });
     if (!response.ok) { const safeError = `facebook publish failed with status ${response.status}`; job.state = "failed"; job.lastError = safeError; this.store.addEvent({ tenantId: job.tenantId, publishJobId: job.id, name: "publish.failed", payload: { state: job.state, retry: classifyPublishRetry(response.status) }, correlationId }); return job; }
     const body = z.object({ id: z.string(), post_id: z.string().optional() }).parse(await response.json());
-    job.state = "published"; job.remoteVideoId = body.id; job.remotePostId = body.post_id; job.updatedAt = new Date().toISOString();
+    job.state = "published";
+    job.remoteVideoId = body.id;
+    if (body.post_id) {
+      job.remotePostId = body.post_id;
+    }
+    job.updatedAt = new Date().toISOString();
     this.store.addEvent({ tenantId: job.tenantId, publishJobId: job.id, name: "publish.published", payload: { state: job.state }, correlationId });
     return job;
   }

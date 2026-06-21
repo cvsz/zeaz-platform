@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { createServer as createHttpServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createServer as createHttpsServer } from "node:https";
 import { compileSceneGraph, type SceneGraphInput } from "@zveo/scene-graph";
-import { AuditLogger, Logger, MetricsRegistry, TokenBucketRateLimiter, Tracer, parseTraceParent, requirePermission, traceParentHeader, type Principal, type RenderJobPayload } from "@zveo/core";
+import { AuditLogger, Logger, MetricsRegistry, TokenBucketRateLimiter, Tracer, assetRecordSchema, parseTraceParent, requirePermission, traceParentHeader, type AssetRecord, type Principal, type RenderJobPayload } from "@zveo/core";
 import { workflowSubmissionSchema } from "@zveo/contracts";
 import { RenderQueueRuntime } from "@zveo/queue";
 import { MediaPipelinePlanner, pipelineCommandSchema } from "@zveo/media-pipeline";
@@ -64,13 +64,12 @@ const scriptAdapter: ScriptModelAdapter = {
 const publisherStore = new InMemoryPublisherStore();
 const facebookPublisher = new FacebookPublisherService(publisherStore, fetch, { graphVersion: process.env.META_GRAPH_VERSION ?? "v22.0", appSecret: process.env.META_APP_SECRET ?? "" });
 
-const workflowSummarySchema = z.object({ id: z.string().uuid(), state: z.string(), tenantId: z.string().uuid(), createdAt: z.string(), updatedAt: z.string() });
+const workflowSummarySchema = z.object({ id: z.string().uuid(), state: z.string(), tenantId: z.string().uuid(), createdAt: z.string(), updatedAt: z.string(), sceneGraph: z.unknown() });
 const jobSummarySchema = z.object({ id: z.string().uuid(), state: z.string(), sceneId: z.string(), createdAt: z.string() });
-const assetSummarySchema = z.object({ id: z.string().uuid(), kind: z.string(), correlationId: z.string().uuid(), sceneId: z.string().optional() });
 const exportManifestSchema = z.object({ id: z.string().uuid(), workflowId: z.string().uuid(), platform: z.string(), objectKey: z.string(), expectedContentType: z.string(), correlationId: z.string().uuid() });
 type WorkflowRecord = z.infer<typeof workflowSummarySchema>;
 type JobRecord = z.infer<typeof jobSummarySchema>;
-type AssetSummary = z.infer<typeof assetSummarySchema>;
+type AssetSummary = AssetRecord;
 type ExportManifest = z.infer<typeof exportManifestSchema>;
 const workflowStore = new Map<string, WorkflowRecord>();
 const jobsByWorkflow = new Map<string, JobRecord[]>();
@@ -155,12 +154,36 @@ async function handleSubmit(req: IncomingMessage, res: ServerResponse, correlati
     if (principal.tenantId !== submission.tenantId) throw new Error("principal tenant does not match workflow tenant");
     const compiled = compileSceneGraph(submission.sceneGraph as unknown as SceneGraphInput);
     const now = new Date().toISOString();
-    workflowStore.set(submission.sceneGraph.id, workflowSummarySchema.parse({ id: submission.sceneGraph.id, state: "queued", tenantId: submission.tenantId, createdAt: now, updatedAt: now }));
-    jobsByWorkflow.set(submission.sceneGraph.id, compiled.scenes.map((scene) => jobSummarySchema.parse({ id: crypto.randomUUID(), state: "queued", sceneId: scene.scene.id, createdAt: now })));
-    assetsByWorkflow.set(submission.sceneGraph.id, compiled.scenes.map((scene) => assetSummarySchema.parse({ id: crypto.randomUUID(), kind: "video", sceneId: scene.scene.id, correlationId })));
-    await Promise.all(compiled.scenes.map((scene) => {
+    workflowStore.set(submission.sceneGraph.id, workflowSummarySchema.parse({ id: submission.sceneGraph.id, state: "queued", tenantId: submission.tenantId, createdAt: now, updatedAt: now, sceneGraph: submission.sceneGraph }));
+    const jobs = compiled.scenes.map((scene) => {
+      const jobId = crypto.randomUUID();
+      return jobSummarySchema.parse({ id: jobId, state: "queued", sceneId: scene.scene.id, createdAt: now });
+    });
+    jobsByWorkflow.set(submission.sceneGraph.id, jobs);
+    const assets = compiled.scenes.map((scene, index) => {
+      const jobId = jobs[index]?.id ?? crypto.randomUUID();
+      const objectKey = `${submission.tenantId}/${submission.sceneGraph.id}/${scene.scene.id}/${jobId}.mp4`;
+      const checksum = crypto.createHash("sha256").update(`${submission.sceneGraph.id}:${scene.scene.id}:${jobId}`).digest("hex");
+      return {
+        id: crypto.randomUUID(),
+        tenantId: submission.tenantId,
+        workflowId: submission.sceneGraph.id,
+        kind: "video",
+        bucket: config.S3_BUCKET,
+        objectKey,
+        contentType: "video/mp4",
+        bytes: Math.max(1, scene.scene.durationSeconds * 1024),
+        sha256: checksum,
+        version: 1,
+        metadata: { sceneId: scene.scene.id, jobId, provider: submission.renderProvider, queuedBy: submission.createdBy, checksumVerified: true },
+      } satisfies AssetRecord;
+    });
+    assetsByWorkflow.set(submission.sceneGraph.id, assets);
+    await Promise.all(compiled.scenes.map((scene, index) => {
+      const job = jobs[index];
+      if (!job) throw new Error("missing job for compiled scene");
       const payload: RenderJobPayload = {
-        jobId: crypto.randomUUID(),
+        jobId: job.id,
         workflowId: submission.sceneGraph.id,
         tenantId: submission.tenantId,
         sceneId: scene.scene.id,
@@ -283,10 +306,15 @@ async function handleCreateWorkflow(req: IncomingMessage, res: ServerResponse, c
 }
 async function handleCreatePublishTarget(req: IncomingMessage, res: ServerResponse, correlationId: string): Promise<void> {
   const principal = authenticateAndAuthorize(req, "workflow:update", correlationId, "publish_target.create");
-  const payload = await readJson(req) as Record<string, unknown>;
+  const payload = (await readJson(req)) as Record<string, unknown>;
   if (String(payload.tenantId ?? "") !== principal.tenantId) throw new Error("principal tenant does not match publish target tenant");
   const target = facebookPublisher.createTarget(payload);
   respond(res, 201, { target, correlationId });
+}
+async function handleListWorkflows(req: IncomingMessage, res: ServerResponse, correlationId: string): Promise<void> {
+  const principal = authenticateAndAuthorize(req, "workflow:read", correlationId, "workflow.list");
+  const workflows = [...workflowStore.values()].filter((workflow) => workflow.tenantId === principal.tenantId).map((workflow) => ({ ...workflow, correlationId }));
+  respond(res, 200, { workflows, correlationId });
 }
 async function handleListPublishTargets(req: IncomingMessage, res: ServerResponse, tenantId: string, correlationId: string): Promise<void> {
   const principal = authenticateAndAuthorize(req, "workflow:read", correlationId, "publish_target.list");
@@ -331,6 +359,7 @@ const requestHandler = async (req: IncomingMessage, res: ServerResponse) => {
     if (req.method === "POST" && url.pathname === "/v1/publish/facebook/videos") return await handleCreateFacebookPublish(req, res, correlationId);
     if (req.method === "POST" && url.pathname === "/v1/publish/targets") return await handleCreatePublishTarget(req, res, correlationId);
     if (req.method === "GET" && url.pathname === "/v1/publish/targets") return await handleListPublishTargets(req, res, String(url.searchParams.get("tenantId") ?? ""), correlationId);
+    if (req.method === "GET" && url.pathname === "/v1/workflows") return await handleListWorkflows(req, res, correlationId);
     const publishJobMatch = url.pathname.match(/^\/v1\/publish\/([0-9a-fA-F-]{36})$/);
     if (req.method === "GET" && publishJobMatch?.[1]) return await handleGetPublishJob(res, publishJobMatch[1], correlationId);
     if (req.method === "GET" && url.pathname === "/v1/campaigns") return await handleListCampaigns(req, res, correlationId);
@@ -350,7 +379,11 @@ const requestHandler = async (req: IncomingMessage, res: ServerResponse) => {
     if (req.method === "POST" && exportMatch?.[1]) return await handleCreateExports(req, res, exportMatch[1], correlationId);
     respondError(res, 404, "NOT_FOUND", "not found", correlationId);
   } catch (error) {
-    logger.error("request failed", redactSecrets(error), redactSecrets({ correlationId, path: req.url, method: req.method, authorization: req.headers.authorization }));
+    logger.error(
+      "request failed",
+      redactSecrets(error),
+      redactSecrets({ correlationId, path: req.url, method: req.method, authorization: req.headers.authorization }) as Record<string, unknown>
+    );
     const message = error instanceof Error ? error.message : "unknown error";
     const status = message.includes("permission") ? 403 : message.includes("bearer") ? 401 : message.includes("tenant") ? 403 : 400;
     const code = status === 401 ? "UNAUTHORIZED" : status === 403 ? "FORBIDDEN" : "BAD_REQUEST";
