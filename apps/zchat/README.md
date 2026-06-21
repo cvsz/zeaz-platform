@@ -54,6 +54,19 @@ npm run dev
 
 Open the Vite dev server URL shown in the terminal.
 
+## Make Targets
+
+From the repository root, you can also use the shared build automation:
+
+```bash
+make zchat-install
+make zchat-dev
+make zchat-test
+make zchat-build
+make zchat-preview
+make zchat-validate
+```
+
 ## Production Build
 
 ```bash

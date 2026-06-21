@@ -1,5 +1,8 @@
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -Eeuo pipefail -c
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 .DEFAULT_GOAL := help
 
 PROJECT_ROOT ?= $(CURDIR)
@@ -23,6 +26,12 @@ TOFU_ENV_DIR := opentofu/environments/$(ENVIRONMENT)
 PYTEST := $(VENV_DIR)/bin/pytest
 TF_ENV_WRAPPER := scripts/terraform/export-tf-vars.sh
 ENV_NORMALIZER := scripts/cloudflare/clean-env-empty-values.sh
+NPM ?= npm
+ZCHAT_ROOT ?= apps/zchat
+ZCHAT_CMD ?= $(NPM) --prefix $(ZCHAT_ROOT)
+ZCHAT_HOST ?= 127.0.0.1
+ZCHAT_DEV_PORT ?= 5173
+ZCHAT_PREVIEW_PORT ?= 4173
 TOKEN_KEEP_MOST ?= 1
 TOKEN_UNUSED_DAYS ?= 90
 TOKEN_SAFE_PRESERVE_REGEX ?= (^|[-_.])(zeaz[.]dev|bootstrap|audit|admin|ai[-_]?gateway)([-_.]|$$)
@@ -50,6 +59,7 @@ export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 .PHONY: local-publish-help local-publish-scan local-publish-scan-untracked local-publish local-publish-untracked local-publish-tracked
 .PHONY: zaiz-deps-check
 .PHONY: zquest-start zquest-stop zquest-status zquest-restart zquest-smoke
+.PHONY: zchat-install zchat-dev zchat-preview zchat-test zchat-build zchat-validate zchat-clean zchat-ci
 
 help:
 	@bash scripts/make-help.sh
@@ -866,6 +876,17 @@ all-apps-build: ## Run build across all apps
 		fi; \
 	done
 
+check-all-lockfiles: ## Check if lockfiles exist for all apps
+	@echo "Verifying lockfiles..."
+	@for app in apps/*; do \
+		if [ -d "$$app" ]; then \
+			if ! (ls "$$app"/*.lock >/dev/null 2>&1 || [ -f "$$app/package-lock.json" ] || [ -f "$$app/requirements.txt" ] || [ -f "$$app/go.mod" ]); then \
+				echo "WARNING: No lockfile/dependency file found in $$app"; \
+			fi; \
+		fi; \
+	done
+
+build-all-stacks: check-all-lockfiles all-apps-build ## Run full build with environment checks
 zquest-start: ## Start the zQuest frontend plus backend-backed database server
 	@bash scripts/zquest-control.sh start
 
@@ -879,6 +900,30 @@ zquest-restart: zquest-stop zquest-start ## Restart zQuest server
 
 zquest-smoke: ## Run zQuest smoke tests against the local server
 	@bash scripts/zquest-control.sh smoke
+
+##@ zChat
+zchat-install: ## Install zChat dependencies (apps/zchat)
+	@$(ZCHAT_CMD) ci
+
+zchat-dev: ## Start the zChat Vite dev server (apps/zchat)
+	@$(ZCHAT_CMD) run dev -- --host $(ZCHAT_HOST) --port $(ZCHAT_DEV_PORT)
+
+zchat-preview: ## Start the zChat production preview server (apps/zchat)
+	@$(ZCHAT_CMD) run preview -- --host $(ZCHAT_HOST) --port $(ZCHAT_PREVIEW_PORT)
+
+zchat-test: ## Run zChat unit tests (apps/zchat)
+	@$(ZCHAT_CMD) test -- --runInBand
+
+zchat-build: ## Build the zChat production bundle (apps/zchat)
+	@$(ZCHAT_CMD) run build
+
+zchat-validate: zchat-test zchat-build ## Run the zChat validation pipeline (apps/zchat)
+	@echo "zChat validation complete."
+
+zchat-clean: ## Remove zChat build artifacts (apps/zchat)
+	@rm -rf "$(ZCHAT_ROOT)/dist" "$(ZCHAT_ROOT)/coverage"
+
+zchat-ci: zchat-validate ## Alias for the zChat CI pipeline (apps/zchat)
 
 .PHONY: all-apps-start all-apps-stop all-apps-restart all-apps-status
 
