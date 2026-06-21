@@ -10,6 +10,7 @@
  */
 
 import { log } from './logger';
+import { getResolvedHuggingFaceModelCandidates } from './huggingFaceModels';
 
 // ---------------------------------------------------------------------------
 // Utility: build OpenAI-compatible messages array from history
@@ -171,39 +172,6 @@ export const cohereAdapter = {
 // Free serverless inference on open models
 // Sign up: https://huggingface.co/settings/tokens
 // ---------------------------------------------------------------------------
-const DEFAULT_HUGGINGFACE_FREE_MODELS = [
-  'Qwen/Qwen3-0.6B',
-  'TinyLlama/TinyLlama-1.1B-Chat-v1.0',
-  'Qwen/Qwen2.5-1.5B-Instruct',
-  'microsoft/phi-2',
-  'openai-community/gpt2',
-  'Qwen/Qwen3-4B',
-  'mistralai/Mistral-7B-Instruct-v0.3',
-  'Qwen/Qwen3-8B',
-];
-
-function parseModelList(rawValue) {
-  return rawValue
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
-function getHuggingFaceModelCandidates() {
-  const override = process.env.REACT_APP_HUGGINGFACE_MODEL_CANDIDATES;
-  if (override) {
-    return [...new Set(parseModelList(override))];
-  }
-
-  const preferred = process.env.REACT_APP_HUGGINGFACE_MODEL?.trim();
-  const models = [
-    preferred || DEFAULT_HUGGINGFACE_FREE_MODELS[0],
-    ...DEFAULT_HUGGINGFACE_FREE_MODELS,
-  ].filter(Boolean);
-
-  return [...new Set(models)];
-}
-
 async function fetchHuggingFaceModel(model, message) {
   const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
     method: 'POST',
@@ -243,7 +211,7 @@ export const huggingFaceAdapter = {
     return parseInt(process.env.REACT_APP_HUGGINGFACE_TIMEOUT, 10) || 30000;
   },
   async call(message) {
-    const candidates = getHuggingFaceModelCandidates();
+    const candidates = getResolvedHuggingFaceModelCandidates();
     log.debug('HUGGINGFACE', 'Model candidates selected', { candidates });
 
     let lastError = null;
@@ -263,7 +231,8 @@ export const huggingFaceAdapter = {
         return text || raw;
       } catch (error) {
         lastError = error;
-        log.warn('HUGGINGFACE', `Model failed model="${model}"`, error.message);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.warn('HUGGINGFACE', `Model failed model="${model}"`, errorMessage);
       }
     }
 

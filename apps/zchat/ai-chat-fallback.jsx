@@ -22,6 +22,13 @@ import { callAIWithFallback, getProviderStatuses } from './src/orchestrator';
 import { persistChat } from './src/chatPersistence';
 import { createRateLimiter } from './src/rateLimiter';
 import {
+  DEFAULT_HUGGINGFACE_FREE_MODELS,
+  getHuggingFaceModelCandidatesSource,
+  getResolvedHuggingFaceModelCandidates,
+  resetHuggingFaceModelCandidates,
+  saveHuggingFaceModelCandidates,
+} from './src/huggingFaceModels';
+import {
   exportAsMarkdown,
   exportAsJSON,
   triggerDownload,
@@ -108,6 +115,112 @@ function ProviderStatusRow({ status }) {
       {!status.enabled && (
         <span className="provider-status-badge badge-disabled">Disabled</span>
       )}
+    </div>
+  );
+}
+
+/**
+ * Hugging Face model order manager shown in settings.
+ */
+function HuggingFaceModelManager({
+  candidates,
+  source,
+  selectedModel,
+  onSelectedModelChange,
+  onAddModel,
+  onMoveModel,
+  onRemoveModel,
+  onResetModels,
+}) {
+  const availableModels = DEFAULT_HUGGINGFACE_FREE_MODELS.filter(
+    (model) => !candidates.includes(model)
+  );
+
+  return (
+    <div className="hf-model-manager">
+      <div className="hf-model-manager-header">
+        <div>
+          <div className="hf-model-manager-title">Hugging Face model order</div>
+          <div className="hf-model-manager-note">
+            Top to bottom. The provider tries the first model, then continues down the list.
+          </div>
+        </div>
+        <span className="provider-status-badge badge-info">
+          {source === 'saved' ? 'Saved in browser' : source === 'env' ? 'From env' : 'Default chain'}
+        </span>
+      </div>
+
+      <div className="hf-model-picker">
+        <select
+          className="hf-model-select"
+          value={selectedModel}
+          onChange={(e) => onSelectedModelChange(e.target.value)}
+        >
+          <option value="">Add a free/open model</option>
+          {availableModels.map((model) => (
+            <option key={model} value={model}>
+              {model}
+            </option>
+          ))}
+        </select>
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={() => onAddModel(selectedModel)}
+          disabled={!selectedModel}
+        >
+          <Plus size={12} />
+          Add
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={onResetModels}>
+          Reset
+        </button>
+      </div>
+
+      <div className="hf-model-list">
+        {candidates.map((model, index) => (
+          <div key={model} className="hf-model-row">
+            <div className="hf-model-row-label">
+              <span className="hf-model-index">{index + 1}</span>
+              <span className="hf-model-name">{model}</span>
+            </div>
+            <div className="hf-model-row-actions">
+              <button
+                className="btn btn-icon hf-model-icon-btn"
+                onClick={() => onMoveModel(index, -1)}
+                disabled={index === 0}
+                aria-label={`Move ${model} up`}
+                title="Move up"
+              >
+                ↑
+              </button>
+              <button
+                className="btn btn-icon hf-model-icon-btn"
+                onClick={() => onMoveModel(index, 1)}
+                disabled={index === candidates.length - 1}
+                aria-label={`Move ${model} down`}
+                title="Move down"
+              >
+                ↓
+              </button>
+              <button
+                className="btn btn-icon hf-model-icon-btn hf-model-remove"
+                onClick={() => onRemoveModel(model)}
+                aria-label={`Remove ${model}`}
+                title="Remove"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hf-model-footer">
+        <span>
+          You can also save a custom order in your browser. The provider uses this before env defaults.
+        </span>
+        <span>{availableModels.length} models available to add</span>
+      </div>
     </div>
   );
 }
@@ -236,6 +349,13 @@ export default function AIChatFallback() {
   const [showProviderPanel, setShowProviderPanel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [providerStatuses, setProviderStatuses] = useState([]);
+  const [hfModelCandidates, setHfModelCandidates] = useState(() =>
+    getResolvedHuggingFaceModelCandidates()
+  );
+  const [hfModelSource, setHfModelSource] = useState(() =>
+    getHuggingFaceModelCandidatesSource()
+  );
+  const [hfModelPicker, setHfModelPicker] = useState('');
   const [rateLimitRemaining, setRateLimitRemaining] = useState(
     rateLimiter ? rateLimiter.remaining() : null
   );
@@ -263,6 +383,17 @@ export default function AIChatFallback() {
     const interval = setInterval(refresh, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!showSettings) return;
+
+    const resolvedCandidates = getResolvedHuggingFaceModelCandidates();
+    setHfModelCandidates(resolvedCandidates);
+    setHfModelSource(getHuggingFaceModelCandidatesSource());
+    setHfModelPicker((current) =>
+      resolvedCandidates.includes(current) ? current : ''
+    );
+  }, [showSettings]);
 
   // Update rate limit display
   useEffect(() => {
@@ -401,6 +532,41 @@ export default function AIChatFallback() {
     },
     [handleSend]
   );
+
+  const commitHuggingFaceModelCandidates = useCallback((nextCandidates) => {
+    const normalized = saveHuggingFaceModelCandidates(nextCandidates);
+    setHfModelCandidates(normalized);
+    setHfModelSource(normalized.length > 0 ? 'saved' : getHuggingFaceModelCandidatesSource());
+    setHfModelPicker((current) => (normalized.includes(current) ? current : ''));
+  }, []);
+
+  const handleAddHuggingFaceModel = useCallback((model) => {
+    if (!model) return;
+    commitHuggingFaceModelCandidates([...hfModelCandidates, model]);
+    setHfModelPicker('');
+  }, [commitHuggingFaceModelCandidates, hfModelCandidates]);
+
+  const handleMoveHuggingFaceModel = useCallback((index, delta) => {
+    const targetIndex = index + delta;
+    if (targetIndex < 0 || targetIndex >= hfModelCandidates.length) return;
+
+    const next = [...hfModelCandidates];
+    const [moved] = next.splice(index, 1);
+    next.splice(targetIndex, 0, moved);
+    commitHuggingFaceModelCandidates(next);
+  }, [commitHuggingFaceModelCandidates, hfModelCandidates]);
+
+  const handleRemoveHuggingFaceModel = useCallback((model) => {
+    commitHuggingFaceModelCandidates(hfModelCandidates.filter((item) => item !== model));
+  }, [commitHuggingFaceModelCandidates, hfModelCandidates]);
+
+  const handleResetHuggingFaceModels = useCallback(() => {
+    resetHuggingFaceModelCandidates();
+    const resolvedCandidates = getResolvedHuggingFaceModelCandidates();
+    setHfModelCandidates(resolvedCandidates);
+    setHfModelSource(getHuggingFaceModelCandidatesSource());
+    setHfModelPicker('');
+  }, []);
 
   // --- Derived values ---
   const enabledProviderCount = providerStatuses.filter(
@@ -617,6 +783,7 @@ export default function AIChatFallback() {
         }
         .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
         .badge-disabled { background: rgba(100, 116, 139, 0.15); color: var(--color-text-muted); }
+        .badge-info { background: rgba(6, 182, 212, 0.12); color: var(--color-secondary); }
 
         .sidebar-footer {
           padding: 12px;
@@ -922,7 +1089,7 @@ export default function AIChatFallback() {
           border: 1px solid var(--color-border);
           border-radius: var(--radius-xl);
           padding: 24px;
-          width: min(480px, 90vw);
+          width: min(640px, 92vw);
           max-height: 80vh;
           overflow-y: auto;
         }
@@ -964,6 +1131,140 @@ export default function AIChatFallback() {
         }
         .settings-provider-status { flex: 1; }
         .settings-provider-note { font-size: 11px; color: var(--color-text-muted); }
+
+        .hf-model-manager {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .hf-model-manager-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .hf-model-manager-title {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--color-text);
+        }
+
+        .hf-model-manager-note,
+        .hf-model-footer {
+          font-size: 11px;
+          color: var(--color-text-muted);
+          line-height: 1.5;
+        }
+
+        .hf-model-picker {
+          display: grid;
+          grid-template-columns: 1fr auto auto;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .hf-model-select {
+          width: 100%;
+          min-width: 0;
+          background: var(--color-bg-elevated);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-md);
+          padding: 10px 12px;
+          color: var(--color-text);
+          font-family: var(--font-family);
+          font-size: 13px;
+          outline: none;
+        }
+
+        .hf-model-select:focus {
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px var(--color-primary-glow);
+        }
+
+        .hf-model-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .hf-model-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          padding: 8px 10px;
+          background: var(--color-bg-elevated);
+          border-radius: var(--radius-sm);
+          border: 1px solid transparent;
+        }
+
+        .hf-model-row:hover {
+          border-color: var(--color-border);
+        }
+
+        .hf-model-row-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+          flex: 1;
+        }
+
+        .hf-model-index {
+          width: 22px;
+          height: 22px;
+          border-radius: 999px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(139, 92, 246, 0.15);
+          color: var(--color-primary);
+          font-size: 11px;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+
+        .hf-model-name {
+          font-size: 12px;
+          color: var(--color-text);
+          word-break: break-word;
+        }
+
+        .hf-model-row-actions {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex-shrink: 0;
+        }
+
+        .hf-model-icon-btn {
+          width: 28px;
+          height: 28px;
+          padding: 0;
+          justify-content: center;
+          border-radius: 8px;
+          font-size: 14px;
+        }
+
+        .hf-model-icon-btn:disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .hf-model-remove {
+          color: var(--color-warning);
+        }
+
+        .hf-model-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
 
         .divider {
           height: 1px;
@@ -1195,6 +1496,22 @@ export default function AIChatFallback() {
                   )}
                 </div>
               ))}
+            </div>
+
+            <div className="divider" />
+
+            <div className="settings-section">
+              <div className="settings-section-title">Hugging Face Models</div>
+              <HuggingFaceModelManager
+                candidates={hfModelCandidates}
+                source={hfModelSource}
+                selectedModel={hfModelPicker}
+                onSelectedModelChange={setHfModelPicker}
+                onAddModel={handleAddHuggingFaceModel}
+                onMoveModel={handleMoveHuggingFaceModel}
+                onRemoveModel={handleRemoveHuggingFaceModel}
+                onResetModels={handleResetHuggingFaceModels}
+              />
             </div>
 
             <div className="divider" />

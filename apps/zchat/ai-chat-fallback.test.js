@@ -30,6 +30,7 @@ function mockFetch(status, body) {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  localStorage.clear();
   // Reset environment variables to safe test defaults
   process.env.REACT_APP_DEBUG = 'false';
   process.env.REACT_APP_GEMINI_ENABLED = 'true';
@@ -154,6 +155,13 @@ const {
   ollamaAdapter,
   smartOfflineAdapter,
 } = require('./src/providers');
+const {
+  DEFAULT_HUGGINGFACE_FREE_MODELS,
+  getResolvedHuggingFaceModelCandidates,
+  normalizeHuggingFaceModelCandidates,
+  resetHuggingFaceModelCandidates,
+  saveHuggingFaceModelCandidates,
+} = require('./src/huggingFaceModels');
 
 // --- C1: Gemini ---
 describe('C1. geminiAdapter', () => {
@@ -216,6 +224,44 @@ describe('C3. cohereAdapter', () => {
 
 // --- C4: HuggingFace ---
 describe('C4. huggingFaceAdapter', () => {
+  it('ships an expanded curated free/open model chain', () => {
+    expect(DEFAULT_HUGGINGFACE_FREE_MODELS).toEqual(
+      expect.arrayContaining([
+        'Qwen/Qwen2.5-0.5B-Instruct',
+        'Qwen/Qwen3-1.7B',
+        'Qwen/Qwen2.5-7B-Instruct',
+        'Qwen/Qwen3-4B-Instruct-2507',
+        'openai/gpt-oss-20b',
+        'deepseek-ai/DeepSeek-R1',
+      ])
+    );
+  });
+
+  it('normalizes and deduplicates candidate order values', () => {
+    expect(
+      normalizeHuggingFaceModelCandidates([
+        '  Qwen/Qwen3-0.6B  ',
+        '',
+        'TinyLlama/TinyLlama-1.1B-Chat-v1.0',
+        'Qwen/Qwen3-0.6B',
+      ])
+    ).toEqual(['Qwen/Qwen3-0.6B', 'TinyLlama/TinyLlama-1.1B-Chat-v1.0']);
+  });
+
+  it('uses browser-saved Hugging Face model order before env defaults', async () => {
+    saveHuggingFaceModelCandidates([
+      'deepseek-ai/DeepSeek-R1',
+      'Qwen/Qwen3-0.6B',
+    ]);
+    expect(getResolvedHuggingFaceModelCandidates()).toEqual([
+      'deepseek-ai/DeepSeek-R1',
+      'Qwen/Qwen3-0.6B',
+    ]);
+    mockFetch(200, [{ generated_text: 'question Saved order wins' }]);
+    const result = await huggingFaceAdapter.call('question');
+    expect(result).toBe('Saved order wins');
+  });
+
   it('returns generated_text on 200 (array response)', async () => {
     mockFetch(200, [{ generated_text: 'question Hello from HF' }]);
     const result = await huggingFaceAdapter.call('question');

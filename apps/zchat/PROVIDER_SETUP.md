@@ -42,12 +42,18 @@ If you only want to enable one or two providers, start with:
 - Disabled providers remain visible in the status panel but are skipped by the orchestrator.
 - Ollama is local-only and requires a running Ollama server on your machine.
 - The Hugging Face provider automatically falls back across these free/open models:
+  - `Qwen/Qwen2.5-0.5B-Instruct`
   - `Qwen/Qwen3-0.6B`
   - `TinyLlama/TinyLlama-1.1B-Chat-v1.0`
-  - `Qwen/Qwen2.5-1.5B-Instruct`
   - `microsoft/phi-2`
   - `openai-community/gpt2`
+  - `Qwen/Qwen2.5-1.5B-Instruct`
+  - `Qwen/Qwen3-1.7B`
   - `Qwen/Qwen3-4B`
+  - `Qwen/Qwen3-4B-Instruct-2507`
+  - `Qwen/Qwen2.5-7B-Instruct`
   - `mistralai/Mistral-7B-Instruct-v0.3`
   - `Qwen/Qwen3-8B`
-- Set `REACT_APP_HUGGINGFACE_MODEL_CANDIDATES` to override the default order.
+  - `openai/gpt-oss-20b`
+  - `deepseek-ai/DeepSeek-R1`
+- Set `REACT_APP_HUGGINGFACE_MODEL_CANDIDATES` to seed the default order, or reorder models from the in-app Settings modal. Browser-saved order overrides env defaults.
