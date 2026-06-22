@@ -14,7 +14,7 @@
     "@zveo/core": "workspace:*",
     "bullmq": "^5.79.0",
     "ioredis": "^5.7.0",
-    "zod": "^3.24.4"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^25.9.3",
