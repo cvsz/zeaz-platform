@@ -117,18 +117,18 @@ def main() -> int:
     for r in routes:
         if r["status"] == "reserved":
             continue
-            app_routes[r["hostname"]] = {
-                "app_id": r["app_id"],
-                "hostname": r["hostname"],
-                "origin": r["origin"],
-                "port": r["port"],
-                "role": r["role"],
-                "status": r["status"],
-                "origin_check": r.get("origin_check"),
-                "health_path": r.get("health_path"),
-                "alias_for": r.get("alias_for"),
-                "api_gateway_prefix": r.get("api_gateway_prefix"),
-            }
+        app_routes[r["hostname"]] = {
+            "app_id": r["app_id"],
+            "hostname": r["hostname"],
+            "origin": r["origin"],
+            "port": r["port"],
+            "role": r["role"],
+            "status": r["status"],
+            "origin_check": r.get("origin_check"),
+            "health_path": r.get("health_path"),
+            "alias_for": r.get("alias_for"),
+            "api_gateway_prefix": r.get("api_gateway_prefix"),
+        }
     OUT_TF.write_text(json.dumps({"app_routes": app_routes}, indent=2) + "\n")
 
     ingress = ["ingress:"]

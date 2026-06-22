@@ -33,6 +33,8 @@ ingress:
     service: http://127.0.0.1:3009
   - hostname: api.zeaz.dev
     service: http://127.0.0.1:8088
+  - hostname: zaiz.zeaz.dev
+    service: http://127.0.0.1:4103
   - hostname: zcfdash.zeaz.dev
     service: http://127.0.0.1:3003
   - hostname: api-zcfdash.zeaz.dev

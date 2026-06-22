@@ -33,6 +33,7 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | zfbauto | ui | `apps/zfbauto` | `zfbauto.zeaz.dev` | 3020 | `http://127.0.0.1:3020` | reserved |  | `` | `` | `` |
 | zagents | ui | `apps/zagents` | `zagents.zeaz.dev` | 3009 | `http://127.0.0.1:3009` | active |  | `` | `` | `` |
 | zeaz-api | api | `apps/zeaz-api` | `api.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active |  | `` | `` | `/v1` |
+| zaiz | ui | `apps/zaiz` | `zaiz.zeaz.dev` | 4103 | `http://127.0.0.1:4103` | active |  | `` | `` | `` |
 | zcfdash | ui | `apps/zeaz-web` | `zcfdash.zeaz.dev` | 3003 | `http://127.0.0.1:3003` | active |  | `` | `web` | `` |
 | zcfdash-api | api | `apps/zeaz-api` | `api-zcfdash.zeaz.dev` | 8088 | `http://127.0.0.1:8088` | active |  | `` | `api-gateway` | `/api/runtime/cloudflare` |
 | ztrader-api | api | `apps/ztrader` | `api-ztrader.zeaz.dev` | 8016 | `http://127.0.0.1:8016` | active |  | `` | `ztrader` | `/api/v1` |
@@ -54,6 +55,7 @@ Route overlays: `configs/platform/zcfdash-route-overlay.json, configs/platform/z
 | 3018 | zpay |
 | 3019 | ztreasury |
 | 3020 | zfbauto |
+| 4103 | zaiz |
 | 5172 | release |
 | 5173 | zdash |
 | 8005 | zdash-api |

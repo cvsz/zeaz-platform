@@ -15,6 +15,10 @@ http:
     zeaz-web:
       rule: "Host(`zeaz.dev`) || Host(`www.zeaz.dev`)"
       service: zeaz-web-service
+    zaiz-web:
+      rule: "Host(`zaiz.zeaz.dev`)"
+      service: zaiz-web-service
+
 
   services:
     zdash-web-service:
@@ -37,6 +41,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://172.18.0.1:3000"
+    zaiz-web-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:4103"
 
   middlewares:
     auth:

@@ -1,5 +1,0 @@
-misconfigurations:
-  - id: AVD-KSV-0125
-    paths:
-      - kubernetes/runner-runtimeclass.yaml
-    statement: RuntimeClass intentionally selects gVisor nodes for runner isolation.

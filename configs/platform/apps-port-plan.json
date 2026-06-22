@@ -294,6 +294,15 @@
       "origin": "http://127.0.0.1:8088",
       "status": "active",
       "api_gateway_prefix": "/v1"
+    },
+    {
+      "app_id": "zaiz",
+      "role": "ui",
+      "path": "apps/zaiz",
+      "hostname": "zaiz.zeaz.dev",
+      "port": 4103,
+      "origin": "http://127.0.0.1:4103",
+      "status": "active"
     }
   ]
 }
