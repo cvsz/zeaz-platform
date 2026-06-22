@@ -1,6 +1,6 @@
 # zLM-CLI
 
-> A full-stack, browser-based coding terminal powered by the **z.ai zLM 1.0** model — with Skills, Modules, Agents, Workflows, Voice (TTS/ASR) + Voice Commander, PromptPay, Billing, Memory (CRUD + auto-extraction), a Security Scanner, Prompt/Agent Generators, an offline Local model, a Connector pipeline, structured Coding Plans, Cloud Data Connectors (Google Drive, Gmail, Outlook), GDPR Data & Privacy tools, Task & Conversation managers, Settings, and **20 cloud + 1 local model (21 total)**.
+> A full-stack, browser-based coding terminal powered by the **zeaz-platform zai zLM 1.0** model — with Skills, Modules, Agents, Workflows, Voice (TTS/ASR) + Voice Commander, PromptPay, Billing, Memory (CRUD + auto-extraction), a Security Scanner, Prompt/Agent Generators, an offline Local model, a Connector pipeline, structured Coding Plans, Cloud Data Connectors (Google Drive, Gmail, Outlook), GDPR Data & Privacy tools, Task & Conversation managers, Settings, and **20 cloud + 1 local model (21 total)**.
 
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen)](.github/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
