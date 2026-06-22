@@ -1,9 +1,24 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
+import { isRateLimited } from '@/lib/ratelimit';
 
 export async function middleware(request: NextRequest) {
-  // 1. Check for Cloudflare Zero Trust headers (Primary Auth)
+  const ip = request.ip || '127.0.0.1';
+
+  // 1. Rate Limiting (Global for API)
+  if (isRateLimited(ip)) {
+    return NextResponse.json({
+      ok: false,
+      error: {
+        code: 'RATE_LIMITED',
+        message: 'Too many requests',
+        request_id: crypto.randomUUID(),
+      }
+    }, { status: 429 });
+  }
+
+  // 2. Check for Cloudflare Zero Trust headers (Primary Auth)
   const user = request.headers.get('CF-ZVEO-User');
   
   if (!user && process.env.ENVIRONMENT === 'production') {
@@ -17,7 +32,7 @@ export async function middleware(request: NextRequest) {
     }, { status: 401 });
   }
 
-  // 2. JWT Verification Hook
+  // 3. JWT Verification Hook
   const authHeader = request.headers.get('Authorization');
   if (authHeader?.startsWith('Bearer ')) {
     const jwt = authHeader.substring(7);
@@ -40,5 +55,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/api/:path*'], // Apply to all API routes
 };
