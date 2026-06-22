@@ -1,0 +1,39 @@
+# CODEOWNERS — https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Each line: <pattern> <owner1> <owner2> ...
+# Owners are requested for review automatically when their files change.
+
+# Default — everything not matched below
+*                           @zai/zlm-cli-maintainers
+
+# Core AI / streaming logic (server-only)
+/src/lib/glm.ts             @zai/zlm-cli-ai
+/src/lib/plan.ts            @zai/zlm-cli-ai
+/src/app/api/               @zai/zlm-cli-ai
+
+# Registries (modes, skills, modules, agents) — changes affect the pipeline
+/src/lib/zlm-modes.ts       @zai/zlm-cli-ai
+/src/lib/skills.ts          @zai/zlm-cli-ai
+/src/lib/modules.ts         @zai/zlm-cli-ai
+/src/lib/agents.ts          @zai/zlm-cli-ai
+/src/lib/connector.ts       @zai/zlm-cli-ai
+
+# Terminal UI
+/src/components/terminal/   @zai/zlm-cli-frontend
+/src/app/page.tsx           @zai/zlm-cli-frontend
+/src/app/layout.tsx         @zai/zlm-cli-frontend
+/src/app/globals.css        @zai/zlm-cli-frontend
+
+# Build / tooling / infra
+/Makefile                   @zai/zlm-cli-maintainers
+/.github/                   @zai/zlm-cli-maintainers
+/package.json               @zai/zlm-cli-maintainers
+/prisma/                    @zai/zlm-cli-maintainers
+
+# Docs — AI agents care about these
+/AGENTS.md                  @zai/zlm-cli-ai
+/GEMINI.md                  @zai/zlm-cli-ai
+/README.md                  @zai/zlm-cli-maintainers
+/CONTRIBUTING.md            @zai/zlm-cli-maintainers
+/CHANGELOG.md               @zai/zlm-cli-maintainers
+/ROADMAP.md                 @zai/zlm-cli-maintainers

@@ -26,6 +26,25 @@
 | prometheus | 9095 | Metrics collection |
 | grafana | 3019 | Dashboard visualization |
 
+### Dashboard studio
+
+The `apps/dashboard` Next.js app provides the operator-facing video studio. It can:
+
+- create campaign records for Veo-oriented video ideas
+- generate scripts from the campaign form
+- create workflows and jump into workflow detail pages
+- refresh queue/provider/workflow status in the browser
+
+Local dashboard runtime variables:
+
+- `ZVEO_API_URL`
+- `AUTH_SHARED_SECRET`
+- `ZVEO_SERVICE_SUBJECT`
+- `ZVEO_SERVICE_TENANT_ID`
+- `ZVEO_DEFAULT_PROJECT_ID`
+- `ZVEO_SERVICE_ROLES`
+- `ZVEO_SERVICE_TOKEN_TTL_SECONDS`
+
 ## Development
 
 ```bash
@@ -50,4 +69,3 @@ pnpm dev
 
 - Primary hostname: `zveo.zeaz.dev`
 - Secrets must stay in local environment files or approved secret stores and must not be committed.
-

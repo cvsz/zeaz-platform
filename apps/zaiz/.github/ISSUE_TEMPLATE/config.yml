@@ -1,0 +1,12 @@
+# Issue template config — https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#configuring-the-template-chooser
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Ask a question / start a discussion
+    url: https://github.com/zai/zlm-cli/discussions
+    about: For questions, ideas, and general discussion — please use Discussions instead of opening an issue.
+  - name: 🔒 Report a security vulnerability
+    url: https://github.com/zai/zlm-cli/security/advisories/new
+    about: Do NOT open a public issue for security problems. Use a private security advisory.
+  - name: 📖 Read the docs
+    url: https://github.com/zai/zlm-cli#readme
+    about: README, AGENTS.md, CONTRIBUTING.md, and the rest of the project docs.

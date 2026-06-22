@@ -1,0 +1,15 @@
+# FUNDING.yml — https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+#
+# Uncomment the lines for the platforms you want to enable.
+
+# github: [zai]
+# open_collective: zlm-cli
+# patreon: # Replace with a single Patreon username
+# ko_fi: # Replace with a single Ko-fi username
+# tidelift: # npm/zlm-cli
+# community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
+# liberapay: # Replace with a single Liberapay username
+# issuehunt: # Replace with a single IssueHunt username
+# otechie: # Replace with a single Otechie username
+# lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
+# custom: # Replace with up to 4 custom sponsorship URLs e.g., ['https://z.ai/sponsor', 'https://z.ai/store']
