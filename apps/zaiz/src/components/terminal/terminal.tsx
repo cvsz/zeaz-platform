@@ -1873,7 +1873,7 @@ Generate complete, production-ready code for every file in this phase. Use fence
   );
 
   const promptLabel = useMemo(
-    () => `glm@cli:~/${mode}${activeSkill ? `/skill:${activeSkill}` : ""}$`,
+    () => `zlm@cli:~/${mode}${activeSkill ? `/skill:${activeSkill}` : ""}$`,
     [mode, activeSkill],
   );
 
