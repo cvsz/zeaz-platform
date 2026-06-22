@@ -375,8 +375,6 @@ bun run db:generate# prisma generate
 
 ## 📄 License
 
-MIT © Z.ai. See [LICENSE](LICENSE).
+MIT © zeaz. See [LICENSE](LICENSE).
 
 ---
-
-Built with the [z.ai](https://chat.z.ai) platform.
