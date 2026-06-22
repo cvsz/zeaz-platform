@@ -1,0 +1,767 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import {
+     4→     4→  useCallback,
+     5→     5→  useEffect,
+     6→     6→  useLayoutEffect,
+     7→     7→  useMemo,
+     8→     8→  useRef,
+     9→     9→  useState,
+    10→    10→} from "react";
+    11→    11→import {
+    12→    12→  TerminalSquare,
+    13→    13→  Trash2,
+    14→    14→  Info,
+    15→    15→  ChevronDown,
+    16→    16→  Square,
+    17→    17→  CornerDownLeft,
+    18→    18→  Zap,
+    19→    19→} from "lucide-react";
+    20→    20→import { Markdown } from "./markdown";
+    21→    21→import { CLI_MODES, type CliMode } from "@/lib/zlm-modes";
+    22→    22→import { cn } from "@/lib/utils";
+    23→    23→
+    24→    24→interface TerminalEntry {
+    25→    25→  id: string;
+    26→    26→  kind: "user" | "assistant" | "system";
+    27→    27→  content: string;
+    28→    28→  mode?: CliMode;
+    29→    29→  streaming?: boolean;
+    30→    30→  error?: boolean;
+    31→    31→}
+    32→    32→
+    33→    33→interface ChatMessage {
+    34→    34→  role: "user" | "assistant";
+    35→    35→  content: string;
+    36→    36→}
+    37→    37→
+    38→    38→const WELCOME_BANNER = `
+    39→    39→ ██████╗ ██╗     ██╗      ██████╗ ██████╗ ███████╗███╗   ██╗
+    40→    40→ ██╔══██╗██║     ██║     ██╔═══██╗██╔══██╗██╔════╝████╗  ██║
+    41→    41→ ██████╔╝██║     ██║     ██║   ██║██████╔╝█████╗  ██╔██╗ ██║
+    42→    42→ ██╔═══╝ ██║     ██║     ██║   ██║██╔══██╗██╔══╝  ██║╚██╗██║
+    43→    43→ ██║     ██║     ██║     ╚██████╔╝██║  ██║███████╗██║ ╚████║
+    44→    44→ ╚═╝     ╚═╝     ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝
+    45→    45→`;
+    46→    46→
+    47→    47→const ABOUT_TEXT = `**zLM-CLI** — a full-stack coding terminal powered by the z.ai **zLM 1.0** model.
+    48→    48→
+    49→    49→- Stack: Next.js 16 (App Router) · TypeScript · Tailwind CSS · z-ai-web-dev-sdk
+    50→    50→- Backend: streaming \`/api/cli\` endpoint (NDJSON, token-by-token)
+    51→    51→- Modes: \`/chat\` \`/explain\` \`/debug\` \`/generate\` \`/review\` \`/optimize\`
+    52→    52→- Shortcuts: \`↑/↓\` history · \`Enter\` send · \`Shift+Enter\` newline · \`Ctrl+L\` clear
+    53→    53→
+    54→    54→Type \`/help\` to see all commands, or just start typing a coding question.`;
+    55→    55→
+    56→    56→const HELP_TEXT = `**Available commands**
+    57→    57→
+    58→    58→| Command | Action |
+    59→    59→| --- | --- |
+    60→    60→| \`/help\` | Show this help screen |
+    61→    61→| \`/clear\` | Clear the terminal |
+    62→    62→| \`/about\` | About zLM-CLI |
+    63→    63→| \`/mode\` | Show the active mode |
+    64→    64→| \`/chat\` \`/explain\` \`/debug\` \`/generate\` \`/review\` \`/optimize\` | Switch mode (or append a prompt, e.g. \`/explain const x = 1\`) |
+    65→    65→
+    66→    66→**Tips**
+    67→    67→- Slash commands run locally; everything else is sent to zLM 1.0.
+    68→    68→- Append text after a mode command to run it in one shot: \`/debug TypeError: x is not a function\`.
+    69→    69→- Press \`↑\` / \`↓\` to browse command history.`;
+    70→    70→
+    71→    71→const EXAMPLE_PROMPTS: { mode: CliMode; text: string }[] = [
+    72→    72→  { mode: "generate", text: "Write a debounce hook in React with TypeScript" },
+    73→    73→  { mode: "debug", text: "Why does my useEffect run twice in development?" },
+    74→    74→  { mode: "explain", text: "Explain how JavaScript's event loop works" },
+    75→    75→  { mode: "review", text: "Review: function sum(a,b){return a+b}" },
+    76→    76→  { mode: "optimize", text: "Optimize: O(n²) duplicate finder in an array" },
+    77→    77→  { mode: "chat", text: "Compare PostgreSQL vs MongoDB for a SaaS app" },
+    78→    78→];
+    79→    79→
+    80→    80→let idCounter = 0;
+    81→    81→const uid = () => `e${++idCounter}`;
+    82→    82→
+    83→    83→function modeMeta(mode: CliMode) {
+    84→    84→  return CLI_MODES.find((m) => m.id === mode)!;
+    85→    85→}
+    86→    86→
+    87→    87→export function Terminal() {
+    88→    88→  const [entries, setEntries] = useState<TerminalEntry[]>([]);
+    89→    89→  const [input, setInput] = useState("");
+    90→    90→  const [mode, setMode] = useState<CliMode>("chat");
+    91→    91→  const [history, setHistory] = useState<string[]>([]);
+    92→    92→  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+    93→    93→  const [isStreaming, setIsStreaming] = useState(false);
+    94→    94→  const [showJump, setShowJump] = useState(false);
+    95→    95→
+    96→    96→  const abortRef = useRef<AbortController | null>(null);
+    97→    97→  const scrollRef = useRef<HTMLDivElement | null>(null);
+    98→    98→  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+    99→    99→  const stickRef = useRef(true);
+   100→   100→
+   101→   101→  // Seed welcome message on mount.
+   102→   102→  useLayoutEffect(() => {
+   103→   103→    setEntries([
+   104→   104→      {
+   105→   105→        id: uid(),
+   106→   106→        kind: "system",
+   107→   107→        content: WELCOME_BANNER,
+   108→   108→      },
+   109→   109→      {
+   110→   110→        id: uid(),
+   111→   111→        kind: "system",
+   112→   112→        content: ABOUT_TEXT,
+   113→   113→      },
+   114→   114→    ]);
+   115→   115→  }, []);
+   116→   116→
+   117→   117→  // Auto-resize the textarea.
+   118→   118→  useEffect(() => {
+   119→   119→    const el = inputRef.current;
+   120→   120→    if (!el) return;
+   121→   121→    el.style.height = "auto";
+   122→   122→    el.style.height = Math.min(el.scrollHeight, 168) + "px";
+   123→   123→  }, [input]);
+   124→   124→
+   125→   125→  // Track whether the user is pinned to the bottom.
+   126→   126→  const handleScroll = useCallback(() => {
+   127→   127→    const el = scrollRef.current;
+   128→   128→    if (!el) return;
+   129→   129→    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+   130→   130→    stickRef.current = distance < 80;
+   131→   131→    setShowJump(distance > 240);
+   132→   132→  }, []);
+   133→   133→
+   134→   134→  const scrollToBottom = useCallback((smooth = false) => {
+   135→   135→    const el = scrollRef.current;
+   136→   136→    if (!el) return;
+   137→   137→    el.scrollTo({ top: el.scrollHeight, behavior: smooth ? "smooth" : "auto" });
+   138→   138→    stickRef.current = true;
+   139→   139→    setShowJump(false);
+   140→   140→  }, []);
+   141→   141→
+   142→   142→  // Stick to bottom when new entries / streaming deltas arrive.
+   143→   143→  useEffect(() => {
+   144→   144→    if (stickRef.current) {
+   145→   145→      scrollToBottom();
+   146→   146→    }
+   147→   147→  }, [entries, scrollToBottom]);
+   148→   148→
+   149→   149→  const focusInput = useCallback(() => {
+   150→   150→    inputRef.current?.focus();
+   151→   151→  }, []);
+   152→   152→
+   153→   153→  const pushEntry = useCallback((entry: TerminalEntry) => {
+   154→   154→    setEntries((prev) => [...prev, entry]);
+   155→   155→  }, []);
+   156→   156→
+   157→   157→  const updateEntry = useCallback((id: string, patch: Partial<TerminalEntry>) => {
+   158→   158→    setEntries((prev) =>
+   159→   159→      prev.map((e) => (e.id === id ? { ...e, ...patch } : e)),
+   160→   160→    );
+   161→   161→  }, []);
+   162→   162→
+   163→   163→  const runLocalCommand = useCallback(
+   164→   164→    (raw: string): boolean => {
+   165→   165→      const trimmed = raw.trim();
+   166→   166→      const [cmd, ...rest] = trimmed.split(/\s+/);
+   167→   167→      const arg = rest.join(" ");
+   168→   168→      const lower = cmd.toLowerCase();
+   169→   169→
+   170→   170→      switch (lower) {
+   171→   171→        case "/help":
+   172→   172→          pushEntry({ id: uid(), kind: "system", content: HELP_TEXT });
+   173→   173→          return true;
+   174→   174→        case "/clear":
+   175→   175→          setEntries([]);
+   176→   176→          return true;
+   177→   177→        case "/about":
+   178→   178→          pushEntry({ id: uid(), kind: "system", content: ABOUT_TEXT });
+   179→   179→          return true;
+   180→   180→        case "/mode":
+   181→   181→          pushEntry({
+   182→   182→            id: uid(),
+   183→   183→            kind: "system",
+   184→   184→            content: `Active mode: **\`${mode}\`** — ${modeMeta(mode).description}`,
+   185→   185→          });
+   186→   186→          return true;
+   187→   187→        default: {
+   188→   188→          const targetMode = CLI_MODES.find((m) => m.command === lower)?.id;
+   189→   189→          if (targetMode) {
+   190→   190→            setMode(targetMode);
+   191→   191→            if (arg) {
+   192→   192→              // Mode command + inline prompt → run it.
+   193→   193→              pushEntry({
+   194→   194→                id: uid(),
+   195→   195→                kind: "user",
+   196→   196→                content: arg,
+   197→   197→                mode: targetMode,
+   198→   198→              });
+   199→   199→              void runCompletion(arg, targetMode);
+   200→   200→            } else {
+   201→   201→              pushEntry({
+   202→   202→                id: uid(),
+   203→   203→                kind: "system",
+   204→   204→                content: `Switched to **\`${targetMode}\`** mode. ${modeMeta(targetMode).hint}.`,
+   205→   205→              });
+   206→   206→            }
+   207→   207→            return true;
+   208→   208→          }
+   209→   209→          return false;
+   210→   210→        }
+   211→   211→      }
+   212→   212→    },
+   213→   213→    [mode, pushEntry],
+   214→   214→  );
+   215→   215→
+   216→   216→  /** Build the conversation context from prior user/assistant entries. */
+   217→   217→  const buildMessages = useCallback(
+   218→   218→    (currentUserText: string): ChatMessage[] => {
+   219→   219→      const prior: ChatMessage[] = entries
+   220→   220→        .filter(
+   221→   221→          (e) =>
+   222→   222→            (e.kind === "user" || e.kind === "assistant") &&
+   223→   223→            !e.error &&
+   224→   224→            e.content.trim().length > 0,
+   225→   225→        )
+   226→   226→        .slice(-12)
+   227→   227→        .map((e) => ({
+   228→   228→          role: e.kind === "user" ? "user" : "assistant",
+   229→   229→          content: e.content,
+   230→   230→        }));
+   231→   231→      return [...prior, { role: "user", content: currentUserText }];
+   232→   232→    },
+   233→   233→    [entries],
+   234→   234→  );
+   235→   235→
+   236→   236→  const runCompletion = useCallback(
+   237→   237→    async (userText: string, targetMode: CliMode) => {
+   238→   238→      const assistantId = uid();
+   239→   239→      pushEntry({
+   240→   240→        id: assistantId,
+   241→   241→        kind: "assistant",
+   242→   242→        content: "",
+   243→   243→        mode: targetMode,
+   244→   244→        streaming: true,
+   245→   245→      });
+   246→   246→
+   247→   247→      setIsStreaming(true);
+   248→   248→      stickRef.current = true;
+   249→   249→
+   250→   250→      const controller = new AbortController();
+   251→   251→      abortRef.current = controller;
+   252→   252→
+   253→   253→      const messages = buildMessages(userText);
+   254→   254→
+   255→   255→      let acc = "";
+   256→   256→
+   257→   257→      try {
+   258→   258→        const res = await fetch("/api/cli", {
+   259→   259→          method: "POST",
+   260→   260→          headers: { "Content-Type": "application/json" },
+   261→   261→          body: JSON.stringify({ messages, mode: targetMode }),
+   262→   262→          signal: controller.signal,
+   263→   263→        });
+   264→   264→
+   265→   265→        if (!res.ok || !res.body) {
+   266→   266→          let detail = `Request failed (${res.status}).`;
+   267→   267→          try {
+   268→   268→            const errJson = await res.json();
+   269→   269→            if (errJson?.error) detail = errJson.error;
+   270→   270→          } catch {
+   271→   271→            /* ignore */
+   272→   272→          }
+   273→   273→          updateEntry(assistantId, {
+   274→   274→            streaming: false,
+   275→   275→            error: true,
+   276→   276→            content: `**Error:** ${detail}`,
+   277→   277→          });
+   278→   278→          return;
+   279→   279→        }
+   280→   280→
+   281→   281→        const reader = res.body.getReader();
+   282→   282→        const decoder = new TextDecoder();
+   283→   283→        let buffer = "";
+   284→   284→
+   285→   285→        while (true) {
+   286→   286→          const { done, value } = await reader.read();
+   287→   287→          if (done) break;
+   288→   288→          buffer += decoder.decode(value, { stream: true });
+   289→   289→
+   290→   290→          let nl: number;
+   291→   291→          while ((nl = buffer.indexOf("\n")) >= 0) {
+   292→   292→            const line = buffer.slice(0, nl).trim();
+   293→   293→            buffer = buffer.slice(nl + 1);
+   294→   294→            if (!line) continue;
+   295→   295→            let evt: { type?: string; content?: string };
+   296→   296→            try {
+   297→   297→              evt = JSON.parse(line);
+   298→   298→            } catch {
+   299→   299→              continue;
+   300→   300→            }
+   301→   301→            if (evt.type === "delta" && evt.content) {
+   302→   302→              acc += evt.content;
+   303→   303→              updateEntry(assistantId, { content: acc });
+   304→   304→            } else if (evt.type === "error") {
+   305→   305→              updateEntry(assistantId, {
+   306→   306→                streaming: false,
+   307→   307→                error: true,
+   308→   308→                content: `**Stream error:** ${evt.content ?? "unknown"}`,
+   309→   309→              });
+   310→   310→              return;
+   311→   311→            } else if (evt.type === "done") {
+   312→   312→              updateEntry(assistantId, {
+   313→   313→                streaming: false,
+   314→   314→                content: acc || "*(empty response)*",
+   315→   315→              });
+   316→   316→              return;
+   317→   317→            }
+   318→   318→          }
+   319→   319→        }
+   320→   320→
+   321→   321→        // Stream closed without explicit done.
+   322→   322→        updateEntry(assistantId, {
+   323→   323→          streaming: false,
+   324→   324→          content: acc || "*(connection closed)*",
+   325→   325→        });
+   326→   326→      } catch (err) {
+   327→   327→        if ((err as Error)?.name === "AbortError") {
+   328→   328→          updateEntry(assistantId, {
+   329→   329→            streaming: false,
+   330→   330→            content: acc ? `${acc}\n\n*(aborted)*` : "*(aborted)*",
+   331→   331→          });
+   332→   332→          return;
+   333→   333→        }
+   334→   334→        updateEntry(assistantId, {
+   335→   335→          streaming: false,
+   336→   336→          error: true,
+   337→   337→          content: `**Error:** ${(err as Error)?.message ?? "unknown failure"}`,
+   338→   338→        });
+   339→   339→      } finally {
+   340→   340→        setIsStreaming(false);
+   341→   341→        abortRef.current = null;
+   342→   342→      }
+   343→   343→    },
+   344→   344→    [buildMessages, pushEntry, updateEntry],
+   345→   345→  );
+   346→   346→
+   347→   347→  const submit = useCallback(() => {
+   348→   348→    const text = input.trim();
+   349→   349→    if (!text || isStreaming) return;
+   350→   350→
+   351→   351→    setInput("");
+   352→   352→    setHistoryIndex(-1);
+   353→   353→    setHistory((h) => [...h, text]);
+   354→   354→
+   355→   355→    if (text.startsWith("/")) {
+   356→   356→      const handled = runLocalCommand(text);
+   357→   357→      if (handled) return;
+   358→   358→      // Unknown slash command — fall through and send to GLM as-is.
+   359→   359→    }
+   360→   360→
+   361→   361→    pushEntry({ id: uid(), kind: "user", content: text, mode });
+   362→   362→    void runCompletion(text, mode);
+   363→   363→  }, [input, isStreaming, mode, pushEntry, runCompletion, runLocalCommand]);
+   364→   364→
+   365→   365→  const stopStreaming = useCallback(() => {
+   366→   366→    abortRef.current?.abort();
+   367→   367→  }, []);
+   368→   368→
+   369→   369→  const onKeyDown = useCallback(
+   370→   370→    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+   371→   371→      // Ctrl+L clears.
+   372→   372→      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "l") {
+   373→   373→        e.preventDefault();
+   374→   374→        setEntries([]);
+   375→   375→        return;
+   376→   376→      }
+   377→   377→      if (e.key === "Enter" && !e.shiftKey) {
+   378→   378→        e.preventDefault();
+   379→   379→        submit();
+   380→   380→        return;
+   381→   381→      }
+   382→   382→      if (e.key === "ArrowUp") {
+   383→   383→        if (history.length === 0) return;
+   384→   384→        e.preventDefault();
+   385→   385→        const next =
+   386→   386→          historyIndex === -1
+   387→   387→            ? history.length - 1
+   388→   388→            : Math.max(0, historyIndex - 1);
+   389→   389→        setHistoryIndex(next);
+   390→   390→        setInput(history[next]);
+   391→   391→        return;
+   392→   392→      }
+   393→   393→      if (e.key === "ArrowDown") {
+   394→   394→        if (history.length === 0 || historyIndex === -1) return;
+   395→   395→        e.preventDefault();
+   396→   396→        const next = historyIndex + 1;
+   397→   397→        if (next >= history.length) {
+   398→   398→          setHistoryIndex(-1);
+   399→   399→          setInput("");
+   400→   400→        } else {
+   401→   401→          setHistoryIndex(next);
+   402→   402→          setInput(history[next]);
+   403→   403→        }
+   404→   404→      }
+   405→   405→    },
+   406→   406→    [history, historyIndex, submit],
+   407→   407→  );
+   408→   408→
+   409→   409→  const hasConversation = entries.some(
+   410→   410→    (e) => e.kind === "user" || e.kind === "assistant",
+   411→   411→  );
+   412→   412→
+   413→   413→  const promptLabel = useMemo(
+   414→   414→    () => `glm@cli:~/${mode}$`,
+   415→   415→    [mode],
+   416→   416→  );
+   417→   417→
+   418→   418→  return (
+   419→   419→    <div
+   420→   420→      className="flex h-dvh min-h-screen flex-col bg-[#07090a] text-zinc-200"
+   421→   421→      onClick={focusInput}
+   422→   422→    >
+   423→   423→      {/* Scanline / vignette ambiance */}
+   424→   424→      <div
+   425→   425→        aria-hidden
+   426→   426→        className="pointer-events-none fixed inset-0 z-0 opacity-[0.35]"
+   427→   427→        style={{
+   428→   428→          background:
+   429→   429→            "radial-gradient(120% 80% at 50% -10%, rgba(16,185,129,0.10), transparent 60%)",
+   430→   430→        }}
+   431→   431→      />
+   432→   432→
+   433→   433→      {/* Title bar */}
+   434→   434→      <header className="relative z-10 flex items-center gap-3 border-b border-emerald-500/10 bg-[#0a0f0d]/80 px-3 py-2.5 backdrop-blur sm:px-4">
+   435→   435→        <div className="flex items-center gap-1.5">
+   436→   436→          <span className="h-3 w-3 rounded-full bg-rose-500/80" />
+   437→   437→          <span className="h-3 w-3 rounded-full bg-amber-400/80" />
+   438→   438→          <span className="h-3 w-3 rounded-full bg-emerald-500/80" />
+   439→   439→        </div>
+   440→   440→        <div className="ml-1 flex items-center gap-2">
+   441→   441→          <TerminalSquare className="h-4 w-4 text-emerald-400" />
+   442→   442→          <span className="font-mono text-xs font-medium tracking-tight text-zinc-300">
+   443→   443→            GLM&nbsp;5.2&nbsp;—&nbsp;Coding&nbsp;CLI
+   444→   444→          </span>
+   445→   445→        </div>
+   446→   446→
+   447→   447→        {/* Mode badges */}
+   448→   448→        <div className="ml-auto hidden items-center gap-1 sm:flex">
+   449→   449→          {CLI_MODES.map((m) => (
+   450→   450→            <button
+   451→   451→              key={m.id}
+   452→   452→              type="button"
+   453→   453→              onClick={(e) => {
+   454→   454→                e.stopPropagation();
+   455→   455→                setMode(m.id);
+   456→   456→                pushEntry({
+   457→   457→                  id: uid(),
+   458→   458→                  kind: "system",
+   459→   459→                  content: `Switched to **\`${m.id}\`** mode. ${m.hint}.`,
+   460→   460→                });
+   461→   461→              }}
+   462→   462→              className={cn(
+   463→   463→                "rounded-md border px-2 py-1 font-mono text-[11px] transition-colors",
+   464→   464→                mode === m.id
+   465→   465→                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+   466→   466→                  : "border-transparent text-zinc-500 hover:border-emerald-500/20 hover:text-zinc-300",
+   467→   467→              )}
+   468→   468→              title={m.description}
+   469→   469→            >
+   470→   470→              {m.command}
+   471→   471→            </button>
+   472→   472→          ))}
+   473→   473→        </div>
+   474→   474→
+   475→   475→        <div className="flex items-center gap-1">
+   476→   476→          <button
+   477→   477→            type="button"
+   478→   478→            onClick={(e) => {
+   479→   479→              e.stopPropagation();
+   480→   480→              pushEntry({ id: uid(), kind: "system", content: ABOUT_TEXT });
+   481→   481→            }}
+   482→   482→            className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-emerald-500/10 hover:text-emerald-300"
+   483→   483→            title="About"
+   484→   484→            aria-label="About"
+   485→   485→          >
+   486→   486→            <Info className="h-3.5 w-3.5" />
+   487→   487→          </button>
+   488→   488→          <button
+   489→   489→            type="button"
+   490→   490→            onClick={(e) => {
+   491→   491→              e.stopPropagation();
+   492→   492→              setEntries([]);
+   493→   493→            }}
+   494→   494→            className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-colors hover:bg-rose-500/10 hover:text-rose-300"
+   495→   495→            title="Clear (Ctrl+L)"
+   496→   496→            aria-label="Clear"
+   497→   497→          >
+   498→   498→            <Trash2 className="h-3.5 w-3.5" />
+   499→   499→          </button>
+   500→   500→        </div>
+   501→   501→      </header>
+   502→   502→
+   503→   503→      {/* Mobile mode selector */}
+   504→   504→      <div className="relative z-10 flex items-center gap-1 overflow-x-auto border-b border-emerald-500/10 bg-[#0a0f0d]/60 px-2 py-1.5 sm:hidden terminal-scroll">
+   505→   505→        {CLI_MODES.map((m) => (
+   506→   506→          <button
+   507→   507→            key={m.id}
+   508→   508→            type="button"
+   509→   509→            onClick={(e) => {
+   510→   510→              e.stopPropagation();
+   511→   511→              setMode(m.id);
+   512→   512→            }}
+   513→   513→            className={cn(
+   514→   514→              "shrink-0 rounded-md border px-2 py-1 font-mono text-[11px] transition-colors",
+   515→   515→              mode === m.id
+   516→   516→                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+   517→   517→                : "border-transparent text-zinc-500",
+   518→   518→            )}
+   519→   519→          >
+   520→   520→            {m.command}
+   521→   521→          </button>
+   522→   522→        ))}
+   523→   523→      </div>
+   524→   524→
+   525→   525→      {/* Output */}
+   526→   526→      <div
+   527→   527→        ref={scrollRef}
+   528→   528→        onScroll={handleScroll}
+   529→   529→        className="terminal-scroll relative z-10 flex-1 overflow-y-auto px-3 py-4 sm:px-5 sm:py-5"
+   530→   530→      >
+   531→   531→        <div className="mx-auto max-w-4xl">
+   532→   532→          {entries.map((entry) => (
+   533→   533→            <EntryView key={entry.id} entry={entry} promptLabel={promptLabel} />
+   534→   534→          ))}
+   535→   535→
+   536→   536→          {!hasConversation && (
+   537→   537→            <ExamplePrompts
+   538→   538→              onPick={(p) => {
+   539→   539→                setMode(p.mode);
+   540→   540→                pushEntry({
+   541→   541→                  id: uid(),
+   542→   542→                  kind: "user",
+   543→   543→                  content: p.text,
+   544→   544→                  mode: p.mode,
+   545→   545→                });
+   546→   546→                void runCompletion(p.text, p.mode);
+   547→   547→              }}
+   548→   548→            />
+   549→   549→          )}
+   550→   550→
+   551→   551→          <div className="h-2" />
+   552→   552→        </div>
+   553→   553→      </div>
+   554→   554→
+   555→   555→      {/* Jump-to-bottom */}
+   556→   556→      {showJump && (
+   557→   557→        <button
+   558→   558→          type="button"
+   559→   559→          onClick={(e) => {
+   560→   560→            e.stopPropagation();
+   561→   561→            scrollToBottom(true);
+   562→   562→          }}
+   563→   563→          className="absolute bottom-24 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full border border-emerald-500/30 bg-[#0a0f0d]/95 px-3 py-1.5 font-mono text-[11px] text-emerald-300 shadow-lg backdrop-blur transition-colors hover:bg-emerald-500/10"
+   564→   564→        >
+   565→   565→          <ChevronDown className="h-3 w-3" /> jump to bottom
+   566→   566→        </button>
+   567→   567→      )}
+   568→   568→
+   569→   569→      {/* Input bar (acts as the sticky footer) */}
+   570→   570→      <footer className="relative z-10 border-t border-emerald-500/10 bg-[#0a0f0d]/90 backdrop-blur">
+   571→   571→        <div className="mx-auto max-w-4xl px-3 py-3 sm:px-5">
+   572→   572→          <div
+   573→   573→            className={cn(
+   574→   574→              "flex items-end gap-2 rounded-xl border bg-[#07090a]/80 px-3 py-2.5 transition-colors",
+   575→   575→              isStreaming
+   576→   576→                ? "border-emerald-500/30"
+   577→   577→                : "border-emerald-500/15 focus-within:border-emerald-500/40",
+   578→   578→            )}
+   579→   579→          >
+   580→   580→            <span className="select-none pb-1 font-mono text-[13px] text-emerald-400">
+   581→   581→              {promptLabel}
+   582→   582→            </span>
+   583→   583→            <textarea
+   584→   584→              ref={inputRef}
+   585→   585→              value={input}
+   586→   586→              onChange={(e) => setInput(e.target.value)}
+   587→   587→              onKeyDown={onKeyDown}
+   588→   588→              rows={1}
+   589→   589→              spellCheck={false}
+   590→   590→              autoComplete="off"
+   591→   591→              autoCapitalize="off"
+   592→   592→              autoCorrect="off"
+   593→   593→              placeholder={
+   594→   594→                isStreaming ? "zLM 1.0 is responding…" : "Ask zLM 1.0 anything, or type /help"
+   595→   595→              }
+   596→   596→              className="terminal-scroll max-h-[168px] flex-1 resize-none bg-transparent py-1 font-mono text-[13.5px] leading-relaxed text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
+   597→   597→            />
+   598→   598→            {isStreaming ? (
+   599→   599→              <button
+   600→   600→                type="button"
+   601→   601→                onClick={(e) => {
+   602→   602→                  e.stopPropagation();
+   603→   603→                  stopStreaming();
+   604→   604→                }}
+   605→   605→                className="flex shrink-0 items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 font-mono text-[12px] text-rose-300 transition-colors hover:bg-rose-500/20"
+   606→   606→              >
+   607→   607→                <Square className="h-3 w-3 fill-current" /> stop
+   608→   608→              </button>
+   609→   609→            ) : (
+   610→   610→              <button
+   611→   611→                type="button"
+   612→   612→                onClick={(e) => {
+   613→   613→                  e.stopPropagation();
+   614→   614→                  submit();
+   615→   615→                }}
+   616→   616→                disabled={!input.trim()}
+   617→   617→                className="flex shrink-0 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 font-mono text-[12px] text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+   618→   618→              >
+   619→   619→                <CornerDownLeft className="h-3 w-3" /> run
+   620→   620→              </button>
+   621→   621→            )}
+   622→   622→          </div>
+   623→   623→          <div className="mt-1.5 flex items-center justify-between px-1 font-mono text-[10.5px] text-zinc-600">
+   624→   624→            <span className="flex items-center gap-1.5">
+   625→   625→              <Zap className="h-3 w-3 text-emerald-500/60" />
+   626→   626→              z.ai zLM 1.0 · streaming
+   627→   627→            </span>
+   628→   628→            <span className="hidden sm:inline">
+   629→   629→              ↑/↓ history · enter run · shift+enter newline · ctrl+L clear
+   630→   630→            </span>
+   631→   631→          </div>
+   632→   632→        </div>
+   633→   633→      </footer>
+   634→   634→    </div>
+   635→   635→  );
+   636→   636→}
+   637→   637→
+   638→   638→/* ---------- sub components ---------- */
+   639→   639→
+   640→   640→function EntryView({
+   641→   641→  entry,
+   642→   642→  promptLabel,
+   643→   643→}: {
+   644→   644→  entry: TerminalEntry;
+   645→   645→  promptLabel: string;
+   646→   646→}) {
+   647→   647→  if (entry.kind === "user") {
+   648→   648→    return (
+   649→   649→      <div className="mb-3">
+   650→   650→        <div className="flex flex-wrap items-baseline gap-x-2">
+   651→   651→          <span className="select-none font-mono text-[13px] text-emerald-400">
+   652→   652→            {promptLabel}
+   653→   653→          </span>
+   654→   654→          {entry.mode && (
+   655→   655→            <span className="rounded border border-emerald-500/20 px-1 font-mono text-[10px] uppercase text-emerald-400/60">
+   656→   656→              {entry.mode}
+   657→   657→            </span>
+   658→   658→          )}
+   659→   659→        </div>
+   660→   660→        <pre className="mt-0.5 whitespace-pre-wrap break-words font-mono text-[13.5px] leading-relaxed text-zinc-100">
+   661→   661→          {entry.content}
+   662→   662→        </pre>
+   663→   663→      </div>
+   664→   664→    );
+   665→   665→  }
+   666→   666→
+   667→   667→  if (entry.kind === "system") {
+   668→   668→    // ASCII banner renders as plain pre; markdown otherwise.
+   669→   669→    const isAscii = entry.content.includes("█") || entry.content.includes("╗");
+   670→   670→    if (isAscii) {
+   671→   671→      return (
+   672→   672→        <pre className="mb-3 overflow-x-auto terminal-scroll font-mono text-[10px] leading-tight text-emerald-500/80 sm:text-[11px]">
+   673→   673→          {entry.content.trim()}
+   674→   674→        </pre>
+   675→   675→      );
+   676→   676→    }
+   677→   677→    return (
+   678→   678→      <div className="mb-3 rounded-lg border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2">
+   679→   679→        <Markdown content={entry.content} />
+   680→   680→      </div>
+   681→   681→    );
+   682→   682→  }
+   683→   683→
+   684→   684→  // assistant
+   685→   685→  return (
+   686→   686→    <div className="mb-4">
+   687→   687→      <div className="mb-1 flex items-center gap-2">
+   688→   688→        <span className="flex h-5 items-center rounded bg-emerald-500/15 px-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-emerald-300">
+   689→   689→          zLM 1.0
+   690→   690→        </span>
+   691→   691→        {entry.mode && (
+   692→   692→          <span className="font-mono text-[10px] uppercase text-zinc-600">
+   693→   693→            {entry.mode}
+   694→   694→          </span>
+   695→   695→        )}
+   696→   696→        {entry.streaming && (
+   697→   697→          <span className="flex items-center gap-1 font-mono text-[10px] text-emerald-400/80">
+   698→   698→            <span className="inline-flex gap-0.5">
+   699→   699→              <span className="h-1 w-1 animate-pulse rounded-full bg-emerald-400 [animation-delay:0ms]" />
+   700→   700→              <span className="h-1 w-1 animate-pulse rounded-full bg-emerald-400 [animation-delay:150ms]" />
+   701→   701→              <span className="h-1 w-1 animate-pulse rounded-full bg-emerald-400 [animation-delay:300ms]" />
+   702→   702→            </span>
+   703→   703→            thinking
+   704→   704→          </span>
+   705→   705→        )}
+   706→   706→      </div>
+   707→   707→      <div
+   708→   708→        className={cn(
+   709→   709→          "rounded-lg border px-3 py-2.5",
+   710→   710→          entry.error
+   711→   711→            ? "border-rose-500/20 bg-rose-500/[0.04]"
+   712→   712→            : "border-emerald-500/10 bg-emerald-500/[0.02]",
+   713→   713→        )}
+   714→   714→      >
+   715→   715→        {entry.content ? (
+   716→   716→          <Markdown content={entry.content} />
+   717→   717→        ) : entry.streaming ? (
+   718→   718→          <span className="inline-block h-4 w-2 animate-pulse bg-emerald-400/70 align-middle" />
+   719→   719→        ) : (
+   720→   720→          <span className="text-zinc-600">…</span>
+   721→   721→        )}
+   722→   722→      </div>
+   723→   723→    </div>
+   724→   724→  );
+   725→   725→}
+   726→   726→
+   727→   727→function ExamplePrompts({
+   728→   728→  onPick,
+   729→   729→}: {
+   730→   730→  onPick: (p: { mode: CliMode; text: string }) => void;
+   731→   731→}) {
+   732→   732→  return (
+   733→   733→    <div className="mt-6">
+   734→   734→      <div className="mb-2 font-mono text-[11px] uppercase tracking-wider text-zinc-600">
+   735→   735→        try an example
+   736→   736→      </div>
+   737→   737→      <div className="grid gap-2 sm:grid-cols-2">
+   738→   738→        {EXAMPLE_PROMPTS.map((p) => {
+   739→   739→          const m = modeMeta(p.mode);
+   740→   740→          return (
+   741→   741→            <button
+   742→   742→              key={p.text}
+   743→   743→              type="button"
+   744→   744→              onClick={(e) => {
+   745→   745→                e.stopPropagation();
+   746→   746→                onPick(p);
+   747→   747→              }}
+   748→   748→              className="group rounded-lg border border-emerald-500/15 bg-[#0a0f0d]/60 px-3 py-2.5 text-left transition-colors hover:border-emerald-500/35 hover:bg-emerald-500/[0.05]"
+   749→   749→            >
+   750→   750→              <div className="mb-1 flex items-center gap-2">
+   751→   751→                <span className={cn("font-mono text-[10px] uppercase", m.accent)}>
+   752→   752→                  {m.command}
+   753→   753→                </span>
+   754→   754→              </div>
+   755→   755→              <div className="font-mono text-[12.5px] text-zinc-300 group-hover:text-zinc-100">
+   756→   756→                {p.text}
+   757→   757→              </div>
+   758→   758→            </button>
+   759→   759→          );
+   760→   760→        })}
+   761→   761→      </div>
+   762→   762→    </div>
+   763→   763→  );
+   764→   764→}
+   765→   765→
+   766→   766→
+   767→   767→
