@@ -1,0 +1,25 @@
+Package: zai-coder-control-plane-v40-team-collaboration-and-workspaces
+Base ZIP: zai-coder-control-plane-v39-notification-and-communication-center-fixed.zip
+Status: built
+Tests: 291 passed
+Push target: cvsz/zeaz-platform/apps/zai/releases/v40-team-collaboration-and-workspaces
+
+Added:
+- team workspace registry
+- member roles
+- shared review queues
+- activity feed
+- invitation plans
+- export bundle
+- dashboard routes
+- scripts
+- docs
+- assets
+- tests
+
+Safety:
+- local-first collaboration state
+- role-gated decisions
+- no external invitations
+- dry-run/demo writes require APPLY=1
+- binary ZIP artifact is not committed through GitHub connector
