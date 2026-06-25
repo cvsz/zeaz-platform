@@ -2,24 +2,29 @@
 
 Package: `zai-coder-control-plane-v40-team-collaboration-and-workspaces.zip`
 
-## Purpose
+## Build status
 
-Add collaboration primitives for enterprise teams and workspaces.
+- Status: built
+- Base package: `zai-coder-control-plane-v39-notification-and-communication-center-fixed.zip`
+- Local test result: `291 passed`
+- GitHub push scope: text-only source snapshot and manifests under `apps/zai/`
+- Binary ZIP artifacts are not committed through this connector.
 
-## Planned systems
+## Added systems
 
 - organization/team workspace registry
 - workspace member roles
 - shared review queues
 - team activity feed
-- collaboration comment threads
 - workspace invitation plans
-- team-level audit log
-- team dashboard routes
 - collaboration export bundle
-- tests and docs
+- team dashboard routes
+- scripts
+- docs
+- assets
+- tests
 
-## Planned commands
+## Commands
 
 ```bash
 make team-collaboration-workspaces
@@ -29,12 +34,13 @@ make team-members
 make review-queue
 make collaboration-activity
 make workspace-invite-plan
+make team-demo APPLY=1
 make team-export APPLY=1
-make team-audit
 make team-dashboard-export
+make team-collaboration-workspaces-requirements
 ```
 
-## Planned routes
+## Routes
 
 ```text
 /api/team/status
@@ -47,9 +53,17 @@ make team-dashboard-export
 
 ## Safety posture
 
-- local-first
-- role-gated
-- audit logged
+- local-first collaboration state
+- role-gated decisions
 - invitation flows are plan-only
 - no external email sending
-- demo writes require APPLY=1
+- exports are local and review-first
+- demo writes require `APPLY=1`
+
+## Source snapshot
+
+A text-only source snapshot for this build is stored under:
+
+```text
+apps/zai/releases/v40-team-collaboration-and-workspaces/source/
+```
