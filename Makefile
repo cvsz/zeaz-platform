@@ -1005,7 +1005,7 @@ tofu-syntax-check:
 # ─── ZAI Coder Integration ───────────────────────────────────────────────────
 ZAI_CODER_ROOT ?= apps/zai-coder
 ZAI_CODER_VENV ?= $(VENV_DIR)
-ZAI_CODER_PYTHON ?= $(ZAI_CODER_VENV)/bin/python3
+ZAI_CODER_PYTHON ?= $(shell pwd)/$(ZAI_CODER_VENV)/bin/python3
 ZAI_CODER_COMPOSE := docker compose -f infra/zai-coder/compose.yaml
 
 ## zai-coder-init: Initialize zai-coder submodule (run after fresh clone)
