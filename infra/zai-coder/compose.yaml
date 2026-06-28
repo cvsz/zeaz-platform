@@ -8,6 +8,13 @@ services:
     image: zai-coder:local
     container_name: zeaz-zai-coder
     restart: unless-stopped
+    # Override CMD to bind 0.0.0.0 instead of 127.0.0.1 so Traefik can reach via 172.18.0.1:8765
+    command: >
+      uvicorn zai_coder.production_hardening_core.server.asgi:app
+      --host 0.0.0.0
+      --port 8765
+      --proxy-headers
+      --forwarded-allow-ips "*"
     environment:
       ZAI_ENV: "${ENVIRONMENT:-prod}"
       ZAI_LOG_LEVEL: "${ZAI_LOG_LEVEL:-INFO}"

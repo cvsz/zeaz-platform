@@ -50,7 +50,7 @@ ingress:
 
   # ─── ZAI Coder ───────────────────────────────────────────────────────────────
   - hostname: zai.zeaz.dev
-    service: http://172.18.0.3:80
+    service: http://127.0.0.1:8765
 
   # ─── Algo Trading & Game Services ────────────────────────────────────────────
   - hostname: ztrader.zeaz.dev
