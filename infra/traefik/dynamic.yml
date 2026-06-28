@@ -18,6 +18,9 @@ http:
     zaiz-web:
       rule: "Host(`zaiz.zeaz.dev`)"
       service: zaiz-web-service
+    zai-coder:
+      rule: "Host(`zai.zeaz.dev`)"
+      service: zai-coder-service
 
 
   services:
@@ -45,6 +48,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://172.18.0.1:4103"
+    zai-coder-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.18.0.1:8765"
 
   middlewares:
     auth:

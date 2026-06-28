@@ -48,6 +48,10 @@ ingress:
   - hostname: release.zeaz.dev
     service: http://172.18.0.3:80
 
+  # ─── ZAI Coder ───────────────────────────────────────────────────────────────
+  - hostname: zai.zeaz.dev
+    service: http://172.18.0.3:80
+
   # ─── Algo Trading & Game Services ────────────────────────────────────────────
   - hostname: ztrader.zeaz.dev
     service: http://172.18.0.3:80

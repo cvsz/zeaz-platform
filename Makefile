@@ -1006,7 +1006,7 @@ tofu-syntax-check:
 ZAI_CODER_ROOT ?= apps/zai-coder
 ZAI_CODER_VENV ?= $(VENV_DIR)
 ZAI_CODER_PYTHON ?= $(ZAI_CODER_VENV)/bin/python3
-ZAI_CODER_COMPOSE := docker compose -f docker-compose.yml -f infra/zai-coder/compose.yaml
+ZAI_CODER_COMPOSE := docker compose -f infra/zai-coder/compose.yaml
 
 ## zai-coder-init: Initialize zai-coder submodule (run after fresh clone)
 zai-coder-init:
@@ -1047,7 +1047,7 @@ zai-coder-build:
 zai-coder-up:
 	@echo "→ Starting zai-coder service..."
 	$(ZAI_CODER_COMPOSE) up -d zai-coder
-	@echo "✓ zai-coder running at http://127.0.0.1:$${ZAI_CODER_PORT:-8090}"
+	@echo "✓ zai-coder running at http://127.0.0.1:$${ZAI_CODER_PORT:-8765}"
 
 ## zai-coder-down: Stop zai-coder service
 zai-coder-down:

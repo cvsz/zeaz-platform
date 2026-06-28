@@ -110,3 +110,12 @@ records:
     ttl: 1
     tags: [internal-tools, zfbauto]
     notes: Facebook Auto-Post Bot dashboard — Zero Trust protected, @zeaz.dev only
+  - id: zai
+    name: zai
+    fqdn: zai.${PRIMARY_DOMAIN}
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
+    tags: [ai-tools, zai-coder]
+    notes: ZAI Coder — AI coding assistant and control plane

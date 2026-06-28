@@ -4,45 +4,30 @@ services:
   zai-coder:
     build:
       context: ../../apps/zai-coder
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.production
     image: zai-coder:local
     container_name: zeaz-zai-coder
     restart: unless-stopped
     environment:
       ZAI_ENV: "${ENVIRONMENT:-prod}"
       ZAI_LOG_LEVEL: "${ZAI_LOG_LEVEL:-INFO}"
-      ZAI_PORT: "${ZAI_CODER_PORT:-8090}"
-      # Pass through AI provider keys from platform .env
+      # AI provider keys passed through from platform .env
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
       ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
       GOOGLE_API_KEY: "${GOOGLE_API_KEY:-}"
     ports:
-      - "127.0.0.1:${ZAI_CODER_PORT:-8090}:8090"
+      # Bind to all interfaces so Traefik can reach via 172.18.0.1:8765
+      - "0.0.0.0:${ZAI_CODER_PORT:-8765}:8765"
     volumes:
       - zai_coder_data:/app/data
       - zai_coder_config:/app/config
-    networks:
-      default:
-      proxy:
-        aliases:
-          - zai-coder
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.zai-coder.rule=Host(`zai.zeaz.dev`)"
-      - "traefik.http.routers.zai-coder.entrypoints=websecure"
-      - "traefik.http.routers.zai-coder.tls.certresolver=cloudflare"
-      - "traefik.http.services.zai-coder.loadbalancer.server.port=8090"
     healthcheck:
-      test: ["CMD", "python3", "-c", "import zai_coder; print('ok')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/healthz')"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 20s
 
 volumes:
   zai_coder_data:
   zai_coder_config:
-
-networks:
-  proxy:
-    external: true
