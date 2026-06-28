@@ -1,6 +1,6 @@
 # zWallet
 
-Last updated: 2026-06-10
+Last updated: 2026-06-28
 
 `apps/zwallet` is the wallet, swap, payments, mobile/admin, and backend service stack inside `cvsz/zeaz-platform`.
 

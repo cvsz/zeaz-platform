@@ -1,6 +1,6 @@
 # ZeaZ Web
 
-Last updated: 2026-06-10
+Last updated: 2026-06-28
 
 `apps/zeaz-web` is the main ZeaZ public web frontend inside `cvsz/zeaz-platform`.
 

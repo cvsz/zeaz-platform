@@ -1,6 +1,6 @@
 # zOffice
 
-Last updated: 2026-06-10
+Last updated: 2026-06-28
 
 zOffice is the `apps/zoffice` application inside `cvsz/zeaz-platform`. It is a self-hosted AI office dashboard for OpenClaw/Hermes-style agent workspaces with local runtime controls, optional panels, license-aware feature gating, and platform-aligned server commands.
 

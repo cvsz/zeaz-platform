@@ -1,6 +1,6 @@
 # zTrader
 
-Last updated: 2026-06-11
+Last updated: 2026-06-28
 
 `apps/ztrader` is the safety-first multi-language algorithmic trading platform stack and the active merge target for archived source material under `.ops/backups`.
 

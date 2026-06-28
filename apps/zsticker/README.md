@@ -1,6 +1,6 @@
 # zSticker
 
-Last updated: 2026-06-10
+Last updated: 2026-06-28
 
 `apps/zsticker` is a Python automation stack for LINE sticker/image generation and delivery workflows. It is kept as its own app stack inside `cvsz/zeaz-platform`.
 

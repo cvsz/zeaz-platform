@@ -1,6 +1,6 @@
 # zDash
 
-Last updated: 2026-06-10
+Last updated: 2026-06-28
 
 `apps/zdash` is the safety-first AI operations and trading dashboard stack inside `cvsz/zeaz-platform`. It is operated as its own full-stack app and must stay separate from `ztrader`, `zkbtrader`, `zoffice`, and other app stacks unless a future migration explicitly merges them.
 

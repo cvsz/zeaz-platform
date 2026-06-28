@@ -1,6 +1,6 @@
 # ZeaZ API
 
-Last updated: 2026-06-10
+Last updated: 2026-06-28
 
 `apps/api` is the lightweight Python API service for the ZeaZ platform.
 

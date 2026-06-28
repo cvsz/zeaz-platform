@@ -1,6 +1,6 @@
 # zWallet Repo Upgrade Checklist
 
-_Last updated: 2026-05-04_
+_Last updated: 2026-06-28_
 
 ## 1) Crypto Engine — **67% (2/3)**
 - [x] HD wallet implemented
