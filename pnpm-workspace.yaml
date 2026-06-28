@@ -29,6 +29,7 @@ packages:
   - '!apps/zcino'
   - '!apps/zcino-modern'
   - '!apps/zsticker'
+  # apps/zai-coder → Python submodule (github.com/cvsz/zai-coder), managed via Makefile targets, not pnpm
 
 overrides:
   ws: 8.21.0

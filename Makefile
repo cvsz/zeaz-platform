@@ -58,6 +58,7 @@ export PROJECT_ROOT ENVIRONMENT PYTHON TF_ROOT
 .PHONY: git-status gpg-commit gpg-push gpg-finalize git-finalize zaiz-validate zaiz-prod zaiz-fix-google-genai
 .PHONY: local-publish-help local-publish-scan local-publish-scan-untracked local-publish local-publish-untracked local-publish-tracked
 .PHONY: zaiz-deps-check
+.PHONY: zai-coder-init zai-coder-update zai-coder-install zai-coder-run zai-coder-test zai-coder-build zai-coder-up zai-coder-down zai-coder-logs zai-coder-status zai-coder-shell
 .PHONY: zquest-start zquest-stop zquest-status zquest-restart zquest-smoke
 .PHONY: zchat-install zchat-dev zchat-preview zchat-test zchat-build zchat-validate zchat-clean zchat-ci
 
@@ -996,6 +997,75 @@ tf-syntax-check:
 	@echo "Checking Terraform syntax..."
 	@terraform fmt -check -recursive terraform/
 
+
 tofu-syntax-check:
 	@echo "Checking OpenTofu syntax..."
 	@tofu fmt -check -recursive opentofu/
+
+# ─── ZAI Coder Integration ───────────────────────────────────────────────────
+ZAI_CODER_ROOT ?= apps/zai-coder
+ZAI_CODER_VENV ?= $(VENV_DIR)
+ZAI_CODER_PYTHON ?= $(ZAI_CODER_VENV)/bin/python3
+ZAI_CODER_COMPOSE := docker compose -f docker-compose.yml -f infra/zai-coder/compose.yaml
+
+## zai-coder-init: Initialize zai-coder submodule (run after fresh clone)
+zai-coder-init:
+	@echo "→ Initializing zai-coder submodule..."
+	git submodule update --init --recursive apps/zai-coder
+	@echo "✓ zai-coder submodule ready at apps/zai-coder"
+
+## zai-coder-update: Pull latest changes in zai-coder submodule
+zai-coder-update:
+	@echo "→ Updating zai-coder submodule to latest main..."
+	git -C $(ZAI_CODER_ROOT) fetch --depth=1 origin main
+	git -C $(ZAI_CODER_ROOT) checkout FETCH_HEAD
+	@echo "✓ Updated. Run: git add apps/zai-coder && git commit -m 'chore(submodule): update zai-coder'"
+
+## zai-coder-install: Install zai-coder Python package into platform venv
+zai-coder-install:
+	@echo "→ Installing zai-coder into $(ZAI_CODER_VENV)..."
+	$(ZAI_CODER_VENV)/bin/pip install -e "$(ZAI_CODER_ROOT)[tui]" --quiet
+	@echo "✓ zai-coder installed"
+
+## zai-coder-run: Run zai-coder CLI (pass ARGS="..." for subcommands)
+zai-coder-run:
+	@cd $(ZAI_CODER_ROOT) && $(ZAI_CODER_PYTHON) -m zai_coder.cli $(ARGS)
+
+## zai-coder-test: Run zai-coder test suite
+zai-coder-test:
+	@echo "→ Running zai-coder tests..."
+	cd $(ZAI_CODER_ROOT) && $(ZAI_CODER_PYTHON) -m pytest -q tests/
+	@echo "✓ zai-coder tests passed"
+
+## zai-coder-build: Build zai-coder Docker image
+zai-coder-build:
+	@echo "→ Building zai-coder Docker image..."
+	$(ZAI_CODER_COMPOSE) build zai-coder
+	@echo "✓ Image built: zai-coder:local"
+
+## zai-coder-up: Start zai-coder service via Docker Compose
+zai-coder-up:
+	@echo "→ Starting zai-coder service..."
+	$(ZAI_CODER_COMPOSE) up -d zai-coder
+	@echo "✓ zai-coder running at http://127.0.0.1:$${ZAI_CODER_PORT:-8090}"
+
+## zai-coder-down: Stop zai-coder service
+zai-coder-down:
+	$(ZAI_CODER_COMPOSE) stop zai-coder
+
+## zai-coder-logs: Tail zai-coder container logs
+zai-coder-logs:
+	$(ZAI_CODER_COMPOSE) logs -f zai-coder
+
+## zai-coder-status: Show zai-coder container status and submodule info
+zai-coder-status:
+	@echo "=== Submodule ==="
+	@git submodule status apps/zai-coder
+	@echo ""
+	@echo "=== Container ==="
+	@$(ZAI_CODER_COMPOSE) ps zai-coder 2>/dev/null || echo "(not running)"
+
+## zai-coder-shell: Open shell inside running zai-coder container
+zai-coder-shell:
+	$(ZAI_CODER_COMPOSE) exec zai-coder bash
+

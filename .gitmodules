@@ -1,0 +1,3 @@
+[submodule "apps/zai-coder"]
+	path = apps/zai-coder
+	url = git@github.com:cvsz/zai-coder.git
