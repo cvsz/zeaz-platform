@@ -51,6 +51,18 @@ jobs:
           find . -name "package.json" -not -path "*/node_modules/*" -not -path "*/.*" | while read -r pkg; do
             dir=$(dirname "$pkg")
             echo "--- Checking Node stack in $dir ---"
+
+            has_lint=false
+            has_typecheck=false
+            has_test=false
+            grep -q '"lint":' "$pkg" && has_lint=true
+            grep -q '"typecheck":' "$pkg" && has_typecheck=true
+            grep -q '"test":' "$pkg" && has_test=true
+
+            if [ "$has_lint" != "true" ] && [ "$has_typecheck" != "true" ] && [ "$has_test" != "true" ]; then
+              echo "No lint/typecheck/test script in $dir. Skipping dependency installation."
+              continue
+            fi
             
             # Check for lockfiles
             if [ -f "$dir/pnpm-lock.yaml" ]; then
@@ -68,17 +80,17 @@ jobs:
             fi
 
             # Safe script execution: only run lint/test/typecheck if they exist in package.json
-            if grep -q '"lint":' "$pkg"; then
+            if [ "$has_lint" = "true" ]; then
               echo "Running lint in $dir..."
               (cd "$dir" && (pnpm lint || npm run lint || yarn lint))
             fi
 
-            if grep -q '"typecheck":' "$pkg"; then
+            if [ "$has_typecheck" = "true" ]; then
               echo "Running typecheck in $dir..."
               (cd "$dir" && (pnpm typecheck || npm run typecheck || yarn typecheck))
             fi
 
-            if grep -q '"test":' "$pkg"; then
+            if [ "$has_test" = "true" ]; then
               echo "Running test in $dir..."
               (cd "$dir" && (pnpm test || npm run test || yarn test))
             fi
@@ -102,6 +114,11 @@ jobs:
           find . \( -name "pyproject.toml" -o -name "requirements.txt" \) -not -path "*/.*" -not -path "*/node_modules/*" | while read -r dep_file; do
             dir=$(dirname "$dep_file")
             echo "--- Checking Python stack in $dir ---"
+
+            if ! find "$dir" -name "*.py" -not -path "*/.*" -print -quit | grep -q .; then
+              echo "No Python files in $dir. Skipping dependency installation."
+              continue
+            fi
             
             # Use venv for isolation
             python -m venv "$dir/.venv"

@@ -86,7 +86,7 @@ else
     while IFS= read -r f; do
        if [[ -f "$f" ]]; then
          while IFS= read -r route_line; do
-           route_pat=$(echo "$route_line" | grep -oE 'pattern[[:space:]]*=[[:space:]]*"[^"]*"' | sed 's/.*="//;s/"//' || true)
+           route_pat=$(echo "$route_line" | grep -oE 'pattern[[:space:]]*=[[:space:]]*"[^"]*"' | sed 's/.*=[[:space:]]*"//;s/"//' || true)
            if [[ -z "$route_pat" ]]; then
              route_pat=$(echo "$route_line" | grep -E '^route[[:space:]]*=' | head -1 | sed 's/.*=[[:space:]]*"//;s/".*//' || true)
            fi
