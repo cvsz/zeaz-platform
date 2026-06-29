@@ -129,12 +129,12 @@ PY
 
 pid_file_for() {
   local app_id="$1" port="$2"
-  echo "$RUNTIME_DIR/${app_id}-${port}.pid"
+  echo "$ROOT/$RUNTIME_DIR/${app_id}-${port}.pid"
 }
 
 log_file_for() {
   local app_id="$1" port="$2"
-  echo "$RUNTIME_DIR/${app_id}-${port}.log"
+  echo "$ROOT/$RUNTIME_DIR/${app_id}-${port}.log"
 }
 
 is_pid_alive() {
@@ -206,7 +206,8 @@ start_route() {
         npm) cmd="HOST=$HOST_BIND PORT=$port npm run $script" ;;
       esac
       echo "START: $pm run $script app=$app_id port=$port"
-      (cd "$dir" && nohup bash -lc "$cmd" >> "$log_file" 2>&1 & echo $! > "$pid_file")
+      touch "$log_file"
+      (cd "$dir" && nohup $pm run $script < /dev/null >> "$log_file" 2>&1 & echo $! > "$pid_file")
       sleep 1
       route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for"
       return 0
