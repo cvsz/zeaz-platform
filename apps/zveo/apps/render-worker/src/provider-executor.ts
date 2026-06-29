@@ -1,6 +1,6 @@
 import { Logger, type RenderProvider } from "@zveo/core";
 import { renderJobPayloadSchema, type RenderJobPayload } from "@zveo/contracts";
-import { HttpRenderProviderAdapter, ProviderRegistry, type ProviderRenderResult } from "@zveo/providers";
+import { HttpRenderProviderAdapter, MuapiRenderProviderAdapter, ProviderRegistry, type ProviderRenderResult } from "@zveo/providers";
 
 export interface ProviderConfig { endpoint?: string; apiKey?: string }
 export interface ProviderRegistryConfig {
@@ -23,6 +23,25 @@ export function createProviderRegistry(config: ProviderRegistryConfig, logger: L
   const allowMock = config.nodeEnv === "test" || config.providerMockMode === "true";
   for (const { provider, configKey, getConfig } of providerConfigs) {
     const providerConfig = getConfig(config);
+    if (provider === "veo") {
+      const apiKey = providerConfig.apiKey;
+      if (!apiKey && !allowMock) {
+        throw new Error(`Missing API Key configuration for ${provider}: VEO provider requires API Key`);
+      }
+      if (allowMock) {
+        registry.register(new MockRenderProviderAdapter(provider));
+      } else {
+        registry.register(new MuapiRenderProviderAdapter({
+          apiKey: apiKey!,
+          endpoint: providerConfig.endpoint,
+          timeoutMs: config.providerTimeoutMs,
+          ...(fetchImpl ? { fetchImpl } : {}),
+          logger
+        }));
+      }
+      continue;
+    }
+
     if (!providerConfig.endpoint) {
       if (allowMock) { registry.register(new MockRenderProviderAdapter(provider)); continue; }
       throw new Error(`Missing provider configuration for ${provider}: required ${configKey}`);

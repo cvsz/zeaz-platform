@@ -122,6 +122,121 @@ export class HttpRenderProviderAdapter implements RenderProviderAdapter {
   }
 }
 
+export interface MuapiProviderAdapterOptions {
+  readonly apiKey: string;
+  readonly endpoint?: string | undefined;
+  readonly webhookUrl?: string | undefined;
+  readonly timeoutMs?: number | undefined;
+  readonly retryPolicy?: RetryPolicy | undefined;
+  readonly fetchImpl?: typeof fetch | undefined;
+  readonly logger?: Logger | undefined;
+}
+
+export class MuapiRenderProviderAdapter implements RenderProviderAdapter {
+  readonly provider: RenderProvider = "veo";
+  private readonly endpoint: string;
+  private readonly apiKey: string;
+  private readonly webhookUrl: string | undefined;
+  private readonly fetchImpl: typeof fetch;
+  private readonly timeoutMs: number;
+  private readonly retryPolicy: RetryPolicy;
+  private readonly logger: Logger;
+
+  constructor(options: MuapiProviderAdapterOptions) {
+    this.apiKey = options.apiKey;
+    this.endpoint = options.endpoint ?? "https://api.muapi.ai";
+    this.webhookUrl = options.webhookUrl ?? undefined;
+    this.fetchImpl = options.fetchImpl ?? fetch;
+    this.timeoutMs = options.timeoutMs ?? 120_000;
+    this.retryPolicy = retryPolicySchema.parse(options.retryPolicy ?? {});
+    this.logger = options.logger ?? new Logger({ service: "providers", provider: "veo" });
+  }
+
+  async render(rawPayload: RenderJobPayload): Promise<ProviderRenderResult> {
+    const payload = renderJobPayloadSchema.parse(rawPayload);
+    return this.withRetries("render", async () => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), this.timeoutMs).unref();
+      
+      try {
+        const visualRefs = payload.continuity.visualReferences ?? [];
+        const hasRefs = visualRefs.length > 0;
+        
+        let targetEndpoint = `${this.endpoint.replace(/\/$/, "")}/v1/veo31/t2v/lite`;
+        const muapiPayload: Record<string, any> = {
+          prompt: payload.prompt,
+          duration: 8,
+          resolution: "720p"
+        };
+
+        if (hasRefs) {
+          targetEndpoint = `${this.endpoint.replace(/\/$/, "")}/v1/veo31/reference`;
+          muapiPayload.images_list = visualRefs.map(ref => ref.embeddingUri).slice(0, 3);
+        }
+
+        const url = this.webhookUrl 
+          ? `${targetEndpoint}?webhook=${encodeURIComponent(this.webhookUrl)}`
+          : targetEndpoint;
+
+        const response = await this.fetchImpl(url, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-api-key": this.apiKey,
+            "x-correlation-id": payload.correlationId,
+          },
+          body: JSON.stringify(muapiPayload),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`muapi.ai render failed: ${response.status} ${text}`);
+        }
+
+        const body = await response.json() as { request_id: string };
+        this.logger.info("muapi.ai render accepted", { jobId: payload.jobId, providerJobId: body.request_id });
+        
+        return {
+          providerJobId: body.request_id,
+          status: "submitted",
+          metadata: {
+            resolvedEndpoint: targetEndpoint,
+            hasReferences: hasRefs
+          }
+        };
+      } finally {
+        clearTimeout(timeout);
+      }
+    });
+  }
+
+  async health(): Promise<ProviderHealth> {
+    const started = Date.now();
+    try {
+      const response = await this.fetchImpl(`${this.endpoint.replace(/\/$/, "")}/healthz`, { method: "GET" });
+      return { provider: this.provider, status: response.ok ? "ok" : "degraded", checkedAt: new Date().toISOString(), latencyMs: Date.now() - started, details: { statusCode: response.status } };
+    } catch (error) {
+      this.logger.error("muapi.ai health check failed", error);
+      return { provider: this.provider, status: "degraded", checkedAt: new Date().toISOString(), latencyMs: Date.now() - started, details: { error: String(error) } };
+    }
+  }
+
+  private async withRetries<T>(operation: string, execute: () => Promise<T>): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= this.retryPolicy.maxAttempts; attempt += 1) {
+      try { return await execute(); }
+      catch (error) {
+        lastError = error;
+        this.logger.warn("muapi.ai provider operation retry scheduled", { operation, attempt, error: error instanceof Error ? error.message : String(error) });
+        if (attempt >= this.retryPolicy.maxAttempts) break;
+        await new Promise((resolve) => setTimeout(resolve, retryDelay(attempt, this.retryPolicy)));
+      }
+    }
+    throw lastError;
+  }
+}
+
 export function retryDelay(attempt: number, policy: RetryPolicy): number {
   const parsed = retryPolicySchema.parse(policy);
   const exponential = Math.min(parsed.maxDelayMs, parsed.baseDelayMs * 2 ** Math.max(0, attempt - 1));

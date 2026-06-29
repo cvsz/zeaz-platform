@@ -280,3 +280,6 @@ pnpm-debug.log
 # Terraform provider signing secrets
 *.sig
 *.asc
+
+# Reference Repositories
+apps/ShipGenAI/
