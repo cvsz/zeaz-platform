@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Validate Markdown Docs Presence
         run: |
@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -55,7 +55,7 @@ jobs:
             # Check for lockfiles
             if [ -f "$dir/pnpm-lock.yaml" ]; then
               echo "pnpm-lock.yaml found in $dir. Installing with pnpm..."
-              (cd "$dir" && pnpm install --frozen-lockfile || pnpm install)
+              (cd "$dir" && pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile)
             elif [ -f "$dir/package-lock.json" ]; then
               echo "package-lock.json found in $dir. Installing with npm..."
               (cd "$dir" && npm ci || npm install)
@@ -89,7 +89,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -114,7 +114,7 @@ jobs:
             elif [ -f "$dir/pyproject.toml" ]; then
               if grep -q -E '\[build-system\]|\[project\]' "$dir/pyproject.toml"; then
                 echo "Installing pyproject.toml in $dir..."
-                pip install .
+                (cd "$dir" && pip install .)
               else
                 echo "Skipping pyproject.toml install in $dir (no build-system/project section)..."
               fi
