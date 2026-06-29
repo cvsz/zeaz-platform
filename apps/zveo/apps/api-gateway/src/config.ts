@@ -15,6 +15,7 @@ const rawConfigSchema = z.object({
   RATE_LIMIT_REFILL_TOKENS: z.coerce.number().int().min(1).max(100_000).default(120),
   RATE_LIMIT_REFILL_INTERVAL_MS: z.coerce.number().int().min(100).max(3_600_000).default(60_000),
   OPENAI_MODEL: z.string().min(1).default("gpt-4.1-mini"),
+  VEO31_API_KEY: z.string().optional(),
 });
 
 const raw = rawConfigSchema.parse(process.env);

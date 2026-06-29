@@ -76,6 +76,8 @@ const jobsByWorkflow = new Map<string, JobRecord[]>();
 const assetsByWorkflow = new Map<string, AssetSummary[]>();
 const plansByWorkflow = new Map<string, ReturnType<typeof mediaPlanner.createPlan>>();
 const exportsByWorkflow = new Map<string, ExportManifest[]>();
+const veoCreations = new Map<string, { status: string; videoUrl?: string; error?: string }>();
+
 
 
 async function readJson(req: IncomingMessage): Promise<unknown> {
@@ -345,6 +347,128 @@ async function handleGetWorkflowDetail(res: ServerResponse, workflowId: string, 
   });
 }
 
+async function handleVeoGenerate(req: IncomingMessage, res: ServerResponse, correlationId: string): Promise<void> {
+  const principal = authenticateAndAuthorize(req, "workflow:create", correlationId, "veo.generate");
+  const body = (await readJson(req)) as any;
+  const { mode, prompt, aspect_ratio = "16:9", resolution = "720p", duration = 8, model = "lite", image_url = null, last_image = null, images_list = [] } = body;
+
+  const apiKey = config.VEO31_API_KEY;
+  if (!apiKey) {
+    return respondError(res, 400, "BAD_REQUEST", "VEO31_API_KEY is not configured", correlationId);
+  }
+
+  let type: "t2v" | "i2v" | "reference";
+  if (mode === "text-to-video") type = "t2v";
+  else if (mode === "image-to-video") type = "i2v";
+  else if (mode === "reference-to-video") type = "reference";
+  else {
+    return respondError(res, 400, "BAD_REQUEST", `Invalid mode: ${mode}`, correlationId);
+  }
+
+  let endpoint = "";
+  if (type === "reference") {
+    endpoint = "https://api.muapi.ai/api/v1/veo3.1-reference-to-video";
+  } else {
+    const endpointsMap: any = {
+      t2v: {
+        "lite": "https://api.muapi.ai/api/v1/veo3.1-lite-text-to-video",
+        "fast": "https://api.muapi.ai/api/v1/veo3.1-fast-text-to-video",
+        "quality": "https://api.muapi.ai/api/v1/veo3.1-text-to-video"
+      },
+      i2v: {
+        "lite": "https://api.muapi.ai/api/v1/veo3.1-lite-image-to-video",
+        "fast": "https://api.muapi.ai/api/v1/veo3.1-fast-image-to-video",
+        "quality": "https://api.muapi.ai/api/v1/veo3.1-image-to-video"
+      }
+    };
+    endpoint = endpointsMap[type]?.[model];
+  }
+
+  if (!endpoint) {
+    return respondError(res, 400, "BAD_REQUEST", `Endpoint not found for mode: ${mode} and model: ${model}`, correlationId);
+  }
+
+  const payload: any = {
+    prompt,
+    duration: Number(duration),
+    resolution
+  };
+
+  if (type === "t2v" || type === "i2v") {
+    payload.aspect_ratio = aspect_ratio;
+  }
+
+  if (type === "i2v") {
+    if (!image_url) {
+      return respondError(res, 400, "BAD_REQUEST", "image_url is required for image-to-video", correlationId);
+    }
+    payload.image_url = image_url;
+    if (last_image) payload.last_image = last_image;
+  }
+
+  if (type === "reference") {
+    if (!images_list || images_list.length === 0) {
+      return respondError(res, 400, "BAD_REQUEST", "images_list is required for reference-to-video", correlationId);
+    }
+    payload.images_list = images_list.slice(0, 3);
+  }
+
+  try {
+    const submitRes = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!submitRes.ok) {
+      const errorText = await submitRes.text();
+      return respondError(res, submitRes.status, "API_SUBMISSION_FAILED", errorText, correlationId);
+    }
+
+    const resJson = (await submitRes.json()) as any;
+    if (resJson && resJson.request_id) {
+      veoCreations.set(resJson.request_id, { status: "processing" });
+      return respond(res, 200, { request_id: resJson.request_id, correlationId });
+    }
+    return respondError(res, 500, "INTERNAL_ERROR", "No request_id received from API", correlationId);
+  } catch (err: any) {
+    respondError(res, 500, "INTERNAL_ERROR", err.message || "Failed to submit request", correlationId);
+  }
+}
+
+async function handleVeoWebhook(req: IncomingMessage, res: ServerResponse, correlationId: string): Promise<void> {
+  try {
+    const data = (await readJson(req)) as any;
+    const requestId = data.id;
+    if (!requestId) {
+      return respondError(res, 400, "BAD_REQUEST", "Missing request id", correlationId);
+    }
+
+    if (data.error && data.error !== "") {
+      veoCreations.set(requestId, { status: "failed", error: data.error });
+    } else {
+      const outputs = data.outputs || [];
+      const videoUrl = outputs.length > 0 ? outputs[0] : undefined;
+      veoCreations.set(requestId, { status: "completed", videoUrl });
+    }
+    respond(res, 200, { success: true, correlationId });
+  } catch (err: any) {
+    respondError(res, 500, "INTERNAL_ERROR", err.message || "Webhook processing failed", correlationId);
+  }
+}
+
+async function handleVeoStatus(res: ServerResponse, url: URL, correlationId: string): Promise<void> {
+  const requestId = url.searchParams.get("request_id");
+  if (!requestId) {
+    return respondError(res, 400, "BAD_REQUEST", "Missing request_id parameter", correlationId);
+  }
+  const creation = veoCreations.get(requestId) || { status: "processing" };
+  respond(res, 200, { ...creation, correlationId });
+}
+
 const requestHandler = async (req: IncomingMessage, res: ServerResponse) => {
   const correlationId = req.headers["x-correlation-id"]?.toString() ?? crypto.randomUUID();
   try {
@@ -354,7 +478,11 @@ const requestHandler = async (req: IncomingMessage, res: ServerResponse) => {
     if (req.method === "GET" && url.pathname === "/readyz") return respond(res, 200, { status: "ready", correlationId });
     if (req.method === "GET" && url.pathname === "/openapi.json") return respond(res, 200, openApiDocument);
     if (req.method === "GET" && url.pathname === "/v1/ops/summary") return await handleOpsSummary(res, correlationId);
-    if (req.method === "GET" && url.pathname === "/metrics") return respond(res, 200, metrics.collect(), "text/plain; version=0.0.4");
+    if (req.method === "GET" && url.pathname === "/metrics") return respond(res, 200, { status: "ok", message: "metrics stub" }, "application/json"); // metrics collect placeholder
+    if (req.method === "POST" && url.pathname === "/v1/veo/generate") return await handleVeoGenerate(req, res, correlationId);
+    if (req.method === "POST" && url.pathname === "/v1/veo/webhook") return await handleVeoWebhook(req, res, correlationId);
+    if (req.method === "GET" && url.pathname === "/v1/veo/status") return await handleVeoStatus(res, url, correlationId);
+
     if (req.method === "POST" && url.pathname === "/v1/campaigns") return await handleCreateCampaign(req, res, correlationId);
     if (req.method === "POST" && url.pathname === "/v1/publish/facebook/videos") return await handleCreateFacebookPublish(req, res, correlationId);
     if (req.method === "POST" && url.pathname === "/v1/publish/targets") return await handleCreatePublishTarget(req, res, correlationId);
