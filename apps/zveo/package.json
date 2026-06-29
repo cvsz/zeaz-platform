@@ -59,7 +59,7 @@
     "verify:node": "pnpm build:node && pnpm typecheck:node && pnpm test:node"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "drizzle-kit": "^0.31.4",
     "pg": "^8.22.0"
   }
