@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -84,11 +84,10 @@ jobs:
 
       - name: Upload Terraform plan artifacts
         if: ${{ hashFiles('terraform/**/*.tfplan', 'terraform/**/plan-*.txt') != '' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-artifacts
           if-no-files-found: warn
           path: |
             terraform/**/*.tfplan
             terraform/**/plan-*.txt
-          if-no-files-found: warn
