@@ -61,7 +61,7 @@ const AssetRecordSchema = z.object({
   bytes: z.number().int().positive(),
   sha256: z.string().regex(/^[a-f0-9]{64}$/),
   version: z.number().int().positive(),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
 });
 
 const ExportProfileSchema = z.object({
@@ -122,7 +122,13 @@ const PipelineCommandSchema = z.object({
     maxDelayMs: z.number().int().min(1_000).max(3_600_000).default(120_000),
     jitterRatio: z.number().min(0).max(1).default(0.25),
     retryableCodes: z.array(z.string().min(1)).default(["RATE_LIMITED", "PROVIDER_TIMEOUT", "LEASE_LOST", "TRANSIENT_STORAGE"]),
-  }).default({}),
+  }).default({
+    maxAttempts: 5,
+    baseDelayMs: 1_000,
+    maxDelayMs: 120_000,
+    jitterRatio: 0.25,
+    retryableCodes: ["RATE_LIMITED", "PROVIDER_TIMEOUT", "LEASE_LOST", "TRANSIENT_STORAGE"],
+  }),
   requestedBy: z.string().uuid(),
 });
 
@@ -142,7 +148,7 @@ const StageCheckpointSchema = z.object({
   ]),
   idempotencyKey: z.string().min(8).max(512),
   artifactKeys: z.array(z.string().min(1).max(2048)),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   completedAt: z.string(),
 });
 
