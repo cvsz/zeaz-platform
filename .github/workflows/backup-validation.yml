@@ -33,7 +33,7 @@ jobs:
 
       - name: Upload backup artifacts
         if: ${{ hashFiles('backups/snapshots/**', 'reports/backup/**') != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backup-snapshots
           if-no-files-found: warn
