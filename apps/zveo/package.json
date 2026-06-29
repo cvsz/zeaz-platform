@@ -2,6 +2,11 @@
   "name": "zveo",
   "private": true,
   "packageManager": "pnpm@10.12.1",
+  "pnpm": {
+    "overrides": {
+      "ioredis": "^5.11.1"
+    }
+  },
   "engines": {
     "node": ">=24"
   },

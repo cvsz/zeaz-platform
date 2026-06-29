@@ -156,7 +156,13 @@ export const workflowSubmissionSchema = z.object({
   priority: z.number().int().min(0).max(100).default(50),
   renderProvider: renderProviderSchema,
   sceneGraph: sceneGraphSchema,
-  retryPolicy: retryPolicySchema.default({}),
+  retryPolicy: retryPolicySchema.default({
+    maxAttempts: 5,
+    baseDelayMs: 1_000,
+    maxDelayMs: 120_000,
+    jitterRatio: 0.25,
+    retryableCodes: ["RATE_LIMITED", "PROVIDER_TIMEOUT", "LEASE_LOST", "TRANSIENT_STORAGE"],
+  }),
 });
 
 export const renderJobPayloadSchema = z.object({
@@ -196,7 +202,7 @@ export const assetRecordSchema = z.object({
   bytes: z.number().int().positive(),
   sha256: z.string().regex(/^[a-f0-9]{64}$/),
   version: z.number().int().positive(),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export type WorkflowState = z.infer<typeof workflowStateSchema>;
