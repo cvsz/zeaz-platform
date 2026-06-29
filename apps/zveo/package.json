@@ -2,10 +2,12 @@
   "name": "zveo",
   "private": true,
   "packageManager": "pnpm@10.12.1",
-  "pnpm": {
-    "overrides": {
-      "ioredis": "^5.11.1"
-    }
+  "overrides": {
+    "ioredis": "^5.11.1",
+    "postcss": "8.5.15",
+    "js-yaml": "4.1.0",
+    "esbuild": "0.28.1",
+    "prismjs": "1.29.0"
   },
   "engines": {
     "node": ">=24"
