@@ -19,8 +19,8 @@ importers:
         specifier: ^8.22.0
         version: 8.22.0
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   apps/api-gateway:
     dependencies:
@@ -53,8 +53,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   apps/dashboard:
     dependencies:
@@ -87,8 +87,8 @@ importers:
         specifier: ^19.1.0
         version: 19.2.3(@types/react@19.2.17)
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   apps/render-worker:
     dependencies:
@@ -115,8 +115,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/ai-script-generator:
     dependencies:
@@ -131,8 +131,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/contracts:
     dependencies:
@@ -144,8 +144,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/core:
     dependencies:
@@ -160,8 +160,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/db:
     dependencies:
@@ -173,8 +173,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/media-pipeline:
     dependencies:
@@ -192,8 +192,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/prompt-compiler:
     dependencies:
@@ -211,8 +211,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/providers:
     dependencies:
@@ -227,8 +227,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/publisher-meta:
     dependencies:
@@ -243,8 +243,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/queue-ts:
     dependencies:
@@ -268,8 +268,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/scene-graph:
     devDependencies:
@@ -277,8 +277,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/scene-memory:
     dependencies:
@@ -293,8 +293,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/telemetry-ts:
     dependencies:
@@ -306,8 +306,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
   packages/workflow-engine:
     dependencies:
@@ -322,8 +322,8 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       typescript:
-        specifier: ^5.8.3
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
 packages:
 
@@ -1284,8 +1284,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2000,7 +2000,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   undici-types@7.24.6: {}
 
