@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { assertTransferRequest, type TransferRequest } from '@zwallet/shared-types/wallet';
-import { logAuditEvent } from '@zwallet/packages/events/audit';
+import { logAuditEvent } from '@zwallet/events';
 
 
 export interface TransferPreview { id: string; digest: string; canonical: string }

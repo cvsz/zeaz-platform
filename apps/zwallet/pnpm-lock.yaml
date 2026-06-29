@@ -158,6 +158,9 @@ importers:
 
   services/wallet-engine:
     dependencies:
+      '@zwallet/events':
+        specifier: workspace:*
+        version: link:../../packages/events
       '@zwallet/rpc':
         specifier: workspace:*
         version: link:../../packages/rpc

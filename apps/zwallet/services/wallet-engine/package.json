@@ -12,6 +12,7 @@
     "./walletEngine": "./src/walletEngine.ts"
   },
   "dependencies": {
+    "@zwallet/events": "workspace:*",
     "@zwallet/rpc": "workspace:*",
     "@zwallet/shared-types": "workspace:*"
   }

@@ -42,7 +42,12 @@ export class MPCWallet {
         throw new Error("Mismatched share lengths");
       }
       for (let i = 0; i < baseLength; i += 1) {
-        combined[i] ^= share[i];
+        const sourceByte = share[i];
+        const combinedByte = combined[i];
+        if (sourceByte === undefined || combinedByte === undefined) {
+          throw new Error("Mismatched share lengths");
+        }
+        combined[i] = combinedByte ^ sourceByte;
       }
     }
     return combined;

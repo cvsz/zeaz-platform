@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { z } from "zod";
 
 const HexAddress = z.string().regex(/^0x[a-fA-F0-9]{40}$/);
@@ -38,7 +38,7 @@ export class EVMSigner {
       );
       const digest = createHash("sha256").update(payload).digest();
       const sig = secp256k1.sign(digest, keyCopy, { lowS: true });
-      return Buffer.from(sig.toCompactRawBytes()).toString("hex");
+      return Buffer.from(sig).toString("hex");
     } finally {
       keyCopy.fill(0);
     }
