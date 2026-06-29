@@ -258,5 +258,43 @@ export const buildApp = (deps: Deps = {}) => {
     return { flow: ['wallet', 'sign', 'swap', 'broadcast', 'index', 'display'], wallet, policy, quote: quoteBody.quote, execution: executeBody, portfolio };
   });
 
+  app.get('/v1/credits/balance', { preHandler: [authGuard] }, async (req: any) => {
+    const credits = await state.getUserCredits(req.user.sub);
+    return { credits };
+  });
+
+  app.post('/v1/credits/deduct', { preHandler: [authGuard] }, async (req: any, reply) => {
+    const body = req.body as Record<string, unknown>;
+    const amount = Number(body?.amount);
+    if (!amount || amount <= 0) return reply.code(400).send({ error: 'invalid_amount' });
+    try {
+      const remaining = await state.deductUserCredits(req.user.sub, amount);
+      return { success: true, remaining };
+    } catch (e: any) {
+      return reply.code(403).send({ error: 'insufficient_credits' });
+    }
+  });
+
+  app.post('/v1/billing/checkout', { preHandler: [authGuard] }, async (req: any, reply) => {
+    const body = req.body as Record<string, unknown>;
+    const planId = String(body?.planId || 'basic');
+    const sessionUrl = `https://checkout.stripe.com/pay/cs_test_${randomUUID()}`;
+    return { sessionUrl, planId };
+  });
+
+  app.post('/v1/billing/webhook', async (req: any, reply) => {
+    const body = req.body as any;
+    const type = body?.type;
+    if (type === 'checkout.session.completed') {
+      const userId = body?.data?.object?.metadata?.userId;
+      const amount = Number(body?.data?.object?.metadata?.credits || 100);
+      if (userId) {
+        await state.addUserCredits(userId, amount);
+        return { success: true };
+      }
+    }
+    return { received: true };
+  });
+
   return app;
 };

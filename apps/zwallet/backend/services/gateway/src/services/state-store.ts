@@ -63,4 +63,24 @@ export class GatewayStateStore {
     if (!item) return null;
     return JSON.parse(item) as TxLifecycleState;
   }
+
+  async getUserCredits(userId: string): Promise<number> {
+    const credits = await this.redis.get(`credits:${userId}`);
+    return credits ? parseInt(credits, 10) : 100;
+  }
+
+  async deductUserCredits(userId: string, amount: number): Promise<number> {
+    const current = await this.getUserCredits(userId);
+    if (current < amount) throw new Error("Insufficient credits");
+    const next = current - amount;
+    await this.redis.set(`credits:${userId}`, String(next));
+    return next;
+  }
+
+  async addUserCredits(userId: string, amount: number): Promise<number> {
+    const current = await this.getUserCredits(userId);
+    const next = current + amount;
+    await this.redis.set(`credits:${userId}`, String(next));
+    return next;
+  }
 }
