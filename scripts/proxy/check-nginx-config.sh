@@ -5,7 +5,7 @@ IFS=$'\n\t'
 trap 'echo "ERROR: ${0##*/} failed at line $LINENO" >&2' ERR
 usage(){ echo 'Usage: check-nginx-config.sh [--config PATH]'; }
 
-config=infrastructure/nginx/zeaz-platform.conf
+config=infra/nginx/zeaz-platform.conf
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --config) config="${2:?missing config}"; shift 2;;

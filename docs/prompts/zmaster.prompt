@@ -331,7 +331,7 @@ Tasks:
 Tasks:
 1. Inspect existing Nginx, Caddy, and Traefik configs.
 2. Prefer existing project standard.
-3. If no standard exists, generate infrastructure/nginx/zeaz-platform.conf.
+3. If no standard exists, generate infra/nginx/zeaz-platform.conf.
 4. Map all public domains to canonical localhost app ports.
 5. Add WebSocket upgrade support.
 6. Add proxy headers: Host, real client IP, forwarded-for, and forwarded-proto.
