@@ -22,7 +22,7 @@ numpy==1.26.4
 pandas==2.2.1
 prometheus-client==0.20.0
 prometheus-fastapi-instrumentator==8.0.0
-google-auth==2.37.0
+google-auth==2.55.0
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.2.0
 qrcode==8.2
