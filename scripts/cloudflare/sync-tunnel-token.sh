@@ -83,12 +83,11 @@ if [[ -z "${TUNNEL_TOKEN}" ]]; then
   exit 1
 fi
 
-log "Generated CLOUDFLARE_TUNNEL_TOKEN (${#TUNNEL_TOKEN} chars, starts with ${TUNNEL_TOKEN:0:10}...)"
+log "Generated CLOUDFLARE_TUNNEL_TOKEN (${#TUNNEL_TOKEN} chars)"
 
 # ── Step 4: Write or print ──────────────────────────────────────────────────
 if [[ "${DRY_RUN}" == "true" ]]; then
-  log "[DRY-RUN] Would write to ${ENV_FILE}:"
-  echo "CLOUDFLARE_TUNNEL_TOKEN=${TUNNEL_TOKEN}"
+  log "[DRY-RUN] Would write CLOUDFLARE_TUNNEL_TOKEN to ${ENV_FILE}"
   exit 0
 fi
 

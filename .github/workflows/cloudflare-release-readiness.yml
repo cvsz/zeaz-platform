@@ -18,15 +18,12 @@ on:
 permissions:
   contents: read
 
-permissions:
-  contents: read
-
 jobs:
   release-readiness:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - name: Bash syntax check
         run: bash -n infra/cloudflare/scripts/*.sh && bash -n scripts/workflow-policy.sh
       - name: Check release readiness

@@ -7,7 +7,7 @@ required_env:
   - ORIGIN_HOSTS
   - PRIMARY_DOMAIN
 
-tunnel: ef0355dd-8e90-4563-a5b3-06b24f2e3b01
+tunnel: ${CLOUDFLARE_TUNNEL_ID}
 failover_origins_from: ORIGIN_HOSTS
 
 ingress:

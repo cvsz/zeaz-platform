@@ -1,5 +1,5 @@
-tunnel: 45667e7e-7383-4265-b53e-6a9e770a8554
-credentials-file: /home/zeazdev/.cloudflared/45667e7e-7383-4265-b53e-6a9e770a8554.json
+tunnel: ${CLOUDFLARE_TUNNEL_ID}
+credentials-file: ${CLOUDFLARE_TUNNEL_CREDENTIALS_FILE}
 protocol: http2
 
 originRequest:

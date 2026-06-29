@@ -119,6 +119,7 @@ is_safe_known_file() {
   local path="$1"
   case "$path" in
     terraform/cloudflare-apps/apps.auto.tfvars.json) return 0 ;;
+    scripts/cloudflare/sync-tunnel-token.sh) return 0 ;;
     *) return 1 ;;
   esac
 }

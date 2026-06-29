@@ -26,7 +26,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Bash syntax check
         run: bash -n scripts/workflow-policy.sh && bash -n infra/cloudflare/scripts/*.sh

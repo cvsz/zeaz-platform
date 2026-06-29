@@ -4,6 +4,7 @@ IFS=$'\n\t'
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # shellcheck source=../lib/gemini-sandbox.sh
+# shellcheck disable=SC1091
 source "${ROOT_DIR}/scripts/lib/gemini-sandbox.sh"
 gemini_init_sandbox_paths "${ROOT_DIR}"
 

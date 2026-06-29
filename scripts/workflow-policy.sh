@@ -23,11 +23,31 @@ search_workflows() {
   shift || true
 
   if command -v rg >/dev/null 2>&1; then
+    if [[ "${1:-}" == "-qE" ]]; then
+      shift
+      rg -q -e "$1" "$pattern"
+      return $?
+    fi
+    if [[ "${1:-}" == "-q" ]]; then
+      shift
+      rg -q "$1" "$pattern"
+      return $?
+    fi
     rg "$@" "$pattern"
     return $?
   fi
 
   grep -E "$@" "$pattern"
+}
+
+workflow_has_contents_read_permission() {
+  local workflow_file="$1"
+  awk '
+    /^permissions:/ { in_permissions=1; next }
+    in_permissions && /^[[:alnum:]_-]+:/ { in_permissions=0 }
+    in_permissions && /^[[:space:]]+contents:[[:space:]]*read([[:space:]]*)$/ { found=1 }
+    END { exit(found ? 0 : 1) }
+  ' "$workflow_file"
 }
 
 find_root() {
@@ -202,7 +222,7 @@ while IFS= read -r workflow_file; do
     if ! search_workflows "$workflow_file" -q 'permissions:'; then
       printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must have explicit permissions"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
-    elif ! awk '/^permissions:/, /^[a-zA-Z]/ { if ($0 ~ /contents: read/) found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
+    elif ! workflow_has_contents_read_permission "$workflow_file"; then
       printf '{"level":"ERROR","file":"%s","msg":"release-readiness workflow must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
@@ -218,7 +238,7 @@ while IFS= read -r workflow_file; do
 
   # Specific checks for Phase 12 manual release approval workflow
   if [[ "$workflow_base" == "cloudflare-manual-release-approval.yml" ]]; then
-    if ! search_workflows "$workflow_file" -q 'permissions:[[:space:]]*\n[[:space:]]*contents: read'; then
+    if ! workflow_has_contents_read_permission "$workflow_file"; then
       printf '{"level":"ERROR","file":"%s","msg":"cloudflare-manual-release-approval.yml must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
@@ -238,7 +258,7 @@ while IFS= read -r workflow_file; do
 
   # Specific checks for Phase 13 break-glass governance workflow
   if [[ "$workflow_base" == "cloudflare-break-glass-governance.yml" ]]; then
-    if ! search_workflows "$workflow_file" -q 'permissions:[[:space:]]*\n[[:space:]]*contents: read'; then
+    if ! workflow_has_contents_read_permission "$workflow_file"; then
       printf '{"level":"ERROR","file":"%s","msg":"cloudflare-break-glass-governance.yml must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
@@ -259,7 +279,7 @@ while IFS= read -r workflow_file; do
     if ! search_workflows "$workflow_file" -q 'permissions:'; then
       printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must have explicit permissions"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
-    elif ! awk '/^permissions:/, /^[a-zA-Z]/ { if ($0 ~ /contents: read/) found=1 } END { exit(found ? 0 : 1) }' "$workflow_file"; then
+    elif ! workflow_has_contents_read_permission "$workflow_file"; then
       printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must have permissions: contents: read"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
@@ -271,7 +291,7 @@ while IFS= read -r workflow_file; do
       printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must run compare-runtime-baseline.sh"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi
-    if ! search_workflows "$workflow_file" -q 'validate-cloudflare-config\.sh.*--runtime-baseline'; then
+    if ! grep -q 'validate-cloudflare-config\.sh' "$workflow_file" || ! grep -q -- '--runtime-baseline' "$workflow_file"; then
       printf '{"level":"ERROR","file":"%s","msg":"runtime-baseline workflow must run validate-cloudflare-config.sh --runtime-baseline"}\n' "${workflow_file#"${ROOT_DIR}"/}" >&2
       fail_count=$((fail_count + 1))
     fi

@@ -86,6 +86,9 @@ extract_hostname() {
   # YAML: hostname: xxx.zeaz.dev
   if [[ "$line" =~ hostname:[[:space:]]*(.+)$ ]]; then
     hostname="${BASH_REMATCH[1]}"
+  # Wrangler: zone_name = "zeaz.dev" is ownership metadata, not a route.
+  elif [[ "$line" =~ zone_name[[:space:]]*= ]]; then
+    hostname=""
   # Terraform: name = "xxx.zeaz.dev"
   elif [[ "$line" =~ name[[:space:]]*=[[:space:]]*\"(.+)\" ]]; then
     hostname="${BASH_REMATCH[1]}"
