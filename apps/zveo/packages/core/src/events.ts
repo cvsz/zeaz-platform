@@ -27,7 +27,7 @@ export const eventEnvelopeSchema = z.object({
   causationId: uuidSchema.optional(),
   actorId: uuidSchema.optional(),
   schemaVersion: z.literal(1),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
 });
 
 export const workflowStateChangedPayloadSchema = z.object({

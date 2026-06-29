@@ -67,7 +67,13 @@ export const pipelineCommandSchema = z.object({
   beatMarkers: z.array(beatMarkerSchema).max(10_000).default([]),
   subtitleCues: z.array(subtitleCueSchema).max(50_000).default([]),
   voiceoverAsset: assetRecordSchema.optional(),
-  retryPolicy: retryPolicySchema.default({}),
+  retryPolicy: retryPolicySchema.default({
+    maxAttempts: 5,
+    baseDelayMs: 1_000,
+    maxDelayMs: 120_000,
+    jitterRatio: 0.25,
+    retryableCodes: ["RATE_LIMITED", "PROVIDER_TIMEOUT", "LEASE_LOST", "TRANSIENT_STORAGE"],
+  }),
   requestedBy: uuidSchema,
 });
 
@@ -75,7 +81,7 @@ export const stageCheckpointSchema = z.object({
   stage: pipelineStageSchema,
   idempotencyKey: z.string().trim().min(8).max(512),
   artifactKeys: z.array(z.string().trim().min(1).max(2048)).default([]),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
   completedAt: z.string().datetime({ offset: true }),
 });
 

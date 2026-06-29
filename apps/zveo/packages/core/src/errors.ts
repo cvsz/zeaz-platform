@@ -7,7 +7,7 @@ export const classifiedErrorSchema = z.object({
   severity: errorSeveritySchema,
   message: z.string().trim().min(1).max(4096),
   retryable: z.boolean(),
-  details: z.record(z.unknown()).default({}),
+  details: z.record(z.string(), z.unknown()).default({}),
 });
 
 export type ErrorSeverity = z.infer<typeof errorSeveritySchema>;

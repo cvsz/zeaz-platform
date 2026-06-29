@@ -8,7 +8,7 @@ export interface PublishTarget { id: string; tenantId: string; provider: "facebo
 export interface PublishJob { id: string; tenantId: string; workflowId: string; assetId: string; targetId: string; provider: "facebook"; state: PublishState; caption: string; remotePostId?: string; remoteVideoId?: string; lastError?: string; createdAt: string; updatedAt: string; }
 export interface PublishEvent { id: string; tenantId: string; publishJobId: string; name: string; payload: Record<string, unknown>; correlationId: string; occurredAt: string; }
 
-const targetInputSchema = z.object({ tenantId: z.string().uuid(), provider: z.literal("facebook"), pageId: z.string().min(1), displayName: z.string().min(1), encryptedAccessTokenRef: z.string().min(1), metadata: z.record(z.unknown()).default({}) });
+const targetInputSchema = z.object({ tenantId: z.string().uuid(), provider: z.literal("facebook"), pageId: z.string().min(1), displayName: z.string().min(1), encryptedAccessTokenRef: z.string().min(1), metadata: z.record(z.string(), z.unknown()).default({}) });
 const createJobSchema = z.object({ tenantId: z.string().uuid(), workflowId: z.string().uuid(), assetId: z.string().uuid(), targetId: z.string().uuid(), caption: z.string().max(2200), correlationId: z.string().uuid() });
 
 export class InMemoryPublisherStore {
