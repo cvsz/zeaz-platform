@@ -14,7 +14,7 @@
     "@zveo/core": "workspace:*",
     "@zveo/queue": "workspace:*",
     "@zveo/scene-graph": "workspace:*",
-    "zod": "^3.24.4",
+    "zod": "^4.4.3",
     "@zveo/media-pipeline": "workspace:*",
     "@zveo/ai-script-generator": "workspace:*",
     "@zveo/publisher-meta": "workspace:*"

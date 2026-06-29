@@ -15,7 +15,7 @@
     "@zveo/core": "workspace:*",
     "@zveo/queue": "workspace:*",
     "@zveo/prompt-compiler": "workspace:*",
-    "zod": "^3.24.4",
+    "zod": "^4.4.3",
     "@zveo/providers": "workspace:*"
   },
   "devDependencies": {
