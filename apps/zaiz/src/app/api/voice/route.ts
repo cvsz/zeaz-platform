@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: auth.error ?? "Unauthorized" }, { status: auth.status });
   }
 
-  let body: { action?: string; text?: string; voice?: string; speed?: number; audioBase64?: string };
+  let body: { action?: string; text?: string; voice?: string; speed?: number; audioBase64?: string; model?: string };
   try {
     body = await req.json();
   } catch {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       if (!result.ok || !result.buffer) {
         return NextResponse.json({ error: result.error ?? "Local TTS failed." }, { status: 500 });
       }
-      return new NextResponse(result.buffer, {
+      return new NextResponse(result.buffer as any, {
         status: 200,
         headers: { "Content-Type": "audio/wav", "Content-Length": result.buffer.length.toString(), "Cache-Control": "no-cache" },
       });
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     if (!result.ok || !result.buffer) {
       return NextResponse.json({ error: result.error ?? "TTS failed." }, { status: 500 });
     }
-    return new NextResponse(result.buffer, {
+    return new NextResponse(result.buffer as any, {
       status: 200,
       headers: {
         "Content-Type": "audio/wav",

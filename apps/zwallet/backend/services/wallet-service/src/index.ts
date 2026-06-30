@@ -1,8 +1,11 @@
 import Fastify from 'fastify';
 import { createHash } from 'node:crypto';
+import creditRoutes from './routes/credit.js';
 
 const app = Fastify({ logger: true });
 app.get('/health', async () => ({ service: 'wallet-service', status: 'ok', timestamp: new Date().toISOString() }));
+
+app.register(creditRoutes);
 
 app.post<{ Body: { userId: string; chain: string } }>('/v1/wallets/default', async (req) => {
   const seed = `${req.body.userId}:${req.body.chain}`;

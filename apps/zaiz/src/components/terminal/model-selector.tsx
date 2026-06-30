@@ -23,6 +23,7 @@ const CATEGORY_ICON: Record<ModelCategory, typeof Cpu> = {
   long: Inf,
   vision: Eye,
   legacy: Search,
+  local: Cpu,
 };
 
 function SpeedMeter({ speed }: { speed: number }) {
