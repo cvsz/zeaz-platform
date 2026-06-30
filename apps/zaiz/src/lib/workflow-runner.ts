@@ -1,7 +1,7 @@
 import { composeSystemPrompt, runStream, type ChatMessage, type SkillId } from "./glm";
 import { AGENT_MAP } from "./agents";
 import type { Workflow, WorkflowNode, WorkflowEvent } from "./workflows";
-import { WORKFLOW_MAP } from "./workflows";
+import { WORKFLOW_MAP, WORKFLOWS } from "./workflows";
 
 /**
  * Workflow runner — server-only.
