@@ -206,7 +206,7 @@ start_route() {
         npm) cmd="HOST=$HOST_BIND PORT=$port npm run $script" ;;
       esac
       echo "START: $pm run $script app=$app_id port=$port"
-      (cd "$dir" && nohup bash -lc "$cmd" >> "$log_file" 2>&1 & echo $! > "$pid_file")
+      (cd "$dir" && nohup bash -lc "$cmd" </dev/null >> "$log_file" 2>&1 & echo $! > "$pid_file")
       sleep 1
       route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for"
       return 0
@@ -216,7 +216,7 @@ start_route() {
   if find "$dir" -maxdepth 2 -type f -name '*.py' | grep -q .; then
     if command -v uvicorn >/dev/null 2>&1 && [ -f "$dir/main.py" ]; then
       echo "START: uvicorn main:app app=$app_id port=$port"
-      (cd "$dir" && nohup uvicorn main:app --host "$HOST_BIND" --port "$port" >> "$log_file" 2>&1 & echo $! > "$pid_file")
+      (cd "$dir" && nohup uvicorn main:app --host "$HOST_BIND" --port "$port" </dev/null >> "$log_file" 2>&1 & echo $! > "$pid_file")
       sleep 1
       route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for"
       return 0
