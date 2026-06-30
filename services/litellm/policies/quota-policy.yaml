@@ -1,0 +1,54 @@
+version: 1
+metering:
+  source: zdash-billing
+  usage_record_model: UsageRecord
+  quota_service: quota_service.consume
+metrics:
+  - llm_requests
+  - prompt_tokens
+  - completion_tokens
+  - cached_tokens
+tiers:
+  free:
+    llm_requests_per_minute: 30
+    llm_requests_per_day: 500
+    prompt_tokens_per_day: 250000
+    completion_tokens_per_day: 250000
+    allowed_models:
+      - openai-gpt-4.1-mini
+      - gemini-2.5-flash
+  starter:
+    llm_requests_per_minute: 120
+    llm_requests_per_day: 5000
+    prompt_tokens_per_day: 1500000
+    completion_tokens_per_day: 1500000
+    allowed_models:
+      - openai-gpt-4.1-mini
+      - gemini-2.5-flash
+      - deepseek-chat
+  pro:
+    llm_requests_per_minute: 300
+    llm_requests_per_day: 25000
+    prompt_tokens_per_day: 12000000
+    completion_tokens_per_day: 12000000
+    allowed_models:
+      - openai-gpt-4.1-mini
+      - gemini-2.5-flash
+      - claude-3-5-sonnet
+      - deepseek-chat
+  enterprise:
+    llm_requests_per_minute: 1200
+    llm_requests_per_day: 250000
+    prompt_tokens_per_day: 100000000
+    completion_tokens_per_day: 100000000
+    allowed_models:
+      - openai-gpt-4.1-mini
+      - gemini-2.5-flash
+      - claude-3-5-sonnet
+      - deepseek-chat
+enforcement:
+  hard_fail_on_quota_exceeded: true
+  warning_threshold_ratio: 0.8
+  emit_events:
+    - usage.quota.warning
+    - usage.quota.exceeded

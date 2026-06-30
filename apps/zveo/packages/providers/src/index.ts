@@ -162,7 +162,7 @@ export class MuapiRenderProviderAdapter implements RenderProviderAdapter {
         const visualRefs = payload.continuity.visualReferences ?? [];
         const hasRefs = visualRefs.length > 0;
         
-        let targetEndpoint = `${this.endpoint.replace(/\/$/, "")}/v1/veo31/t2v/lite`;
+        let targetEndpoint = `${this.endpoint.replace(/\/$/, "")}/api/v1/veo3.1-lite-text-to-video`;
         const muapiPayload: Record<string, any> = {
           prompt: payload.prompt,
           duration: 8,
@@ -170,7 +170,7 @@ export class MuapiRenderProviderAdapter implements RenderProviderAdapter {
         };
 
         if (hasRefs) {
-          targetEndpoint = `${this.endpoint.replace(/\/$/, "")}/v1/veo31/reference`;
+          targetEndpoint = `${this.endpoint.replace(/\/$/, "")}/api/v1/veo3.1-reference-to-video`;
           muapiPayload.images_list = visualRefs.map(ref => ref.embeddingUri).slice(0, 3);
         }
 

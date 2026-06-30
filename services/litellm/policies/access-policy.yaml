@@ -1,0 +1,36 @@
+version: 1
+gateway:
+  hostname_env: LITELLM_GATEWAY_HOSTNAME
+  default_hostname: litellm.zeaz.dev
+  upstream_auth:
+    mode: forward-auth
+    provider: authentik
+    required_headers:
+      - X-authentik-email
+      - X-authentik-groups
+      - X-authentik-username
+identity:
+  allowed_email_domain_env: LITELLM_ALLOWED_EMAIL_DOMAIN
+  default_allowed_email_domain: zeaz.dev
+  required_groups:
+    - zveo-admin
+    - zveo-creator
+    - zveo-publisher
+    - zveo-analytics
+authorization:
+  publish_groups:
+    - zveo-admin
+    - zveo-publisher
+  draft_groups:
+    - zveo-admin
+    - zveo-creator
+    - zveo-publisher
+  read_only_groups:
+    - zveo-analytics
+denies:
+  wildcard_public_access: true
+  finance_group_passthrough: true
+headers:
+  user: CF-ZVEO-User
+  role: CF-ZVEO-Role
+  groups: CF-ZVEO-Groups

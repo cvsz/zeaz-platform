@@ -30,7 +30,16 @@ export async function validatePageToken(fetchImpl: typeof fetch, token: string, 
 }
 
 export class FacebookPublisherService {
-  constructor(private readonly store: InMemoryPublisherStore, private readonly fetchImpl: typeof fetch, private readonly env: { graphVersion: string; appSecret: string }) {}
+  private readonly store: InMemoryPublisherStore;
+  private readonly fetchImpl: typeof fetch;
+  private readonly env: { graphVersion: string; appSecret: string };
+
+  constructor(store: InMemoryPublisherStore, fetchImpl: typeof fetch, env: { graphVersion: string; appSecret: string }) {
+    this.store = store;
+    this.fetchImpl = fetchImpl;
+    this.env = env;
+  }
+
   createTarget(input: unknown): PublishTarget { const parsed = targetInputSchema.parse(input); const now = new Date().toISOString(); const target = { id: crypto.randomUUID(), ...parsed, createdAt: now, updatedAt: now }; this.store.targets.set(target.id, target); return target; }
   listTargets(tenantId: string): PublishTarget[] { return [...this.store.targets.values()].filter((it) => it.tenantId === tenantId); }
   createJob(input: unknown): PublishJob { const parsed = createJobSchema.parse(input); const target = this.store.targets.get(parsed.targetId); if (!target || target.tenantId !== parsed.tenantId) throw new Error("invalid publish target"); const now = new Date().toISOString(); const job: PublishJob = { id: crypto.randomUUID(), provider: "facebook", state: "queued", createdAt: now, updatedAt: now, ...parsed }; this.store.jobs.set(job.id, job); this.store.addEvent({ tenantId: job.tenantId, publishJobId: job.id, name: "publish.queued", payload: { state: job.state }, correlationId: parsed.correlationId }); return job; }

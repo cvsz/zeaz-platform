@@ -24,7 +24,7 @@ const payload: RenderJobPayload = {
 };
 
 test("createProviderRegistry throws for missing provider config in production", () => {
-  assert.throws(() => createProviderRegistry({ nodeEnv: "production", providerTimeoutMs: 10_000, veo: {}, googleFlow: {}, nanoBanana: {} }, logger), /Missing provider configuration for veo/);
+  assert.throws(() => createProviderRegistry({ nodeEnv: "production", providerTimeoutMs: 10_000, veo: {}, googleFlow: {}, nanoBanana: {} }, logger), /Missing API Key configuration for veo/);
 });
 
 test("createProviderRegistry allows mock mode for missing config", async () => {
@@ -34,7 +34,7 @@ test("createProviderRegistry allows mock mode for missing config", async () => {
 });
 
 test("executeProviderRender returns provider result via registry", async () => {
-  const fetchImpl: typeof fetch = async () => new Response(JSON.stringify({ providerJobId: "provider-job-123", status: "submitted", artifactUri: "s3://bucket/path.mp4", metadata: { accepted: true } }), { status: 200, headers: { "content-type": "application/json" } });
+  const fetchImpl: typeof fetch = async () => new Response(JSON.stringify({ request_id: "provider-job-123", status: "submitted", artifactUri: "s3://bucket/path.mp4", metadata: { accepted: true } }), { status: 200, headers: { "content-type": "application/json" } });
   const registry = createProviderRegistry({ nodeEnv: "production", providerTimeoutMs: 10_000, veo: { endpoint: "https://provider.local", apiKey: "token" }, googleFlow: { endpoint: "https://provider.local" }, nanoBanana: { endpoint: "https://provider.local" } }, logger, fetchImpl);
   const result = await executeProviderRender(registry, payload);
   assert.equal(result.providerJobId, "provider-job-123");
