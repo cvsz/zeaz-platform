@@ -268,19 +268,33 @@ EOF_REPORT
 
 run_routes() {
   write_report_header
+  local tmp_out="$RUNTIME_DIR/tmp_out.log"
   while IFS=$'\t' read -r app_id hostname path port role status origin alias_for; do
     [ -n "$app_id" ] || continue
     result=""
     case "$ACTION" in
-      start) result="$(start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" | tail -n 1)" ;;
-      stop) result="$(stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" | tail -n 1 || true)" ;;
-      restart) stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" >/dev/null 2>&1 || true; result="$(start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" | tail -n 1)" ;;
-      status|report) result="$(route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for")" ;;
+      start)
+        start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" > "$tmp_out" 2>&1
+        result="$(tail -n 1 "$tmp_out" || true)"
+        ;;
+      stop)
+        stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" > "$tmp_out" 2>&1
+        result="$(tail -n 1 "$tmp_out" || true)"
+        ;;
+      restart)
+        stop_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" >/dev/null 2>&1 || true
+        start_route "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for" > "$tmp_out" 2>&1
+        result="$(tail -n 1 "$tmp_out" || true)"
+        ;;
+      status|report)
+        result="$(route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for")"
+        ;;
       *) usage; exit 2 ;;
     esac
     echo "$result"
     printf '| `%s` | `%s` | `%s` | `%s` | `%s` | `%s` | `%s` | `%s` |\n' "$app_id" "$hostname" "${alias_for:-}" "$path" "$port" "$role" "$status" "${result//|/ }" >> "$REPORT"
   done < <(json_routes)
+  rm -f "$tmp_out"
   echo "PASS: wrote $REPORT"
 }
 
