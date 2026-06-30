@@ -60,7 +60,6 @@ export async function getDataInventory(keyHash: string): Promise<DataInventory> 
 
   const roleRecords = await db.apiKeyRole.findMany({
     where: { apiKeyId: keyHash },
-    include: { Role: false },
   });
 
   return {
