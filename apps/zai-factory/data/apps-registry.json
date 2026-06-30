@@ -1,7 +1,1311 @@
 {
-  "generated_at": "2026-06-20T07:16:50Z",
+  "generated_at": "2026-06-30T22:33:40.637Z",
   "source": "apps",
   "apps": [
+    {
+      "id": "ShipGenAI-ai_agents-ai-knowledge-base",
+      "path": "apps/ShipGenAI/ai_agents/ai-knowledge-base",
+      "package_name": "ai-knowledge-base",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/ai_agents/ai-knowledge-base/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-ai_agents-ai-travel-studio",
+      "path": "apps/ShipGenAI/ai_agents/ai-travel-studio",
+      "package_name": "ai-travel-studio",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/ai_agents/ai-travel-studio/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-ai_agents-my-podcast",
+      "path": "apps/ShipGenAI/ai_agents/my-podcast",
+      "package_name": "my-podcast",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/ai_agents/my-podcast/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-beauty_fashion-ai-hair-style-simulator",
+      "path": "apps/ShipGenAI/beauty_fashion/ai-hair-style-simulator",
+      "package_name": "ai-hair-style-simulator",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/beauty_fashion/ai-hair-style-simulator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-beauty_fashion-ai-professional-makeup-generator",
+      "path": "apps/ShipGenAI/beauty_fashion/ai-professional-makeup-generator",
+      "package_name": "ai-professional-makeup-generator",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/beauty_fashion/ai-professional-makeup-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-beauty_fashion-ai-tattoo-try-on",
+      "path": "apps/ShipGenAI/beauty_fashion/ai-tattoo-try-on",
+      "package_name": "ai-tattoo-try-on",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/beauty_fashion/ai-tattoo-try-on/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-beauty_fashion-ai-tryon",
+      "path": "apps/ShipGenAI/beauty_fashion/ai-tryon",
+      "package_name": "ai-tryon",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/beauty_fashion/ai-tryon/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-ecommerce-amazon-product-studio",
+      "path": "apps/ShipGenAI/ecommerce/amazon-product-studio",
+      "package_name": "amazon-product-studio",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/ecommerce/amazon-product-studio/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-ecommerce-pet-product-studio",
+      "path": "apps/ShipGenAI/ecommerce/pet-product-studio",
+      "package_name": "pet-product-studio",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/ecommerce/pet-product-studio/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-ecommerce-resale-photo-enhancer",
+      "path": "apps/ShipGenAI/ecommerce/resale-photo-enhancer",
+      "package_name": "resale-photo-enhancer",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/ecommerce/resale-photo-enhancer/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-home_real_estate-ai-real-estate-stager",
+      "path": "apps/ShipGenAI/home_real_estate/ai-real-estate-stager",
+      "package_name": "ai-real-estate-stager",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "npx prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "npx prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/home_real_estate/ai-real-estate-stager/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-home_real_estate-ai-room-declutter",
+      "path": "apps/ShipGenAI/home_real_estate/ai-room-declutter",
+      "package_name": "ai-room-declutter",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/home_real_estate/ai-room-declutter/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-image_generation-ai-headshot-generator",
+      "path": "apps/ShipGenAI/image_generation/ai-headshot-generator",
+      "package_name": "ai-headshot-generator",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/image_generation/ai-headshot-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-image_generation-ai-logo-studio",
+      "path": "apps/ShipGenAI/image_generation/ai-logo-studio",
+      "package_name": "ai-logo-studio",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/image_generation/ai-logo-studio/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-image_generation-ai-meme-generator",
+      "path": "apps/ShipGenAI/image_generation/ai-meme-generator",
+      "package_name": "ai-meme",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/image_generation/ai-meme-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-image_generation-clearmark-ai",
+      "path": "apps/ShipGenAI/image_generation/clearmark-ai",
+      "package_name": "clearmark-ai",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/image_generation/clearmark-ai/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-image_generation-nano-banana-generator",
+      "path": "apps/ShipGenAI/image_generation/nano-banana-generator",
+      "package_name": "nano-banana-template",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/image_generation/nano-banana-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-image_generation-old-photo-restore",
+      "path": "apps/ShipGenAI/image_generation/old-photo-restore",
+      "package_name": "old-photo-restore",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/image_generation/old-photo-restore/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Free-AI-Social-Media-Scheduler",
+      "path": "apps/ShipGenAI/platforms/Free-AI-Social-Media-Scheduler",
+      "package_name": "free-ai-social-media-scheduler",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/platforms/Free-AI-Social-Media-Scheduler/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-AI-Design-Agent-client",
+      "path": "apps/ShipGenAI/platforms/Open-AI-Design-Agent/client",
+      "package_name": "open-muapi-assistant",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "set NODE_OPTIONS=--max-old-space-size=4096 && next dev",
+        "dev:turbo": "set NODE_OPTIONS=--max-old-space-size=4096 && next dev --turbo",
+        "build": "next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/platforms/Open-AI-Design-Agent/client/next.config.mjs",
+        "apps/ShipGenAI/platforms/Open-AI-Design-Agent/client/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-AI-Design-Agent",
+      "path": "apps/ShipGenAI/platforms/Open-AI-Design-Agent",
+      "package_name": "open-ai-design-agent-monorepo",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "dev:app": "npm run dev -w client",
+        "build:app": "npm run build -w client",
+        "build:lib": "npm run build -w packages/design-agent",
+        "install:all": "npm install"
+      },
+      "configs": [
+        "apps/ShipGenAI/platforms/Open-AI-Design-Agent/docker-compose.yml"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-AI-Design-Agent-packages-design-agent",
+      "path": "apps/ShipGenAI/platforms/Open-AI-Design-Agent/packages/design-agent",
+      "package_name": "design-agent",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build:css": "tailwindcss -i ./src/tailwind.css -o ./dist/tailwind.css --minify",
+        "build": "npm run build:css && babel src --out-dir dist --extensions .js,.jsx"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-Generative-AI",
+      "path": "apps/ShipGenAI/platforms/Open-Generative-AI",
+      "package_name": "open-generative-ai",
+      "version": "2.0.0",
+      "frameworks": [
+        "next",
+        "vite",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "build:studio": "npm run build -w studio",
+        "build:workflow": "npm run build -w workflow-builder",
+        "build:agent": "npm run build -w ai-agent",
+        "build:packages": "npm run build:workflow && npm run build:agent && npm run build:studio",
+        "setup": "git submodule update --init --recursive && npm install && npm run build:packages",
+        "vite:dev": "vite",
+        "vite:build": "vite build",
+        "electron:dev": "npm run vite:build && electron .",
+        "electron:build": "vite build && electron-builder --mac",
+        "electron:build:win": "vite build && electron-builder --win",
+        "electron:build:linux": "vite build && electron-builder --linux",
+        "electron:build:linux:dir": "vite build && electron-builder --linux dir",
+        "electron:build:linux:arm64:dir": "vite build && electron-builder --linux dir --arm64",
+        "stage:local-ai": "node scripts/stage-local-ai-binary.js",
+        "package:linux:deb": "node scripts/package-linux-deb.js",
+        "package:linux:deb:arm64": "node scripts/package-linux-deb.js --arch arm64",
+        "package:linux:deb:x64": "node scripts/package-linux-deb.js --arch x64",
+        "electron:build:all": "vite build && electron-builder --mac --win --linux"
+      },
+      "configs": [
+        "apps/ShipGenAI/platforms/Open-Generative-AI/next.config.mjs",
+        "apps/ShipGenAI/platforms/Open-Generative-AI/Dockerfile",
+        "apps/ShipGenAI/platforms/Open-Generative-AI/docker-compose.yml"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-Generative-AI-packages-studio",
+      "path": "apps/ShipGenAI/platforms/Open-Generative-AI/packages/studio",
+      "package_name": "studio",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build:css": "tailwindcss -i ./src/tailwind.css -o ./dist/tailwind.css --minify",
+        "build": "npm run build:css && babel src --out-dir dist --extensions .js,.jsx"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-Poe-AI-client",
+      "path": "apps/ShipGenAI/platforms/Open-Poe-AI/client",
+      "package_name": "vibe-agents-client",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/platforms/Open-Poe-AI/client/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-Poe-AI",
+      "path": "apps/ShipGenAI/platforms/Open-Poe-AI",
+      "package_name": "vibe-agents-monorepo",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "dev:app": "npm run dev -w client",
+        "build:app": "npm run build -w client",
+        "build:lib": "npm run build -w packages/agents",
+        "install:all": "npm install"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "ShipGenAI-platforms-Open-Poe-AI-packages-agents",
+      "path": "apps/ShipGenAI/platforms/Open-Poe-AI/packages/agents",
+      "package_name": "ai-agent",
+      "version": "1.0.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "build:css": "tailwindcss -i ./src/tailwind.css -o ./dist/tailwind.css --minify",
+        "build": "npm run build:css && babel src --out-dir dist --extensions .js,.jsx"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-business-card",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-business-card",
+      "package_name": "ai-business-card",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-business-card/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-character-studio",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-character-studio",
+      "package_name": "common-saas-template",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-character-studio/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-fitness-body-simulator",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-fitness-body-simulator",
+      "package_name": "common-saas-template",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-fitness-body-simulator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-kid-to-adult-prediction",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-kid-to-adult-prediction",
+      "package_name": "ai-kid-to-adult-prediction",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-kid-to-adult-prediction/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-pet-portrait",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-pet-portrait",
+      "package_name": "ai-pet-portrait",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-pet-portrait/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-royal-portrait",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-royal-portrait",
+      "package_name": "ai-royal-portrait",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-royal-portrait/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-ai-wedding-photo",
+      "path": "apps/ShipGenAI/portrait_avatar/ai-wedding-photo",
+      "package_name": "ai-wedding-photo",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/ai-wedding-photo/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-magicself-ai",
+      "path": "apps/ShipGenAI/portrait_avatar/magicself-ai",
+      "package_name": "magicself-ai",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/magicself-ai/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-portrait_avatar-open-character-ai",
+      "path": "apps/ShipGenAI/portrait_avatar/open-character-ai",
+      "package_name": "open-character-ai",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/portrait_avatar/open-character-ai/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-video_generation-Open-AI-Micro-Drama-Generator-client",
+      "path": "apps/ShipGenAI/video_generation/Open-AI-Micro-Drama-Generator/client",
+      "package_name": "microdrama-ai-client",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+      },
+      "configs": [
+        "apps/ShipGenAI/video_generation/Open-AI-Micro-Drama-Generator/client/next.config.js"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-video_generation-Open-AI-UGC",
+      "path": "apps/ShipGenAI/video_generation/Open-AI-UGC",
+      "package_name": "open-ai-ugc",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/video_generation/Open-AI-UGC/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-video_generation-ai-clipping-generator",
+      "path": "apps/ShipGenAI/video_generation/ai-clipping-generator",
+      "package_name": "aiclips-generator",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/video_generation/ai-clipping-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-video_generation-ai-kissing-video-generator",
+      "path": "apps/ShipGenAI/video_generation/ai-kissing-video-generator",
+      "package_name": "ai-kissing-video-generator",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "npx prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/video_generation/ai-kissing-video-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-video_generation-seedance-2-generator",
+      "path": "apps/ShipGenAI/video_generation/seedance-2-generator",
+      "package_name": "seedance-v2-template",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/video_generation/seedance-2-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-video_generation-veo4-video-generator",
+      "path": "apps/ShipGenAI/video_generation/veo4-video-generator",
+      "package_name": "veo31-generator",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/video_generation/veo4-video-generator/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-writing_content-ai-resume-builder",
+      "path": "apps/ShipGenAI/writing_content/ai-resume-builder",
+      "package_name": "ai-resume-builder",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/writing_content/ai-resume-builder/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-writing_content-blogger-cms",
+      "path": "apps/ShipGenAI/writing_content/blogger-cms",
+      "package_name": "blogger-cms",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+      },
+      "configs": [
+        "apps/ShipGenAI/writing_content/blogger-cms/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-writing_content-geo-checker",
+      "path": "apps/ShipGenAI/writing_content/geo-checker",
+      "package_name": "geo-checker",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/writing_content/geo-checker/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-writing_content-mail-wise",
+      "path": "apps/ShipGenAI/writing_content/mail-wise",
+      "package_name": "mail-wise",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/writing_content/mail-wise/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-writing_content-prompt-architect",
+      "path": "apps/ShipGenAI/writing_content/prompt-architect",
+      "package_name": "prompt-architect",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/writing_content/prompt-architect/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "ShipGenAI-writing_content-social-post",
+      "path": "apps/ShipGenAI/writing_content/social-post",
+      "package_name": "social-post",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint"
+      },
+      "configs": [
+        "apps/ShipGenAI/writing_content/social-post/next.config.mjs"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zai-coder-web",
+      "path": "apps/zai-coder/web",
+      "package_name": "open-webui",
+      "version": "0.9.6",
+      "frameworks": [
+        "vite",
+        "svelte"
+      ],
+      "scripts": {
+        "dev": "npm run pyodide:fetch && vite dev --host",
+        "dev:5050": "npm run pyodide:fetch && vite dev --port 5050",
+        "build": "npm run pyodide:fetch && vite build",
+        "build:watch": "npm run pyodide:fetch && vite build --watch",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "npm run lint:frontend ; npm run lint:types ; npm run lint:backend",
+        "lint:frontend": "eslint . --fix",
+        "lint:types": "npm run check",
+        "lint:backend": "pylint backend/",
+        "format": "prettier --plugin-search-dir --write \"**/*.{js,ts,svelte,css,md,html,json}\"",
+        "format:backend": "ruff format . --exclude .venv --exclude venv",
+        "i18n:parse": "i18next --config i18next-parser.config.ts && prettier --write \"src/lib/i18n/**/*.{js,json}\"",
+        "cy:open": "cypress open",
+        "test:frontend": "vitest --passWithNoTests",
+        "pyodide:fetch": "node scripts/prepare-pyodide.js"
+      },
+      "configs": [
+        "apps/zai-coder/web/vite.config.ts",
+        "apps/zai-coder/web/tsconfig.json",
+        "apps/zai-coder/web/Dockerfile"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
     {
       "id": "zai-factory",
       "path": "apps/zai-factory",
@@ -26,24 +1330,93 @@
       }
     },
     {
-      "id": "zaiz-.agent-skills-playwright-skill",
-      "path": "apps/zaiz/.agent/skills/playwright-skill",
-      "package_name": "playwright-skill",
-      "version": "4.1.0",
+      "id": "zai-factory-skills-vault",
+      "path": "apps/zai-factory/skills-vault",
+      "package_name": "@zeazdev/zai-factory-skills",
+      "version": "1.2.0",
       "frameworks": [
         "unknown"
       ],
       "scripts": {
-        "setup": "npm install && npx playwright install chromium",
-        "install-all-browsers": "npx playwright install chromium firefox webkit"
+        "build:catalog": "node scripts/build-catalog.js",
+        "validate:skills": "node scripts/validate-skills.js",
+        "check:catalog": "node scripts/check-catalog-drift.js",
+        "test": "node --test",
+        "doctor": "node ./bin/cli.js doctor",
+        "stats": "node ./bin/cli.js stats",
+        "zai:index": "node scripts/build-catalog.js",
+        "zai:validate": "node scripts/validate-skills.js",
+        "zai:install:global": "node ./bin/cli.js install --global",
+        "zai:install:factory": "node ./bin/cli.js install --zai-factory"
       },
       "configs": [],
       "factory": {
         "develop": true,
         "plan": true,
         "refactor": true,
-        "test": false,
+        "test": true,
         "build": false
+      }
+    },
+    {
+      "id": "zaiz",
+      "path": "apps/zaiz",
+      "package_name": "nextjs_tailwind_shadcn_ts",
+      "version": "0.2.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev -p 3000 2>&1 | tee dev.log",
+        "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+        "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
+        "lint": "eslint .",
+        "db:push": "prisma db push",
+        "db:generate": "prisma generate",
+        "db:migrate": "prisma migrate dev",
+        "db:reset": "prisma migrate reset"
+      },
+      "configs": [
+        "apps/zaiz/next.config.ts",
+        "apps/zaiz/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zchat",
+      "path": "apps/zchat",
+      "package_name": "ai-chat-fallback",
+      "version": "2.0.0",
+      "frameworks": [
+        "vite",
+        "react"
+      ],
+      "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "api": "node server/index.js",
+        "start": "vite",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
+      },
+      "configs": [
+        "apps/zchat/vite.config.js"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
+        "build": true
       }
     },
     {
@@ -178,6 +1551,51 @@
       }
     },
     {
+      "id": "zeaz-web",
+      "path": "apps/zeaz-web",
+      "package_name": "@zeaz/web",
+      "version": "1.0.0",
+      "frameworks": [
+        "next"
+      ],
+      "scripts": {
+        "dev": "next dev -p 3003",
+        "build": "NODE_ENV=production next build",
+        "start": "next start -p 3003",
+        "lint": "eslint"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zfbauto",
+      "path": "apps/zfbauto",
+      "package_name": "@zeaz/zfbauto",
+      "version": "1.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "start": "node src/server.js",
+        "dev": "node --watch src/server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
       "id": "zlms-app-assets-global-plugins-bootstrap-markdown",
       "path": "apps/zlms/app/assets/global/plugins/bootstrap-markdown",
       "package_name": "bootstrap-markdown",
@@ -254,6 +1672,204 @@
         "plan": true,
         "refactor": true,
         "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zsp-aitool--agent-skills-playwright-skill",
+      "path": "apps/zsp-aitool/.agent/skills/playwright-skill",
+      "package_name": "playwright-skill",
+      "version": "4.1.0",
+      "frameworks": [
+        "unknown"
+      ],
+      "scripts": {
+        "setup": "npm install && npx playwright install chromium",
+        "install-all-browsers": "npx playwright install chromium firefox webkit"
+      },
+      "configs": [],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zsp-aitool--agents-skills-remotion-to-hyperframes-assets-test-corpus-tier-1-title-card-remotion-src",
+      "path": "apps/zsp-aitool/.agents/skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src",
+      "package_name": "tier-1-title-card-remotion",
+      "version": "0.0.0",
+      "frameworks": [
+        "react"
+      ],
+      "scripts": {
+        "render": "remotion render TitleCard out/baseline.mp4"
+      },
+      "configs": [
+        "apps/zsp-aitool/.agents/skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zsp-aitool--agents-skills-remotion-to-hyperframes-assets-test-corpus-tier-2-multi-scene-remotion-src",
+      "path": "apps/zsp-aitool/.agents/skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src",
+      "package_name": "tier-2-multi-scene-remotion",
+      "version": "0.0.0",
+      "frameworks": [
+        "react"
+      ],
+      "scripts": {
+        "render": "remotion render MultiScene out/baseline.mp4"
+      },
+      "configs": [
+        "apps/zsp-aitool/.agents/skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zsp-aitool--agents-skills-remotion-to-hyperframes-assets-test-corpus-tier-3-data-driven-remotion-src",
+      "path": "apps/zsp-aitool/.agents/skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src",
+      "package_name": "tier-3-data-driven-remotion",
+      "version": "0.0.0",
+      "frameworks": [
+        "react"
+      ],
+      "scripts": {
+        "render": "remotion render Stargazed out/baseline.mp4"
+      },
+      "configs": [
+        "apps/zsp-aitool/.agents/skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": false
+      }
+    },
+    {
+      "id": "zsp-aitool-extension",
+      "path": "apps/zsp-aitool/extension",
+      "package_name": "zsp-aitool-extension",
+      "version": "0.1.0",
+      "frameworks": [
+        "vite"
+      ],
+      "scripts": {
+        "build": "vite build",
+        "dev": "vite build --watch",
+        "typecheck": "tsc --noEmit"
+      },
+      "configs": [
+        "apps/zsp-aitool/extension/vite.config.ts",
+        "apps/zsp-aitool/extension/tsconfig.json"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": false,
+        "build": true
+      }
+    },
+    {
+      "id": "zsp-aitool",
+      "path": "apps/zsp-aitool",
+      "package_name": "zeaz-platform",
+      "version": "0.1.0",
+      "frameworks": [
+        "next",
+        "react"
+      ],
+      "scripts": {
+        "dev": "next dev",
+        "build": "NODE_ENV=production next build",
+        "start": "next start",
+        "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0",
+        "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:migrate:deploy": "prisma migrate deploy",
+        "prisma:generate": "prisma generate",
+        "prisma:seed": "prisma db seed",
+        "postbuild": "bash scripts/fix-next-server-chunks.sh",
+        "test": "vitest run tests/smoke.test.ts tests/branding.test.ts tests/middleware.auth.test.ts tests/api/products.test.ts tests/api/hyperframes-compose.test.ts tests/api/tenant-isolation.test.ts tests/api/product-import-routes.test.ts tests/api/content-workflow-hardening.test.ts tests/product-validation.test.ts tests/url-safety.test.ts tests/services/ProductService.hardening.test.ts tests/services/AIContentService.test.ts tests/services/ExportService.test.ts tests/services/AuthValidation.test.ts tests/services/ProductService.test.ts tests/services/OCRService.test.ts tests/services/SimilarProductService.test.ts tests/services/hyperframes-script-service.test.ts tests/lib.hyperframes-billing.test.ts tests/hyperframes-sanitize.test.ts tests/export-panel-security.test.ts tests/api/hyperframes-render.test.ts tests/api/hyperframes-render-history.test.ts tests/api/hyperframes-render-status.test.ts tests/api/hyperframes-render-retry.test.ts tests/api/hyperframes-render-download.test.ts tests/api/hyperframes-render-download-token.test.ts tests/api/hyperframes-render-share.test.ts tests/api/hyperframes-render-thumbnail.test.ts tests/api/hyperframes-render-batch.test.ts tests/api/hyperframes-render-metrics.test.ts tests/api/hyperframes-quota.test.ts tests/api/hyperframes-social-export.test.ts tests/api/hyperframes-variants.test.ts tests/api/hyperframes-org-scope.test.ts tests/api/hyperframes-operator-controls.test.ts tests/api/hyperframes-script.test.ts tests/api/hyperframes-billing-gates.test.ts tests/api/hyperframes-brand-kit.test.ts tests/hyperframes-worker.test.ts tests/hyperframes-render-safety.test.ts tests/hyperframes-render-validation.test.ts tests/hyperframes-render-command.test.ts tests/hyperframes-render-smoke.test.ts tests/hyperframes-enqueue-smoke-job.test.ts tests/hyperframes-worker-trial-script.test.ts tests/hyperframes-live-queue-trial-script.test.ts tests/hyperframes-watchdog.test.ts tests/hyperframes-safe-rollback.test.ts tests/hyperframes-cleanup-timer.test.ts tests/hyperframes-worker-alerts.test.ts tests/hyperframes-subtitles.test.ts tests/hyperframes-asset-fetch.test.ts tests/hyperframes-render-quality.test.ts tests/hyperframes-render-inventory.test.ts tests/hyperframes-templates.test.ts tests/hyperframes-template-marketplace.test.ts tests/components/hyperframes-template-browser-static.test.ts tests/components/hyperframes-render-history-static.test.ts tests/components/hyperframes-dashboard-render-button-static.test.ts tests/components/hyperframes-quota-static.test.ts tests/components/hyperframes-upgrade-cta.test.tsx tests/components/final-ui-admin-hyperframes-audit.test.ts tests/components/full-ux-ui-final-release-static.test.ts tests/components/theme-mode-static.test.ts tests/components/all-menu-coverage-static.test.ts tests/components/background-color-select-static.test.ts tests/security/hyperframes-security.test.ts tests/components/growth-copy-safety-static.test.ts tests/docs/growth-runbook-static.test.ts tests/lib/shopee-open-api-config.test.ts tests/services/ShopeeOpenApiService.test.ts tests/api/shopee-open-api-status.test.ts tests/components/shopee-open-api-import-static.test.ts tests/scripts/db-schema-drift-check-static.test.ts tests/api/admin-analytics.test.ts tests/api/feedback-api.test.ts tests/components/growth-analytics-feedback-static.test.ts tests/api/usage-summary.test.ts tests/components/mobile-nav-coverage-static.test.ts tests/security/extension-permissions.test.ts tests/docs/enterprise-readiness-scale-plan-static.test.ts tests/security/security-compliance-static-scans.test.ts tests/scripts/backup-db-static.test.ts tests/runbooks/backup-restore-release-static.test.ts tests/services/BudgetService.test.ts tests/lib/rate-limit-distributed.test.ts tests/lib/marqeta-config.test.ts tests/services/MarqetaCoreApiService.test.ts tests/api/marqeta-status.test.ts tests/docs/marqeta-runbook-static.test.ts tests/security/marqeta-secret-redaction-static.test.ts tests/api/auth-routes.test.ts tests/api/templates-crud.test.ts tests/api/ocr-routes.test.ts tests/api/ai-generate-routes.test.ts tests/api/settings-route.test.ts tests/api/export-routes-headers.test.ts tests/components/dashboard-pages-states.test.tsx tests/docs/high-priority-test-coverage-static.test.ts tests/scripts/db-critical-schema-drift-static.test.ts tests/services/BackendMonitorService.test.ts tests/api/admin-backend-status.test.ts tests/components/admin-backend-monitor-static.test.tsx tests/scripts/backend-monitor-static.test.ts tests/security/backend-monitor-redaction-static.test.ts tests/services/AdminAuditLogService.test.ts tests/api/admin-audit-logs.test.ts tests/components/admin-audit-logs-static.test.tsx tests/security/admin-audit-redaction.test.ts",
+        "test:db": "vitest run tests/services/similar-isolation.test.ts",
+        "test:all": "npm run test && npm run test:db",
+        "test:security": "vitest run tests/security/hyperframes-security.test.ts",
+        "health": "bash scripts/health-zsp-aitool.sh",
+        "hyperframes:doctor": "bash scripts/hyperframes/doctor.sh",
+        "hyperframes:worker": "tsx scripts/hyperframes/render-worker.ts",
+        "hyperframes:worker:once": "tsx scripts/hyperframes/render-worker.ts --once",
+        "hyperframes:render-smoke": "tsx scripts/hyperframes/render-smoke.ts",
+        "hyperframes:enqueue-smoke-job": "tsx scripts/hyperframes/enqueue-smoke-job.ts",
+        "hyperframes:render-job-status": "tsx scripts/hyperframes/render-job-status.ts",
+        "hyperframes:test-render": "bash scripts/hyperframes/test-hyperframes-render.sh",
+        "hyperframes:worker:install-service": "bash scripts/hyperframes/install-worker-service.sh",
+        "hyperframes:worker:status": "bash scripts/hyperframes/worker-status.sh",
+        "hyperframes:worker:logs": "bash scripts/hyperframes/worker-logs.sh",
+        "hyperframes:worker:disable-service": "bash scripts/hyperframes/disable-worker-service.sh",
+        "hyperframes:queue-status": "tsx scripts/hyperframes/render-queue-status.ts",
+        "hyperframes:cleanup-renders": "tsx scripts/hyperframes/cleanup-renders.ts",
+        "hyperframes:recover-stale-jobs": "tsx scripts/hyperframes/recover-stale-jobs.ts",
+        "hyperframes:worker:trial": "bash scripts/hyperframes/worker-trial.sh",
+        "hyperframes:worker:live-trial": "bash scripts/hyperframes/live-queue-trial.sh",
+        "hyperframes:worker:preflight": "bash scripts/hyperframes/persistent-worker-preflight.sh",
+        "hyperframes:worker:enable-real": "bash scripts/hyperframes/enable-real-worker-daemon.sh",
+        "hyperframes:worker:disable-real": "bash scripts/hyperframes/disable-real-worker-daemon.sh",
+        "hyperframes:worker:watchdog": "tsx scripts/hyperframes/worker-watchdog.ts",
+        "hyperframes:worker:journal-summary": "bash scripts/hyperframes/worker-journal-summary.sh",
+        "hyperframes:diag": "bash scripts/hyperframes/diag.sh",
+        "hyperframes:safe-rollback": "bash scripts/hyperframes/safe-rollback.sh",
+        "hyperframes:worker:install-log-policy": "bash scripts/hyperframes/install-worker-log-policy.sh",
+        "hyperframes:ci:mock": "bash scripts/hyperframes/ci-mock.sh",
+        "hyperframes:ci:real": "bash scripts/hyperframes/ci-real.sh",
+        "hyperframes:render-inventory": "tsx scripts/hyperframes/render-inventory.ts",
+        "hyperframes:worker:alerts": "tsx scripts/hyperframes/worker-alerts.ts",
+        "hyperframes:worker:install-alert-timer": "bash scripts/hyperframes/install-worker-alert-timer.sh",
+        "hyperframes:cleanup:install-timer": "bash scripts/hyperframes/install-cleanup-timer.sh",
+        "hyperframes:cleanup:disable-timer": "bash scripts/hyperframes/disable-cleanup-timer.sh",
+        "hyperframes:cleanup:status": "bash scripts/hyperframes/cleanup-timer-status.sh",
+        "post-launch:status-summary": "bash scripts/post-launch/status-summary.sh",
+        "post-launch:smoke-routes": "bash scripts/post-launch/smoke-routes.sh",
+        "db:schema-drift-check": "tsx scripts/db/check-user-settings-schema.ts",
+        "db:import-csv-table": "tsx scripts/db/import-csv-to-table.ts",
+        "db:import-csv-products": "tsx scripts/db/import-csv-to-products.ts",
+        "monitor:backend": "tsx scripts/monitor/backend-monitor.ts",
+        "imports:csv-products:worker": "tsx scripts/imports/csv-product-import-worker.ts",
+        "imports:csv-products:worker:once": "tsx scripts/imports/csv-product-import-worker.ts --once",
+        "imports:csv-products:status": "tsx scripts/imports/csv-product-import-status.ts",
+        "ai:content-worker": "tsx scripts/ai/content-queue-worker.ts",
+        "ai:content-worker:once": "tsx scripts/ai/content-queue-worker.ts --once",
+        "ai:content-queue-status": "tsx scripts/ai/content-queue-status.ts",
+        "ci:local-preflight": "bash scripts/ci/local-preflight.sh"
+      },
+      "configs": [
+        "apps/zsp-aitool/next.config.js",
+        "apps/zsp-aitool/next.config.ts",
+        "apps/zsp-aitool/tsconfig.json",
+        "apps/zsp-aitool/Dockerfile",
+        "apps/zsp-aitool/docker-compose.yml"
+      ],
+      "factory": {
+        "develop": true,
+        "plan": true,
+        "refactor": true,
+        "test": true,
         "build": true
       }
     },
@@ -1496,51 +3112,6 @@
       "configs": [
         "apps/zwallet/services/wallet-engine/tsconfig.json"
       ],
-      "factory": {
-        "develop": true,
-        "plan": true,
-        "refactor": true,
-        "test": false,
-        "build": false
-      }
-    },
-    {
-      "id": "zeaz-web",
-      "path": "apps/zeaz-web",
-      "package_name": "@zeaz/web",
-      "version": "1.0.0",
-      "frameworks": [
-        "next"
-      ],
-      "scripts": {
-        "dev": "next dev -p 3003",
-        "build": "NODE_ENV=production next build",
-        "start": "next start -p 3003",
-        "lint": "eslint"
-      },
-      "configs": [],
-      "factory": {
-        "develop": true,
-        "plan": true,
-        "refactor": true,
-        "test": false,
-        "build": true
-      }
-    },
-    {
-      "id": "zfbauto",
-      "path": "apps/zfbauto",
-      "package_name": "@zeaz/zfbauto",
-      "version": "1.1.0",
-      "frameworks": [
-        "unknown"
-      ],
-      "scripts": {
-        "start": "node src/server.js",
-        "dev": "node --watch src/server.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
-      },
-      "configs": [],
       "factory": {
         "develop": true,
         "plan": true,
