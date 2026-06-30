@@ -2164,7 +2164,7 @@ Generate complete, production-ready code for every file in this phase. Use fence
                 <AgentView
                   key={entry.id}
                   agentName={entry.agentName ?? "Agent"}
-                  agentGoal={entry.agentGoal ?? ""}
+                  goal={entry.agentGoal ?? ""}
                   plan={entry.agentPlan ?? null}
                   steps={entry.agentSteps ?? []}
                   done={entry.agentDone ?? false}
