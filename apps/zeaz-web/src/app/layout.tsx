@@ -1,21 +1,59 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const siteUrl = "https://zeaz.dev";
+
+const outfit = Outfit({
   subsets: ["latin"],
+  variable: "--font-zeaz-sans",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  variable: "--font-zeaz-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "ZEAZ Platform — AI Automation and Software Development SaaS",
+  metadataBase: new URL(siteUrl),
+  applicationName: "ZEAZDEV Platform",
+  title: {
+    default: "ZEAZDEV Company Limited — Production AI, Cloud, and Software Systems",
+    template: "%s — ZEAZDEV Company Limited",
+  },
   description:
-    "ZEAZ Platform provides AI-powered software development tools, cloud services, DevOps automation, API integrations, and SaaS subscriptions for businesses and developers.",
+    "ZEAZDEV Company Limited builds production-ready AI automation, Cloudflare-first edge operations, SaaS products, and developer platforms for zeaz.dev.",
+  alternates: {
+    canonical: siteUrl,
+  },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "ZEAZDEV Company Limited",
+    title: "ZEAZDEV Company Limited — Production AI, Cloud, and Software Systems",
+    description:
+      "Secure AI automation, Cloudflare-first edge operations, SaaS products, and developer platforms for zeaz.dev.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ZEAZDEV Company Limited",
+    description:
+      "Production-ready AI automation, edge operations, SaaS products, and developer platforms.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  category: "technology",
 };
 
 export default function RootLayout({
@@ -24,12 +62,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`${outfit.variable} ${jetbrainsMono.variable} dark`}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-foreground min-h-screen font-sans`}
+        className="min-h-screen bg-black font-sans text-foreground antialiased"
       >
         {children}
       </body>
     </html>
   );
 }
+
