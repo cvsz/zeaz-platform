@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in apps/ztrader/.env}
       POSTGRES_DB: ${POSTGRES_DB:-ztrader_db}
     ports:
-      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+      - "127.0.0.1:${ZTRADER_POSTGRES_PORT:-15432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro

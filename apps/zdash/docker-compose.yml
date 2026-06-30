@@ -59,7 +59,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in apps/zdash/.env}
       POSTGRES_DB: ${POSTGRES_DB:-zdash}
     ports:
-      - "127.0.0.1:${POSTGRES_PORT:-15433}:5432"
+      - "127.0.0.1:${ZDASH_POSTGRES_PORT:-15433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
