@@ -6,8 +6,8 @@ services:
       - ../../runtime:/app/runtime:ro
       - ../../:/home/zeazdev/zeaz-platform:ro
       - /var/run/docker.sock:/var/run/docker.sock
-    expose:
-      - "8000"
+    ports:
+      - "127.0.0.1:8088:8000"
     environment:
       - REDIS_URL=redis://redis:6379/0
     networks:
