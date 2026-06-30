@@ -15,16 +15,22 @@ http:
     zeaz-web:
       rule: "Host(`zeaz.dev`) || Host(`www.zeaz.dev`)"
       service: zeaz-web-service
+    litellm:
+      rule: "Host(`litellm.zeaz.dev`)"
+      service: litellm-service
+    openwebui:
+      rule: "Host(`openwebui.zeaz.dev`)"
+      service: openwebui-service
 
   services:
     zdash-web-service:
       loadBalancer:
         servers:
-          - url: "http://172.18.0.1:5173"
+          - url: "http://172.20.0.14:80"
     zdash-api-service:
       loadBalancer:
         servers:
-          - url: "http://172.18.0.1:8005"
+          - url: "http://172.20.0.15:8005"
     zwallet-web-service:
       loadBalancer:
         servers:
@@ -36,7 +42,15 @@ http:
     zeaz-web-service:
       loadBalancer:
         servers:
-          - url: "http://172.18.0.1:3000"
+          - url: "http://172.18.0.1:3003"
+    litellm-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.20.0.5:4000"
+    openwebui-service:
+      loadBalancer:
+        servers:
+          - url: "http://172.20.0.12:8080"
 
   middlewares:
     auth:
