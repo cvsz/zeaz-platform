@@ -67,7 +67,7 @@ export async function getDataInventory(keyHash: string): Promise<DataInventory> 
       ? { exists: true, name: apiKey.name, lastFour: apiKey.lastFour, usageCount: apiKey.usageCount, createdAt: apiKey.createdAt.toISOString() }
       : { exists: false },
     profile: profile
-      ? { exists: true, email: profile.email, name: profile.name, plan: profile.plan, credits: profile.credits, tokensUsed: profile.tokensUsed }
+      ? { exists: true, email: profile.email ?? undefined, name: profile.name ?? undefined, plan: profile.plan, credits: profile.credits, tokensUsed: profile.tokensUsed }
       : { exists: false },
     usageRecords: {
       count: await db.usageRecord.count({ where: { keyHash } }),
