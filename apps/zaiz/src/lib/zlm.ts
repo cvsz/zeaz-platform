@@ -184,8 +184,11 @@ export async function* runStream(
 ): AsyncGenerator<string, void, unknown> {
   // --- Local model: no API call, heuristic response, simulated streaming ---
   if (isLocalModel(model)) {
-    const response = generateLocalResponse(messages);
-    for (const chunk of tokenize(response)) {
+    const lastPrompt = messages[messages.length - 1]?.content || "";
+    const response = await generateLocalResponse(model || "local", lastPrompt, systemPrompt);
+    const words = response.split(" ");
+    for (let i = 0; i < words.length; i++) {
+      const chunk = words[i] + (i < words.length - 1 ? " " : "");
       yield chunk;
       // Small delay to simulate streaming (20ms per chunk).
       await new Promise((r) => setTimeout(r, 20));
