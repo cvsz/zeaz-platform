@@ -340,6 +340,13 @@ export function Terminal() {
 
   const clearWorkspace = useCallback(() => setWorkspace(null), []);
 
+  const openSidebar = useCallback((tab: SidebarTab) => {
+    setSidebarTab(tab);
+    setSidebarOpen(true);
+  }, []);
+
+  const runPlanRef = useRef<((task: string) => Promise<void>) | null>(null);
+
   /* ---------------- local slash commands ---------------- */
 
   const runLocalCommand = useCallback(
@@ -1071,7 +1078,7 @@ export function Terminal() {
             return true;
           }
           pushEntry({ id: uid(), kind: "user", content: arg, mode });
-          void runPlan(arg);
+          void runPlanRef.current?.(arg);
           return true;
         }
         default: {
@@ -1523,6 +1530,8 @@ export function Terminal() {
     [mode, activeSkill, activeModules, workspace, pushEntry, updateEntry],
   );
 
+  runPlanRef.current = runPlan;
+
   /** Toggle a plan step's completion state (interactive checklist). */
   const togglePlanStep = useCallback(
     (entryId: string, phaseIndex: number, stepIndex: number) => {
@@ -1876,11 +1885,6 @@ Generate complete, production-ready code for every file in this phase. Use fence
     () => `zlm@cli:~/${mode}${activeSkill ? `/skill:${activeSkill}` : ""}$`,
     [mode, activeSkill],
   );
-
-  const openSidebar = useCallback((tab: SidebarTab) => {
-    setSidebarTab(tab);
-    setSidebarOpen(true);
-  }, []);
 
   return (
     <div
