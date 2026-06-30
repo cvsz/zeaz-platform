@@ -1,4 +1,4 @@
-import { composeSystemPrompt, runStream, type ChatMessage } from "./glm";
+import { composeSystemPrompt, runStream, type ChatMessage, type SkillId } from "./glm";
 import { AGENT_MAP } from "./agents";
 import type { Workflow, WorkflowNode, WorkflowEvent } from "./workflows";
 import { WORKFLOW_MAP } from "./workflows";
@@ -66,7 +66,7 @@ async function* runNode(
   const agent = AGENT_MAP.get(node.agent);
   const systemPrompt = composeSystemPrompt({
     mode: node.mode,
-    skill: opts.skill ?? agent?.defaultSkill ?? null,
+    skill: (opts.skill ?? agent?.defaultSkill ?? null) as SkillId | null,
     modules: opts.modules as never,
     workspace: opts.workspace,
     model: opts.model,
