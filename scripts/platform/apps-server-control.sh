@@ -152,7 +152,7 @@ route_status() {
   pid_file="$(pid_file_for "$app_id" "$port")"
   if is_pid_alive "$pid_file"; then
     echo "RUNNING pid=$(cat "$pid_file") app=$app_id host=$hostname port=$port path=$path alias=${alias_for:-none}"
-  elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 2 "http://127.0.0.1:${port}/" >/dev/null 2>&1; then
+  elif command -v curl >/dev/null 2>&1 && curl -sS --max-time 2 "http://127.0.0.1:${port}/" >/dev/null 2>&1; then
     echo "RUNNING external app=$app_id host=$hostname port=$port path=$path alias=${alias_for:-none}"
   else
     echo "STOPPED app=$app_id host=$hostname port=$port path=$path alias=${alias_for:-none}"
@@ -200,13 +200,8 @@ start_route() {
   if [ -n "$pm" ]; then
     script="$(package_script "$dir")"
     if [ -n "$script" ]; then
-      case "$pm" in
-        pnpm) cmd="corepack enable >/dev/null 2>&1 || true; HOST=$HOST_BIND PORT=$port pnpm run $script" ;;
-        yarn) cmd="HOST=$HOST_BIND PORT=$port yarn $script" ;;
-        npm) cmd="HOST=$HOST_BIND PORT=$port npm run $script" ;;
-      esac
       echo "START: $pm run $script app=$app_id port=$port"
-      (cd "$dir" && nohup bash -lc "$cmd" </dev/null >> "$log_file" 2>&1 & echo $! > "$pid_file")
+      (cd "$dir" && nohup env HOST="$HOST_BIND" PORT="$port" "$pm" run "$script" </dev/null >> "$log_file" 2>&1 & echo $! > "$pid_file")
       sleep 1
       route_status "$app_id" "$hostname" "$path" "$port" "$role" "$status" "$origin" "$alias_for"
       return 0
