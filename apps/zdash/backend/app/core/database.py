@@ -6,6 +6,8 @@ from app.core.config import get_settings
 
 settings = get_settings()
 database_url = getattr(settings, "database_url", "sqlite:///./zdash.db")
+if database_url.startswith("postgresql://"):
+    database_url = "postgresql+psycopg://" + database_url[len("postgresql://"):]
 connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
 engine = create_engine(database_url, echo=False, connect_args=connect_args)
 
