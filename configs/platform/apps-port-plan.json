@@ -294,6 +294,17 @@
       "origin": "http://127.0.0.1:8088",
       "status": "active",
       "api_gateway_prefix": "/v1"
+    },
+    {
+      "app_id": "litellm",
+      "role": "ops",
+      "path": "services/litellm",
+      "hostname": "litellm.zeaz.dev",
+      "port": 4000,
+      "origin": "http://127.0.0.1:4000",
+      "status": "reserved",
+      "origin_check": "must-run",
+      "health_path": "/health/liveliness"
     }
   ]
 }

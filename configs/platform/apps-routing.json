@@ -176,6 +176,16 @@
       "origin": null,
       "port": null,
       "status": "reserved"
+    },
+    {
+      "app_id": "litellm",
+      "path": "services/litellm",
+      "type": "ops",
+      "hostnames": ["litellm.zeaz.dev"],
+      "origin": "http://127.0.0.1:4000",
+      "port": 4000,
+      "status": "reserved",
+      "gateway_prefix": "/v1/litellm"
     }
   ]
 }

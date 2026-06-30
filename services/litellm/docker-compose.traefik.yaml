@@ -1,0 +1,19 @@
+---
+services:
+  litellm:
+    networks:
+      - default
+      - proxy
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: proxy
+      traefik.http.routers.litellm.rule: Host(`${LITELLM_GATEWAY_HOSTNAME:-litellm.zeaz.dev}`)
+      traefik.http.routers.litellm.entrypoints: websecure
+      traefik.http.routers.litellm.tls: "true"
+      traefik.http.routers.litellm.middlewares: auth@file,securityHeaders@file,global-headers@file
+      traefik.http.routers.litellm.service: litellm
+      traefik.http.services.litellm.loadbalancer.server.port: "${LITELLM_PORT:-4000}"
+
+networks:
+  proxy:
+    external: true

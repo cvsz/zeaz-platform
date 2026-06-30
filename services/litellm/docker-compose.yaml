@@ -1,0 +1,105 @@
+---
+services:
+  litellm-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${LITELLM_DB_NAME:-litellm}
+      POSTGRES_USER: ${LITELLM_DB_USER:-litellm}
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD}
+    volumes:
+      - litellm_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  litellm-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+    volumes:
+      - litellm_redis_data:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    restart: unless-stopped
+    depends_on:
+      litellm-postgres:
+        condition: service_healthy
+      litellm-redis:
+        condition: service_healthy
+    command:
+      - --config
+      - /app/config/litellm.config.yaml
+      - --port
+      - ${LITELLM_PORT:-4000}
+      - --num_workers
+      - "2"
+    environment:
+      DATABASE_URL: postgresql://${LITELLM_DB_USER:-litellm}:${LITELLM_DB_PASSWORD}@litellm-postgres:5432/${LITELLM_DB_NAME:-litellm}
+      REDIS_URL: ${REDIS_URL:-redis://litellm-redis:6379/0}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      STORE_MODEL_IN_DB: "true"
+      LITELLM_LOG: INFO
+    ports:
+      - "${LITELLM_PORT:-4000}:${LITELLM_PORT:-4000}"
+    volumes:
+      - ./config/litellm.config.yaml:/app/config/litellm.config.yaml:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://127.0.0.1:${LITELLM_PORT:-4000}/health/readiness >/dev/null || wget -qO- http://127.0.0.1:${LITELLM_PORT:-4000}/health/liveliness >/dev/null
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "${PROMETHEUS_PORT:-9094}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      litellm:
+        condition: service_started
+
+  grafana:
+    image: grafana/grafana:11.1.4
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_started
+
+volumes:
+  litellm_postgres_data:
+  litellm_redis_data:
