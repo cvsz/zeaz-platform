@@ -3,17 +3,25 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
 
 exporters:
-  # LiteLLM logs and metrics
   prometheus:
-    endpoint: "0.0.0.0:9090"
+    endpoint: "0.0.0.0:8889"
+  logging:
+    verbosity: detailed
 
 service:
   pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]
     metrics:
       receivers: [otlp]
-      exporters: [prometheus]
-    logs:
-      receivers: [otlp]
-      exporters: [prometheus]
+      processors: [batch]
+      exporters: [prometheus, logging]

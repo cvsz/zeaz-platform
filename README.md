@@ -1,7 +1,21 @@
-## LiteLLM Integration
+# ZeaZ Platform
 
-Unified LLM proxy added in `infra/litellm/`.
+ZeaZ Platform is a production-grade, GitOps-ready Cloudflare Zero Trust platform.
 
-Access via http://litellm:4000
+## Architecture & Standards
+This project follows strict platform engineering standards. Please refer to:
+- `GEMINI.md`: Authoritative operating guide.
+- `SECURITY.md`: Security policy and alignment.
 
-See `infra/litellm/config.yaml` for model configuration.
+## Applications
+The platform monorepo includes Cloudflare-facing apps under `apps/`, including
+`apps/zdash` for the zDash cockpit and Cloudflare operations dashboard.
+
+## Getting Started
+See the [Installation Guide](docs/README.md) for environment setup and asset installation.
+
+## Validation
+Run platform validation:
+```bash
+make validate
+```

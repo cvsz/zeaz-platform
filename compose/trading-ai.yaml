@@ -1,12 +1,8 @@
 services:
-  litellm:
-    extends:
-      file: ../infra/litellm/docker-compose.yaml
-      service: litellm
-  trading-ai:
-    depends_on:
-      litellm:
-        condition: service_healthy
+  ai-coordinator:
+    build: .
+    command: python runtime/trading/ai_sandbox.py
+    networks:
+      - internal_trading
     environment:
-      - LITELLM_BASE_URL=http://litellm:4000
-      - LITELLM_API_KEY=${LITELLM_MASTER_KEY}
+      - PORT=8106
