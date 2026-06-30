@@ -5,7 +5,7 @@ WORKDIR /app
 
 RUN npm install -g pnpm@latest
 COPY package.json pnpm-lock.yaml .npmrc* ./
-RUN pnpm config set ignore-scripts true && pnpm install --frozen-lockfile
+RUN pnpm config set ignore-scripts true && pnpm install --no-frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
