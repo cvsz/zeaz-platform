@@ -222,7 +222,7 @@ logs: ## Tail dev.log (Ctrl+C to exit)
 # ---------------------------------------------------------------------------
 # build — production build (cross-platform)
 # ---------------------------------------------------------------------------
-build: ## Production build (Next.js standalone)
+build: db-generate ## Production build (Next.js standalone)
 	@printf "$(C_CYAN)▸ [$(PLATFORM)] Building for production…$(C_RESET)\n"
 	@printf "$(C_DIM)  Note: Next.js build creates a standalone server in .next/standalone/$(C_RESET)\n"
 	@bun run build
