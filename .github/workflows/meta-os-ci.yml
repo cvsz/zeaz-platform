@@ -22,6 +22,7 @@ jobs:
       ALLOW_PAID_CLOUDFLARE_FEATURES: "false"
       CLOUDFLARE_PLAN_TIER: "Free"
       NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
 
     steps:
       - name: Checkout
