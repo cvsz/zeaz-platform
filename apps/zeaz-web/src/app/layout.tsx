@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, JetBrains_Mono } from "next/font/google";
+import AuthProvider from "./providers";
 import "./globals.css";
 
 const siteUrl = "https://zeaz.dev";
@@ -66,7 +67,7 @@ export default function RootLayout({
       <body
         className="min-h-screen bg-black font-sans text-foreground antialiased"
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
