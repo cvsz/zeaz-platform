@@ -8,6 +8,7 @@
     "postinstall": "prisma generate",
     "start": "next start -p 3003",
     "lint": "eslint",
+    "pretypecheck": "prisma generate",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
