@@ -28,6 +28,7 @@ while IFS= read -r -d '' path; do
   # Scan tracked files from the current working tree. This intentionally skips
   # untracked/ignored local secret files such as .env and Cloudflare audit logs.
   [[ -e "$path" ]] || continue
+  [[ -d "$path" && ! -L "$path" ]] && continue
   mkdir -p "$tmp/$(dirname "$path")"
   cp -P "$path" "$tmp/$path"
   copied=$((copied + 1))

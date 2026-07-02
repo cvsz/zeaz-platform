@@ -257,10 +257,12 @@ export function Terminal() {
 
   // Seed welcome message on mount.
   useLayoutEffect(() => {
-    setEntries([
-      { id: uid(), kind: "system", content: WELCOME_BANNER },
-      { id: uid(), kind: "system", content: ABOUT_TEXT },
-    ]);
+    requestAnimationFrame(() => {
+      setEntries([
+        { id: uid(), kind: "system", content: WELCOME_BANNER },
+        { id: uid(), kind: "system", content: ABOUT_TEXT },
+      ]);
+    });
   }, []);
 
   // Auto-resize the textarea.
@@ -347,6 +349,13 @@ export function Terminal() {
 
   const runPlanRef = useRef<((task: string) => Promise<void>) | null>(null);
   const runAgentRef = useRef<((goal: string, agentType: AgentId) => Promise<void>) | null>(null);
+  const runCompletionRef = useRef<((userText: string) => Promise<void>) | null>(null);
+
+  useEffect(() => {
+    runAgentRef.current = runAgent;
+    runPlanRef.current = runPlan;
+    runCompletionRef.current = runCompletion;
+  }, [runAgent, runPlan, runCompletion]);
 
   /* ---------------- local slash commands ---------------- */
 
@@ -516,7 +525,7 @@ export function Terminal() {
               content: promptRest,
               mode,
             });
-            void runCompletion(promptRest);
+            void runCompletionRef.current?.(promptRest);
             return true;
           }
           pushEntry({
@@ -1093,7 +1102,7 @@ export function Terminal() {
                 content: rest,
                 mode: targetMode,
               });
-              void runCompletion(rest);
+              void runCompletionRef.current?.(rest);
             } else {
               pushEntry({
                 id: uid(),
@@ -1756,7 +1765,7 @@ Generate complete, production-ready code for every file in this phase. Use fence
     }
 
     pushEntry({ id: uid(), kind: "user", content: text, mode });
-    void runCompletion(text);
+    void runCompletionRef.current?.(text);
   }, [input, isStreaming, mode, activeAgent, pushEntry, runCompletion, runAgent, runLocalCommand]);
 
   const stopStreaming = useCallback(() => {
@@ -2210,7 +2219,7 @@ Generate complete, production-ready code for every file in this phase. Use fence
                     content: p.text,
                     mode: p.mode,
                   });
-                  void runCompletion(p.text);
+                  void runCompletionRef.current?.(p.text);
                 }}
               />
             )}

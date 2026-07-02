@@ -55,6 +55,7 @@ coverage/
 
 # Node / frontend
 node_modules/
+.pnpm-store/
 dist/
 build/
 .next/

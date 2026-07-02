@@ -1,0 +1,388 @@
+#!/usr/bin/env python3
+"""
+azchat - CLI for gpt-5-mini with skills, multi-agents & goal routing
+
+Usage:
+  azchat <message>
+  azchat --goal <goal>                    # Auto-find best skill for your goal
+  azchat --skill <name> <message>         # Use a specific skill
+  azchat --list-skills                    # List all skills
+  azchat --agents <a1>,<a2> <message>     # Multi-agent mode
+  azchat --debate <topic>                 # Agent debate
+  azchat -s <message> / --stream          # Streaming
+  azchat -S "prompt" <message>            # Custom system prompt
+  azchat -m <model> <message>             # Use different model
+  echo <message> | azchat                 # Pipe input
+
+Environment:
+  AZCHAT_HOST   - API host (default: http://localhost:8090)
+  AZCHAT_MODEL  - Default model (default: gpt-5-mini)
+  AZCHAT_VAULT  - Skills vault path (default: auto-detect)
+"""
+
+import urllib.request, json, sys, os, re, textwrap
+from pathlib import Path
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+API_HOST = os.getenv("AZCHAT_HOST", "http://localhost:8090")
+DEFAULT_MODEL = os.getenv("AZCHAT_MODEL", "gpt-5-mini")
+
+SKILL_DIRS = [
+    Path.home() / ".azchat" / "skills",
+    Path.cwd() / ".azchat" / "skills",
+]
+SKILL_VAULT = os.getenv("AZCHAT_VAULT") or str(
+    Path("/home/zeazdev/zeaz-platform/apps/zai-factory/skills-vault/skills")
+)
+AGENT_DIRS = [
+    Path.home() / ".azchat" / "agents",
+    Path.cwd() / ".azchat" / "agents",
+]
+
+# ── Parse a SKILL.md file ───────────────────────────────────────
+def parse_skill_md(path):
+    """Parse a SKILL.md file, return {name, description, system_prompt}."""
+    with open(path) as f:
+        content = f.read()
+    parts = content.split("---")
+    if len(parts) < 3:
+        return None
+
+    frontmatter = {}
+    if yaml:
+        frontmatter = yaml.safe_load(parts[1]) or {}
+    else:
+        for line in parts[1].strip().split("\n"):
+            if ":" in line:
+                k, _, v = line.partition(":")
+                frontmatter[k.strip()] = v.strip().strip('"').strip("'")
+
+    body = "---".join(parts[2:]).strip()
+    # Strip leading # title line
+    body_lines = body.split("\n")
+    if body_lines and body_lines[0].startswith("# "):
+        body_lines = body_lines[1:]
+    body = "\n".join(body_lines).strip()
+
+    name = frontmatter.get("name") or path.parent.name
+    desc = frontmatter.get("description") or name
+    return {
+        "name": name,
+        "description": desc,
+        "system_prompt": body,
+        "_source": str(path),
+    }
+
+
+# ── Load skills from all sources ─────────────────────────────────
+def load_skills():
+    skills = {}
+
+    # Built-in skills (simple)
+    builtins = {
+        "translate": {"description": "Translate text between languages", "system_prompt": "You are a professional translator. Translate accurately and naturally."},
+        "summarize": {"description": "Summarize text concisely", "system_prompt": "You are an expert at summarization. Provide a clear, concise summary."},
+        "explain": {"description": "Explain concepts simply", "system_prompt": "You are a patient teacher. Explain concepts clearly with examples."},
+        "brainstorm": {"description": "Brainstorm creative ideas", "system_prompt": "You are a creative brainstorming partner. Generate diverse ideas."},
+    }
+    for name, cfg in builtins.items():
+        skills[name] = cfg
+
+    # User skills (~/.azchat/skills/*.json)
+    for d in SKILL_DIRS:
+        if d.exists():
+            for f in sorted(d.glob("*.json")):
+                try:
+                    with open(f) as fh:
+                        cfg = json.load(fh)
+                    skills[f.stem] = cfg
+                except Exception:
+                    pass
+
+    # Skills vault (SKILL.md files)
+    vault = Path(SKILL_VAULT)
+    if vault.exists():
+        for skill_dir in sorted(vault.iterdir()):
+            if skill_dir.is_dir():
+                md = skill_dir / "SKILL.md"
+                if md.exists():
+                    parsed = parse_skill_md(str(md))
+                    if parsed:
+                        skills[parsed["name"]] = {
+                            "description": parsed["description"],
+                            "system_prompt": parsed["system_prompt"],
+                            "_source": parsed["_source"],
+                        }
+
+    return skills
+
+
+# ── Find best skill for a goal ──────────────────────────────────
+def find_skill_for_goal(goal, skills):
+    goal_lower = goal.lower()
+    goal_words = set(re.findall(r"[a-z0-9]+", goal_lower))
+
+    scored = []
+    for name, cfg in skills.items():
+        desc = cfg.get("description", "").lower()
+        name_lower = name.lower()
+        text = f"{name_lower} {desc}"
+        words = set(re.findall(r"[a-z0-9]+", text))
+        overlap = len(goal_words & words)
+        # Bonus for exact word matches in name
+        name_bonus = 5 if any(w == name_lower for w in goal_words) else 0
+        # Bonus for name substring match
+        if name_lower in goal_lower or goal_lower in name_lower:
+            name_bonus += 3
+        scored.append((-(overlap + name_bonus), name))
+
+    scored.sort()
+    return scored[0][1] if scored else None
+
+
+# ── Chat function ────────────────────────────────────────────────
+def chat(messages, stream, model):
+    url = f"{API_HOST}/v1/chat/completions"
+    body = json.dumps({"model": model, "messages": messages, "stream": stream}).encode()
+    req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
+    resp = urllib.request.urlopen(req, timeout=120)
+    if stream:
+        while True:
+            chunk = resp.read(4096)
+            if not chunk:
+                break
+            for line in chunk.decode().split("\n"):
+                if line.startswith("data: [DONE]"):
+                    print()
+                    return
+                if line.startswith("data: "):
+                    try:
+                        d = json.loads(line[6:])
+                        ct = d.get("choices", [{}])[0].get("delta", {}).get("content", "")
+                        print(ct, end="", flush=True)
+                    except:
+                        pass
+        print()
+    else:
+        data = json.load(resp)
+        print(data["choices"][0]["message"]["content"])
+
+
+# ── Display configs ──────────────────────────────────────────────
+def list_configs(configs, config_type):
+    if not configs:
+        print(f"No {config_type} found.")
+        return
+    print(f"\nAvailable {config_type} ({len(configs)}):")
+    print(f"  {'Name':<30} {'Description'}")
+    print(f"  {'─'*30} ─{'─'*50}")
+    for name, cfg in sorted(configs.items()):
+        desc = cfg.get("description", "")
+        print(f"  {name:<30} {desc[:60]}")
+    print()
+
+
+# ── Multi-agent modes ───────────────────────────────────────────
+def load_agents():
+    agents = {}
+    builtin_agents = {
+        "writer": {"description": "Creative writer", "system_prompt": "You are a creative writer. Produce engaging, original content."},
+        "critic": {"description": "Constructive critic", "system_prompt": "You are a thoughtful critic. Analyze work objectively."},
+        "coder": {"description": "Software engineer", "system_prompt": "You are a senior software engineer. Write clean, efficient code."},
+        "teacher": {"description": "Patient teacher", "system_prompt": "You are a knowledgeable teacher. Explain concepts clearly."},
+        "skeptic": {"description": "Devil's advocate", "system_prompt": "You are a friendly skeptic. Challenge assumptions constructively."},
+    }
+    for name, cfg in builtin_agents.items():
+        agents[name] = cfg
+    for d in AGENT_DIRS:
+        if d.exists():
+            for f in sorted(d.glob("*.json")):
+                try:
+                    with open(f) as fh:
+                        cfg = json.load(fh)
+                    agents[f.stem] = cfg
+                except Exception:
+                    pass
+    return agents
+
+
+def run_agents(agent_list, user_msg, stream):
+    agents = load_agents()
+    results = {}
+    for name in agent_list:
+        agent = agents.get(name)
+        if not agent:
+            print(f"Unknown agent: {name}", file=sys.stderr)
+            continue
+        model = agent.get("model") or DEFAULT_MODEL
+        sys_prompt = agent.get("system_prompt", "You are a helpful assistant.")
+        messages = [{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_msg}]
+        print(f"\n── [{name}] ── {agent.get('description','')}")
+        chat(messages, stream, model)
+        results[name] = True
+    return results
+
+
+def run_debate(topic, agent_names, stream, rounds=2):
+    agents = load_agents()
+    selected = []
+    for name in agent_names:
+        agent = agents.get(name)
+        if not agent:
+            print(f"Unknown agent: {name}", file=sys.stderr)
+            continue
+        selected.append((name, agent))
+    if len(selected) < 2:
+        print("Need at least 2 agents for a debate.", file=sys.stderr)
+        return
+    history = f"Debate topic: {topic}\n\n"
+    for r in range(rounds):
+        for name, agent in selected:
+            model = agent.get("model") or DEFAULT_MODEL
+            sys_prompt = agent.get("system_prompt", "You are a helpful assistant.")
+            debate_prompt = f"{sys_prompt}\n\nDebate topic: {topic}\n\nPrevious discussion:\n{history}\n\nProvide your perspective:"
+            messages = [
+                {"role": "system", "content": debate_prompt},
+                {"role": "user", "content": f"Round {r+1}: {topic}"},
+            ]
+            print(f"\n── [{name}] Round {r+1} ──")
+            chat(messages, stream, model)
+
+
+# ── Main ─────────────────────────────────────────────────────────
+def main():
+    args = [a for a in sys.argv[1:] if a]
+    stream = False
+    model = DEFAULT_MODEL
+    system = None
+    skill_name = None
+    list_skills = False
+    agents_mode = None
+    debate_mode = False
+    goal_mode = False
+    show_vault = False
+    positional = []
+
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a in ("-s", "--stream"):
+            stream = True
+        elif a in ("-m", "--model") and i + 1 < len(args):
+            i += 1
+            model = args[i]
+        elif a in ("-S", "--system") and i + 1 < len(args):
+            i += 1
+            system = args[i]
+        elif a in ("-k", "--skill") and i + 1 < len(args):
+            i += 1
+            skill_name = args[i]
+        elif a in ("-l", "--list-skills"):
+            list_skills = True
+        elif a in ("-g", "--goal"):
+            goal_mode = True
+        elif a in ("-a", "--agents") and i + 1 < len(args):
+            i += 1
+            agents_mode = [x.strip() for x in args[i].split(",") if x.strip()]
+        elif a in ("-d", "--debate"):
+            debate_mode = True
+        elif a in ("-h", "--help"):
+            print(__doc__.strip())
+            return
+        else:
+            positional.append(a)
+        i += 1
+
+    # Load skills once
+    all_skills = load_skills()
+
+    if list_skills:
+        list_configs(all_skills, "skills")
+        vault_path = Path(SKILL_VAULT)
+        if vault_path.exists():
+            count = len([d for d in vault_path.iterdir() if d.is_dir() and (d / "SKILL.md").exists()])
+            extra = len(all_skills) - count - 4  # builtins
+            print(f"  ({count} from skills-vault, {extra} custom, 4 built-in)")
+        return
+
+    # Get user message
+    if positional:
+        user_msg = " ".join(positional)
+    elif not sys.stdin.isatty():
+        user_msg = sys.stdin.read().strip()
+    else:
+        user_msg = None
+
+    if debate_mode:
+        topic = user_msg or input("Debate topic: ")
+        agents = agents_mode or ["writer", "critic"]
+        print(f"\nDebate: {topic}\nAgents: {', '.join(agents)}")
+        run_debate(topic, agents, stream)
+        return
+
+    if agents_mode:
+        if not user_msg:
+            print("Provide a message for the agents.", file=sys.stderr)
+            return
+        run_agents(agents_mode, user_msg, stream)
+        return
+
+    # ── Goal mode: auto-find best skill ──────────────────────────
+    if goal_mode:
+        if not user_msg:
+            print("Provide a goal.", file=sys.stderr)
+            return
+        best = find_skill_for_goal(user_msg, all_skills)
+        if best:
+            skill = all_skills[best]
+            sys_prompt = skill.get("system_prompt", "")
+            source = skill.get("_source", "built-in")
+            print(f"  Matching skill: {best}", file=sys.stderr)
+            print(f"  ({skill.get('description','')[:80]})", file=sys.stderr)
+            print(f"  Source: {source}", file=sys.stderr)
+            print(file=sys.stderr)
+            messages = [
+                {"role": "system", "content": f"{sys_prompt}\n\nThe user's goal is: {user_msg}"},
+                {"role": "user", "content": f"Help me achieve this: {user_msg}"},
+            ]
+        else:
+            messages = [{"role": "user", "content": user_msg}]
+        chat(messages, stream, model)
+        return
+
+    if skill_name:
+        skill = all_skills.get(skill_name)
+        if not skill:
+            print(f"Unknown skill: {skill_name}", file=sys.stderr)
+            return
+        system = skill.get("system_prompt", system)
+
+    if not user_msg and not system:
+        print("Usage: azchat [options] <message>")
+        print("   or: azchat --goal <goal>")
+        print("   or: azchat --skill <name> <message>")
+        print("   or: azchat --list-skills")
+        print("\nOptions:")
+        print("  -s, --stream          Stream response")
+        print("  -m, --model NAME      Model to use")
+        print("  -S, --system PROMPT   System prompt")
+        print("  -k, --skill NAME      Apply a skill")
+        print("  -g, --goal GOAL       Auto-find best skill for goal")
+        print("  -l, --list-skills     List available skills")
+        print("  -a, --agents A,B      Multi-agent mode")
+        print("  -d, --debate          Agent debate mode")
+        return
+
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    if user_msg:
+        messages.append({"role": "user", "content": user_msg})
+    chat(messages, stream, model)
+
+
+if __name__ == "__main__":
+    main()

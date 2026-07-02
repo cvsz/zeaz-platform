@@ -26,7 +26,10 @@ export function TasksPanel() {
     finally { setLoading(false); }
   }, [key]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => refresh());
+    return () => cancelAnimationFrame(id);
+  }, [refresh]);
 
   const handleAdd = async () => {
     if (!newTitle.trim() || !key) return;

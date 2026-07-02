@@ -25,7 +25,10 @@ export function SettingsPanel() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => refresh());
+    return () => cancelAnimationFrame(id);
+  }, [refresh]);
 
   const handleSave = async () => {
     if (!settings) return;

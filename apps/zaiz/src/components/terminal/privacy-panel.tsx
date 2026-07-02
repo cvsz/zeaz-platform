@@ -37,7 +37,11 @@ export function PrivacyPanel() {
     finally { setLoading(false); }
   }, [key]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    // ใช้ requestAnimationFrame เพื่อเลื่อนการเรียก refresh ออกไปนอก cycle ปัจจุบัน
+    const id = requestAnimationFrame(() => refresh());
+    return () => cancelAnimationFrame(id);
+  }, [refresh]);
 
   const handleExport = async () => {
     if (!key) return;

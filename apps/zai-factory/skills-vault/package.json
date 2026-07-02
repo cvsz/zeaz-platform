@@ -1,0 +1,59 @@
+{
+  "name": "@zeazdev/zai-factory-skills",
+  "version": "1.2.0",
+  "description": "ZAI Factory Skill Vault CLI - install, search, validate, bundle, and synchronize AI agent skills for ZAI Factory, Antigravity, Gemini, Codex, Claude Code, and OpenCode-compatible workflows.",
+  "bin": {
+    "zai-skills": "./bin/cli.js",
+    "zai-factory-skills": "./bin/cli.js",
+    "ag-skills": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "scripts",
+    "skills",
+    "catalog.json",
+    "CATALOG.md",
+    "validation-baseline.json",
+    "bundles.json",
+    "aliases.json",
+    "SECURITY.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build:catalog": "node scripts/build-catalog.js",
+    "validate:skills": "node scripts/validate-skills.js",
+    "check:catalog": "node scripts/check-catalog-drift.js",
+    "test": "node --test",
+    "doctor": "node ./bin/cli.js doctor",
+    "stats": "node ./bin/cli.js stats",
+    "zai:index": "node scripts/build-catalog.js",
+    "zai:validate": "node scripts/validate-skills.js",
+    "zai:install:global": "node ./bin/cli.js install --global",
+    "zai:install:factory": "node ./bin/cli.js install --zai-factory"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmyndharis/antigravity-skills.git"
+  },
+  "keywords": [
+    "antigravity",
+    "ai",
+    "agent",
+    "skills"
+  ],
+  "author": "rmyndharis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rmyndharis/antigravity-skills/issues"
+  },
+  "homepage": "https://github.com/rmyndharis/antigravity-skills#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "yaml": "^2.8.2"
+  },
+  "private": true
+}
