@@ -1,6 +1,6 @@
-# ZeaZ Loading Worker
+# ZEAZDEV Apps Directory Worker
 
-Bilingual Thai + English loading page for `www.zeaz.dev`, designed for Cloudflare Workers under the `cvsz/zeaz-platform` control plane.
+Bilingual Thai + English app directory for `www.zeaz.dev`, designed for Cloudflare Workers under the `cvsz/zeaz-platform` control plane.
 
 ## Files
 
@@ -70,6 +70,18 @@ ZONE_NAME="zeaz.dev" \
 bash scripts/cloudflare/install-zeaz-loading-local.sh --deploy
 ```
 
+## Runtime endpoints
+
+```text
+/
+/apps.json
+/healthz
+```
+
+`/` renders the active `apps/*` public URL directory.
+
+`/apps.json` returns the machine-readable URL list.
+
 ## Health check
 
 ```bash
@@ -82,7 +94,8 @@ Expected JSON shape:
 {
   "ok": true,
   "service": "zeaz-loading",
-  "language": "th-en"
+  "cloudflare_runtime": "worker",
+  "app_count": 27
 }
 ```
 
@@ -90,5 +103,6 @@ Expected JSON shape:
 
 - The page uses no external font or asset dependency.
 - Security headers are set directly by the Worker.
-- Cache is disabled so the loading page updates immediately after deploy.
+- Cache is disabled so the public URL directory updates immediately after deploy.
 - The route is scoped to `www.zeaz.dev/*` so it does not collide with `app.zeaz.dev`, `auth.zeaz.dev`, `studio.zeaz.dev`, or other platform subdomains.
+- The source URL registry is `configs/platform/apps-public-url-list.json`; keep the Worker list aligned with it by running `node scripts/platform/validate-apps-public-url-list.mjs`.

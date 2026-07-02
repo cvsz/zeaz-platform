@@ -60,6 +60,7 @@ pick_permission(){
         else 999 end
       elif $k == "zt" then if has("(?i)\bZero Trust\b.*(write|edit)") and (has("(?i)(Report|Read|PII|Resilience|Seats)") | not) then 0 else 999 end
       elif $k == "workers" then if has("(?i)(\bWorkers Scripts?\b).*Write") and (has("(?i)(AI|CI|KV|Containers|Observability|Routes|Tail|Websearch|R2)") | not) then 0 else 999 end
+      elif $k == "workers_routes" then if has("(?i)\bWorkers Routes\b.*Write") then 0 else 999 end
       elif $k == "pages" then if has("(?i)^Pages Write$") then 0 else 999 end
       elif $k == "tunnel" then if has("(?i)(cloudflare tunnel|cloudflared|tunnel).*(write|edit)|(write|edit).*(cloudflare tunnel|cloudflared|tunnel)") then 0 else 999 end
       elif $k == "r2" then if has("(?i)\bR2 Storage\b.*Write") and (has("(?i)(Data Catalog|Bucket|Metadata|SQL|Read)") | not) then 0 else 999 end
@@ -88,6 +89,7 @@ export_if_missing(){
 export_if_missing CLOUDFLARE_DNS_PERMISSION_GROUP_ID "$(pick_permission dns)" dns
 export_if_missing CLOUDFLARE_ZT_PERMISSION_GROUP_ID "$(pick_permission zt)" zt
 export_if_missing CLOUDFLARE_WORKERS_PERMISSION_GROUP_ID "$(pick_permission workers)" workers
+export_if_missing CLOUDFLARE_WORKERS_ROUTES_PERMISSION_GROUP_ID "$(pick_permission workers_routes)" workers-routes
 export_if_missing CLOUDFLARE_PAGES_PERMISSION_GROUP_ID "$(pick_permission pages)" pages
 export_if_missing CLOUDFLARE_WAF_PERMISSION_GROUP_ID "$(pick_permission waf)" waf
 export_if_missing CLOUDFLARE_TUNNEL_PERMISSION_GROUP_ID "$(pick_permission tunnel)" tunnel

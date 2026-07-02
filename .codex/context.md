@@ -28,3 +28,9 @@ Use `zeaz-platform/scripts/contracts/environment-contract.json` and `zeaz-platfo
 
 ## MCP Runtime
 - Regenerate local MCP config with `make -C zeaz-platform mcp-config` after token rotation.
+
+## Local Model Runtime
+- Ollama local model registry: `configs/platform/local-models.json`.
+- Default local model: `gpt-oss:20b-8k`.
+- Local-only endpoint: `http://localhost:11434`.
+- Validate with `node scripts/platform/validate-local-ollama-models.mjs`.

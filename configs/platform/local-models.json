@@ -1,0 +1,81 @@
+{
+  "description": "Local Ollama model registry for zeaz-platform developer and automation workflows.",
+  "provider": "ollama",
+  "base_url": "http://localhost:11434",
+  "default_model": "gpt-oss:20b-8k",
+  "validated_from": "ollama list",
+  "validated_at": "2026-07-01",
+  "models": [
+    {
+      "id": "gpt-oss:20b-8k",
+      "name": "GPT OSS 20B 8K",
+      "role": "default",
+      "size": "13 GB",
+      "context": 8192,
+      "use_cases": ["planning", "coding", "review", "automation"]
+    },
+    {
+      "id": "gpt-oss:20b",
+      "name": "GPT OSS 20B",
+      "role": "general",
+      "size": "13 GB",
+      "use_cases": ["planning", "review", "automation"]
+    },
+    {
+      "id": "qwen3:14b",
+      "name": "Qwen3 14B",
+      "role": "reasoning",
+      "size": "9.3 GB",
+      "use_cases": ["reasoning", "analysis", "code review"]
+    },
+    {
+      "id": "zcode-fast-safe:latest",
+      "name": "ZCode Fast Safe",
+      "role": "fast-coder",
+      "size": "4.7 GB",
+      "use_cases": ["routine coding", "fast edits", "safe automation"]
+    },
+    {
+      "id": "qwen2.5-coder:7b",
+      "name": "Qwen2.5 Coder 7B",
+      "role": "fallback-coder",
+      "size": "4.7 GB",
+      "use_cases": ["coding", "refactoring", "tests"]
+    },
+    {
+      "id": "zcode-turbo:latest",
+      "name": "ZCode Turbo",
+      "role": "quick",
+      "size": "1.9 GB",
+      "use_cases": ["quick completion", "small edits"]
+    },
+    {
+      "id": "qwen2.5-coder:3b",
+      "name": "Qwen2.5 Coder 3B",
+      "role": "lightweight-coder",
+      "size": "1.9 GB",
+      "use_cases": ["small edits", "offline fallback"]
+    },
+    {
+      "id": "zcode:latest",
+      "name": "ZCode",
+      "role": "coder",
+      "size": "9.0 GB",
+      "use_cases": ["coding", "review"]
+    },
+    {
+      "id": "zcode-qwen25-coder:14b-tiny",
+      "name": "ZCode Qwen2.5 Coder 14B Tiny",
+      "role": "review-coder",
+      "size": "9.0 GB",
+      "use_cases": ["code review", "refactoring"]
+    },
+    {
+      "id": "qwen2.5-coder:14b",
+      "name": "Qwen2.5 Coder 14B",
+      "role": "deep-coder",
+      "size": "9.0 GB",
+      "use_cases": ["larger coding tasks", "architecture review"]
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "zone": "zeaz.dev",
+  "description": "Public active apps/* URL directory for ZEAZDEV Cloudflare-served hostnames.",
+  "cloudflare_runtime": {
+    "www_owner": "workers/zeaz-loading",
+    "apex_owner": "cloudflare-tunnel",
+    "app_owner": "cloudflare-tunnel",
+    "deployment_required": true,
+    "deployment_note": "This file is local source-of-truth evidence. Cloudflare deployment still requires explicit operator approval."
+  },
+  "apps": [
+    {
+      "name": "api",
+      "path": "apps/api",
+      "hostname": "api.zeaz.dev",
+      "url": "https://api.zeaz.dev",
+      "status": "active",
+      "category": "Shared API",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "ShipGenAI",
+      "path": "apps/ShipGenAI",
+      "hostname": "shipgenai.zeaz.dev",
+      "url": "https://shipgenai.zeaz.dev",
+      "status": "active",
+      "category": "AI media",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zacademy",
+      "path": "apps/zacademy",
+      "hostname": "academy.zeaz.dev",
+      "url": "https://academy.zeaz.dev",
+      "status": "active",
+      "category": "Education",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zai",
+      "path": "apps/zai",
+      "hostname": "zai.zeaz.dev",
+      "url": "https://zai.zeaz.dev",
+      "status": "active",
+      "category": "AI runtime",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zai-coder",
+      "path": "apps/zai-coder",
+      "hostname": "zai-coder.zeaz.dev",
+      "url": "https://zai-coder.zeaz.dev",
+      "status": "active",
+      "category": "Developer AI",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zai-factory",
+      "path": "apps/zai-factory",
+      "hostname": "factory.zeaz.dev",
+      "url": "https://factory.zeaz.dev",
+      "status": "active",
+      "category": "Agent factory",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zaiz",
+      "path": "apps/zaiz",
+      "hostname": "zaiz.zeaz.dev",
+      "url": "https://zaiz.zeaz.dev",
+      "status": "active",
+      "category": "AI application",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zcfdash",
+      "path": "apps/zcfdash",
+      "hostname": "zcfdash.zeaz.dev",
+      "url": "https://zcfdash.zeaz.dev",
+      "status": "active",
+      "category": "Cloudflare ops",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zchat",
+      "path": "apps/zchat",
+      "hostname": "zchat.zeaz.dev",
+      "url": "https://zchat.zeaz.dev",
+      "status": "active",
+      "category": "Messaging",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zcino",
+      "path": "apps/zcino",
+      "hostname": "zcino.zeaz.dev",
+      "url": "https://zcino.zeaz.dev",
+      "status": "active",
+      "category": "Game services",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zcloud",
+      "path": "apps/zcloud",
+      "hostname": "zcloud.zeaz.dev",
+      "url": "https://zcloud.zeaz.dev",
+      "status": "active",
+      "category": "Cloud ops",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zdash",
+      "path": "apps/zdash",
+      "hostname": "zdash.zeaz.dev",
+      "url": "https://zdash.zeaz.dev",
+      "status": "active",
+      "category": "Platform ops",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zdev",
+      "path": "apps/zdev",
+      "hostname": "zdev.zeaz.dev",
+      "url": "https://zdev.zeaz.dev",
+      "status": "active",
+      "category": "Developer tools",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zeaz-api",
+      "path": "apps/zeaz-api",
+      "hostname": "zeaz-api.zeaz.dev",
+      "url": "https://zeaz-api.zeaz.dev",
+      "status": "active",
+      "category": "API gateway",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zeaz-web",
+      "path": "apps/zeaz-web",
+      "hostname": "www.zeaz.dev",
+      "url": "https://www.zeaz.dev",
+      "canonical_url": "https://zeaz.dev",
+      "status": "active",
+      "category": "Public web",
+      "cloudflare": "worker"
+    },
+    {
+      "name": "zfbauto",
+      "path": "apps/zfbauto",
+      "hostname": "zfbauto.zeaz.dev",
+      "url": "https://zfbauto.zeaz.dev",
+      "status": "active",
+      "category": "Automation",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zlinebot",
+      "path": "apps/zlinebot",
+      "hostname": "linebot.zeaz.dev",
+      "url": "https://linebot.zeaz.dev",
+      "status": "active",
+      "category": "Messaging bot",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zlms",
+      "path": "apps/zlms",
+      "hostname": "zlms.zeaz.dev",
+      "url": "https://zlms.zeaz.dev",
+      "status": "active",
+      "category": "Learning",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zoffice",
+      "path": "apps/zoffice",
+      "hostname": "zoffice.zeaz.dev",
+      "url": "https://zoffice.zeaz.dev",
+      "status": "active",
+      "category": "Workspace",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zorg",
+      "path": "apps/zorg",
+      "hostname": "zorg.zeaz.dev",
+      "url": "https://zorg.zeaz.dev",
+      "status": "active",
+      "category": "Organization",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zow",
+      "path": "apps/zow",
+      "hostname": "zow.zeaz.dev",
+      "url": "https://zow.zeaz.dev",
+      "status": "active",
+      "category": "Open work",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zquest",
+      "path": "apps/zquest",
+      "hostname": "zquest.zeaz.dev",
+      "url": "https://zquest.zeaz.dev",
+      "status": "active",
+      "category": "Quest app",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zsp-aitool",
+      "path": "apps/zsp-aitool",
+      "hostname": "zsp-aitool.zeaz.dev",
+      "url": "https://zsp-aitool.zeaz.dev",
+      "status": "active",
+      "category": "SaaS automation",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zsticker",
+      "path": "apps/zsticker",
+      "hostname": "zsticker.zeaz.dev",
+      "url": "https://zsticker.zeaz.dev",
+      "status": "active",
+      "category": "Creative tools",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "ztrader",
+      "path": "apps/ztrader",
+      "hostname": "ztrader.zeaz.dev",
+      "url": "https://ztrader.zeaz.dev",
+      "status": "active",
+      "category": "Trading",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zveo",
+      "path": "apps/zveo",
+      "hostname": "zveo.zeaz.dev",
+      "url": "https://zveo.zeaz.dev",
+      "status": "active",
+      "category": "AI video",
+      "cloudflare": "tunnel"
+    },
+    {
+      "name": "zwallet",
+      "path": "apps/zwallet",
+      "hostname": "zwallet.zeaz.dev",
+      "url": "https://zwallet.zeaz.dev",
+      "status": "active",
+      "category": "Fintech",
+      "cloudflare": "tunnel"
+    }
+  ]
+}

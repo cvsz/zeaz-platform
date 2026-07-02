@@ -110,3 +110,14 @@ records:
     ttl: 1
     tags: [internal-tools, zfbauto]
     notes: Facebook Auto-Post Bot dashboard — Zero Trust protected, @zeaz.dev only
+
+  # ─── Open WebUI / AI Chat ───────────────────────────────────────────
+  - id: az
+    name: az
+    fqdn: az.zeaz.dev
+    type: CNAME
+    target_from: tunnel_endpoint
+    proxied: true
+    ttl: 1
+    tags: [ai, open-webui]
+    notes: Open WebUI — GPT-5-mini chat interface

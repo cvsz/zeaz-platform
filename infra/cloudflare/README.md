@@ -93,7 +93,7 @@ The actual running tunnel uses **token-based auth** (not config files in this re
 
 | Hostname | Worker Route | DNS CNAME | Tunnel Ingress | Owner |
 |---|---|---|---|---|
-| `www.zeaz.dev` | `zeaz-loading` | TA module | No | **Worker** (route wins) |
+| `www.zeaz.dev` | `zeaz-loading` apps directory | TA module | No | **Worker** (route wins) |
 | `zeaz.dev` apex | No | No | Yes | **Tunnel** |
 | `app.zeaz.dev` | No | TA module | Yes | **Tunnel** |
 | `api-*.zeaz.dev` | No | TC module | Yes | **Tunnel** |
@@ -499,4 +499,3 @@ printf 'Remove production Worker route for app.zeaz.dev with no rollback plan' |
   echo "Expected strict failure for unapproved Critical risk"
 infra/cloudflare/scripts/validate-cloudflare-config.sh --check
 ```
-

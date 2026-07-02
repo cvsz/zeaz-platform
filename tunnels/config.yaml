@@ -38,5 +38,8 @@ ingress:
   - hostname: ztrader.${PRIMARY_DOMAIN}
     service: http://localhost:3016
 
+  - hostname: az.${PRIMARY_DOMAIN}
+    service: http://127.0.0.1:3001
+
   # Catch-all rule
   - service: http_status:404

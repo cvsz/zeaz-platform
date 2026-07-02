@@ -177,6 +177,20 @@ resolve_permission_id(){
   ' "$cache"
 }
 
+resolve_workers_routes_permission_id(){
+  local cache explicit
+  explicit="${CLOUDFLARE_WORKERS_ROUTES_PERMISSION_GROUP_ID:-}"
+  [[ -n "$explicit" ]] && { printf '%s' "$explicit"; return 0; }
+
+  cache="$(fetch_permission_groups)"
+  [[ -f "$cache" ]] || die "permission-group cache file not found: $cache"
+  jq -r '
+    (.result // [])
+    | map(select(([.name // "", .description // "", .scope // "", (.scopes // [] | tostring), (.resource_groups // [] | tostring)] | join(" ")) | test("(?i)\\bWorkers Routes\\b.*Write")))
+    | .[0].id // empty
+  ' "$cache"
+}
+
 backup_json(){
   local json="$1" label="${2:-tokens}" ts file
   mkdir -p "$BACKUP_DIR"
@@ -366,7 +380,26 @@ for t in "${TYPES_ARR[@]}"; do
   current_count="$(printf '%s' "$TOKEN_LIST_JSON" | jq '(.result // []) | length')"
   [[ "$current_count" -lt "$TOKEN_QUOTA" ]] || die "token quota reached ($current_count/$TOKEN_QUOTA)"
 
-  payload="$(jq -n --arg name "${TOKEN_NAME_MAP[$t]}" --arg resource "${RESOURCE_MAP[$t]}" --arg perm "$perm" '{name:$name, policies:[{effect:"allow", resources:{($resource):"*"}, permission_groups:[{id:$perm}]}]}')"
+  if [[ "$t" == "workers" ]]; then
+    route_perm="$(resolve_workers_routes_permission_id)"
+    [[ -n "$route_perm" ]] || { warn "could not resolve Workers Routes Write permission-group ID; zeaz-workers-token will not be able to update routes"; }
+    if [[ -n "$route_perm" ]]; then
+      payload="$(jq -n \
+        --arg name "${TOKEN_NAME_MAP[$t]}" \
+        --arg script_resource "${RESOURCE_MAP[$t]}" \
+        --arg route_resource "com.cloudflare.api.account.zone.${CLOUDFLARE_ZONE_ID:-}" \
+        --arg script_perm "$perm" \
+        --arg route_perm "$route_perm" \
+        '{name:$name, policies:[
+          {effect:"allow", resources:{($script_resource):"*"}, permission_groups:[{id:$script_perm}]},
+          {effect:"allow", resources:{($route_resource):"*"}, permission_groups:[{id:$route_perm}]}
+        ]}')"
+    else
+      payload="$(jq -n --arg name "${TOKEN_NAME_MAP[$t]}" --arg resource "${RESOURCE_MAP[$t]}" --arg perm "$perm" '{name:$name, policies:[{effect:"allow", resources:{($resource):"*"}, permission_groups:[{id:$perm}]}]}')"
+    fi
+  else
+    payload="$(jq -n --arg name "${TOKEN_NAME_MAP[$t]}" --arg resource "${RESOURCE_MAP[$t]}" --arg perm "$perm" '{name:$name, policies:[{effect:"allow", resources:{($resource):"*"}, permission_groups:[{id:$perm}]}]}')"
+  fi
 
   if $DRY_RUN; then
     log "DRY-RUN: would create ${TOKEN_NAME_MAP[$t]} with permission_group=$perm resource=${RESOURCE_MAP[$t]}"
