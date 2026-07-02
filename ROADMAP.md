@@ -1,62 +1,314 @@
-# ZeaZ Platform Development Roadmap
+# ZeaZ Platform Strategic Roadmap
 
-This document outlines the strategic roadmap for the ZeaZ Platform. It is divided into sequential phases focusing on open-source readiness, stabilization, security, deployment, and future features.
+Status: Active Development
+Target Release: ZeaZ Platform v3.x
+Last Updated: 2026-07-02
 
 ---
 
-## Phase 1: Open Source Readiness (Current Phase)
-*Goal: Prepare the codebase for secure, maintainable, and contributor-friendly open-source collaboration.*
+# Vision
 
-- [x] Consolidate and clean up application paths (`zkbtrader` and `ABTPi18n` merged into `ztrader`).
-- [x] Standardize directory naming conventions (rename `zlms-prod` to `zlms`).
-- [x] Establish standard community files:
-  - [x] `README.md` (Updated repository map and deployment guides)
-  - [x] `LICENSE` (MIT)
-  - [x] `SECURITY.md` (Vulnerability disclosure and secret policy)
-  - [x] `CONTRIBUTING.md` (Developer workflows, branch conventions)
-  - [x] `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1)
-  - [x] `ROADMAP.md` (Strategic direction tracker)
-- [x] Configure GitHub issue and pull request templates.
-- [x] Build local CI-safe verification workflows (`oss-readiness.yml`).
+Transform ZeaZ Platform into a cloud-native AI Operating System combining:
 
-## Phase 2: Platform Stabilization
-*Goal: Ensure multi-application stacks run harmoniously with reliable local build processes.*
+- Multi-tenant SaaS
+- Autonomous AI Agents
+- Multi-LLM orchestration
+- Enterprise security
+- Kubernetes-native deployment
+- Cloudflare-first edge architecture
+- Full observability and governance
 
-- [ ] Reconcile overlapping application ports and service allocations across the monorepo.
-- [ ] Add unified compiler and lockfile checks via `make build-all-stacks`.
-- [ ] Clean up redundant assets in legacy project directories.
-- [ ] Stabilize dev server and daemon dependencies (e.g., PM2 / python-venv settings).
-- [ ] Standardize local Docker and Docker Compose environment setup.
+---
 
-## Phase 3: Cloudflare Production Deployment
-*Goal: Harden cloud infrastructure, access control, and routing using Cloudflare-native features.*
+# Phase 0 — Platform Foundation
 
-- [ ] Implement robust Zero Trust configurations and Cloudflare Tunnel maps.
-- [ ] Optimize edge compute logic for Cloudflare Workers.
-- [ ] Hardcode WAF rules for exposed apps and endpoints.
-- [ ] Verify static routing configurations for the main `web` application and API interfaces.
-- [ ] Document backup and restore routines for Cloudflare KV, D1, and R2 databases.
+## Objectives
 
-## Phase 4: Security Hardening
-*Goal: Build automated threat detection and secure coding practices directly into the workflow.*
+- Repository consolidation
+- Dependency standardization
+- Configuration normalization
+- CI/CD stabilization
 
-- [ ] Configure automatic secret detection workflows (e.g., git-secrets or Gitleaks).
-- [ ] Set up automated dependency vulnerability scanning (Dependabot/Snyk).
-- [ ] Build isolated network boundary maps for Docker containers.
-- [ ] Refine production-only environment variables generation.
-- [ ] Mandate strict GPG commit signatures across all maintainers.
+### Deliverables
 
-## Phase 5: Developer Experience (DX)
-*Goal: Make it easy for developers to spin up applications locally with minimal configuration.*
+- Unified repository structure
+- Environment validation framework
+- Makefile standardization
+- Secret scanning enforcement
+- Dependency audit and cleanup
 
-- [ ] Support Dev Containers for consistent local sandbox workspaces.
-- [ ] Build a local diagnostic CLI utility to verify environment health and port mapping.
-- [ ] Optimize workspace caches to accelerate local dependency installs (npm, pnpm, yarn, cargo, pip).
-- [ ] Enhance log streaming and tracing between concurrent application runtimes.
+Success Criteria:
 
-## Phase 6: Community Growth
-*Goal: Scale contributions and onboard new maintainers.*
+- 100% CI green
+- Zero critical security findings
+- Reproducible local development
 
-- [ ] Write comprehensive API references for shared platform microservices.
-- [ ] Build automated integration testing suites across services.
-- [ ] Launch contributor bounty program for security and architecture stabilization tasks.
+---
+
+# Phase 1 — Infrastructure Hardening
+
+## Objectives
+
+- Production-grade deployment baseline
+
+### Deliverables
+
+- Cloudflare Zero Trust
+- Tunnel automation
+- WAF policies
+- DNS governance
+- Backup and disaster recovery
+- Terraform validation
+
+Success Criteria:
+
+- Automated infrastructure deployment
+- Disaster recovery documented and tested
+
+---
+
+# Phase 2 — AI Runtime Platform
+
+## Objectives
+
+Build the core ZAI Runtime.
+
+### Deliverables
+
+- LiteLLM Gateway
+- Cloudflare AI Gateway integration
+- OpenAI integration
+- Anthropic integration
+- Gemini integration
+- DeepSeek integration
+- Ollama integration
+- Local GPT-OSS support
+
+Success Criteria:
+
+- Provider failover
+- Cost-aware routing
+- Multi-provider inference
+
+---
+
+# Phase 3 — Persistent Memory Platform
+
+### Deliverables
+
+- PostgreSQL persistence
+- Redis caching
+- Qdrant vector memory
+- Project memory
+- Organizational memory
+- Semantic memory
+- Agent memory
+
+Success Criteria:
+
+- Cross-session recall
+- Long-term agent memory
+
+---
+
+# Phase 4 — Agent Operating System
+
+### Deliverables
+
+Agent Graph:
+
+Planner → Architect → Coder → Reviewer → Security → QA → DevOps
+
+Core Components:
+
+- Agent Registry
+- Agent Scheduler
+- Agent Executor
+- Workflow Engine
+- State Management
+- Event Bus
+
+Success Criteria:
+
+- Autonomous execution
+- Multi-agent collaboration
+
+---
+
+# Phase 5 — Enterprise RAG
+
+### Deliverables
+
+- Hybrid Retrieval
+- BM25 Search
+- Dense Retrieval
+- Reranking
+- Knowledge Graph
+- Repository Intelligence
+
+Success Criteria:
+
+- Enterprise-scale codebase support
+
+---
+
+# Phase 6 — GitHub Autonomous Engineering
+
+### Deliverables
+
+- Repository analysis
+- Automatic issue planning
+- Autonomous implementation
+- Automated testing
+- PR generation
+- Security review
+
+Success Criteria:
+
+- End-to-end autonomous development workflows
+
+---
+
+# Phase 7 — Security and Governance
+
+### Deliverables
+
+- Vault integration
+- RBAC
+- OpenFGA authorization
+- Audit logging
+- Compliance automation
+- Secret lifecycle management
+
+Success Criteria:
+
+- Enterprise compliance readiness
+
+---
+
+# Phase 8 — Observability Platform
+
+### Deliverables
+
+- OpenTelemetry
+- Grafana
+- Loki
+- Tempo
+- Distributed tracing
+- Cost monitoring
+- Agent analytics
+
+Success Criteria:
+
+- Full runtime visibility
+
+---
+
+# Phase 9 — API Platform
+
+### Deliverables
+
+- FastAPI services
+- OpenAPI documentation
+- OAuth2
+- JWT authentication
+- API Gateway
+- Rate limiting
+
+Success Criteria:
+
+- API-first architecture
+
+---
+
+# Phase 10 — Kubernetes Native Platform
+
+### Deliverables
+
+- Helm Charts
+- ArgoCD
+- GitOps
+- Multi-environment deployments
+- Kubernetes operators
+
+Success Criteria:
+
+- Production-grade K8s deployments
+
+---
+
+# Phase 11 — Multi-Tenant SaaS
+
+### Deliverables
+
+- Organizations
+- Team management
+- Billing
+- Usage metering
+- Subscription management
+- Admin portal
+
+Success Criteria:
+
+- Commercial SaaS readiness
+
+---
+
+# Phase 12 — ZeaZ AI Operating System
+
+### Deliverables
+
+- MCP Client
+- MCP Server
+- A2A Protocol
+- Autonomous Software Factory
+- Cross-cluster agent execution
+- Self-improving agent workflows
+
+Success Criteria:
+
+- Enterprise AI Operating System
+
+---
+
+# Target Architecture
+
+ZeaZ Platform
+    ↓
+ZAI Runtime
+    ↓
+Agent Operating System
+    ↓
+LiteLLM Gateway
+    ↓
+Claude / GPT / Gemini / DeepSeek / Ollama
+    ↓
+PostgreSQL + Redis + Qdrant
+    ↓
+Cloudflare + Kubernetes
+
+---
+
+# Definition of Done
+
+Every release must pass:
+
+- CI Validation
+- Security Scan
+- Secret Scan
+- Policy Validation
+- Integration Tests
+- E2E Tests
+- Backup Verification
+- Rollback Verification
+- Documentation Review
+
+---
+
+# Ultimate Goal
+
+Developer Platform
+→ AI Platform
+→ Agent Platform
+→ Autonomous Engineering Platform
+→ Enterprise AI Operating System
