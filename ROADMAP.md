@@ -1,291 +1,486 @@
-# ZeaZ Platform Strategic Roadmap
+# ZeaZ Platform Development Roadmap
 
-Status: Active Development
-Target Release: ZeaZ Platform v3.x
-Last Updated: 2026-07-02
+**Status:** Active Development
+**Target Release:** ZeaZ Platform v3.x
+**Last Updated:** 2026-07-02
 
 ---
 
 # Vision
 
-Transform ZeaZ Platform into a cloud-native AI Operating System combining:
+Transform ZeaZ Platform into a cloud-native AI Operating System that combines:
 
-- Multi-tenant SaaS
-- Autonomous AI Agents
-- Multi-LLM orchestration
-- Enterprise security
-- Kubernetes-native deployment
-- Cloudflare-first edge architecture
-- Full observability and governance
+* Multi-tenant SaaS architecture
+* Autonomous AI Agents
+* Multi-LLM orchestration
+* Enterprise-grade security and governance
+* Kubernetes-native deployment
+* Cloudflare-first edge infrastructure
+* Full observability and operational intelligence
+* Autonomous software engineering workflows
+
+---
+
+# Current Progress
+
+## Open Source Readiness (Completed)
+
+### Repository Consolidation
+
+* [x] Consolidate application paths (`zkbtrader` and `ABTPi18n` merged into `ztrader`)
+* [x] Standardize directory naming conventions (`zlms-prod` → `zlms`)
+* [x] Repository cleanup and normalization
+
+### Community Standards
+
+* [x] README.md
+* [x] LICENSE (MIT)
+* [x] SECURITY.md
+* [x] CONTRIBUTING.md
+* [x] CODE_OF_CONDUCT.md
+* [x] ROADMAP.md
+
+### GitHub Governance
+
+* [x] Issue templates
+* [x] Pull request templates
+* [x] OSS readiness validation workflow
+* [x] CI-safe verification pipelines
 
 ---
 
 # Phase 0 — Platform Foundation
 
-## Objectives
+## Goal
 
-- Repository consolidation
-- Dependency standardization
-- Configuration normalization
-- CI/CD stabilization
+Establish a stable engineering foundation for long-term platform growth.
+
+### Objectives
+
+* Repository consolidation
+* Dependency standardization
+* Configuration normalization
+* CI/CD stabilization
+* Developer workflow consistency
 
 ### Deliverables
 
-- Unified repository structure
-- Environment validation framework
-- Makefile standardization
-- Secret scanning enforcement
-- Dependency audit and cleanup
+* Unified repository structure
+* Environment validation framework
+* Makefile standardization
+* Secret scanning enforcement
+* Dependency audit and cleanup
+* Build reproducibility validation
 
-Success Criteria:
+### Success Criteria
 
-- 100% CI green
-- Zero critical security findings
-- Reproducible local development
+* 100% CI passing
+* Zero critical security findings
+* Reproducible local development
+* Standardized build process
 
 ---
 
-# Phase 1 — Infrastructure Hardening
+# Phase 1 — Platform Stabilization
 
-## Objectives
+## Goal
 
-- Production-grade deployment baseline
+Ensure all applications and services operate consistently across development and production environments.
 
 ### Deliverables
 
-- Cloudflare Zero Trust
-- Tunnel automation
-- WAF policies
-- DNS governance
-- Backup and disaster recovery
-- Terraform validation
+* Reconcile overlapping ports and service allocations
+* Unified build pipeline (`make build-all-stacks`)
+* Remove redundant legacy assets
+* Standardize PM2 and Python runtime management
+* Docker and Docker Compose standardization
+* Dependency lockfile validation
 
-Success Criteria:
+### Success Criteria
 
-- Automated infrastructure deployment
-- Disaster recovery documented and tested
+* Deterministic builds
+* Stable local development environment
+* Consistent deployment behavior
 
 ---
 
-# Phase 2 — AI Runtime Platform
+# Phase 2 — Infrastructure Hardening
 
-## Objectives
+## Goal
 
-Build the core ZAI Runtime.
+Establish a secure and resilient production infrastructure.
 
 ### Deliverables
 
-- LiteLLM Gateway
-- Cloudflare AI Gateway integration
-- OpenAI integration
-- Anthropic integration
-- Gemini integration
-- DeepSeek integration
-- Ollama integration
-- Local GPT-OSS support
+### Cloudflare
 
-Success Criteria:
+* Zero Trust implementation
+* Tunnel automation
+* DNS governance
+* WAF policies
+* Workers optimization
+* API Gateway policies
 
-- Provider failover
-- Cost-aware routing
-- Multi-provider inference
+### Infrastructure as Code
+
+* Terraform validation
+* Policy enforcement
+* Environment isolation
+
+### Backup & Recovery
+
+* Backup automation
+* Disaster recovery procedures
+* Restore validation testing
+
+### Success Criteria
+
+* Automated infrastructure deployment
+* Documented and tested disaster recovery
+* Production-ready security posture
 
 ---
 
-# Phase 3 — Persistent Memory Platform
+# Phase 3 — AI Runtime Platform
+
+## Goal
+
+Build the core ZAI Runtime and Multi-LLM Gateway.
 
 ### Deliverables
 
-- PostgreSQL persistence
-- Redis caching
-- Qdrant vector memory
-- Project memory
-- Organizational memory
-- Semantic memory
-- Agent memory
+### Provider Gateway
 
-Success Criteria:
+* LiteLLM
+* Cloudflare AI Gateway
+* OpenAI
+* Anthropic
+* Gemini
+* DeepSeek
+* OpenRouter
+* Ollama
 
-- Cross-session recall
-- Long-term agent memory
+### Local AI Runtime
+
+* GPT-OSS
+* Qwen
+* DeepSeek-R1
+* Llama
+
+### Runtime Features
+
+* Provider failover
+* Cost-aware routing
+* Model routing policies
+* Usage analytics
+
+### Success Criteria
+
+* Multi-provider inference
+* Automatic failover
+* Local-first AI execution
 
 ---
 
-# Phase 4 — Agent Operating System
+# Phase 4 — Persistent Memory Platform
+
+## Goal
+
+Provide durable memory and knowledge retention across agents and projects.
 
 ### Deliverables
 
-Agent Graph:
+### Storage
+
+* PostgreSQL
+* Redis
+* Qdrant
+
+### Memory Types
+
+* Session Memory
+* Agent Memory
+* Project Memory
+* Organizational Memory
+* Semantic Memory
+
+### Success Criteria
+
+* Cross-session recall
+* Long-term knowledge retention
+* Repository intelligence
+
+---
+
+# Phase 5 — Agent Operating System
+
+## Goal
+
+Create a true autonomous multi-agent runtime.
+
+### Agent Graph
 
 Planner → Architect → Coder → Reviewer → Security → QA → DevOps
 
-Core Components:
+### Deliverables
 
-- Agent Registry
-- Agent Scheduler
-- Agent Executor
-- Workflow Engine
-- State Management
-- Event Bus
+* Agent Registry
+* Agent Scheduler
+* Agent Executor
+* Workflow Engine
+* State Management
+* Event Bus
+* Task Orchestration
 
-Success Criteria:
+### Success Criteria
 
-- Autonomous execution
-- Multi-agent collaboration
+* Autonomous execution
+* Multi-agent collaboration
+* Workflow persistence
 
 ---
 
-# Phase 5 — Enterprise RAG
+# Phase 6 — Enterprise RAG
+
+## Goal
+
+Deliver enterprise-scale knowledge retrieval and repository intelligence.
 
 ### Deliverables
 
-- Hybrid Retrieval
-- BM25 Search
-- Dense Retrieval
-- Reranking
-- Knowledge Graph
-- Repository Intelligence
+* Hybrid Retrieval
+* BM25 Search
+* Dense Vector Search
+* Re-ranking
+* Knowledge Graph
+* Repository Intelligence
+* Incremental Indexing
 
-Success Criteria:
+### Success Criteria
 
-- Enterprise-scale codebase support
+* Large-scale repository support
+* High-quality contextual retrieval
 
 ---
 
-# Phase 6 — GitHub Autonomous Engineering
+# Phase 7 — GitHub Autonomous Engineering
+
+## Goal
+
+Enable autonomous software engineering workflows.
 
 ### Deliverables
 
-- Repository analysis
-- Automatic issue planning
-- Autonomous implementation
-- Automated testing
-- PR generation
-- Security review
+* Repository Analysis
+* Architecture Review
+* Issue Planning
+* Automated Implementation
+* Automated Testing
+* Pull Request Generation
+* Security Review
+* Release Automation
 
-Success Criteria:
+### Success Criteria
 
-- End-to-end autonomous development workflows
+* End-to-end autonomous development workflows
 
 ---
 
-# Phase 7 — Security and Governance
+# Phase 8 — Security and Governance
+
+## Goal
+
+Implement enterprise-grade governance and compliance controls.
 
 ### Deliverables
 
-- Vault integration
-- RBAC
-- OpenFGA authorization
-- Audit logging
-- Compliance automation
-- Secret lifecycle management
+* Vault Integration
+* RBAC
+* OpenFGA Authorization
+* Audit Logging
+* Compliance Automation
+* Secret Lifecycle Management
+* Dependency Vulnerability Management
 
-Success Criteria:
+### Success Criteria
 
-- Enterprise compliance readiness
+* Enterprise compliance readiness
+* Complete auditability
 
 ---
 
-# Phase 8 — Observability Platform
+# Phase 9 — Observability Platform
+
+## Goal
+
+Provide complete visibility into platform operations.
 
 ### Deliverables
 
-- OpenTelemetry
-- Grafana
-- Loki
-- Tempo
-- Distributed tracing
-- Cost monitoring
-- Agent analytics
+* OpenTelemetry
+* Grafana
+* Loki
+* Tempo
+* Distributed Tracing
+* Cost Monitoring
+* Agent Analytics
+* Operational Dashboards
 
-Success Criteria:
+### Success Criteria
 
-- Full runtime visibility
+* Full runtime observability
+* Actionable operational metrics
 
 ---
 
-# Phase 9 — API Platform
+# Phase 10 — API Platform
+
+## Goal
+
+Expose all platform capabilities through secure APIs.
 
 ### Deliverables
 
-- FastAPI services
-- OpenAPI documentation
-- OAuth2
-- JWT authentication
-- API Gateway
-- Rate limiting
+* FastAPI Services
+* OpenAPI Documentation
+* OAuth2
+* JWT Authentication
+* API Gateway
+* Rate Limiting
+* Service Discovery
 
-Success Criteria:
+### Success Criteria
 
-- API-first architecture
+* API-first architecture
+* Secure service integration
 
 ---
 
-# Phase 10 — Kubernetes Native Platform
+# Phase 11 — Kubernetes Native Platform
+
+## Goal
+
+Operate ZeaZ Platform as a cloud-native system.
 
 ### Deliverables
 
-- Helm Charts
-- ArgoCD
-- GitOps
-- Multi-environment deployments
-- Kubernetes operators
+* Helm Charts
+* ArgoCD
+* GitOps Workflows
+* Multi-Environment Deployments
+* Kubernetes Operators
+* Horizontal Scaling
 
-Success Criteria:
+### Success Criteria
 
-- Production-grade K8s deployments
+* Production-grade Kubernetes deployments
+* Fully automated delivery
 
 ---
 
-# Phase 11 — Multi-Tenant SaaS
+# Phase 12 — Multi-Tenant SaaS
+
+## Goal
+
+Enable commercial deployment and organizational management.
 
 ### Deliverables
 
-- Organizations
-- Team management
-- Billing
-- Usage metering
-- Subscription management
-- Admin portal
+* Organizations
+* Team Management
+* Subscription Management
+* Billing
+* Usage Metering
+* Administrative Portal
 
-Success Criteria:
+### Success Criteria
 
-- Commercial SaaS readiness
+* Commercial SaaS readiness
 
 ---
 
-# Phase 12 — ZeaZ AI Operating System
+# Phase 13 — ZeaZ AI Operating System
+
+## Goal
+
+Establish ZeaZ Platform as an Enterprise AI Operating System.
 
 ### Deliverables
 
-- MCP Client
-- MCP Server
-- A2A Protocol
-- Autonomous Software Factory
-- Cross-cluster agent execution
-- Self-improving agent workflows
+* MCP Client
+* MCP Server
+* Agent-to-Agent (A2A) Protocol
+* Autonomous Software Factory
+* Cross-Cluster Agent Execution
+* Self-Improving Agent Workflows
 
-Success Criteria:
+### Success Criteria
 
-- Enterprise AI Operating System
+* Enterprise AI Operating System
+* Autonomous engineering platform
+
+---
+
+# Developer Experience Roadmap
+
+### Deliverables
+
+* Dev Containers
+* Local Diagnostic CLI
+* Workspace Cache Optimization
+* Integrated Log Streaming
+* Environment Validation Tools
+
+### Success Criteria
+
+* Fast onboarding
+* Consistent development experience
+
+---
+
+# Community Growth
+
+### Deliverables
+
+* API Reference Documentation
+* Integration Test Suites
+* Contributor Programs
+* Security Bounty Programs
+* Architecture Working Groups
+
+### Success Criteria
+
+* Sustainable contributor ecosystem
 
 ---
 
 # Target Architecture
 
+```text
 ZeaZ Platform
-    ↓
+    │
+    ▼
 ZAI Runtime
-    ↓
+    │
+    ▼
 Agent Operating System
-    ↓
+    │
+    ▼
 LiteLLM Gateway
-    ↓
-Claude / GPT / Gemini / DeepSeek / Ollama
-    ↓
+    │
+    ├── Claude
+    ├── GPT
+    ├── Gemini
+    ├── DeepSeek
+    ├── OpenRouter
+    └── Ollama
+    │
+    ▼
 PostgreSQL + Redis + Qdrant
-    ↓
+    │
+    ▼
 Cloudflare + Kubernetes
+```
 
 ---
 
@@ -293,22 +488,29 @@ Cloudflare + Kubernetes
 
 Every release must pass:
 
-- CI Validation
-- Security Scan
-- Secret Scan
-- Policy Validation
-- Integration Tests
-- E2E Tests
-- Backup Verification
-- Rollback Verification
-- Documentation Review
+* CI Validation
+* Security Scan
+* Secret Scan
+* Policy Validation
+* Integration Tests
+* End-to-End Tests
+* Backup Verification
+* Rollback Verification
+* Documentation Review
+* Release Validation
 
 ---
 
 # Ultimate Goal
 
+```text
 Developer Platform
-→ AI Platform
-→ Agent Platform
-→ Autonomous Engineering Platform
-→ Enterprise AI Operating System
+        ↓
+AI Platform
+        ↓
+Agent Platform
+        ↓
+Autonomous Engineering Platform
+        ↓
+Enterprise AI Operating System
+```
