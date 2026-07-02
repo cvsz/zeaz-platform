@@ -21,14 +21,15 @@ packages:
   - apps/zdash/frontend
   - apps/zdash/backend
   - apps/ztrader/frontend
-  - apps/zveo/frontend
   - '!apps/zeaz-api'
   - '!apps/zcino'
   - '!apps/zcino-modern'
   - '!apps/zsticker'
+  - '!apps/zdash/backend' # Python project, not Node.js
 
 overrides:
   ws: 8.21.0
   form-data: 4.0.6
   postcss: ">=8.5.3"
   esbuild: ">=0.25.0"
+

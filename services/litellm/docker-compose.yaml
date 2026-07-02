@@ -67,7 +67,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - wget -qO- http://127.0.0.1:${LITELLM_PORT:-4000}/health/readiness >/dev/null || wget -qO- http://127.0.0.1:${LITELLM_PORT:-4000}/health/liveliness >/dev/null
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:${LITELLM_PORT:-4000}/health/liveliness')"
       interval: 15s
       timeout: 5s
       retries: 5

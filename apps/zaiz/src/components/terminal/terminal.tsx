@@ -346,6 +346,7 @@ export function Terminal() {
   }, []);
 
   const runPlanRef = useRef<((task: string) => Promise<void>) | null>(null);
+  const runAgentRef = useRef<((goal: string, agentType: AgentId) => Promise<void>) | null>(null);
 
   /* ---------------- local slash commands ---------------- */
 
@@ -627,7 +628,7 @@ export function Terminal() {
                 content: goalRest,
                 mode,
               });
-              void runAgent(goalRest, agentMatch.id);
+              void runAgentRef.current(goalRest, agentMatch.id);
               return true;
             }
             pushEntry({
@@ -640,7 +641,7 @@ export function Terminal() {
           // No type matched → treat the whole arg as a goal with the active agent.
           if (activeAgent) {
             pushEntry({ id: uid(), kind: "user", content: arg, mode });
-            void runAgent(arg, activeAgent);
+            void runAgentRef.current(arg, activeAgent);
             return true;
           }
           pushEntry({
@@ -1530,7 +1531,13 @@ export function Terminal() {
     [mode, activeSkill, activeModules, workspace, pushEntry, updateEntry],
   );
 
-  runPlanRef.current = runPlan;
+  useEffect(() => {
+    runAgentRef.current = runAgent;
+  }, [runAgent]);
+
+  useEffect(() => {
+    runPlanRef.current = runPlan;
+  }, [runPlan]);
 
   /** Toggle a plan step's completion state (interactive checklist). */
   const togglePlanStep = useCallback(
@@ -1744,7 +1751,7 @@ Generate complete, production-ready code for every file in this phase. Use fence
     // If an agent is active, route the prompt to the agent runner.
     if (activeAgent) {
       pushEntry({ id: uid(), kind: "user", content: text, mode });
-      void runAgent(text, activeAgent);
+      void runAgentRef.current(text, activeAgent);
       return;
     }
 

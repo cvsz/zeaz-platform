@@ -999,3 +999,18 @@ tf-syntax-check:
 tofu-syntax-check:
 	@echo "Checking OpenTofu syntax..."
 	@tofu fmt -check -recursive opentofu/
+
+start-all:
+	@echo "Starting all applications..."
+	@for dir in apps/*/; do \
+		service_name=$$(basename "$$dir"); \
+		echo "Starting $$service_name"; \
+		if [ -f "$$dir/setup.sh" ]; then \
+			cd "$$dir" && ./setup.sh || echo "Failed to start $$service_name"; \
+		elif [ -f "$$dir/docker-compose.yml" ]; then \
+			cd "$$dir" && docker-compose up -d || echo "Failed to start $$service_name"; \
+		elif [ -f "$$dir/package.json" ]; then \
+			cd "$$dir" && npm run dev || echo "Failed to start $$service_name"; \
+		fi; \
+	done
+	@echo "All applications started. Use 'make help' for more options."

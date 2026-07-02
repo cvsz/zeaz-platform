@@ -1,4 +1,4 @@
-faf_version: "0.1"
+faf_version: "0.3"
 project:
   name: "zeaz-platform"
   owner: "ZeaZDev"
@@ -31,6 +31,70 @@ stack:
     - OpenTofu
   cicd:
     - GitHub Actions
+
+applications:
+  - api
+  - ShipGenAI
+  - zacademy
+  - zai
+  - zai-coder
+  - zai-factory
+  - zaiz
+  - zcfdash
+  - zchat
+  - zcino
+  - zcloud
+  - zdash
+  - zdev
+  - zeaz-api
+  - zeaz-web
+  - zfbauto
+  - zlinebot
+  - zlms
+  - zoffice
+  - zorg
+  - zow
+  - zquest
+  - zsp-aitool
+  - zsticker
+  - ztrader
+  - zveo
+  - zwallet
+
+capabilities:
+  cli_zai_coder:
+    - project-management
+    - artifact-management
+    - extended-thinking
+    - web-search-and-fetch
+    - vision-processing
+    - agent-core
+    - structured-outputs
+    - code-execution
+    - auto-approve-auto-accept
+  platform_core:
+    - zero-trust-networking
+    - edge-compute-workers
+    - secure-identity-rbac
+    - audit-logging
+  fintech:
+    - wallet-application-controls
+    - treasury-access-management
+    - crypto-operation-guardrails
+    - compliance-auditing
+  ai_platform:
+    - ai-gateway-orchestration
+    - video-generation-orchestration
+    - publishing-workflows
+    - edge-ai-deployment
+    - prompt-injection-mitigation
+  workspace_tools:
+    - saas-automation
+    - workspace-portals
+    - educational-lms
+    - team-collaboration
+    - sticker-automation
+    - bot-trigger-daemons
 
 conventions:
   commit_style: "conventional commits"
