@@ -1,4 +1,4 @@
-# AGENTS.md — Cloudflare Platform Codex Operating Guide (Omega Master Advanced Professional Final Release Complete)
+# GEMINI.md — Cloudflare Platform Codex Operating Guide (Omega Master Advanced Professional Final Release Complete)
 
 # ZeaZ Platform Project Instructions
 
